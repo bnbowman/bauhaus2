@@ -44,6 +44,10 @@ def parseArgs():
     parser.add_argument(
         "--chunks", type=int, default=8,
         help="The number of chunks that should be used for scatter-gather compatible workflows (0 means disable chunking)")
+    parser.add_argument(
+        "-q", "--sgeQueue",
+        default="default", type=str,
+        help="Specify destination SGE queue for workflow tasks")
 
     subparsers = parser.add_subparsers(help="sub-command help", dest="subcommand")
     subparsers.required=True
