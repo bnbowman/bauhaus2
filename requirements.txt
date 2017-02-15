@@ -1,0 +1,4 @@
+requests
+eztable
+jinja2
+future

@@ -1,0 +1,47 @@
+
+
+include: "./map-chunked-subreads.snake"
+
+from runtime import ct
+
+
+variant_calls = 
+
+# -- Worker rules --
+
+rule variant_call_fixed_coverage_one_chunk:
+    input:  "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    output: 
+        gff=  "conditions/{condition}/variant_calling/variants.{depth}.gff",
+        fasta="conditions/{condition}/variant_calling/consensus.{depth}.fasta"
+        fastq="conditions/{condition}/variant_calling/consensus.{depth}.fastq"
+    params:
+        modelPath="",
+        modelSpec="",
+        reference=reference=lambda wc: ct.reference(wc.condition)
+    shell:
+        """
+        variantCaller {params.modelPath} {params.modelSpec} --algorithm=arrow \
+             -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \    
+            {input} -r {params.reference} -o {output.gff} \
+            -o {output.fasta} -o {output.fastq}
+        """
+
+# TODO: note -x0, -q0
+rule variant_call_one_chunk:
+    input:  "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    output: 
+        gff=  "conditions/{condition}/variant_calling/variants.gff",
+        fasta="conditions/{condition}/variant_calling/consensus.fasta"
+        fastq="conditions/{condition}/variant_calling/consensus.fastq"
+    params:
+        modelPath="",
+        modelSpec="",
+        reference=reference=lambda wc: ct.reference(wc.condition)
+    shell:
+        """
+        variantCaller {params.modelPath} {params.modelSpec} --algorithm=arrow \
+             -x0 -q0 -j $ncpus --reportEffectiveCoverage \    
+            {input} -r {params.reference} -o {output.gff} \
+            -o {output.fasta} -o {output.fastq}
+        """

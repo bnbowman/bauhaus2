@@ -1,0 +1,52 @@
+
+
+include: "./scatter-subreads.snake"
+
+from runtime import ct
+from os.path import abspath
+
+ccs_chunks = \
+    { c : expand("conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
+                 condition=c, chunkNo=range(CHUNK_FACTOR))
+      for c in ct.conditions }
+
+gathered_ccs_chunks = \
+    { c : expand("conditions/{condition}/ccs/ccs.consensusreadset.xml", condition=c)
+      for c in ct.conditions }
+
+# -- Target rules --
+
+rule ccs:
+    input: gathered_ccs_chunks.values()
+
+rule ccs_chunks:
+    input: flatten(ccs_chunks.values())
+
+# -- Worker rules --
+
+rule ccs_one_chunk:
+    input:  "conditions/{condition}/subreads_chunks/input.chunk{chunkNo}.subreadset.xml"
+    output:
+        dset="conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
+        bam= "conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.ccs.bam",
+        ccsDiagnosticsReport="conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.report.txt"
+    params:
+        modelPath="",
+        modelSpec="",
+    shell:
+        """
+        ccs --force --numThreads=8 \
+            --reportFile={output.ccsDiagnosticsReport} {params.modelPath} {params.modelSpec} \
+             {input} {output.bam} && \
+        dataset create --type ConsensusReadSet {output.dset} {output.bam}
+        """
+
+rule ccs_one_condition:
+    input: lambda wc: ccs_chunks[wc.condition]
+    output: "conditions/{condition}/ccs/ccs.consensusreadset.xml"
+    shell:
+        """
+        dataset merge {output} {input}
+        """
+
+

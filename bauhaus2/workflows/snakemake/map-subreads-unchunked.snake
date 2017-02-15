@@ -1,0 +1,29 @@
+
+# This is a workflow for doing mapping without chunking.  This may be
+# appropriate if we subsample the subreads sufficiently.
+
+include: "./collect-subreads.snake"
+include: "./collect-references.snake"
+
+from runtime import ct
+
+mappings = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+# -- Target ---
+
+rule map_subreads:
+    input: mappings.values()
+
+# --- Worker rules ---
+
+rule map_subreads_one_condition:
+    input:
+        subreads="conditions/{condition}/subreads/input.subreadset.xml",
+        reference="conditions/{condition}/reference.fasta"
+    output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    shell:
+        """
+        pbalign  --tmpDir=/scratch --nproc 8 {input.subreads} {input.reference} {output}
+        """

@@ -1,0 +1,29 @@
+# collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
+
+from runtime import ct
+
+assert ct.inputsAreMapped, "collect-mappings.snake is for workflows with pre-mapped data"
+
+local_alignnmentset = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+remote_alignmentsets = \
+    { c : ct.inputs(c)
+      for c in ct.conditions }
+
+
+# -- Target rules --
+
+rule collect_mappings:
+    input: local_alignnmentset.values()
+
+# -- Worker rules --
+
+rule collect_mappings_one_condition:
+    input: lambda wc: remote_alignmentsets[wc.condition]
+    output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    shell:
+        """
+        dataset create {output} {input}
+        """

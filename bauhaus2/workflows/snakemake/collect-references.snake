@@ -1,0 +1,22 @@
+
+from runtime import ct
+
+local_fasta_files = \
+    { c : expand("conditions/{condition}/reference.fasta", condition=c)
+      for c in ct.conditions }
+
+rule collect_references:
+    input: local_fasta_files.values()
+
+rule collect_reference_one_condition:
+    input:
+        fasta=lambda wc: ct.reference(wc.condition),
+        fai=lambda wc: ct.reference(wc.condition)+".fai"
+    output:
+        fasta="conditions/{condition}/reference.fasta",
+        fai="conditions/{condition}/reference.fasta.fai"
+    shell:
+        """
+        ln -s {input.fasta} {output.fasta}
+        ln -s {input.fai} {output.fai}
+        """

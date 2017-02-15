@@ -1,0 +1,39 @@
+
+include: "./map-chunked-subreads.snake"
+
+from runtime import ct
+
+# variant calling with all filtering disabled
+rule variant_call_one_chunk:
+    input:  "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    output: 
+        gff=  "conditions/{condition}/variant_calling/variants.{depth}.gff",
+        fasta="conditions/{condition}/variant_calling/consensus.{depth}.fasta"
+        fastq="conditions/{condition}/variant_calling/consensus.{depth}.fastq"
+    params:
+        modelPath="",
+        modelSpec="",
+        reference=reference=lambda wc: ct.reference(wc.condition)
+    shell:
+        """
+        variantCaller {params.modelPath} {params.modelSpec} --algorithm=arrow \
+             -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \    
+            {input} -r {params.reference} -o {output.gff} \
+            -o {output.fasta} -o {output.fastq}
+        """
+
+rule mask_variants:
+    input:
+    output:
+    shell:
+        """
+        gffsubtract.pl {input} {params.referenceMask} > {output}
+        """
+
+rule summarize_coverage:
+    input:
+    output:
+    shell:
+        """
+        summarize_coverage --region_size=10000 {input} {params.reference} {output}
+        """
