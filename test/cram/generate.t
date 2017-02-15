@@ -1,7 +1,7 @@
 
   $ BH_ROOT=$TESTDIR/../../
 
-  $ bauhaus2 -m -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies.csv -o mapping-reports generate
+  $ bauhaus2 -m generate -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies.csv -o mapping-reports
   Validation and input resolution succeeded.
 
   $ tree mapping-reports

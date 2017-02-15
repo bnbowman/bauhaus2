@@ -9,13 +9,8 @@ from bauhaus2.__version__ import __VERSION__
 
 
 def doWorkflowHelp(args):
-    if not args.workflow :
-        print("Please pick a workflow with the --workflow option:")
-        print(' '.join(list(availableWorkflows.keys())))
-        return
-
     wfg = availableWorkflows[args.workflow]()
-    wfg.help()
+    print(wfg.__doc__)
 
 def doValidate(args):
     if args.mockResolver:
@@ -33,18 +28,9 @@ def doRun(args):
     raise NotImplementedError
 
 def parseArgs():
-    parser = argparse.ArgumentParser(prog="bauhaus")
+    parser = argparse.ArgumentParser(prog="bauhaus2")
     parser.add_argument("--version", action="version", version=__VERSION__)
-    parser.add_argument(
-        "--conditionTable", "-t",
-        action="store", metavar="CONDITION_TABLE.CSV",
-        required=True,
-        type=op.abspath)
-    parser.add_argument(
-        "--workflow", "-w",
-        action="store", type=str,
-        required=True,
-        choices = list(availableWorkflows.keys()))
+
     parser.add_argument(
         "--mockResolver", "-m",
         action="store_true",
@@ -52,10 +38,6 @@ def parseArgs():
     parser.add_argument(
         "--pdb", action="store_true",
         help="Drop into debugger on exception")
-    parser.add_argument(
-        "--outputDirectory", "-o",
-        default="out",
-        action="store", type=str)
     parser.add_argument(
         "--noGrid", action="store_true",
         help="Disable the qsub submission to the grid")
@@ -65,10 +47,33 @@ def parseArgs():
 
     subparsers = parser.add_subparsers(help="sub-command help", dest="subcommand")
     subparsers.required=True
-    subparsers.add_parser("help", help="Help for the given work flow")
-    subparsers.add_parser("validate", help="Validate the condition table")
-    subparsers.add_parser("generate", help="Generate the ninja script to run the workflow")
-    subparsers.add_parser("run", help="Run the workflow")
+    subparsers.add_parser("list-workflows", help="List available workflows")
+    pDescribe = subparsers.add_parser("describe-workflow", help="Describe chosen workflow")
+    pValidate = subparsers.add_parser("validate", help="Validate the condition table")
+    pGenerate = subparsers.add_parser("generate", help="Generate the ninja script to run the workflow")
+    pRun      = subparsers.add_parser("run", help="Run the workflow")
+
+    for p in (pDescribe, pValidate, pGenerate, pRun):
+        p.add_argument(
+            "--workflow", "-w",
+            action="store", type=str,
+            required=True,
+            choices = list(availableWorkflows.keys()),
+            metavar="WORKFLOW")
+
+    for p in (pValidate, pGenerate, pRun):
+        p.add_argument(
+            "--conditionTable", "-t",
+            action="store", metavar="CONDITION_TABLE.CSV",
+            required=True,
+            type=op.abspath)
+
+    for p in (pGenerate, pRun):
+        p.add_argument(
+            "--outputDirectory", "-o",
+            default="out",
+            action="store", type=str)
+
 
     args = parser.parse_args()
     return args
@@ -77,8 +82,13 @@ def parseArgs():
 def _main(args):
     #print args
 
-    if args.subcommand == "help":
+    if args.subcommand == "describe-workflow":
         doWorkflowHelp(args)
+        return
+
+    if args.subcommand == "list-workflows":
+        for wf in availableWorkflows:
+            print(wf)
         return
 
     if args.subcommand in ("validate", "generate", "run"):

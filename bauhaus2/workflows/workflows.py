@@ -77,22 +77,43 @@ class Workflow(object):
 # TODO: can we come up with a more intelligent way to determine scripts we need to bundle?
 
 class MappingWorkflow(Workflow):
+    """
+    Align subreads to the reference.
+    """
     WORKFLOW_NAME        = "Mapping"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
     SNAKEMAKE_FILES      = chase("map-subreads.snake")
 
 class MappingReportsWorkflow(Workflow):
+    """
+    Align subreads to the reference and generate comprehensive
+    analysis plots and tables.
+    """
     WORKFLOW_NAME        = "MappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
     SNAKEMAKE_FILES      = chase("summarize-mappings.snake")
     R_SCRIPTS            = ( "R/PbiSampledPlots.R", "R/PbiPlots.R", "R/Bauhaus2.R" )
 
 class CCSMappingReportsWorkflow(Workflow):
+    """
+    Map CCS reads to the reference and generate comprehensive analysis
+    plots and tables, including analysis of consensus accuracy by
+    numpasses and yield of CCS reads by quality.
+    """
     WORKFLOW_NAME        = "CCSMappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
     SNAKEMAKE_FILES      = chase("map-ccs.snake")
 
 class CoverageTitrationWorkflow(Workflow):
+    """
+    Map subreads to the reference and call consensus using arrow (or
+    quiver, if selected) at different coverage cuts.  Masks regions
+    known to be untrustworthy in the reference.  Generate plots and
+    tables of these results.
+
+    This workflow will only work for references that have been curated
+    by the consensus team.
+    """
     WORKFLOW_NAME        = "CoverageTitration"
     CONDITION_TABLE_TYPE = CoverageTitrationConditionTable
     SNAKEMAKE_FILES      = []
@@ -107,4 +128,5 @@ for wfc in (MappingWorkflow,
             CCSMappingReportsWorkflow,
             CoverageTitrationWorkflow):
     assert wfc.WORKFLOW_NAME not in availableWorkflows, "Workflow name collision"
+    assert wfc.__doc__ is not None, "All workflows require descriptive docstrings"
     availableWorkflows[wfc.WORKFLOW_NAME] = wfc
