@@ -5,6 +5,7 @@ from bauhaus2.pbls2 import Resolver, MockResolver
 from bauhaus2.utils import mkdirp
 from bauhaus2.experiment import (InputResolutionError, TableValidationError)
 from bauhaus2.workflows import availableWorkflows
+from bauhaus2.__version__ import __VERSION__
 
 
 def doWorkflowHelp(args):
@@ -33,6 +34,7 @@ def doRun(args):
 
 def parseArgs():
     parser = argparse.ArgumentParser(prog="bauhaus")
+    parser.add_argument("--version", action="version", version=__VERSION__)
     parser.add_argument(
         "--conditionTable", "-t",
         action="store", metavar="CONDITION_TABLE.CSV",
