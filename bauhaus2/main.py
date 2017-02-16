@@ -91,7 +91,7 @@ def _main(args):
         return
 
     if args.subcommand == "list-workflows":
-        for wf in availableWorkflows:
+        for wf in sorted(availableWorkflows):
             print(wf)
         return
 
