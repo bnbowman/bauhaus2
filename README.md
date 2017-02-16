@@ -19,7 +19,6 @@ environment will be properly configured and the workflow will execute.
 
 ## How to contribute a workflow or analysis?
 
-
    (TODO)
 
 
@@ -29,4 +28,4 @@ The original `bauhaus` was a prototype.  It had problems, which you
 can read about [here](https://github.com/dalexander/bauhaus/wiki/Bauhaus-experience-report).
 
 [Snakemake]: https://snakemake.readthedocs.io/en/stable/
-[condition-table-spec]: ./doc/ConditionTableSpec.org
+[condition-table-spec]: ./doc/ConditionTableSpec.md
