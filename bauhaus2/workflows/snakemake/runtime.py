@@ -15,4 +15,4 @@ CT_CLASS = WF_CLASS.CONDITION_TABLE_TYPE
 #
 # Global variables to be used by snakemake workflows
 #
-ct = CT_CLASS(config.get("condition_table", "condition-table.csv"), resolver)
+ct = CT_CLASS(config.get("bh2_condition_table", "condition-table.csv"), resolver)
