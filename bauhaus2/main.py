@@ -106,6 +106,7 @@ def _main(args):
 
     if args.subcommand == "generate":
         doGenerate(args, wfg, ct)
+        print("Generated runnable workflow to \"%s\"" % args.outputDirectory)
 
     elif args.subcommand == "run":
         doGenerate(args, wfg, ct)
