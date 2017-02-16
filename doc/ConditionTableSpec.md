@@ -107,12 +107,12 @@ Example condition tables
 Here's a simple example of a condition table for resequencing-based
 analysis:
 
-  Condition     RunCode        ReportsFolder   Genome      p~SnrT~
-  ------------- -------------- --------------- ----------- ---------
-  Foo-r1        3150113-0001                   FooGenome   5
-  Foo-r2        3150113-0002                   FooGenome   6
-  Foo-HighSNR   3150113-0003                   FooGenome   10
-  Bar           3150113-0004                   BarGenome   6
+| Condition   | RunCode      | ReportsFolder | Genome    | p~SnrT~ |
+|-------------|--------------|---------------|-----------|---------|
+| Foo-r1      | 3150113-0001 |               | FooGenome | 5       |
+| Foo-r2      | 3150113-0002 |               | FooGenome | 6       |
+| Foo-HighSNR | 3150113-0003 |               | FooGenome | 10      |
+| Bar         | 3150113-0004 |               | BarGenome | 6       |
 
 Note that ReportsFolder is empty; the default "ReportsFolder" in the
 Sequel world is now "" (same directory as the "trc.h5") so ReportsFolder
@@ -131,12 +131,12 @@ each run had low yield, and we need to combine them to get adequate
 coverage for some analysis. We can do so by changing the condition table
 as follows:
 
-  Condition     RunCode        ReportsFolder   Genome      p~SnrT~
-  ------------- -------------- --------------- ----------- ---------
-  Foo           3150113-0001                   FooGenome   LOW
-  Foo           3150113-0002                   FooGenome   LOW
-  Foo-HighSNR   3150113-0003                   FooGenome   HIGH
-  Bar           3150113-0004                   BarGenome   LOW
+| Condition   | RunCode      | ReportsFolder | Genome    | p~SnrT~ |
+|-------------|--------------|---------------|-----------|---------|
+| Foo         | 3150113-0001 |               | FooGenome | LOW     |
+| Foo         | 3150113-0002 |               | FooGenome | LOW     |
+| Foo-HighSNR | 3150113-0003 |               | FooGenome | HIGH    |
+| Bar         | 3150113-0004 |               | BarGenome | LOW     |
 
 Here, to satisfy the rule that "variables have a single value within a
 condition", we have had to manually bin the variable `p_SnrT`.
