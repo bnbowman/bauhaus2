@@ -1,6 +1,7 @@
 library(data.table)
 library(dplyr)
 library(ggplot2)
+library(jsonlite)
 
 ##
 ## Core functions for operation in a bauhaus2/zia environment.
@@ -90,13 +91,13 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
     reportOutputPath <- dirname(outputFile)
     reportOutputFile = outputFile
     version <- version
-    plotsToOutput <- data.frame()
-    tablesToOutput <- data.frame()
+    plotsToOutput <- NULL
+    tablesToOutput <- NULL
     cond_table <- loadConditionTable(conditionTableCSV)
 
     ## Save a ggplot in the report.
-    .ggsave <- function(img_file_name, plot, id = "plot_name", title="Default Title",
-                       caption="No caption specified", ...)
+    .ggsave <- function(img_file_name, plot, id, title="Default Title",
+                       caption="No caption specified", tags=c(), ...)
     {
         if (!chkPng(img_file_name)) {
             img_file_name = paste0(img_file_name, ".png")
@@ -104,28 +105,48 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
         img_path = file.path(reportOutputPath, img_file_name)
         ggplot2::ggsave(img_path, plot = plot, ...)
         logging::loginfo(paste("Wrote img to: ", img_path))
-        ## FIXME.
-        ##plotsToOutput <<- c(list(p), plotsToOutput)
+
+        thisPlot <- list(id=unbox(id),
+                         image=unbox(img_file_name),
+                         title=unbox(title),
+                         caption=unbox(caption),
+                         tags=as.vector(tags, mode="character"))
+        if (is.null(plotsToOutput)) {
+            plotsToOutput <<- thisPlot
+        } else {
+            plotsToOutput <<- rbind(plotsToOutput, thisPlot)
+        }
     }
 
     ## Add a table to the report.
-    .write.table<- function(tbl_file_name, tbl, id = "table_name", title = "Default Title")
+    .write.table<- function(tbl_file_name, tbl, id, title = "Default Title", tags=c())
     {
         if (!chkCsv(tbl_file_name)) {
             tbl_file_name = paste(tbl_file_name, ".csv")
         }
         tbl_path = file.path(reportOutputPath, tbl_file_name)
-
         write.csv(tbl, file=tbl_path)
-        ## FIXME
-        ##tablesToOutput <<- c(table, tablesToOutput)
+        logging::loginfo(paste("Wrote table to: ", tbl_path))
+
+        thisTbl <- list(id=unbox(id),
+                        csv=unbox(tbl_file_name),
+                        title=unbox(title),
+                        tags=as.vector(tags, mode="character"))
+        if (is.null(tablesToOutput)) {
+            tablesToOutput <<- thisTbl
+        } else {
+            tablesToOutput <<- rbind(tablesToOutput, thisTbl)
+        }
     }
 
     ## Output the report file as json.
     .write.report <- function()
     {
-        ## FIXME
-        write("{}", file=file.path(reportOutputPath, "report.json"))
+        pp <- as.data.frame(plotsToOutput)
+        row.names(pp) <- NULL
+        tt <- as.data.frame(tablesToOutput)
+        row.names(tt) <- NULL
+        write_json(list(plots=pp, tables=tt), file.path(reportOutputPath, "report.json"), pretty=T)
     }
 
 
@@ -134,4 +155,22 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
          write.table = .write.table,
          write.report = .write.report,
          outputPath = reportOutputPath)
+}
+
+
+
+
+if (0) {
+
+    r <- bh2Reporter("/tmp/two-tiny-movies.csv", "/tmp/report.json")
+
+    p <- qplot()
+    r$ggsave("1.png", p, "Id1", "Title1", "Caption1", tags=c())
+    r$ggsave("2.png", p, "Id2", "Title2", "Caption2", tags=c("A"))
+
+    t <- data.frame(a=1:3, b=4:6)
+    r$write.table("foo.csv", t, "T1", "TTitle1", tags=c("A"))
+    r$write.table("foo2.csv", t, "T2", "TTitle2", tags=c())
+
+    r$write.report()
 }
