@@ -1,5 +1,5 @@
-pbexperiment: schema, validation, and accessors for tertiary analysis experiment condition tables
-=================================================================================================
+Condition table specification for `bauhaus2`
+============================================
 
 What is this?
 -------------
