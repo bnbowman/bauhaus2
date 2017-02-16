@@ -107,7 +107,7 @@ Example condition tables
 Here's a simple example of a condition table for resequencing-based
 analysis:
 
-| Condition   | RunCode      | ReportsFolder | Genome    | p~SnrT~ |
+| Condition   | RunCode      | ReportsFolder | Genome    | p_SnrT  |
 |-------------|--------------|---------------|-----------|---------|
 | Foo-r1      | 3150113-0001 |               | FooGenome | 5       |
 | Foo-r2      | 3150113-0002 |               | FooGenome | 6       |
@@ -131,7 +131,7 @@ each run had low yield, and we need to combine them to get adequate
 coverage for some analysis. We can do so by changing the condition table
 as follows:
 
-| Condition   | RunCode      | ReportsFolder | Genome    | p~SnrT~ |
+| Condition   | RunCode      | ReportsFolder | Genome    | p_SnrT  |
 |-------------|--------------|---------------|-----------|---------|
 | Foo         | 3150113-0001 |               | FooGenome | LOW     |
 | Foo         | 3150113-0002 |               | FooGenome | LOW     |
