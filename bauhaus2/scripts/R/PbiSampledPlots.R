@@ -912,7 +912,7 @@ makeReport <- function(report) {
                      title = "Median SNR values")
   
   # Save the report object for later debugging
-  save(report, file = file.path(report$outputPath, "report.Rd"))
+  save(report, file = file.path(report$outputDir, "report.Rd"))
   
   # Output error rates by SNR
   loginfo("Examining error rates by SNR Bin")

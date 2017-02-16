@@ -88,7 +88,7 @@ loadConditionTable <- function(conditionTableCSV,
 ##
 bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
 
-    reportOutputPath <- dirname(outputFile)
+    reportOutputDir <- dirname(outputFile)
     reportOutputFile = outputFile
     version <- version
     plotsToOutput <- NULL
@@ -96,13 +96,13 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
     cond_table <- loadConditionTable(conditionTableCSV)
 
     ## Save a ggplot in the report.
-    .ggsave <- function(img_file_name, plot, id, title="Default Title",
+    .ggsave <- function(img_file_name, plot, id="Default ID", title="Default Title",
                        caption="No caption specified", tags=c(), ...)
     {
         if (!chkPng(img_file_name)) {
             img_file_name = paste0(img_file_name, ".png")
         }
-        img_path = file.path(reportOutputPath, img_file_name)
+        img_path = file.path(reportOutputDir, img_file_name)
         ggplot2::ggsave(img_path, plot = plot, ...)
         logging::loginfo(paste("Wrote img to: ", img_path))
 
@@ -111,11 +111,7 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
                          title=unbox(title),
                          caption=unbox(caption),
                          tags=as.vector(tags, mode="character"))
-        if (is.null(plotsToOutput)) {
-            plotsToOutput <<- thisPlot
-        } else {
-            plotsToOutput <<- rbind(plotsToOutput, thisPlot)
-        }
+        plotsToOutput <<- rbind(plotsToOutput, thisPlot)
     }
 
     ## Add a table to the report.
@@ -124,7 +120,7 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
         if (!chkCsv(tbl_file_name)) {
             tbl_file_name = paste(tbl_file_name, ".csv")
         }
-        tbl_path = file.path(reportOutputPath, tbl_file_name)
+        tbl_path = file.path(reportOutputDir, tbl_file_name)
         write.csv(tbl, file=tbl_path)
         logging::loginfo(paste("Wrote table to: ", tbl_path))
 
@@ -132,11 +128,8 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
                         csv=unbox(tbl_file_name),
                         title=unbox(title),
                         tags=as.vector(tags, mode="character"))
-        if (is.null(tablesToOutput)) {
-            tablesToOutput <<- thisTbl
-        } else {
-            tablesToOutput <<- rbind(tablesToOutput, thisTbl)
-        }
+
+        tablesToOutput <<- rbind(tablesToOutput, thisTbl)
     }
 
     ## Output the report file as json.
@@ -146,7 +139,8 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
         row.names(pp) <- NULL
         tt <- as.data.frame(tablesToOutput)
         row.names(tt) <- NULL
-        write_json(list(plots=pp, tables=tt), file.path(reportOutputPath, "report.json"), pretty=T)
+        write_json(list(plots=pp, tables=tt), reportOutputFile, pretty=T)
+        logging::loginfo(paste("Wrote report to: ", reportOutputFile))
     }
 
 
@@ -154,7 +148,8 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
          ggsave = .ggsave,
          write.table = .write.table,
          write.report = .write.report,
-         outputPath = reportOutputPath)
+         outputDir = reportOutputDir,
+         outputJSON = reportOutputFile)
 }
 
 
@@ -162,7 +157,7 @@ bh2Reporter <- function(conditionTableCSV, outputFile, reportTitle) {
 
 if (0) {
 
-    r <- bh2Reporter("/tmp/two-tiny-movies.csv", "/tmp/report.json")
+    r <- bh2Reporter("~dalexander/Projects/rsync/bauhaus/test/data/two-tiny-movies.csv", "/tmp/report.json")
 
     p <- qplot()
     r$ggsave("1.png", p, "Id1", "Title1", "Caption1", tags=c())

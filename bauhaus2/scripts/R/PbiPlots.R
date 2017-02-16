@@ -446,7 +446,7 @@ makeReport <- function(report) {
   makeYieldHistogram(report, cd)
   
   # Save the report object for later debugging
-  save(report, file = file.path(report$outputPath, "report.Rd"))
+  save(report, file = file.path(report$outputDir, "report.Rd"))
   
   # At the end of this function we need to call this last, it outputs the report
   report$write.report()
