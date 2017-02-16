@@ -34,6 +34,7 @@ setup(
         "console_scripts" : [ "bauhaus2 = bauhaus2.main:main" ]
     },
     package_data={ "bauhaus2.workflows.snakemake" : [ "*.snake", "*.py" ],
+                   "bauhaus2.scripts"             : [ "run.sh" ],
                    "bauhaus2.scripts.R"           : [ "*.R" ],
                    "bauhaus2.scripts.Python"      : [ "*.python" ],
                    "bauhaus2.scripts.MATLAB"      : [ "*.m" ] },
