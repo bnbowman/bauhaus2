@@ -1,13 +1,15 @@
+__all__ = [ "availableWorkflows" ]
+
 from builtins import object
 import shutil, json, os.path as op
 
 from bauhaus2.experiment import *
-from bauhaus2.utils import mkdirp
+from bauhaus2.utils import mkdirp, readFile
 
 from bauhaus2.scripts import analysisScriptPath, runShScriptPath
-from .snakemakeFiles import (chaseSnakemakeIncludes as chase,
-                             snakemakeFilePath,
-                             snakemakeStdlibFiles)
+from .snakemakeFiles import (snakemakeFilePath,
+                             snakemakeStdlibFiles,
+                             runtimeFilePath)
 
 class Workflow(object):
     WORKFLOW_NAME        = None
@@ -26,10 +28,16 @@ class Workflow(object):
         return cls.WORKFLOW_NAME
 
     def _bundleSnakemakeFiles(self, outputDir):
-        sfDestDir = op.join(outputDir, "workflow")
-        for sf in self.SNAKEMAKE_FILES:
-            sfPath = snakemakeFilePath(sf)
-            shutil.copy(sfPath, sfDestDir)
+        """
+        Simply *concatenate* the constituent scripts
+        """
+        outFname = op.join(outputDir, "workflow", "Snakefile")
+        with open(outFname, "w") as outFile:
+            outFile.write(readFile(runtimeFilePath("stub.py")))
+            for sf in self.SNAKEMAKE_FILES:
+                sfPath = snakemakeFilePath(sf)
+                contents = readFile(sfPath)
+                outFile.write(contents)
 
     def _bundleSnakemakeStdlib(self, outputDir):
         sfDestDir = op.join(outputDir, "workflow")
@@ -82,7 +90,11 @@ class MappingWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "Mapping"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    SNAKEMAKE_FILES      = chase("map-subreads.snake")
+    SNAKEMAKE_FILES      = [ "map-subreads.snake",
+                             "collect-references.snake",
+                             "scatter-subreads.snake",
+                             "collect-subreads.snake" ]
+
 
 class MappingReportsWorkflow(Workflow):
     """
@@ -91,8 +103,9 @@ class MappingReportsWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "MappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    SNAKEMAKE_FILES      = chase("summarize-mappings.snake")
+    SNAKEMAKE_FILES      = ["summarize-mappings.snake"]  + MappingWorkflow.SNAKEMAKE_FILES
     R_SCRIPTS            = ( "R/PbiSampledPlots.R", "R/PbiPlots.R", "R/Bauhaus2.R" )
+
 
 class CCSMappingReportsWorkflow(Workflow):
     """
@@ -102,7 +115,12 @@ class CCSMappingReportsWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "CCSMappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    SNAKEMAKE_FILES      = chase("map-ccs.snake")
+    SNAKEMAKE_FILES      = [ "map-ccs.snake",
+                             "collect-references.snake",
+                             "scatter-subreads.snake",
+                             "collect-subreads.snake" ]
+
+
 
 class CoverageTitrationWorkflow(Workflow):
     """

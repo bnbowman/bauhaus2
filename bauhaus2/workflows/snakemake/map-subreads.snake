@@ -1,9 +1,6 @@
 
-include: "./collect-references.snake"
-include: "./scatter-subreads.snake"
-
-from runtime import ct
-from stdlib import flatten
+# ---------------------------------------------------------------------------------------------------
+# map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
 
 mapped_chunks = \
     { c : expand("conditions/{condition}/mapped_chunks/mapped.chunk{chunkNo}.alignmentset.xml",

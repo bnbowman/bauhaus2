@@ -1,11 +1,6 @@
 
-# This is a workflow for doing mapping without chunking.  This may be
-# appropriate if we subsample the subreads sufficiently.
-
-include: "./collect-subreads.snake"
-include: "./collect-references.snake"
-
-from runtime import ct
+# ---------------------------------------------------------------------------------------------------
+# map-subreads-unchunked.snake: map subreads, not using scattering
 
 mappings = \
     { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
@@ -27,3 +22,5 @@ rule map_subreads_one_condition:
         """
         pbalign  --tmpDir=/scratch --nproc 8 {input.subreads} {input.reference} {output}
         """
+
+# ---------------------------------------------------------------------------------------------------

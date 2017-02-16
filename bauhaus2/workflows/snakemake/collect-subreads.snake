@@ -1,5 +1,5 @@
-
-from runtime import ct
+# ---------------------------------------------------------------------------------------------------
+# collect-subreads.snake: hotlink "remote" subreadsets into the workflow directory
 
 assert (not ct.inputsAreMapped), "collect-subreads.snake is for workflows with unmapped data"
 

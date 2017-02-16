@@ -1,12 +1,12 @@
 
-include: "./map-chunked-subreads.snake"
-
-from runtime import ct
+# ---------------------------------------------------------------------------------------------------
+# consensus-coverage-titration: run variant calling/consensus at
+# different coverage levels to see how consensus accuracy converges
 
 # variant calling with all filtering disabled
 rule variant_call_one_chunk:
     input:  "conditions/{condition}/mapped/mapped.alignmentset.xml"
-    output: 
+    output:
         gff=  "conditions/{condition}/variant_calling/variants.{depth}.gff",
         fasta="conditions/{condition}/variant_calling/consensus.{depth}.fasta"
         fastq="conditions/{condition}/variant_calling/consensus.{depth}.fastq"
@@ -17,7 +17,7 @@ rule variant_call_one_chunk:
     shell:
         """
         variantCaller {params.modelPath} {params.modelSpec} --algorithm=arrow \
-             -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \    
+             -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \
             {input} -r {params.reference} -o {output.gff} \
             -o {output.fasta} -o {output.fastq}
         """

@@ -3,6 +3,7 @@
 # at runtime, by initializing global variables that bauhaus2 workflows
 # need to interrogate to define file paths and make decisions.
 #
+__all__ = [ "ct" ]
 
 from bauhaus2.workflows import availableWorkflows
 from bauhaus2.pbls2 import Resolver

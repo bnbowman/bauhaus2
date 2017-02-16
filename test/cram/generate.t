@@ -21,12 +21,8 @@
   |       |-- PbiPlots.R
   |       `-- PbiSampledPlots.R
   `-- workflow
-      |-- collect-references.snake
-      |-- collect-subreads.snake
-      |-- map-subreads.snake
+      |-- Snakefile
       |-- runtime.py
-      |-- scatter-subreads.snake
-      |-- stdlib.py
-      `-- summarize-mappings.snake
+      `-- stdlib.py
   
-  8 directories, 13 files
+  8 directories, 9 files

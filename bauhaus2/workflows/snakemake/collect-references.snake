@@ -1,5 +1,6 @@
 
-from runtime import ct
+# ---------------------------------------------------------------------------------------------------
+# collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
 
 local_fasta_files = \
     { c : expand("conditions/{condition}/reference.fasta", condition=c)

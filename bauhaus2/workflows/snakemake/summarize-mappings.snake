@@ -1,7 +1,6 @@
 
-include: "./map-subreads.snake"
-
-from runtime import ct
+# ---------------------------------------------------------------------------------------------------
+# summarize-mappings.snake: analyze mapping results, generating plots and tables.
 
 mapped_subreads = \
     { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
@@ -30,3 +29,4 @@ rule PbiSampledPlots:
         """
         Rscript --vanilla scripts/R/PbiSampledPlots.R
         """
+

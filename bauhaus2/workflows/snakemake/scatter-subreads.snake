@@ -1,8 +1,5 @@
-
-include: "./collect-subreads.snake"
-
-from runtime import ct
-from stdlib import flatten
+# ---------------------------------------------------------------------------------------------------
+# scatter-subreads.snake: split subreadsets into smaller chunks for analysis
 
 # Todo: need a class to handle config, with defaults...
 CHUNK_FACTOR = 8

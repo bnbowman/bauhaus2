@@ -1,9 +1,6 @@
 
-
-include: "./scatter-subreads.snake"
-
-from runtime import ct
-from os.path import abspath
+# ---------------------------------------------------------------------------------------------------
+# ccs-subreads.snake
 
 ccs_chunks = \
     { c : expand("conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
@@ -48,5 +45,3 @@ rule ccs_one_condition:
         """
         dataset merge {output} {input}
         """
-
-
