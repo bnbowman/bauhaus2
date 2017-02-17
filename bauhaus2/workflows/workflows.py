@@ -69,15 +69,11 @@ class Workflow(object):
         # Generate workflow dir
         mkdirp(outputDir)
         shutil.copyfile(conditionTableCSV, op.join(outputDir, "condition-table.csv"))
-        mkdirp(op.join(outputDir, "log"))
         mkdirp(op.join(outputDir, "workflow"))
-        mkdirp(op.join(outputDir, "reports"))
-        mkdirp(op.join(outputDir, "conditions"))
         mkdirp(op.join(outputDir, "scripts"))
-        mkdirp(op.join(outputDir, "scripts/R"))
-        mkdirp(op.join(outputDir, "scripts/Python"))
-        mkdirp(op.join(outputDir, "scripts/MATLAB"))
-
+        if self.R_SCRIPTS:      mkdirp(op.join(outputDir, "scripts/R"))
+        if self.PYTHON_SCRIPTS: mkdirp(op.join(outputDir, "scripts/Python"))
+        if self.MATLAB_SCRIPTS: mkdirp(op.join(outputDir, "scripts/MATLAB"))
         self._bundleSnakemakeFiles(outputDir)  # Output relevant snakemake files
         self._bundleSnakemakeStdlib(outputDir) # Output our python stdlib for snakemake files
         self._bundleAnalysisScripts(outputDir) # Output relevant scripts

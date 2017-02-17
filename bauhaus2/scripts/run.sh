@@ -10,5 +10,6 @@ unset R_LIBS
 export R_IGNORE_USER_LIBS=1
 module load R/3.2.3-internal
 
-## FIXME: need to configurify this..
+
+mkdir log conditions reports
 snakemake -p -s workflow/Snakefile --configfile config.json
