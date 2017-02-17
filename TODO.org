@@ -1,3 +1,5 @@
+
+
 * Workflows
 - [X] Rename to verb_noun[_modifier]
 - [X] Mapping
@@ -8,7 +10,7 @@
 
 * Logic
 - [X] Bring over the bh codebase
-- [ ] Figure out generate strategy
+- [X] Figure out generate strategy
 - [X] Figure out condition table type issue
 
 * Scripts
@@ -24,7 +26,7 @@
 
 * Testing
 - [X] Basic validation tests
-- [ ] Generate tests
+- [X] Generate tests
 - [ ] Execution tests: mapping-reports
 - [ ] Execution tests: ccs-mapping-reports
 
