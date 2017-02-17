@@ -11,4 +11,4 @@ export R_IGNORE_USER_LIBS=1
 module load R/3.2.3-internal
 
 ## FIXME: need to configurify this..
-snakemake -p -s workflow/summarize-mappings.snake --configfile config.json
+snakemake -p -s workflow/Snakefile --configfile config.json
