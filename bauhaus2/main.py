@@ -9,7 +9,7 @@ from bauhaus2.__version__ import __VERSION__
 
 
 def doWorkflowHelp(args):
-    wfg = availableWorkflows[args.workflow]()
+    wfg = availableWorkflows[args.workflow]
     print(wfg.__doc__)
 
 def doValidate(args):
@@ -17,8 +17,9 @@ def doValidate(args):
         r = MockResolver()
     else:
         r = Resolver()
-    wfg = availableWorkflows[args.workflow]()
-    ct = wfg.conditionTableType()(args.conditionTable, r)
+    wfc = availableWorkflows[args.workflow]
+    ct = wfc.conditionTableType()(args.conditionTable, r)
+    wfg = wfc(ct, args)
     return wfg, ct
 
 def doGenerate(args, wfg, ct):
@@ -91,7 +92,7 @@ def _main(args):
         return
 
     if args.subcommand == "list-workflows":
-        for wf in sorted(availableWorkflows):
+        for wf in sorted(availableWorkflows.keys()):
             print(wf)
         return
 

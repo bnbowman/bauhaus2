@@ -15,7 +15,6 @@ from .snakemakeFiles import (snakemakeFilePath,
 class Workflow(object):
     WORKFLOW_NAME        = None
     CONDITION_TABLE_TYPE = None
-    SNAKEMAKE_FILES      = ()
     R_SCRIPTS            = ()
     PYTHON_SCRIPTS       = ()
     MATLAB_SCRIPTS       = ()
@@ -35,7 +34,7 @@ class Workflow(object):
         outFname = op.join(outputDir, "workflow", "Snakefile")
         with open(outFname, "w") as outFile:
             outFile.write(readFile(runtimeFilePath("stub.py")))
-            for sf in self.SNAKEMAKE_FILES:
+            for sf in self.plan():
                 sfPath = snakemakeFilePath(sf)
                 contents = readFile(sfPath)
                 outFile.write(contents)
@@ -54,7 +53,7 @@ class Workflow(object):
 
     def _bundleConfigJson(self, outputDir):
         acc = {"bh2.workflow_name": self.WORKFLOW_NAME}
-        for snakeFile in self.SNAKEMAKE_FILES:
+        for snakeFile in self.plan():
             jsonPath = configJsonPath(snakeFile.replace(".snake", ".json"))
             jsonData = json.load(open(jsonPath))
             acc.update(jsonData)
@@ -65,6 +64,8 @@ class Workflow(object):
     def _bundleRunSh(self, outputDir):
         shutil.copy(runShScriptPath(), outputDir)
 
+    def plan(self):
+        raise NotImplementedError
 
     def generate(self, conditionTableCSV, outputDir):
         # Generate workflow dir
@@ -81,11 +82,47 @@ class Workflow(object):
         self._bundleConfigJson(outputDir)      # Generate snakemake config.json
         self._bundleRunSh(outputDir)           # Generate driver "run" script
 
-
+    def __init__(self, ct, args):
+        self.conditionTable = ct
+        self.cliArgs = args # TODO: we should have a real class for this...
 
 # ---
 
-# TODO: can we come up with a more intelligent way to determine scripts we need to bundle?
+# A *plan* is a list of snakemake files that will be assembled to make
+# the overall workflow.  The main entry point comes first in the list.
+# A plan is in general generated dynamically depending on the input
+# type, workflow type, and options provided to bauhaus2.
+#
+# For example: the *plan* to get mapped data depends on:
+#   - whether the input already specifies mapped data (in which case
+#     we just "link" to it) or if it specifies subreadsets, in which
+#     case we must perform the mapping ourself;
+#   - whether the bauhaus user has explicitly specified not to use
+#     scatter/gather, in which case we will use naive unchunked
+#     mapping
+
+
+def subreadsPlan(ct, args):
+    # In greater generality, this could include a bax2bam conversion
+    # possibility to enable integration of RSII data; or we could even
+    # run the basecaller, if we have trace input specified; or we
+    # could re-call adapters... lots of possibilities.
+    assert not ct.inputsAreMapped
+    return [ "collect-subreads.snake" ]
+
+def subreadsMappingPlan(ct, args):
+    if ct.inputsAreMapped:
+        return [ "collect-subread-mappings.snake" ]
+    elif args.chunks > 0:
+        return [ "map-subreads.snake",
+                 "scatter-subreads.snake",
+                 "collect-references.snake" ] + \
+                subreadsPlan(ct, args)
+    else:
+        return [ "map-subreads.snake",
+                 "collect-references.snake" ] + \
+                subreadsPlan(ct, args)
+
 
 class MappingWorkflow(Workflow):
     """
@@ -93,11 +130,9 @@ class MappingWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "Mapping"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    SNAKEMAKE_FILES      = [ "map-subreads.snake",
-                             "collect-references.snake",
-                             "scatter-subreads.snake",
-                             "collect-subreads.snake" ]
 
+    def plan(self):
+        return subreadsMappingPlan(self.conditionTable, self.cliArgs)
 
 class MappingReportsWorkflow(Workflow):
     """
@@ -106,8 +141,11 @@ class MappingReportsWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "MappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    SNAKEMAKE_FILES      = ["summarize-mappings.snake"]  + MappingWorkflow.SNAKEMAKE_FILES
     R_SCRIPTS            = ( "R/PbiSampledPlots.R", "R/PbiPlots.R", "R/Bauhaus2.R" )
+
+    def plan(self):
+        return ["summarize-mappings.snake"] + \
+            subreadsMappingPlan(self.conditionTable, self.cliArgs)
 
 
 class CCSMappingReportsWorkflow(Workflow):
@@ -118,11 +156,12 @@ class CCSMappingReportsWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "CCSMappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    SNAKEMAKE_FILES      = [ "map-ccs.snake",
-                             "collect-references.snake",
-                             "scatter-subreads.snake",
-                             "collect-subreads.snake" ]
 
+    def plan(self):
+        return [ "map-ccs.snake",
+                 "collect-references.snake",
+                 "scatter-subreads.snake",
+                 "collect-subreads.snake" ]
 
 
 class CoverageTitrationWorkflow(Workflow):
@@ -137,7 +176,6 @@ class CoverageTitrationWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "CoverageTitration"
     CONDITION_TABLE_TYPE = CoverageTitrationConditionTable
-    SNAKEMAKE_FILES      = []
 
 
 # ---
