@@ -1,5 +1,3 @@
-
-
 * Workflows
 - [X] Rename to verb_noun[_modifier]
 - [X] Mapping
@@ -33,3 +31,11 @@
 
 * pbservice integration
 - [ ] Stub out map_subreads_pbservices
+
+
+* Long-term initiatives
+** Dockerize the module dependencies
+   If we can get smrtanalysis etc. into a Docker image (with a new
+   image available frequently), we could actually make these workflows
+   *completely* self-contained and reproducible---no need to depend on
+   modules.
