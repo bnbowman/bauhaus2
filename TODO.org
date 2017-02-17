@@ -1,37 +1,17 @@
 * Workflows
-- [X] Rename to verb_noun[_modifier]
-- [X] Mapping
-- [X] CCS mapping
-- [X] Mapping reports
 - [ ] CCS mapping reports
 - [ ] Coverage titration
 
-* Logic
-- [X] Bring over the bh codebase
-- [X] Figure out generate strategy
-- [X] Figure out condition table type issue
-
-* Scripts
-- [X] Bring over the R scripts from bauhaus
-- [X] Bring over the R scripts from internaltools (hard fork)
-- [X] Port the R scripts to use the predestined locations of ct, not use RTC
-
-
 * Infrastructure
-- [X] Fix setup.py
 - [ ] Move to use smrtportal-release reference repo
 - [ ] Move reference masks under itg directory
 
 * Testing
-- [X] Basic validation tests
-- [X] Generate tests
 - [ ] Execution tests: mapping-reports
 - [ ] Execution tests: ccs-mapping-reports
 
-
 * pbservice integration
 - [ ] Stub out map_subreads_pbservices
-
 
 * Long-term initiatives
 ** Dockerize the module dependencies
