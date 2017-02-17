@@ -59,7 +59,8 @@ class Workflow(object):
             jsonData = json.load(open(jsonPath))
             acc.update(jsonData)
         with open(op.join(outputDir, "config.json"), "w") as jsonOut:
-            json.dump(acc, jsonOut)
+            json.dump(acc, jsonOut, sort_keys=True, indent=4, separators=(',', ': '))
+            jsonOut.write("\n")
 
     def _bundleRunSh(self, outputDir):
         shutil.copy(runShScriptPath(), outputDir)
