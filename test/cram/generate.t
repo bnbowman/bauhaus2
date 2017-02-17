@@ -8,14 +8,9 @@
   $ tree mapping-reports
   mapping-reports
   |-- condition-table.csv
-  |-- conditions
   |-- config.json
-  |-- log
-  |-- reports
   |-- run.sh
   |-- scripts
-  |   |-- MATLAB
-  |   |-- Python
   |   `-- R
   |       |-- Bauhaus2.R
   |       |-- PbiPlots.R
@@ -25,4 +20,4 @@
       |-- runtime.py
       `-- stdlib.py
   
-  8 directories, 9 files
+  3 directories, 9 files
