@@ -8,6 +8,7 @@ from bauhaus2.utils import mkdirp, readFile
 
 from bauhaus2.scripts import analysisScriptPath, runShScriptPath
 from .snakemakeFiles import (snakemakeFilePath,
+                             configJsonPath,
                              snakemakeStdlibFiles,
                              runtimeFilePath)
 
@@ -52,8 +53,13 @@ class Workflow(object):
             shutil.copy(analysisScriptPath(analysisScript), destDir)
 
     def _bundleConfigJson(self, outputDir):
+        acc = {"bh2.workflow_name": self.WORKFLOW_NAME}
+        for snakeFile in self.SNAKEMAKE_FILES:
+            jsonPath = configJsonPath(snakeFile.replace(".snake", ".json"))
+            jsonData = json.load(open(jsonPath))
+            acc.update(jsonData)
         with open(op.join(outputDir, "config.json"), "w") as jsonOut:
-            json.dump({"bh2_workflow_name": self.WORKFLOW_NAME}, jsonOut)
+            json.dump(acc, jsonOut)
 
     def _bundleRunSh(self, outputDir):
         shutil.copy(runShScriptPath(), outputDir)
