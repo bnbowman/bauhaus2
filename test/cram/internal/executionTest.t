@@ -14,7 +14,7 @@ Generate mapping reports workflow, starting from subreads.
   $ (cd mapping-reports && ./run.sh >/dev/null 2>&1)
 
 
-  $ tree mapping-reports
+  $ tree -I __pycache__ mapping-reports
   mapping-reports
   |-- condition-table.csv
   |-- conditions
@@ -182,13 +182,11 @@ Generate mapping reports workflow, starting from subreads.
   |-- snakemake.log
   `-- workflow
       |-- Snakefile
-      |-- __pycache__
-      |   |-- runtime.cpython-34.pyc
-      |   `-- stdlib.cpython-34.pyc
       |-- runtime.py
       `-- stdlib.py
   
-  19 directories, 152 files
+  18 directories, 150 files
+
 
 
 
