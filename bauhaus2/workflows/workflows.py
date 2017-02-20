@@ -4,9 +4,9 @@ from builtins import object
 import shutil, json, os.path as op
 
 from bauhaus2.experiment import *
-from bauhaus2.utils import mkdirp, readFile
-
+from bauhaus2.utils import mkdirp, readFile, renderTemplate, chmodPlusX
 from bauhaus2.scripts import analysisScriptPath, runShScriptPath
+
 from .snakemakeFiles import (snakemakeFilePath,
                              configJsonPath,
                              snakemakeStdlibFiles,
@@ -62,7 +62,15 @@ class Workflow(object):
             jsonOut.write("\n")
 
     def _bundleRunSh(self, outputDir):
-        shutil.copy(runShScriptPath(), outputDir)
+        if self.cliArgs.noGrid:
+            clusterOptions=""
+        else:
+            clusterOptions=('-j 999 --cluster-sync="qsub -q {sge_queue} -pe smp {{threads}} -cwd -V -b y -sync y -e log/ -o log/" --latency-wait 60'
+                            .format(sge_queue=self.cliArgs.sgeQueue))
+        outputPath = op.join(outputDir, "run.sh")
+        renderTemplate(runShScriptPath(), outputPath, cluster_options=clusterOptions)
+        chmodPlusX(outputPath)
+
 
     def plan(self):
         raise NotImplementedError

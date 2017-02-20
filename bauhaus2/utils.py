@@ -1,7 +1,4 @@
-import os, stat, itertools, os.path as op
-
-
-
+import os, stat, itertools, os.path as op, jinja2
 
 def mkdirp(path):
     try:
@@ -26,13 +23,7 @@ def writeFile(path, content):
 
 def quote(s):
     return '"%s"' % s
-    
-    
 
-
-## Test
-
-
-
-#print includes("bauhaus2/workflows/map-subreads.snake")
-##print chaseSnakemakeIncludes("bauhaus2/workflows/map-subreads.snake")
+def renderTemplate(inPath, outPath, **kwargs):
+    template = jinja2.Template(readFile(inPath))
+    writeFile(outPath, template.render(**kwargs))
