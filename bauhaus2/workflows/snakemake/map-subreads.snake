@@ -26,9 +26,10 @@ rule map_chunked_subreads_one_chunk:
         subreads="conditions/{condition}/subreads_chunks/input.chunk{chunkNo}.subreadset.xml",
         reference="conditions/{condition}/reference.fasta"
     output: "conditions/{condition}/mapped_chunks/mapped.chunk{chunkNo}.alignmentset.xml"
+    threads: 8
     shell:
         """
-        pbalign --tmpDir=/scratch --nproc 8 {input.subreads} {input.reference} {output}
+        pbalign --tmpDir=/scratch --nproc {threads} {input.subreads} {input.reference} {output}
         """
 
 rule map_chunked_subreads_and_gather_one_condition:
