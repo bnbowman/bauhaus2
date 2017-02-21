@@ -6,7 +6,7 @@ from runtime import ct
 
 mapped_ccs_chunks = \
     { c : expand("conditions/{condition}/mapped_ccs_chunks/mapped-ccs.chunk{chunkNo}.alignmentset.xml",
-                 condition=c, chunkNo=range(CHUNK_FACTOR))
+                 condition=c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
       for c in ct.conditions }
 
 gathered_mapped_ccs_chunks = \

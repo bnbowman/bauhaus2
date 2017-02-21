@@ -167,6 +167,7 @@ class CCSMappingReportsWorkflow(Workflow):
 
     def plan(self):
         return [ "map-ccs.snake",
+                 "ccs-subreads.snake",
                  "collect-references.snake",
                  "scatter-subreads.snake",
                  "collect-subreads.snake" ]
