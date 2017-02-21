@@ -1,4 +1,7 @@
 #!/bin/bash
+THISDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $THISDIR
+
 source /mnt/software/Modules/current/init/bash
 
 module load smrtanalysis/mainline
@@ -12,4 +15,4 @@ module load R/3.2.3-internal
 
 
 mkdir -p log conditions reports
-snakemake {{ cluster_options }} -p -s workflow/Snakefile --configfile config.json | tee snakemake.log
+snakemake {{ cluster_options }} -p -s workflow/Snakefile --configfile config.json 2>&1 | tee snakemake.log
