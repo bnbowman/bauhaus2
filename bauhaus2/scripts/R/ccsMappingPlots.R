@@ -14,43 +14,14 @@ toPhred <- function(acc, maximum=60) {
     -10*log10(err)
 }
 
-## This is not a good idea at all really---the dataset could contain
-## "filter" operations that we are ignoring via this mechanism.  We
-## need a better solution in pbbamr, to somehow provide access to a
-## virtual pbi.
-listDatasetContents <- function(datasetXmlFile)
-{
-    x <- read_xml(datasetXmlFile)
-    ns <- xml_ns(x)
-    allResourceFiles <- sapply(xml_find_all(x, ".//pbbase:ExternalResource/@ResourceId", ns), xml_text)
-    isBam <- str_detect(allResourceFiles, ".*.bam$")
-    bams <- unique(allResourceFiles[isBam])
-    bams
-}
 
 makeCCSDataFrame1 <- function(datasetXmlFile, conditionName, sampleFraction=1.0)
 {
     print(datasetXmlFile)
-    ## Do subsampling at the BAM level
-    allBams <- listDatasetContents(datasetXmlFile)
-    if (sampleFraction < 1) {
-        set.seed(42) # Do we want to do this globally instead?
-        n <- max(1, floor(length(allBams)*sampleFraction))
-        sampledBams <- as.character(sample_n(data.frame(fname=allBams), n)$fname)
-    } else {
-        sampledBams <- allBams
-    }
-    pbis <- lapply(sampledBams, pbbamr::loadPBI,
-                   loadSNR = TRUE, loadNumPasses = TRUE, loadRQ = TRUE)
-    ## This would be more efficient, but it crashes!
-    ##do.call(bind_rows, sampledBams)
-    combinedPbi <- do.call(rbind, pbis)
-
-    ## TODO: moviename??
-
+    pbi <- pbbamr::loadPBI(datasetXmlFile, loadSNR = TRUE, loadNumPasses = TRUE, loadRQ = TRUE)
     ## TODO: readlength not yet available, unfortunately, due to the
     ## qstart/qend convention for CCS reads.
-    with(combinedPbi,
+    with(pbi,
          tbl_df(data.frame(
              Condition=conditionName,
              NumPasses = np,
@@ -72,7 +43,8 @@ makeCCSDataFrame <- function(report, wfOutputRoot, sampleFraction=1.0)
 {
     ct <- report$condition.table
     conditions <- unique(ct$Condition)
-    dsetXmls <- sapply(conditions, function(condition) file.path(wfOutputRoot, condition, "ccs_mapping/all_movies.consensusalignments.xml"))
+    dsetXmls <- sapply(conditions, function(condition) {
+        file.path(wfOutputRoot, "conditions", condition, "mapped_ccs/mapped-ccs.alignmentset.xml") })
     dfs <- mapply(makeCCSDataFrame1, dsetXmls, conditions, sampleFraction=sampleFraction, SIMPLIFY=F)
     tbl_df(do.call(rbind, dfs))
 }

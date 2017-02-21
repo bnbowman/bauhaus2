@@ -164,6 +164,7 @@ class CCSMappingReportsWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "CCSMappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
+    R_SCRIPTS = ("R/ccsMappingPlots.R", "R/Bauhaus2.R")
 
     def plan(self):
         return [ "map-ccs.snake",
