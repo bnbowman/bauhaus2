@@ -1,7 +1,6 @@
 
-
-include: "./ccs-subreads.snake"
-include: "./collect-references.snake"
+# ---------------------------------------------------------------------------------------------------
+# map-ccs.snake
 
 from runtime import ct
 
