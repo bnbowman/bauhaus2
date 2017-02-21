@@ -1,3 +1,6 @@
+
+![bauhaus2 logo](./doc/img/bauhaus2.png)
+
 `bauhaus2` is a simplistic tertiary analysis engine for in-house use
 at PacBio, enabling execution of analysis workflows from raw data to
 multi-condition analysis plots.
