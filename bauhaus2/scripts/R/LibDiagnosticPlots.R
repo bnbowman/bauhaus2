@@ -16,8 +16,9 @@ library(tidyr, quietly = TRUE)
 library(survival)
 library(ggfortify)
 
-#library(devtools)
-#install_github("PacificBiosciences/pbbamr")
+## FIXME: make a real package
+myDir = "./scripts/R"
+source(file.path(myDir, "Bauhaus2.R"))
 
 #' Define a basic addition to all plots
 plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
@@ -185,7 +186,8 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
   cd2$Region = as.factor(cd2$Region)
   
   summaries = table(cd2$Region, by = cd2$Condition)
-  report$write.table(summaries,
+  report$write.table("sumtable.csv",
+                     summaries,
                      id = "nReads",
                      title = "nReads in Regions I-IV")
   
@@ -456,46 +458,42 @@ makeReport <- function(report) {
   
   conditions = report$condition.table
   # Load the pbi index for each data frame
-  dfs = lapply(as.character(conditions$alignmentset), function(s) {
+  dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
     loginfo(paste("Loading alignment set:", s))
     loadPBI2(s)
   })
 
   ## Let's set the graphic defaults
-  n = length(levels(conditions$condition))
+  n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
   
   # Now combine into one large data frame
-  cd = combineConditions(dfs, as.character(conditions$condition))
+  cd = combineConditions(dfs, as.character(conditions$Condition))
   cd$tlen = as.numeric(cd$tend - cd$tstart)
   cd$alen = as.numeric(cd$aend - cd$astart)
-  
+
   # Make Plots
   makeCDFofaStartPlots(report, cd)
   makeMaxVsUnrolledPlots(report, cd)
   makeCDFofTemplatePlots(report, cd)
   
   # Save the report object for later debugging
-  save(report, file = file.path(report$outputPath, "report.Rd"))
-  
+  save(report, file = file.path(report$outputDir, "report.Rd"))
   # At the end of this function we need to call this last, it outputs the report
   report$write.report()
 }
 
-# Now we need to wrap this tool using these two lines. Simply change the
-# arguments here to match your desired filename, tool name and report id.
-rpt = pbReseqJob(
-  "LibDiagnosticPlots.R",
-  
-  "lib_diagnostic_plotter",
-  makeReport,
-  reportid = "lib_diagnostic",
-  reportTitle = "Library Diagnostic Plots",
-  nproc = 3,
-  distributed = TRUE
-)
+main <- function()
+{
+  report <- bh2Reporter(
+    "condition-table.csv",
+    "reports/LibDiagnosticPlots/report.json",
+    "Library Diagnostic Plots")
+  makeReport(report)
+  0
+}
 
-# Leave this as the last line in the file.
+## Leave this as the last line in the file.
 logging::basicConfig()
-q(status = rpt())
+main()
