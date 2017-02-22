@@ -1,47 +1,28 @@
 
+variant_calls = \
+    { c : expand("conditions/{condition}/variant_calling/variants.{depth}.gff",
+                 condition=c, depth=config["bh2.coverage_titration.depths"])
+      for c in ct.conditions }
 
-include: "./map-chunked-subreads.snake"
+rule coverage_titration:
+    input: variant_calls
 
-from runtime import ct
-
-
-variant_calls = 
-
-# -- Worker rules --
-
-rule variant_call_fixed_coverage_one_chunk:
-    input:  "conditions/{condition}/mapped/mapped.alignmentset.xml"
-    output: 
+rule variant_call_fixed_coverage_one_condition:
+    input: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    output:
         gff=  "conditions/{condition}/variant_calling/variants.{depth}.gff",
-        fasta="conditions/{condition}/variant_calling/consensus.{depth}.fasta"
+        fasta="conditions/{condition}/variant_calling/consensus.{depth}.fasta",
         fastq="conditions/{condition}/variant_calling/consensus.{depth}.fastq"
     params:
-        modelPath="",
-        modelSpec="",
+        algorithm=config.get("bh2.variant_calling.consensus_algorithm", "arrow"),
+        modelPathArg=("" if "bh2.variant_calling.model_path" not in config else ("--parametersFile %s" % config.get("bh2.variant_calling.model_path"))),
+        modelSpecArg=("" if "bh2.variant_calling.model_spec" not in config else ("--parametersSpec %s" % config.get("bh2.variant_calling.model_spec"))),
         reference=reference=lambda wc: ct.reference(wc.condition)
+    threads: 8
     shell:
         """
-        variantCaller {params.modelPath} {params.modelSpec} --algorithm=arrow \
-             -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \    
-            {input} -r {params.reference} -o {output.gff} \
-            -o {output.fasta} -o {output.fastq}
-        """
-
-# TODO: note -x0, -q0
-rule variant_call_one_chunk:
-    input:  "conditions/{condition}/mapped/mapped.alignmentset.xml"
-    output: 
-        gff=  "conditions/{condition}/variant_calling/variants.gff",
-        fasta="conditions/{condition}/variant_calling/consensus.fasta"
-        fastq="conditions/{condition}/variant_calling/consensus.fastq"
-    params:
-        modelPath="",
-        modelSpec="",
-        reference=reference=lambda wc: ct.reference(wc.condition)
-    shell:
-        """
-        variantCaller {params.modelPath} {params.modelSpec} --algorithm=arrow \
-             -x0 -q0 -j $ncpus --reportEffectiveCoverage \    
+        variantCaller {params.modelPathArg} {params.modelSpecArg} --algorithm={params.algorithm} \
+             -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \
             {input} -r {params.reference} -o {output.gff} \
             -o {output.fasta} -o {output.fastq}
         """

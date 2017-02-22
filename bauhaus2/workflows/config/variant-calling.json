@@ -1,1 +1,6 @@
-{}
+{
+    "bh2.variant_calling.consensus_algorithm" : "arrow"
+    "bh2.variant_calling.model_path" : ""
+    "bh2.variant_calling.model_spec" : ""
+
+}
