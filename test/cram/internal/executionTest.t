@@ -119,6 +119,34 @@ Generate mapping reports workflow, starting from subreads.
   |-- config.json
   |-- log
   |-- reports
+  |   |-- LibDiagnosticPlots
+  |   |   |-- cdf_astart.png
+  |   |   |-- cdf_astart_log.png
+  |   |   |-- cdf_hqlenmax.png
+  |   |   |-- cdf_ratio.png
+  |   |   |-- cdf_tlen.png
+  |   |   |-- density_max.png
+  |   |   |-- density_max_region.png
+  |   |   |-- density_unroll.png
+  |   |   |-- density_unroll_summation.png
+  |   |   |-- hist_max.png
+  |   |   |-- hist_unroll.png
+  |   |   |-- max_hqlen.png
+  |   |   |-- max_unrolled.png
+  |   |   |-- maxt_unrolledt.png
+  |   |   |-- nsubreads_ref_hist_percentage.png
+  |   |   |-- report.Rd
+  |   |   |-- report.json
+  |   |   |-- subreads_ref_hist.png
+  |   |   |-- sumtable.csv
+  |   |   |-- template_span_ref_box.png
+  |   |   |-- unrolled_ref_hist.png
+  |   |   |-- unrolled_ref_hist_percentage.png
+  |   |   |-- unrolled_template.png
+  |   |   |-- unrolled_template_boxplot.png
+  |   |   |-- unrolled_template_densityplot.png
+  |   |   |-- unrolled_template_densityplot_summation.png
+  |   |   `-- unrolled_template_log.png
   |   |-- PbiPlots
   |   |   |-- acc_accvrl.png
   |   |   |-- acc_accvtl.png
@@ -177,6 +205,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
+  |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       `-- PbiSampledPlots.R
   |-- snakemake.log
@@ -185,7 +214,7 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  18 directories, 150 files
+  19 directories, 178 files
 
 
 

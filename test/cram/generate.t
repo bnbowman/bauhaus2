@@ -15,6 +15,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
+  |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       `-- PbiSampledPlots.R
   `-- workflow
@@ -22,12 +23,12 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 9 files
+  3 directories, 10 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
-  $ grep -e '#' mapping-reports/workflow/Snakefile  | grep -v '\-\-'
-  # stub.py : set up runtime/stdlib for the snakemake workflow
+  $ grep -e '^#' mapping-reports/workflow/Snakefile  | grep -v '\-\-'
+  # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
   # scatter-subreads.snake: split subreadsets into smaller chunks for analysis
@@ -46,6 +47,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
+  |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       `-- PbiSampledPlots.R
   `-- workflow
@@ -53,13 +55,13 @@ Let's look at the "plan" that got assembled in the Snakemake file.
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 9 files
+  3 directories, 10 files
 
 
 Again, let's look at the plan.  In this case, it doesn't include
 mapping, since the mapping has already been done.
 
-  $ grep -e '#' mapping-reports2/workflow/Snakefile  | grep -v '\-\-'
-  # stub.py : set up runtime/stdlib for the snakemake workflow
+  $ grep -e '^#' mapping-reports2/workflow/Snakefile  | grep -v '\-\-'
+  # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
