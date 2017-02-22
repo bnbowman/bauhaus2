@@ -62,7 +62,7 @@ class MockResolver(object):
             return subreadSet
 
     def ensureAlignmentSet(self, alignmentSet):
-        if not alignmentSet.endswith(".alignmentset.xml"):
+        if not (alignmentSet.endswith(".alignmentset.xml") or alignmentSet.endswith(".aligned_subreads.bam")):
             raise InvalidDataset("%s not an alignmentset")
         else:
             return alignmentSet
