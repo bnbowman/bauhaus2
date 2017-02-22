@@ -149,7 +149,7 @@ class MappingReportsWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "MappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    R_SCRIPTS            = ( "R/PbiSampledPlots.R", "R/PbiPlots.R", "R/LibDiagnosticPlots.R", "R/Bauhaus2.R" )
+    R_SCRIPTS            = ( "R/PbiSampledPlots.R", "R/PbiPlots.R", "R/LibDiagnosticPlots.R", "R/ReadPlots.R", "R/Bauhaus2.R" )
 
     def plan(self):
         return ["summarize-mappings.snake"] + \
