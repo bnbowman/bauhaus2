@@ -65,7 +65,7 @@ class Workflow(object):
         if self.cliArgs.noGrid:
             clusterOptions=""
         else:
-            clusterOptions=('-j 999 --cluster-sync="qsub -q {sge_queue} -pe smp {{threads}} -cwd -V -b y -sync y -e log/ -o log/" --latency-wait 60'
+            clusterOptions=('-j 999 --cluster-sync="qsub -cwd -q {sge_queue} -pe smp {{threads}} -sync y -e log/ -o log/" --latency-wait 60'
                             .format(sge_queue=self.cliArgs.sgeQueue))
         outputPath = op.join(outputDir, "run.sh")
         renderTemplate(runShScriptPath(), outputPath, cluster_options=clusterOptions)
