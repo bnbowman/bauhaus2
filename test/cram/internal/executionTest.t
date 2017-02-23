@@ -172,49 +172,61 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tlen_box.png
   |   |   |-- tlen_density.png
   |   |   `-- tlen_violin.png
-  |   `-- PbiSampledPlots
-  |       |-- bperr_rate_by_snr.png
-  |       |-- bpmm_rate_by_snr.png
-  |       |-- dutycycle_boxplot.png
-  |       |-- global_localpolrate.png
-  |       |-- ipddist.png
-  |       |-- ipddistbybase_boxplot.png
-  |       |-- ipddistbybase_violin.png
-  |       |-- localpolrate_boxplot.png
-  |       |-- medianIPD.csv
-  |       |-- medianPolymerizationRate.csv
-  |       |-- medianSNR.csv
-  |       |-- noninternalBAM.csv
-  |       |-- polrate_ref_box.png
-  |       |-- pw_boxplot.png
-  |       |-- pw_boxplot_by_base.png
-  |       |-- pw_by_template.png
-  |       |-- pw_by_template_cdf.png
-  |       |-- pw_violin.png
+  |   |-- PbiSampledPlots
+  |   |   |-- bperr_rate_by_snr.png
+  |   |   |-- bpmm_rate_by_snr.png
+  |   |   |-- dutycycle_boxplot.png
+  |   |   |-- global_localpolrate.png
+  |   |   |-- ipddist.png
+  |   |   |-- ipddistbybase_boxplot.png
+  |   |   |-- ipddistbybase_violin.png
+  |   |   |-- localpolrate_boxplot.png
+  |   |   |-- medianIPD.csv
+  |   |   |-- medianPolymerizationRate.csv
+  |   |   |-- medianSNR.csv
+  |   |   |-- noninternalBAM.csv
+  |   |   |-- polrate_ref_box.png
+  |   |   |-- pw_boxplot.png
+  |   |   |-- pw_boxplot_by_base.png
+  |   |   |-- pw_by_template.png
+  |   |   |-- pw_by_template_cdf.png
+  |   |   |-- pw_violin.png
+  |   |   |-- report.Rd
+  |   |   |-- report.json
+  |   |   |-- snrBoxNoViolin.png
+  |   |   |-- snrDensity.png
+  |   |   |-- snrViolin.png
+  |   |   |-- snrvsacc.png
+  |   |   |-- snrvsdeletion.png
+  |   |   |-- snrvsindelrat.png
+  |   |   |-- snrvsinsertion.png
+  |   |   `-- snrvsmismatch.png
+  |   `-- ReadPlots
+  |       |-- clip_rate.png
+  |       |-- deletion_norm.png
+  |       |-- deletion_rate.png
+  |       |-- deletion_size_log.png
+  |       |-- insert_size_log.png
+  |       |-- insert_size_norm.png
+  |       |-- insertion_rate.png
+  |       |-- mismatch_rate.png
   |       |-- report.Rd
-  |       |-- report.json
-  |       |-- snrBoxNoViolin.png
-  |       |-- snrDensity.png
-  |       |-- snrViolin.png
-  |       |-- snrvsacc.png
-  |       |-- snrvsdeletion.png
-  |       |-- snrvsindelrat.png
-  |       |-- snrvsinsertion.png
-  |       `-- snrvsmismatch.png
+  |       `-- report.json
   |-- run.sh
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
-  |       `-- PbiSampledPlots.R
+  |       |-- PbiSampledPlots.R
+  |       `-- ReadPlots.R
   |-- snakemake.log
   `-- workflow
       |-- Snakefile
       |-- runtime.py
       `-- stdlib.py
   
-  19 directories, 178 files
+  20 directories, 189 files
 
 
 

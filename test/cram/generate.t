@@ -17,13 +17,14 @@ Generate mapping reports workflow, starting from subreads.
   |       |-- Bauhaus2.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
-  |       `-- PbiSampledPlots.R
+  |       |-- PbiSampledPlots.R
+  |       `-- ReadPlots.R
   `-- workflow
       |-- Snakefile
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 10 files
+  3 directories, 11 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
@@ -49,13 +50,14 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   |       |-- Bauhaus2.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
-  |       `-- PbiSampledPlots.R
+  |       |-- PbiSampledPlots.R
+  |       `-- ReadPlots.R
   `-- workflow
       |-- Snakefile
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 10 files
+  3 directories, 11 files
 
 
 Again, let's look at the plan.  In this case, it doesn't include
