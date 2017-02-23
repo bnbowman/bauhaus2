@@ -20,4 +20,6 @@ shell.prefix(\
     unset R_LIBS
     export R_IGNORE_USER_LIBS=1
     module load R/3.2.3-internal
+
+    set -euo pipefail
     """)
