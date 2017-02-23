@@ -120,7 +120,8 @@ def subreadsPlan(ct, args):
 
 def subreadsMappingPlan(ct, args):
     if ct.inputsAreMapped:
-        return [ "collect-mappings.snake" ]
+        return [ "collect-mappings.snake",
+                 "collect-references.snake" ]
     elif args.chunks > 0:
         return [ "map-subreads.snake",
                  "scatter-subreads.snake",
