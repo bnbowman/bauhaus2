@@ -1,39 +1,45 @@
 
-# ---------------------------------------------------------------------------------------------------
-# consensus-coverage-titration: run variant calling/consensus at
-# different coverage levels to see how consensus accuracy converges
+variant_calls = \
+    { c : expand("conditions/{condition}/variant_calling/variants.{depth}.gff",
+                 condition=c, depth=config["bh2.consensus_coverage_titration.depths"])
+      for c in ct.conditions }
 
-# variant calling with all filtering disabled
-rule variant_call_one_chunk:
-    input:  "conditions/{condition}/mapped/mapped.alignmentset.xml"
+
+rule coverage_titration:
+    input: variant_calls.values()
+
+
+def modelPathArg(config):
+    if ("bh2.variant_calling.model_path" not in config or
+        not config["bh2.variant_calling.model_path"]):
+        return ""
+    else:
+        return "--parametersFile %s" % config["bh2.variant_calling.model_path"]
+
+def modelSpecArg(config):
+    if ("bh2.variant_calling.model_spec" not in config or
+        not config["bh2.variant_calling.model_spec"]):
+        return ""
+    else:
+        return "--parametersSpec %s" % config["bh2.variant_calling.model_spec"]
+
+
+rule variant_call_fixed_coverage_one_condition:
+    input: "conditions/{condition}/mapped/mapped.alignmentset.xml"
     output:
         gff=  "conditions/{condition}/variant_calling/variants.{depth}.gff",
-        fasta="conditions/{condition}/variant_calling/consensus.{depth}.fasta"
+        fasta="conditions/{condition}/variant_calling/consensus.{depth}.fasta",
         fastq="conditions/{condition}/variant_calling/consensus.{depth}.fastq"
     params:
-        modelPath="",
-        modelSpec="",
-        reference=reference=lambda wc: ct.reference(wc.condition)
+        algorithm=config.get("bh2.variant_calling.consensus_algorithm", "arrow"),
+        modelPathArg=modelPathArg(config),
+        modelSpecArg=modelSpecArg(config),
+        reference=lambda wc: ct.reference(wc.condition)
+    threads: 8
     shell:
         """
-        variantCaller {params.modelPath} {params.modelSpec} --algorithm=arrow \
-             -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \
+        variantCaller {params.modelPathArg} {params.modelSpecArg} --algorithm={params.algorithm} \
+             -X{wildcards.depth} -x0 -q0 -j {threads} --reportEffectiveCoverage \
             {input} -r {params.reference} -o {output.gff} \
             -o {output.fasta} -o {output.fastq}
-        """
-
-rule mask_variants:
-    input:
-    output:
-    shell:
-        """
-        gffsubtract.pl {input} {params.referenceMask} > {output}
-        """
-
-rule summarize_coverage:
-    input:
-    output:
-    shell:
-        """
-        summarize_coverage --region_size=10000 {input} {params.reference} {output}
         """

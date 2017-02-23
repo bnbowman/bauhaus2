@@ -186,6 +186,11 @@ class CoverageTitrationWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "CoverageTitration"
     CONDITION_TABLE_TYPE = CoverageTitrationConditionTable
+    R_SCRIPTS = ("R/coverageTitrationPlots.R",)
+
+    def plan(self):
+        return [ "consensus-coverage-titration.snake" ] + \
+            subreadsMappingPlan(self.conditionTable, self.cliArgs)
 
 
 # ---
