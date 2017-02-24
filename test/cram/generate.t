@@ -67,3 +67,4 @@ mapping, since the mapping has already been done.
   # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
+  # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
