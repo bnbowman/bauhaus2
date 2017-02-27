@@ -26,7 +26,7 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 12 files
+  3 directories, 13 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
@@ -61,7 +61,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 12 files
+  3 directories, 13 files
 
 
 Again, let's look at the plan.  In this case, it doesn't include

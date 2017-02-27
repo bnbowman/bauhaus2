@@ -149,7 +149,7 @@ constantArrow <-
       return(0)
     }
     # Decide the sampling size
-    ZMWS_TO_SAMPLE = min(nrow(indFilter), SAMPLING_SIZE)
+    ZMWS_TO_SAMPLE = min(nrow(indFilter), as.numeric(SAMPLING_SIZE))
     if (ZMWS_TO_SAMPLE != nrow(indFilter)) {
       sampled_rows = sample(nrow(indFilter), ZMWS_TO_SAMPLE)
     } else {
