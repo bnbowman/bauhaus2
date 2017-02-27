@@ -28,14 +28,5 @@ python setup.py install
 #
 # Set up the wrapper scripts
 #
-cat > /mnt/software/b/bauhaus2/bauhaus2 <<EOF
-#!/bin/bash
-(source /pbi/dept/itg/bauhaus2/python-ve/bin/activate && bauhaus2 \$*)
-EOF
-chmod +x /mnt/software/b/bauhaus2/bauhaus2
-
-cat > /mnt/software/b/bauhaus2/snakemake <<EOF
-#!/bin/bash
-(source /pbi/dept/itg/bauhaus2/python-ve/bin/activate && snakemake \$*)
-EOF
-chmod +x /mnt/software/b/bauhaus2/snakemake
+ln -sf /pbi/dept/itg/bauhaus2/python-ve/bin/bauhaus2 /mnt/software/b/bauhaus2/bauhaus2
+ln -sf /pbi/dept/itg/bauhaus2/python-ve/bin/snakemake /mnt/software/b/bauhaus2/snakemake
