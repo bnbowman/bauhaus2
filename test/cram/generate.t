@@ -16,6 +16,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
+  |       |-- ConstantArrowFishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
@@ -50,6 +51,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
+  |       |-- ConstantArrowFishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
