@@ -13,6 +13,8 @@ def analysisScriptPath(scriptName):
     else:
         return path
 
-
 def runShScriptPath():
     return resource_filename(Requirement.parse("bauhaus2"), "bauhaus2/scripts/run.sh")
+
+def prefixShScriptPath():
+    return resource_filename(Requirement.parse("bauhaus2"), "bauhaus2/scripts/prefix.sh")

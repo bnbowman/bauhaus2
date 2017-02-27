@@ -118,6 +118,7 @@ Generate mapping reports workflow, starting from subreads.
   |           `-- input.chunk7.subreadset.xml
   |-- config.json
   |-- log
+  |-- prefix.sh
   |-- reports
   |   |-- LibDiagnosticPlots
   |   |   |-- cdf_astart.png
@@ -226,7 +227,7 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  20 directories, 189 files
+  20 directories, 190 files
 
 
 

@@ -4,8 +4,12 @@ from builtins import object
 import shutil, json, os.path as op
 
 from bauhaus2.experiment import *
-from bauhaus2.utils import mkdirp, readFile, renderTemplate, chmodPlusX
-from bauhaus2.scripts import analysisScriptPath, runShScriptPath
+
+from bauhaus2.utils import (mkdirp, readFile, renderTemplate,
+                            chmodPlusX)
+
+from bauhaus2.scripts import (analysisScriptPath, runShScriptPath,
+                              prefixShScriptPath)
 
 from .snakemakeFiles import (snakemakeFilePath,
                              configJsonPath,
@@ -71,6 +75,11 @@ class Workflow(object):
         renderTemplate(runShScriptPath(), outputPath, cluster_options=clusterOptions)
         chmodPlusX(outputPath)
 
+    def _bundlePrefixSh(self, outputDir):
+        outputPath = op.join(outputDir, "prefix.sh")
+        # TODO: a lot of possibilities... can specify modules separately?
+        renderTemplate(prefixShScriptPath(), outputPath)
+        chmodPlusX(outputPath)
 
     def plan(self):
         raise NotImplementedError
@@ -89,6 +98,7 @@ class Workflow(object):
         self._bundleAnalysisScripts(outputDir) # Output relevant scripts
         self._bundleConfigJson(outputDir)      # Generate snakemake config.json
         self._bundleRunSh(outputDir)           # Generate driver "run" script
+        self._bundlePrefixSh(outputDir)        # Generate task prefix shell code
 
     def __init__(self, ct, args):
         self.conditionTable = ct

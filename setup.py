@@ -36,7 +36,7 @@ setup(
     package_data={ "bauhaus2.workflows.snakemake" : [ "*.snake" ],
                    "bauhaus2.workflows.runtime"   : [ "*.py" ],
                    "bauhaus2.workflows.config"    : [ "*.json" ],
-                   "bauhaus2.scripts"             : [ "run.sh" ],
+                   "bauhaus2.scripts"             : [ "run.sh", "prefix.sh" ],
                    "bauhaus2.scripts.R"           : [ "*.R" ],
                    "bauhaus2.scripts.Python"      : [ "*.py" ],
                    "bauhaus2.scripts.MATLAB"      : [ "*.m" ] },

@@ -11,6 +11,7 @@ Generate mapping reports workflow, starting from subreads.
   mapping-reports
   |-- condition-table.csv
   |-- config.json
+  |-- prefix.sh
   |-- run.sh
   |-- scripts
   |   `-- R
@@ -24,7 +25,7 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 11 files
+  3 directories, 12 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
@@ -44,6 +45,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   mapping-reports2
   |-- condition-table.csv
   |-- config.json
+  |-- prefix.sh
   |-- run.sh
   |-- scripts
   |   `-- R
@@ -57,7 +59,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
       |-- runtime.py
       `-- stdlib.py
   
-  3 directories, 11 files
+  3 directories, 12 files
 
 
 Again, let's look at the plan.  In this case, it doesn't include
