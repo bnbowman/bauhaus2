@@ -225,7 +225,6 @@ class ResequencingConditionTable(ConditionTable):
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
 
-
     @property
     def variables(self):
         """
@@ -277,9 +276,15 @@ class UnrolledMappingConditionTable(ResequencingConditionTable):
     like some kind of flag in the reference information to indicate
     whether this holds or not.  For now, just look for "circular" or
     "unrolled" in the reference name.
+
+    This workflow requires unmapped inputs.
     """
     def _validateTable(self):
         super(UnrolledMappingConditionTable, self)._validateTable()
+
+        if self.inputsAreMapped:
+            raise TableValidationError("Unrolled mapping workflow requires unmapped inputs.")
+
         for genome in self.tbl.Genome:
             if "unrolled" in genome or "circular" in genome:
                 continue
