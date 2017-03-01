@@ -46,9 +46,9 @@ for mapping-based workflows whereas it may not be necessary for other workflows.
 Next, we want to generate a runnable workflow for performing this mapping:
 
   ```sh
-  $ bauhaus2 generate -t inputs.csv -w BasicMapping -o experiment1
+  $ bauhaus2 generate -t inputs.csv -w MappingReports -o experiment1
   Validation and input resolution succeeded.
-  Runnable Workflow written to directory "experiment1"
+  Runnable workflow written to directory "experiment1"
   ```
 
 Here we specified an output directory "experiment1" and called the
