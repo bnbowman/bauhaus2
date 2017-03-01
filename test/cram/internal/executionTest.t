@@ -252,154 +252,154 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrViolin.png",
         "title": "SNR Violin Plot",
         "caption": "Distribution of SNR in Aligned Files (Violin plot)",
-        "tags": []
+        "tags": ["sampled", "snr", "violin"]
       },
       {
         "id": "snr_density",
         "image": "snrDensity.png",
         "title": "SNR Density Plot",
         "caption": "Distribution of SNR in Aligned Files (Density plot)",
-        "tags": []
+        "tags": ["sampled", "snr", "density"]
       },
       {
         "id": "snr_boxplot",
         "image": "snrBoxNoViolin.png",
         "title": "SNR Box Plot",
         "caption": "Distribution of SNR in Aligned Files (Boxplot)",
-        "tags": []
+        "tags": ["sampled", "snr", "boxplot"]
       },
       {
         "id": "snr_vs_acc",
         "image": "snrvsacc.png",
         "title": "SNR vs Accuracy",
         "caption": "SNR vs. Accuracy",
-        "tags": []
+        "tags": ["sampled", "snr", "accuracy"]
       },
       {
         "id": "snr_vs_ins",
         "image": "snrvsinsertion.png",
         "title": "SNR vs Insertion Rate",
         "caption": "SNR vs. Insertion Rate",
-        "tags": []
+        "tags": ["sampled", "snr", "insertion"]
       },
       {
         "id": "snr_vs_del",
         "image": "snrvsdeletion.png",
         "title": "SNR vs Deletion Rate",
         "caption": "SNR vs. Deletion Rate",
-        "tags": []
+        "tags": ["sampled", "snr", "deletion"]
       },
       {
         "id": "snr_vs_mm",
         "image": "snrvsmismatch.png",
         "title": "SNR vs Mismatch Rate",
         "caption": "SNR vs. Mismatch Rate",
-        "tags": []
+        "tags": ["sampled", "snr", "mismatch"]
       },
       {
         "id": "snr_vs_indel_rat",
         "image": "snrvsindelrat.png",
         "title": "SNR vs Relative Indels",
         "caption": "SNR vs. Indel Rate / Deletion Rate",
-        "tags": []
+        "tags": ["sampled", "snr", "deletion"]
       },
       {
         "id": "polrate_ref_box",
         "image": "polrate_ref_box.png",
         "title": "Polymerization Rate by Reference",
         "caption": "Polymerization Rate by Reference",
-        "tags": []
+        "tags": ["sampled", "boxplot", "polrate", "reference"]
       },
       {
         "id": "pw_by_template.png",
         "image": "pw_by_template.png",
         "title": "Pulse Width by Template Base",
         "caption": "Pulse Width by Template Base",
-        "tags": []
+        "tags": ["sampled", "density", "pw"]
       },
       {
         "id": "pw_by_template_cdf.png",
         "image": "pw_by_template_cdf.png",
         "title": "Pulse Width by Template Base (CDF)",
         "caption": "Pulse Width by Template Base (CDF)",
-        "tags": []
+        "tags": ["sampled", "pw", "cdf"]
       },
       {
         "id": "ipd_violin",
         "image": "ipddist.png",
         "title": "IPD Distribution - Violin Plot",
         "caption": "IPD Distribution - Violin Plot",
-        "tags": []
+        "tags": ["sampled", "violin", "ipd"]
       },
       {
         "id": "ipd_violin_by_base",
         "image": "ipddistbybase_violin.png",
         "title": "IPD Distribution by Ref Base - Violin Plot",
         "caption": "IPD Distribution by Ref Base - Violin Plot",
-        "tags": []
+        "tags": ["sampled", "violin", "ipd"]
       },
       {
         "id": "ipd_boxplot_by_base",
         "image": "ipddistbybase_boxplot.png",
         "title": "IPD Distribution by Ref Base - Boxplot",
         "caption": "IPD Distribution by Ref Base - Boxplot",
-        "tags": []
+        "tags": ["sampled", "boxplot", "ipd"]
       },
       {
         "id": "pw_violin",
         "image": "pw_violin.png",
         "title": "PW Distribution - Violin Plot",
         "caption": "PW Distribution - Violin Plot",
-        "tags": []
+        "tags": ["sampled", "violin", "pw"]
       },
       {
         "id": "pw_boxplot",
         "image": "pw_boxplot.png",
         "title": "PW Distribution - Boxplot",
         "caption": "PW Distribution - Boxplot",
-        "tags": []
+        "tags": ["sampled", "boxplot", "pw"]
       },
       {
         "id": "pw_boxplot_by_base",
         "image": "pw_boxplot_by_base.png",
         "title": "PW Distribution By Base",
         "caption": "PW Distribution",
-        "tags": []
+        "tags": ["sampled", "pw", "boxplot"]
       },
       {
         "id": "dutycycle_boxplot",
         "image": "dutycycle_boxplot.png",
         "title": "Duty Cycle - Boxplot",
         "caption": "Duty Cycle - Boxplot",
-        "tags": []
+        "tags": ["sampled", "boxplot", "duty cycle"]
       },
       {
         "id": "localpolrate_boxplot",
         "image": "localpolrate_boxplot.png",
         "title": "Local PolRate - Boxplot",
         "caption": "Local PolRate - Boxplot",
-        "tags": []
+        "tags": ["sampled", "boxplot", "polrate"]
       },
       {
         "id": "global_localpolrate",
         "image": "global_localpolrate.png",
         "title": "Global/Local PolRate",
         "caption": "Global/Local PolRate",
-        "tags": []
+        "tags": ["sampled", "polrate", "john eid"]
       },
       {
         "id": "bp_err_rate_by_snr",
         "image": "bperr_rate_by_snr.png",
         "title": "BP Error Rates by SNR",
         "caption": "BP Error Rates by SNR",
-        "tags": []
+        "tags": ["sampled", "error rate", "base"]
       },
       {
         "id": "bp_mm_err_rate_by_snr",
         "image": "bpmm_rate_by_snr.png",
         "title": "Mismatch Rates by SNR",
         "caption": "Mismatch Rates by SNR",
-        "tags": []
+        "tags": ["sampled", "mismatch", "error rate"]
       }
     ],
     "tables": [
