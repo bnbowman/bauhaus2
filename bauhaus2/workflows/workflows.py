@@ -235,7 +235,8 @@ availableWorkflows = {}
 for wfc in (MappingWorkflow,
             MappingReportsWorkflow,
             CCSMappingReportsWorkflow,
-            CoverageTitrationWorkflow):
+            CoverageTitrationWorkflow,
+            UnrolledNoHQMappingWorkflow):
     assert wfc.WORKFLOW_NAME not in availableWorkflows, "Workflow name collision"
     assert wfc.__doc__ is not None, "All workflows require descriptive docstrings"
     availableWorkflows[wfc.WORKFLOW_NAME] = wfc
