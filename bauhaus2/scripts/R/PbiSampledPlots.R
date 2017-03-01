@@ -205,7 +205,8 @@ makeSamplingPlots <-
         tp,
         id = "active_zmw_normalized.png",
         title = "Active ZMW - Normalized",
-        caption = "Active ZMW - Normalized"
+        caption = "Active ZMW - Normalized",
+        tags = c("sampled", "active ZMW", "time")
       )
       
       # pkMid for complete data set, accurate bases, and inaccurate bases
@@ -232,7 +233,8 @@ makeSamplingPlots <-
             variableTitle[i],
             " (Boxplot)",
             sep = ""
-          )
+          ),
+          tags = c("sampled", "pkmid", "boxplot", variableTitle[i])
         )
         
         tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) + geom_violin() +
@@ -248,7 +250,8 @@ makeSamplingPlots <-
             variableTitle[i],
             " (Violin plot)",
             sep = ""
-          )
+          ),
+          tags = c("sampled", "pkmid", "violin", variableTitle[i])
         )
         
         tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + geom_density(alpha = .5) +
@@ -264,7 +267,8 @@ makeSamplingPlots <-
             variableTitle[i],
             " (Density plot)",
             sep = ""
-          )
+          ),
+          tags = c("sampled", "pkmid", "density", variableTitle[i])
         )
         
         tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + stat_ecdf() +
@@ -275,7 +279,8 @@ makeSamplingPlots <-
           tp,
           id = paste("pkMid_cdf_", variableTitle[i], sep = ""),
           title = paste("pkMid CDF - ", variableTitle[i], sep = ""),
-          caption = paste("Distribution of pkMid for ", variableTitle[i],  " (CDF)", sep = "")
+          caption = paste("Distribution of pkMid for ", variableTitle[i],  " (CDF)", sep = ""),
+          tags = c("sampled", "pkmid", "cdf", variableTitle[i])
         )
         
         tp = ggplot(reads[[i]], aes(x = pkmid, fill = Condition)) + geom_histogram() +
@@ -291,7 +296,8 @@ makeSamplingPlots <-
             variableTitle[i],
             " (Histogram)",
             sep = ""
-          )
+          ),
+          tags = c("sampled", "pkmid", "histogram", variableTitle[i])
         )
       }
       
@@ -305,7 +311,8 @@ makeSamplingPlots <-
         tp,
         id = "pkMid_Accu_Inaccu_densityplot",
         title = "pkMid Density Plot - Accurate vs Inaccurate bases",
-        caption = "Distribution of pkMid for Accurate vs inaccurate bases (Density plot)"
+        caption = "Distribution of pkMid for Accurate vs inaccurate bases (Density plot)",
+        tags = c("sampled", "pkmid", "density")
       )
       
       # Make Pkmid / PW / PolRate by time plot
@@ -333,7 +340,8 @@ makeSamplingPlots <-
         tp,
         id = "pw_mean_by_time",
         title = "Mean Pulse Width by Time",
-        caption = "Mean Pulse Width by Time"
+        caption = "Mean Pulse Width by Time",
+        tags = c("sampled", "pw", "time")
       )
       
       tp = ggplot(cd2time,
@@ -351,7 +359,8 @@ makeSamplingPlots <-
         tp,
         id = "pkmid_mean_by_time",
         title = "Mean Pkmid by Time",
-        caption = "Mean Pkmid by Time"
+        caption = "Mean Pkmid by Time",
+        tags = c("sampled", "pkmid", "time")
       )
       
       tp = ggplot(cd2time,
@@ -369,7 +378,8 @@ makeSamplingPlots <-
         tp,
         id = "pkmid_median_by_time",
         title = "Median Pkmid by Time",
-        caption = "Median Pkmid by Time"
+        caption = "Median Pkmid by Time",
+        tags = c("sampled", "pkmid", "time")
       )
       
       tp = ggplot(cd2time,
@@ -387,7 +397,8 @@ makeSamplingPlots <-
         tp,
         id = "pkmid_median_by_time_normalized",
         title = "Median Pkmid by Time (Normalized)",
-        caption = "Median Pkmid by Time (Normalized)"
+        caption = "Median Pkmid by Time (Normalized)",
+        tags = c("sampled", "pkmid", "time")
       )
     }
     
@@ -401,7 +412,8 @@ makeSamplingPlots <-
       tp,
       id = "polrate_ref_box",
       title = "Polymerization Rate by Reference",
-      caption = "Polymerization Rate by Reference"
+      caption = "Polymerization Rate by Reference",
+      tags = c("sampled", "boxplot", "polrate", "reference")
     )
     
     # PW by Template Base
@@ -416,7 +428,8 @@ makeSamplingPlots <-
       tp,
       id = "pw_by_template.png",
       title = "Pulse Width by Template Base",
-      caption = "Pulse Width by Template Base"
+      caption = "Pulse Width by Template Base",
+      tags = c("sampled", "density", "pw")
     )
     
     tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() + xlim(0, 50) +
@@ -430,7 +443,8 @@ makeSamplingPlots <-
       tp,
       id = "pw_by_template_cdf.png",
       title = "Pulse Width by Template Base (CDF)",
-      caption = "Pulse Width by Template Base (CDF)"
+      caption = "Pulse Width by Template Base (CDF)",
+      tags = c("sampled", "pw", "cdf")
     )
     
     # # Local Polymerization Rate
@@ -458,7 +472,8 @@ makeSamplingPlots <-
                   tp,
                   id = "ipd_violin",
                   title = "IPD Distribution - Violin Plot",
-                  caption = "IPD Distribution - Violin Plot")
+                  caption = "IPD Distribution - Violin Plot",
+                  tags = c("sampled", "violin", "ipd"))
     
     tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
       labs(
@@ -471,7 +486,8 @@ makeSamplingPlots <-
       tp,
       id = "ipd_violin_by_base",
       title = "IPD Distribution by Ref Base - Violin Plot",
-      caption = "IPD Distribution by Ref Base - Violin Plot"
+      caption = "IPD Distribution by Ref Base - Violin Plot",
+      tags = c("sampled", "violin", "ipd")
     )
     
     tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() +
@@ -493,7 +509,8 @@ makeSamplingPlots <-
       tp,
       id = "ipd_boxplot_by_base",
       title = "IPD Distribution by Ref Base - Boxplot",
-      caption = "IPD Distribution by Ref Base - Boxplot"
+      caption = "IPD Distribution by Ref Base - Boxplot",
+      tags = c("sampled", "boxplot", "ipd")
     )
     
     # PW Plots
@@ -518,7 +535,8 @@ makeSamplingPlots <-
       tp,
       id = "pw_violin",
       title = "PW Distribution - Violin Plot",
-      caption = "PW Distribution - Violin Plot"
+      caption = "PW Distribution - Violin Plot",
+      tags = c("sampled", "violin", "pw")
     )
     
     tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_boxplot() +
@@ -532,7 +550,8 @@ makeSamplingPlots <-
       tp,
       id = "pw_boxplot",
       title = "PW Distribution - Boxplot",
-      caption = "PW Distribution - Boxplot"
+      caption = "PW Distribution - Boxplot",
+      tags = c("sampled", "boxplot", "pw")
     )
     
     tp = tp + facet_wrap( ~ ref)
@@ -541,7 +560,8 @@ makeSamplingPlots <-
       tp,
       id = "pw_boxplot_by_base",
       title = "PW Distribution By Base",
-      caption = "PW Distribution"
+      caption = "PW Distribution",
+      tags = c("sampled", "pw", "boxplot")
     )
     
     # Make a median PW plot
@@ -571,7 +591,8 @@ makeSamplingPlots <-
       tp,
       id = "dutycycle_boxplot",
       title = "Duty Cycle - Boxplot",
-      caption = "Duty Cycle - Boxplot"
+      caption = "Duty Cycle - Boxplot",
+      tags = c("sampled", "boxplot", "duty cycle")
     )
     
     # Local PolRate plot
@@ -597,7 +618,8 @@ makeSamplingPlots <-
       tp,
       id = "localpolrate_boxplot",
       title = "Local PolRate - Boxplot",
-      caption = "Local PolRate - Boxplot"
+      caption = "Local PolRate - Boxplot",
+      tags = c("sampled", "boxplot", "polrate")
     )
     
     # Global/Local PolRate plot
@@ -619,7 +641,8 @@ makeSamplingPlots <-
       tp,
       id = "global_localpolrate",
       title = "Global/Local PolRate",
-      caption = "Global/Local PolRate"
+      caption = "Global/Local PolRate",
+      tags = c("sampled", "polrate", "john eid")
     )
     
     # Now mismatch insertions
@@ -644,7 +667,8 @@ makeSamplingPlots <-
       tp,
       id = "bp_err_rate_by_snr",
       title = "BP Error Rates by SNR",
-      caption = "BP Error Rates by SNR"
+      caption = "BP Error Rates by SNR",
+      tags = c("sampled", "error rate", "base")
     )
     
     # Now for mismatch rates
@@ -669,7 +693,8 @@ makeSamplingPlots <-
       tp,
       id = "bp_mm_err_rate_by_snr",
       title = "Mismatch Rates by SNR",
-      caption = "Mismatch Rates by SNR"
+      caption = "Mismatch Rates by SNR",
+      tags = c("sampled", "mismatch", "error rate")
     )
     
     # Table of the polymerization rate
@@ -740,7 +765,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tp,
     id = "snr_vs_acc",
     title = "SNR vs Accuracy",
-    caption = "SNR vs. Accuracy"
+    caption = "SNR vs. Accuracy",
+    tags = c("sampled", "snr", "accuracy")
   )
   
   tp = ggplot(cd2,
@@ -761,7 +787,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tp,
     id = "snr_vs_ins",
     title = "SNR vs Insertion Rate",
-    caption = "SNR vs. Insertion Rate"
+    caption = "SNR vs. Insertion Rate",
+    tags = c("sampled", "snr", "insertion")
   )
   
   tp = ggplot(cd2,
@@ -782,7 +809,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tp,
     id = "snr_vs_del",
     title = "SNR vs Deletion Rate",
-    caption = "SNR vs. Deletion Rate"
+    caption = "SNR vs. Deletion Rate",
+    tags = c("sampled", "snr", "deletion")
   )
   
   tp = ggplot(cd2,
@@ -803,7 +831,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tp,
     id = "snr_vs_mm",
     title = "SNR vs Mismatch Rate",
-    caption = "SNR vs. Mismatch Rate"
+    caption = "SNR vs. Mismatch Rate",
+    tags = c("sampled", "snr", "mismatch")
   )
   
   tp = ggplot(cd2,
@@ -824,7 +853,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tp,
     id = "snr_vs_indel_rat",
     title = "SNR vs Relative Indels",
-    caption = "SNR vs. Indel Rate / Deletion Rate"
+    caption = "SNR vs. Indel Rate / Deletion Rate",
+    tags = c("sampled", "snr", "deletion")
   )
 }
 
@@ -865,7 +895,8 @@ makeReport <- function(report) {
     tp,
     id = "snr_violin",
     title = "SNR Violin Plot",
-    caption = "Distribution of SNR in Aligned Files (Violin plot)"
+    caption = "Distribution of SNR in Aligned Files (Violin plot)",
+    tags = c("sampled", "snr", "violin")
   )
   
   tp = ggplot(snrs, aes(x = SNR, colour = Condition)) + geom_density(alpha = .5) +
@@ -876,7 +907,8 @@ makeReport <- function(report) {
     tp,
     id = "snr_density",
     title = "SNR Density Plot",
-    caption = "Distribution of SNR in Aligned Files (Density plot)"
+    caption = "Distribution of SNR in Aligned Files (Density plot)",
+    tags = c("sampled", "snr", "density")
   )
   
   tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) +
@@ -887,7 +919,8 @@ makeReport <- function(report) {
     tp,
     id = "snr_boxplot",
     title = "SNR Box Plot",
-    caption = "Distribution of SNR in Aligned Files (Boxplot)"
+    caption = "Distribution of SNR in Aligned Files (Boxplot)",
+    tags = c("sampled", "snr", "boxplot")
   )
   
   snrs = NULL # make available for GC
