@@ -4,3 +4,4 @@
   CoverageTitration
   Mapping
   MappingReports
+  UnrolledNoHQMapping
