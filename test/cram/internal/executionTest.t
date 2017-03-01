@@ -120,6 +120,15 @@ Generate mapping reports workflow, starting from subreads.
   |-- log
   |-- prefix.sh
   |-- reports
+  |   |-- ConstantArrowFishbonePlots
+  |   |   |-- FishboneSnrBinnedSummary.csv
+  |   |   |-- errormode_MovieA.csv
+  |   |   |-- errormode_MovieB.csv
+  |   |   |-- fishboneplot_deletion.png
+  |   |   |-- fishboneplot_insertion.png
+  |   |   |-- fishboneplot_mismatch.png
+  |   |   |-- report.Rd
+  |   |   `-- report.json
   |   |-- LibDiagnosticPlots
   |   |   |-- cdf_astart.png
   |   |   |-- cdf_astart_log.png
@@ -217,6 +226,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
+  |       |-- ConstantArrowFishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
@@ -227,7 +237,8 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  20 directories, 190 files
+  21 directories, 199 files
+
 
 
 

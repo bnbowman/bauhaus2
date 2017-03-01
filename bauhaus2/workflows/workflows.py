@@ -164,6 +164,7 @@ class MappingReportsWorkflow(Workflow):
                              "R/PbiPlots.R",
                              "R/LibDiagnosticPlots.R",
                              "R/ReadPlots.R",
+                             "R/ConstantArrowFishbonePlots.R",
                              "R/Bauhaus2.R" )
 
     def plan(self):
