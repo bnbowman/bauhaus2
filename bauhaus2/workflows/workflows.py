@@ -234,6 +234,7 @@ class ConstantArrowWorkflow(Workflow):
     WORKFLOW_NAME        = "ConstantArrow"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
     R_SCRIPTS            = ( "R/constant_arrow.R",
+                             "R/FishbonePlots.R",
                              "R/Bauhaus2.R" )
 
     def plan(self):
