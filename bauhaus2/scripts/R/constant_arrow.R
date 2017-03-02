@@ -2,25 +2,44 @@
 # Fit a constant rate arrow model to an alignment/reference and output the
 # parameters as a CSV
 
-library(argparser, quietly = TRUE)
+library(argparse)
 library(data.table, quietly = TRUE)
 library(jsonlite, quietly = TRUE)
 library(logging)
 library(ggplot2)
 library(pbbamr)
-library(pbcommandR, quietly = TRUE)
 library(uuid, quietly = TRUE)
 library(gridExtra)
 library(dplyr, quietly = TRUE)
 library(tidyr, quietly = TRUE)
 library(unitem)
 library(nnet)
+library(reshape2)
+library(lazyeval)
+
+## FIXME: make a real package
+myDir = "./scripts/R"
+source(file.path(myDir, "Bauhaus2.R"))
+
+# load sample size for argument, default sample size = 500
+parser <- ArgumentParser()
+parser$add_argument("--sampleSize", nargs = 1, default = 500, help = "number of samples (ZMWs) for each condition")
+try(args <- parser$parse_args())
+set.seed(args$seed)
 
 ## PARAMETERS THAT SHOULD BECOME TASK OPTIONS
 # Used to filter out alignments that don't have enough data for fitting
-MIN_ALN_LENGTH = 900 # Should be larger, but test data was ~930 bp in size and wanted to keep that working.
+MIN_ALN_LENGTH = 1000 # Should be larger, but test data was ~930 bp in size and wanted to keep that working.
 # Set up sample size of the sampled ZMW for each condition:
-SAMPLING_SIZE = 500
+SAMPLING_SIZE = args$sampleSize
+
+# Define a basic addition to all plots
+plTheme <- theme_bw(base_size = 18)
+clScale <- scale_colour_brewer(palette = "Set1")
+clFillScale <- scale_fill_brewer(palette = "Set1")
+themeTilt = theme(axis.text.x = element_text(size = 11, angle = 45, hjust = 1))
+pd <- position_dodge(0.2)
+dpi <- 72
 
 # Output column names
 # In below column names, ‘X.Insert.Y’ indicates the Y-insertion (read base) rate for a XX or NX context (template)
@@ -73,7 +92,8 @@ csv_names = c(
   "T.Merge.T",
   "AlnTLength",
   "Time",
-  "Iterations"
+  "Iterations",
+  "Condition"
 )
 
 ##' Filters out data with large length discrepencies
@@ -95,41 +115,40 @@ filterData <- function(data) {
 constantArrow <-
   function(input_aln,
            input_ref,
-           outputcsv) {
+           Condition,
+           report) {
     loginfo("Running Arrow Training.")
     loginfo(paste("Input Aln:", input_aln))
     loginfo(paste("Input Ref:", input_ref))
     loginfo(paste("Requested Sampling Size:", SAMPLING_SIZE))
-    loginfo(paste("Output CSV:", outputcsv))
     loginfo(paste(
       "R_LIBS is: ",
       .libPaths(),
       sep = "",
       collapse = "\n"
     ))
-
-    # Commented out test data
-    #input_aln = "/pbi/dept/secondary/siv/smrtlink/smrtlink-internal/userdata/jobs-root/005/005573/tasks/pbalign.tasks.consolidate_alignments-0/combined.alignmentset.xml"
-    #input_ref = "/pbi/dept/secondary/siv/smrtlink/smrtlink-internal/userdata/jobs-root/005/005572/pacbio-reference/All4mers_circular_215x_l150070/referenceset.xml"
-    input_ref = pbbamr::getReferencePath(as.character(input_ref))
+    
     loginfo(paste("Fasta file:", input_ref))
-
+    
     # Filter the data set
     ind = loadPBI(input_aln)
     org_size = nrow(ind)
     indFilter = ind[ind$tend - ind$tstart > MIN_ALN_LENGTH,]
     loginfo(paste("Filtered out", org_size - nrow(indFilter), "alignments for being too small for fitting"))
-
+    
     # Handle case with no valid alignments, write empty CSV
     if (nrow(indFilter) == 0) {
       errormode <- data.frame(matrix(NA, nrow = 0, ncol = length(csv_names)))
       colnames(errormode) <- csv_names
-      write.csv(errormode, outputcsv, row.names = F)
-      logging::loginfo(paste("Wrote CSV to ", outputcsv))
+      report$write.table(paste("errormode_", Condition, ".csv", sep = ''),
+                         errormode,
+                         id = "errormode",
+                         title = "Constant Arrow Errormode")
+      logging::loginfo(paste("Wrote empty CSV for ", Condition))
       return(0)
     }
     # Decide the sampling size
-    ZMWS_TO_SAMPLE = min(nrow(indFilter), SAMPLING_SIZE)
+    ZMWS_TO_SAMPLE = min(nrow(indFilter), as.numeric(SAMPLING_SIZE))
     if (ZMWS_TO_SAMPLE != nrow(indFilter)) {
       sampled_rows = sample(nrow(indFilter), ZMWS_TO_SAMPLE)
     } else {
@@ -142,15 +161,15 @@ constantArrow <-
       data.frame(matrix(NA, nrow = length(sampled_rows), ncol = length(csv_names)))
     colnames(errormode) <- csv_names
     errormode$ZMW = sampled_ZMW
-
-
+    errormode$Condition = Condition
+    
     # Aggregate the pmf matrix
     baseAgg <- function(pmf) {
       pmf = aggregate(pmf[,c(1:4)], list(substr(pmf[, "CTX"], 2, 2)), function(x)
         (0.25 * x[1] + 0.75 * x[2]))
       pmf
     }
-
+    
     bases <- c("A", "C", "G", "T")
     for (i in 1:nrow(errormode)) {
       if ((i %% 100) == 0) {
@@ -167,11 +186,11 @@ constantArrow <-
       } else {
         # Fit hmm
         fit = hmm(read ~ 1,
-                       singleZMW,
-                       verbose = FALSE,
-                       filter = FALSE,
-                       use8Contexts = TRUE,
-                       end_dif = 0.005)
+                  singleZMW,
+                  verbose = FALSE,
+                  filter = FALSE,
+                  use8Contexts = TRUE,
+                  end_dif = 0.005)
         # Summerize model parameters
         predictions <- list()
         for (j in 1:8) {
@@ -179,71 +198,81 @@ constantArrow <-
         }
         predictions <- as.data.frame(matrix(unlist(predictions), ncol = 4, byrow = T))
         colnames(predictions) = colnames(fit$pseudoCounts) # copy the outcome names over
-        predictions$CTX = fit$sPmf$CTX
-        predictions = predictions[,c(1:4)]
-
+        CTX <- fit$sPmf$CTX
+        
         # Dark rate
         darkCols <- which(csv_names == "A.Dark.A"):which(csv_names == "T.Dark.T")
-        errormode[i, darkCols] = predictions[c(5:8), 4]
-
+        darkRows <- which(CTX == "NA"):which(CTX == "NT")
+        errormode[i, darkCols] = predictions[darkRows, "Delete"]
+        
         # Merge rate
         mergeCols <- which(csv_names == "A.Merge.A"):which(csv_names == "T.Merge.T")
-        errormode[i, mergeCols] = predictions[c(1:4), 4] - predictions[c(5:8), 4]
-
+        mergeRows <- which(CTX == "AA"):which(CTX == "TT")
+        errormode[i, mergeCols] = predictions[mergeRows, "Delete"] - predictions[darkRows, "Delete"]
+        
         # Match rate
         matchCols <- which(csv_names == "A.Match.A"):which(csv_names == "T.Match.T")
-        errormode[i, matchCols] = predictions[, 1] * as.vector(as.matrix(baseAgg(fit$mPmf)[, c(2:5)]))
-
-        # When insert a same base, use branch
-        branchCols <- which(csv_names %in% paste(bases, ".Insert.", bases, sep = ""))
-        errormode[i, branchCols] = (predictions[1, 2] * as.vector(as.matrix(baseAgg(fit$bPmf)[, c(2:5)])))[c(1, 6, 11, 16)]
-
+        matchVals <- predictions[, "Match"] * fit$mPmf[, bases]
+        matchVals$CTX <- fit$mPmf$CTX
+        errormode[i, matchCols] = as.vector(as.matrix(baseAgg(matchVals)[, bases]))
+        
         # When insert a different base, use stick
-        stickCols <- setdiff(which(csv_names == "A.Insert.A"):which(csv_names == "T.Insert.T"), branchCols)
-        errormode[i, stickCols] = (predictions[, 3] * as.vector(as.matrix(baseAgg(fit$sPmf)[, c(2:5)])))[c(2:5, 7:10, 12:15)]
-
-
+        stickCols <- which(csv_names == "A.Insert.A"):which(csv_names == "T.Insert.T")  # also includes branch, will replace below
+        stickVals <- predictions[, "Stick"] * fit$sPmf[, bases]
+        stickVals$CTX <- fit$sPmf$CTX
+        errormode[i, stickCols] = as.vector(as.matrix(baseAgg(stickVals)[, bases]))
+        
+        # When insert a same base, use branch
+        branchCols <- which(csv_names %in% paste(bases, ".Insert.", bases, sep=""))
+        branchVals <- predictions[, "Branch"] * fit$bPmf[, bases]
+        branchVals$CTX <- fit$bPmf$CTX
+        errormode[i, branchCols] = diag(as.matrix(baseAgg(branchVals)[, bases]))
+        
+        
         # Get the alignment length, accounting for any filtered bases
         errormode[i, "AlnTLength"] = sum(sapply(singleZMW, function(x) sum(x$ref != "-")))
         errormode[i, "Time"] = fit$time_s
         errormode[i, "Iterations"] = length(fit$likelihoodHistory)
       }
     }
-
-    write.csv(errormode, outputcsv, row.names = F)
-    logging::loginfo(paste("Wrote CSV to ", outputcsv))
-    return(0)
+    return(errormode)
   }
 
-constantArrowRtc <- function(rtc) {
-  return(
-    constantArrow(
-      rtc@task@inputFiles[1],
-      rtc@task@inputFiles[2],
-      rtc@task@outputFiles[1]
-    )
-  )
+makeReport <- function(report) {
+  
+  conditions = report$condition.table
+  n = length(levels(conditions$Condition))
+  clFillScale <<- getPBFillScale(n)
+  clScale <<- getPBColorScale(n)
+  
+  # Generate constant Arrow CSV file
+  errormodeList = lapply(1:n, function(i) {
+    constantArrow(as.character(conditions$MappedSubreads[i]), as.character(conditions$Reference[i]), as.character(conditions$Condition[i]), report)
+  })
+  errormodeCombine = rbindlist(errormodeList)
+  loginfo("Making constant Arrow CSV file")
+  report$write.table("errormode.csv",
+                     errormodeCombine,
+                     id = "errormode",
+                     title = "Constant Arrow Errormode")
+  
+  # Save the report object for later debugging
+  save(report, file = file.path(report$outputDir, "report.Rd"))
+  
+  # At the end of this function we need to call this last, it outputs the report
+  report$write.report()
 }
 
-
-# Example populated Registry for testing
-#' @export
-PBIReseqconditionRegistryBuilder <- function() {
-  r <- registryBuilder(PB_TOOL_NAMESPACE, "constant_arrow.R run-rtc ")
-
-  registerTool(
-    r,
-    "constant_arrow",
-    "0.0.1",
-    c(FileTypes$DS_ALIGN, FileTypes$DS_REF),
-    c(FileTypes$CSV),
-    16,
-    TRUE,
-    constantArrowRtc
-  )
-  return(r)
+main <- function()
+{
+  report <- bh2Reporter(
+    "condition-table.csv",
+    "reports/report.json",
+    "Constant Arrow csv file")
+  makeReport(report)
+  0
 }
 
-## Add this line to enable logging
-basicConfig()
-q(status = mainRegisteryMainArgs(PBIReseqconditionRegistryBuilder()))
+## Leave this as the last line in the file.
+logging::basicConfig()
+main()
