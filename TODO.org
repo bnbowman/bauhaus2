@@ -1,19 +1,23 @@
 * Workflows
-- [ ] CCS mapping reports
-- [ ] Coverage titration
+- [X] CCS mapping reports
+- [X] Coverage titration
+- [X] Unrolled mapping +/- HQ
+- [ ] Adapter re-calling / generic "rerun PPA"
 
 * Infrastructure
-- [ ] Move to use smrtportal-release reference repo
+- [X] Move to use smrtportal-release reference repo
 - [ ] Move reference masks under itg directory
 
 * Testing
-- [ ] Execution tests: mapping-reports
+- [X] Execution tests: mapping-reports
 - [ ] Execution tests: ccs-mapping-reports
+- [ ] Execution tests: coverage titration
 
 * pbservice integration
 - [ ] Stub out map_subreads_pbservices
 
 * Long-term initiatives
+** Make the paradigm that user specifies the *reports* desired, workflows then determined
 ** Dockerize the module dependencies
    If we can get smrtanalysis etc. into a Docker image (with a new
    image available frequently), we could actually make these workflows
