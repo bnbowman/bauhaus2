@@ -9,7 +9,7 @@ class MockResolver(object):
     # For testing purposes
 
     REFERENCE_MASKS_ROOT = "/pbi/dept/consensus/bauhaus/genome-masks"
-    REFERENCES_ROOT = "/mnt/secondary/iSmrtanalysis/current/common/references"
+    REFERENCES_ROOT = "/pbi/dept/secondary/siv/references"
 
     def __init__(self):
         pass

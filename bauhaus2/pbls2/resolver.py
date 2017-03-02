@@ -38,11 +38,8 @@ class Resolver(object):
     identifiers, reference names (to the reference FASTA or the
     reference "mask")
     """
-
-    # TODO: this isn't really hygienic because, in fact, there are
-    # multiple reference repos, associated with different SL engines
-    REFERENCE_MASKS_ROOT = "/pbi/dept/consensus/bauhaus/genome-masks/"         # Maintained by consensus group
-    REFERENCES_ROOT = "/mnt/secondary/iSmrtanalysis/current/common/references" # SMRTPortal-internal reference repository
+    REFERENCE_MASKS_ROOT = "/pbi/dept/consensus/bauhaus/genome-masks/"  # Maintained by consensus group
+    REFERENCES_ROOT = "/pbi/dept/secondary/siv/references"              # This is a central location for SA3+ references
 
     SMRTLINK_SERVER_TO_JOBS_ROOT = \
         { serverName : ("/pbi/dept/secondary/siv/smrtlink/smrtlink-" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
