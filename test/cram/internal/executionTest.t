@@ -196,6 +196,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- medianSNR.csv
   |   |   |-- noninternalBAM.csv
   |   |   |-- polrate_ref_box.png
+  |   |   |-- polrate_template_per_second.png
   |   |   |-- pw_boxplot.png
   |   |   |-- pw_boxplot_by_base.png
   |   |   |-- pw_by_template.png
@@ -237,7 +238,7 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  21 directories, 199 files
+  21 directories, 200 files
 
 
 
@@ -302,6 +303,13 @@ Generate mapping reports workflow, starting from subreads.
         "title": "SNR vs Relative Indels",
         "caption": "SNR vs. Indel Rate / Deletion Rate",
         "tags": ["sampled", "snr", "deletion"]
+      },
+      {
+        "id": "polrate_template_per_second",
+        "image": "polrate_template_per_second.png",
+        "title": "Polymerization Rate (template bases per second)",
+        "caption": "Polymerization Rate (template bases per second)",
+        "tags": ["sampled", "boxplot", "polrate", "template", "time"]
       },
       {
         "id": "polrate_ref_box",

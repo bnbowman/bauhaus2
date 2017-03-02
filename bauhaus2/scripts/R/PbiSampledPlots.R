@@ -159,6 +159,13 @@ makeSamplingPlots <-
     cd3$DC <- cd3$medianipd + cd3$medianpw
     cd3$DutyCycle  = cd3$medianpw / (cd3$medianpw + cd3$medianipd)
     
+    # cd4 is used to generate the plot of template span ove time
+    cd4 = cd2 %>% group_by(Condition, framePerSecond, hole) %>% summarise(
+      sumpw = sum(pw),
+      sumipd = sum(ipd),
+      templateSpan = length(ref[!ref == "-"])
+    )
+    
     # Plots based on startFrame (Only produced when "sf" is loaded)
     if (internalBAM) {
       # ActiveZMWs
@@ -401,6 +408,20 @@ makeSamplingPlots <-
         tags = c("sampled", "pkmid", "time")
       )
     }
+    
+    # Polymerization Rate measured by template bases per second
+    tp = ggplot(cd4, aes(x = Condition, y = templateSpan / (sumpw + sumipd) * framePerSecond, fill = Condition)) + geom_boxplot(position = "dodge") + 
+      plTheme + themeTilt  + clFillScale + 
+      labs(x = "Condition", y = "Polymerization Rate (template bases per second)", title = "Polymerization Rate (template bases per second)")
+    
+    report$ggsave(
+      "polrate_template_per_second.png",
+      tp,
+      id = "polrate_template_per_second",
+      title = "Polymerization Rate (template bases per second)",
+      caption = "Polymerization Rate (template bases per second)",
+      tags = c("sampled", "boxplot", "polrate", "template", "time")
+    )
     
     # Polymerization Rate by Reference
     tp = ggplot(cd3, aes(x = refName, y = PolRate, fill = Condition)) + geom_boxplot(position = "dodge") + 
