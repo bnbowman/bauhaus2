@@ -36,6 +36,12 @@ class MockResolver(object):
         referenceFasta = op.join(self.REFERENCES_ROOT, referenceName, "sequence", referenceName + ".fasta")
         return referenceFasta
 
+    def resolveReferenceSet(self, referenceName):
+        if referenceName not in ["lambdaNEB", "ecoliK12_pbi_March2013", "plasmidbell_v1", "pBR322_EcoRV"]:
+            raise DataNotFound("Reference not found: %s" % referenceName)
+        referenceSet = op.join(self.REFERENCES_ROOT, referenceName, referenceName + ".referenceset.xml")
+        return referenceSet
+
     def resolveReferenceMask(self, referenceName):
         if referenceName not in ["lambdaNEB", "ecoliK12_pbi_March2013"]:
             raise DataNotFound("Reference mask (required for CoverageTitration) not found for genome: %s" % referenceName)

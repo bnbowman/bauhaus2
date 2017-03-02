@@ -122,6 +122,15 @@ class Resolver(object):
         else:
             raise DataNotFound(referenceName)
 
+    def resolveReferenceSet(self, referenceName):
+        referenceSet = op.join(self.REFERENCES_ROOT, referenceName, referenceName + ".referenceset.xml")
+        if op.isfile(referenceSet):
+            return referenceSet
+        elif not op.exists(self.REFERENCES_ROOT):
+            raise ResolverFailure("NFS unavailable?")
+        else:
+            raise DataNotFound(referenceSet)
+
     def resolveReferenceMask(self, referenceName):
         maskGff = op.join(self.REFERENCE_MASKS_ROOT, referenceName + "-mask.gff")
         if op.isfile(maskGff):

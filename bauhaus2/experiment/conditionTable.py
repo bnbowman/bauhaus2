@@ -218,10 +218,12 @@ class ResequencingConditionTable(ConditionTable):
     def _resolveInputs(self, resolver):
         super(ResequencingConditionTable, self)._resolveInputs(resolver)
         self._referenceByCondition = {}
+        self._referenceSetByCondition = {}
         for condition in self.conditions:
             genome = self.genome(condition)
             try:
                 self._referenceByCondition[condition] = resolver.resolveReference(genome)
+                self._referenceSetByCondition[condition] = resolver.resolveReferenceSet(genome)
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
 
@@ -244,6 +246,10 @@ class ResequencingConditionTable(ConditionTable):
 
     def reference(self, condition):
         return self._referenceByCondition[condition]
+
+    def referenceSet(self, condition):
+        return self._referenceSetByCondition[condition]
+
 
 class CoverageTitrationConditionTable(ResequencingConditionTable):
 
