@@ -54,8 +54,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   `-- mapped.chunk7.alignmentset.xml
-  |   |   |-- reference.fasta -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |   |   |-- reference.fasta.fai -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
+  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
   |   |   |-- subreads
   |   |   |   `-- input.subreadset.xml
   |   |   `-- subreads_chunks
@@ -103,8 +103,8 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |-- mapped.chunk7.alignmentset.bam.bai
   |       |   |-- mapped.chunk7.alignmentset.bam.pbi
   |       |   `-- mapped.chunk7.alignmentset.xml
-  |       |-- reference.fasta -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |       |-- reference.fasta.fai -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
+  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
   |       |-- subreads
   |       |   `-- input.subreadset.xml
   |       `-- subreads_chunks
