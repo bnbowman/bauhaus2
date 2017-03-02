@@ -108,20 +108,20 @@ makeAccuracyDensityPlots <- function(report, cd) {
     caption = "Accuracy Distribution"
   )
   
-  loginfo("Making Accuracy Violin Plots")
-  tp = ggplot(cd, aes(x = Condition, y = Accuracy, fill = Condition)) + geom_violin() +
-    plTheme + clFillScale + themeTilt +
-    labs(y = "Accuracy (1 - Mean Errors Per Template Position)", title = "Accuracy by Condition", x = "Condition") +
-    geom_boxplot(width = 0.1, fill = "white")
-  report$ggsave(
-    "acc_violin.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "acc_violin",
-    title = "Accuracy Violin",
-    caption = "Accuracy Violin"
-  )
+  # loginfo("Making Accuracy Violin Plots")
+  # tp = ggplot(cd, aes(x = Condition, y = Accuracy, fill = Condition)) + geom_violin() +
+  #   plTheme + clFillScale + themeTilt +
+  #   labs(y = "Accuracy (1 - Mean Errors Per Template Position)", title = "Accuracy by Condition", x = "Condition") +
+  #   geom_boxplot(width = 0.1, fill = "white")
+  # report$ggsave(
+  #   "acc_violin.png",
+  #   tp,
+  #   width = plotwidth,
+  #   height = plotheight,
+  #   id = "acc_violin",
+  #   title = "Accuracy Violin",
+  #   caption = "Accuracy Violin"
+  # )
   
   loginfo("Making Template Length vs. Accuracy")
   samps_per_group = sampleSize / length(levels(cd$Condition))
@@ -208,19 +208,19 @@ makeAccuracyDensityPlots <- function(report, cd) {
     caption = "Unaligned Read Length v. Aligned Read Length"
   )
   
-  loginfo("Making Template Span Violin Plot")
-  tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_violin() + 
-    plTheme + clFillScale + themeTilt + 
-    labs(y = "Template Span (tend - tstart)", title = "Template Span Violin Plot", x = "Condition")
-  report$ggsave(
-    "tlen_violin.png",
-    tp,
-    id = "tlen_violin",
-    width = plotwidth,
-    height = plotheight,
-    title = "Template Span Violin Plot",
-    caption = "Template Span Violin Plot"
-  )
+  # loginfo("Making Template Span Violin Plot")
+  # tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_violin() + 
+  #   plTheme + clFillScale + themeTilt + 
+  #   labs(y = "Template Span (tend - tstart)", title = "Template Span Violin Plot", x = "Condition")
+  # report$ggsave(
+  #   "tlen_violin.png",
+  #   tp,
+  #   id = "tlen_violin",
+  #   width = plotwidth,
+  #   height = plotheight,
+  #   title = "Template Span Violin Plot",
+  #   caption = "Template Span Violin Plot"
+  # )
   
   loginfo("Making Template Span Density Plot")
   tp = ggplot(cd, aes(x = tlen, colour = Condition)) + geom_density() + 
@@ -265,33 +265,33 @@ makeAccuracyDensityPlots <- function(report, cd) {
   )
 }
 
-makeErateViolinPlots <- function(report, cd) {
-  loginfo("Making Error Rate Violin Plots")
-  vnames = c("mmrate", "irate", "drate")
-  labels = c("Mismatch", "Insertion", "Deletion")
-  mkErate <- function(i) {
-    vname = vnames[i]
-    label = labels[i]
-    tp = ggplot(cd, aes_string(x = "Condition", y = vname, fill = "Condition")) + geom_violin() +
-      plTheme + clFillScale + geom_boxplot(width = 0.1, fill = "white") + themeTilt +
-      labs(
-        y = label,
-        title = paste(label, " Rate by Condition - Violin Plot"),
-        x = "Condition"
-      )
-    report$ggsave(
-      paste("etype_", "_", vname, "_violin.png", sep = ""),
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = paste("etype_", "_", vname, "_violin", sep = ""),
-      title = paste(label, "Rate - Violin Plot"),
-      caption = paste(label, "Rate - Violin Plot")
-    )
-  }
-  pv = lapply(1:3, mkErate)
-  return(pv)
-}
+# makeErateViolinPlots <- function(report, cd) {
+#   loginfo("Making Error Rate Violin Plots")
+#   vnames = c("mmrate", "irate", "drate")
+#   labels = c("Mismatch", "Insertion", "Deletion")
+#   mkErate <- function(i) {
+#     vname = vnames[i]
+#     label = labels[i]
+#     tp = ggplot(cd, aes_string(x = "Condition", y = vname, fill = "Condition")) + geom_violin() +
+#       plTheme + clFillScale + geom_boxplot(width = 0.1, fill = "white") + themeTilt +
+#       labs(
+#         y = label,
+#         title = paste(label, " Rate by Condition - Violin Plot"),
+#         x = "Condition"
+#       )
+#     report$ggsave(
+#       paste("etype_", "_", vname, "_violin.png", sep = ""),
+#       tp,
+#       width = plotwidth,
+#       height = plotheight,
+#       id = paste("etype_", "_", vname, "_violin", sep = ""),
+#       title = paste(label, "Rate - Violin Plot"),
+#       caption = paste(label, "Rate - Violin Plot")
+#     )
+#   }
+#   pv = lapply(1:3, mkErate)
+#   return(pv)
+# }
 
 makeErateBoxPlots <- function(report, cd) {
   loginfo("Making Error Rate Boxplots")
@@ -440,7 +440,7 @@ makeReport <- function(report) {
   # Make Plots
   makeReadLengthSurvivalPlots(report, cd)
   makeAccuracyDensityPlots(report, cd)
-  makeErateViolinPlots(report, cd)
+  # makeErateViolinPlots(report, cd)
   makeErateBoxPlots(report, cd)
   makeBasesDistribution(report, cd)
   makeYieldHistogram(report, cd)

@@ -54,8 +54,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   `-- mapped.chunk7.alignmentset.xml
-  |   |   |-- reference.fasta -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |   |   |-- reference.fasta.fai -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
+  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
   |   |   |-- subreads
   |   |   |   `-- input.subreadset.xml
   |   |   `-- subreads_chunks
@@ -103,8 +103,8 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |-- mapped.chunk7.alignmentset.bam.bai
   |       |   |-- mapped.chunk7.alignmentset.bam.pbi
   |       |   `-- mapped.chunk7.alignmentset.xml
-  |       |-- reference.fasta -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |       |-- reference.fasta.fai -> /mnt/secondary/iSmrtanalysis/current/common/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
+  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
   |       |-- subreads
   |       |   `-- input.subreadset.xml
   |       `-- subreads_chunks
@@ -161,18 +161,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- acc_accvrl.png
   |   |   |-- acc_accvtl.png
   |   |   |-- acc_density.png
-  |   |   |-- acc_violin.png
   |   |   |-- alen_density.png
   |   |   |-- alen_v_qlen.png
   |   |   |-- aligned_read_length_survival\ (Log-scale).png
   |   |   |-- aligned_read_length_survival.png
   |   |   |-- base_count_bar.png
   |   |   |-- etype__drate_boxplot.png
-  |   |   |-- etype__drate_violin.png
   |   |   |-- etype__irate_boxplot.png
-  |   |   |-- etype__irate_violin.png
   |   |   |-- etype__mmrate_boxplot.png
-  |   |   |-- etype__mmrate_violin.png
   |   |   |-- nreads_hist.png
   |   |   |-- report.Rd
   |   |   |-- report.json
@@ -180,16 +176,13 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- template_span_survival\ (Log-scale).png
   |   |   |-- template_span_survival.png
   |   |   |-- tlen_box.png
-  |   |   |-- tlen_density.png
-  |   |   `-- tlen_violin.png
+  |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
   |   |   |-- global_localpolrate.png
-  |   |   |-- ipddist.png
   |   |   |-- ipddistbybase_boxplot.png
-  |   |   |-- ipddistbybase_violin.png
   |   |   |-- localpolrate_boxplot.png
   |   |   |-- medianIPD.csv
   |   |   |-- medianPolymerizationRate.csv
@@ -201,12 +194,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- pw_boxplot_by_base.png
   |   |   |-- pw_by_template.png
   |   |   |-- pw_by_template_cdf.png
-  |   |   |-- pw_violin.png
   |   |   |-- report.Rd
   |   |   |-- report.json
   |   |   |-- snrBoxNoViolin.png
   |   |   |-- snrDensity.png
-  |   |   |-- snrViolin.png
   |   |   |-- snrvsacc.png
   |   |   |-- snrvsdeletion.png
   |   |   |-- snrvsindelrat.png
@@ -238,7 +229,7 @@ Generate mapping reports workflow, starting from subreads.
       |-- runtime.py
       `-- stdlib.py
   
-  21 directories, 200 files
+  21 directories, 191 files
 
 
 
@@ -248,13 +239,6 @@ Generate mapping reports workflow, starting from subreads.
   $ cat mapping-reports/reports/PbiSampledPlots/report.json
   {
     "plots": [
-      {
-        "id": "snr_violin",
-        "image": "snrViolin.png",
-        "title": "SNR Violin Plot",
-        "caption": "Distribution of SNR in Aligned Files (Violin plot)",
-        "tags": ["sampled", "snr", "violin"]
-      },
       {
         "id": "snr_density",
         "image": "snrDensity.png",
@@ -333,32 +317,11 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "pw", "cdf"]
       },
       {
-        "id": "ipd_violin",
-        "image": "ipddist.png",
-        "title": "IPD Distribution - Violin Plot",
-        "caption": "IPD Distribution - Violin Plot",
-        "tags": ["sampled", "violin", "ipd"]
-      },
-      {
-        "id": "ipd_violin_by_base",
-        "image": "ipddistbybase_violin.png",
-        "title": "IPD Distribution by Ref Base - Violin Plot",
-        "caption": "IPD Distribution by Ref Base - Violin Plot",
-        "tags": ["sampled", "violin", "ipd"]
-      },
-      {
         "id": "ipd_boxplot_by_base",
         "image": "ipddistbybase_boxplot.png",
         "title": "IPD Distribution by Ref Base - Boxplot",
         "caption": "IPD Distribution by Ref Base - Boxplot",
         "tags": ["sampled", "boxplot", "ipd"]
-      },
-      {
-        "id": "pw_violin",
-        "image": "pw_violin.png",
-        "title": "PW Distribution - Violin Plot",
-        "caption": "PW Distribution - Violin Plot",
-        "tags": ["sampled", "violin", "pw"]
       },
       {
         "id": "pw_boxplot",
