@@ -15,4 +15,6 @@ module add smrtanalysis/mainline
 # want to comment out these lines.
 unset R_LIBS
 export R_IGNORE_USER_LIBS=1
-module load R/3.2.3-internal
+
+# Note: DO NOT REMOVE THE TRAILING SEMICOLON
+module load R/3.2.3-internal;
