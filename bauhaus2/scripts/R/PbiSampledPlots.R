@@ -125,9 +125,6 @@ makeSamplingPlots <-
                        "pkMid Box Plot - all reference reads",
                        "pkMid Box Plot - accurate reference reads",
                        "pkMid Box Plot - inaccurate reference reads",
-                       "pkMid Violin Plot - all reference reads",
-                       "pkMid Violin Plot - accurate reference reads",
-                       "pkMid Violin Plot - inaccurate reference reads",
                        "pkMid Density Plot - all reference reads",
                        "pkMid Density Plot - accurate reference reads",
                        "pkMid Density Plot - inaccurate reference reads",
@@ -244,22 +241,22 @@ makeSamplingPlots <-
           tags = c("sampled", "pkmid", "boxplot", variableTitle[i])
         )
         
-        tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) + geom_violin() +
-          geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
-          facet_wrap( ~ ref)
-        report$ggsave(
-          paste("pkMid_Violin_", variableTitle[i], ".png", sep = ""),
-          tp,
-          id = paste("pkMid_violinplot_", variableTitle[i], sep = ""),
-          title = paste("pkMid Violin Plot - ", variableTitle[i], sep = ""),
-          caption = paste(
-            "Distribution of pkMid for ",
-            variableTitle[i],
-            " (Violin plot)",
-            sep = ""
-          ),
-          tags = c("sampled", "pkmid", "violin", variableTitle[i])
-        )
+        # tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) + geom_violin() +
+        #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
+        #   facet_wrap( ~ ref)
+        # report$ggsave(
+        #   paste("pkMid_Violin_", variableTitle[i], ".png", sep = ""),
+        #   tp,
+        #   id = paste("pkMid_violinplot_", variableTitle[i], sep = ""),
+        #   title = paste("pkMid Violin Plot - ", variableTitle[i], sep = ""),
+        #   caption = paste(
+        #     "Distribution of pkMid for ",
+        #     variableTitle[i],
+        #     " (Violin plot)",
+        #     sep = ""
+        #   ),
+        #   tags = c("sampled", "pkmid", "violin", variableTitle[i])
+        # )
         
         tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + geom_density(alpha = .5) +
           plTheme + themeTilt  + clScale + facet_wrap( ~ ref) +
@@ -483,33 +480,33 @@ makeSamplingPlots <-
     
     # IPD Plots
     maxIPD = 100
-    tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
-      labs(
-        y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
-        title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      plTheme + themeTilt + clFillScale
-    report$ggsave("ipddist.png",
-                  tp,
-                  id = "ipd_violin",
-                  title = "IPD Distribution - Violin Plot",
-                  caption = "IPD Distribution - Violin Plot",
-                  tags = c("sampled", "violin", "ipd"))
+    # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
+    #   labs(
+    #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
+    #     title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
+    #   ) +
+    #   plTheme + themeTilt + clFillScale
+    # report$ggsave("ipddist.png",
+    #               tp,
+    #               id = "ipd_violin",
+    #               title = "IPD Distribution - Violin Plot",
+    #               caption = "IPD Distribution - Violin Plot",
+    #               tags = c("sampled", "violin", "ipd"))
     
-    tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
-      labs(
-        y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
-        title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      plTheme + themeTilt + clFillScale + facet_wrap( ~ ref)
-    report$ggsave(
-      "ipddistbybase_violin.png",
-      tp,
-      id = "ipd_violin_by_base",
-      title = "IPD Distribution by Ref Base - Violin Plot",
-      caption = "IPD Distribution by Ref Base - Violin Plot",
-      tags = c("sampled", "violin", "ipd")
-    )
+    # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
+    #   labs(
+    #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
+    #     title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
+    #   ) +
+    #   plTheme + themeTilt + clFillScale + facet_wrap( ~ ref)
+    # report$ggsave(
+    #   "ipddistbybase_violin.png",
+    #   tp,
+    #   id = "ipd_violin_by_base",
+    #   title = "IPD Distribution by Ref Base - Violin Plot",
+    #   caption = "IPD Distribution by Ref Base - Violin Plot",
+    #   tags = c("sampled", "violin", "ipd")
+    # )
     
     tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() +
       labs(
@@ -537,28 +534,28 @@ makeSamplingPlots <-
     # PW Plots
     maxPW = 20
     cd2$Insertion = cd2$ref == "-"
-    tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_violin() +
-      labs(
-        y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
-        title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      stat_summary(
-        fun.y = median,
-        colour = "black",
-        geom = "text",
-        show.legend = FALSE,
-        vjust = -0.8,
-        aes(label = round(..y.., digits = 3))
-      ) +
-      plTheme + themeTilt + clFillScale
-    report$ggsave(
-      "pw_violin.png",
-      tp,
-      id = "pw_violin",
-      title = "PW Distribution - Violin Plot",
-      caption = "PW Distribution - Violin Plot",
-      tags = c("sampled", "violin", "pw")
-    )
+    # tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_violin() +
+    #   labs(
+    #     y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
+    #     title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
+    #   ) +
+    #   stat_summary(
+    #     fun.y = median,
+    #     colour = "black",
+    #     geom = "text",
+    #     show.legend = FALSE,
+    #     vjust = -0.8,
+    #     aes(label = round(..y.., digits = 3))
+    #   ) +
+    #   plTheme + themeTilt + clFillScale
+    # report$ggsave(
+    #   "pw_violin.png",
+    #   tp,
+    #   id = "pw_violin",
+    #   title = "PW Distribution - Violin Plot",
+    #   caption = "PW Distribution - Violin Plot",
+    #   tags = c("sampled", "violin", "pw")
+    # )
     
     tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_boxplot() +
       labs(
@@ -908,17 +905,17 @@ makeReport <- function(report) {
   snrs = cd[, .(Condition, hole, snrA, snrC, snrG, snrT)]
   colnames(snrs) = sub("snr", "", colnames(snrs))
   snrs = snrs %>% gather(channel, SNR, A, C, G, T)
-  tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) + geom_violin() +
-    geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
-    facet_wrap(~ channel)
-  report$ggsave(
-    "snrViolin.png",
-    tp,
-    id = "snr_violin",
-    title = "SNR Violin Plot",
-    caption = "Distribution of SNR in Aligned Files (Violin plot)",
-    tags = c("sampled", "snr", "violin")
-  )
+  # tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) + geom_violin() +
+  #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
+  #   facet_wrap(~ channel)
+  # report$ggsave(
+  #   "snrViolin.png",
+  #   tp,
+  #   id = "snr_violin",
+  #   title = "SNR Violin Plot",
+  #   caption = "Distribution of SNR in Aligned Files (Violin plot)",
+  #   tags = c("sampled", "snr", "violin")
+  # )
   
   tp = ggplot(snrs, aes(x = SNR, colour = Condition)) + geom_density(alpha = .5) +
     plTheme + themeTilt  + clScale + facet_wrap(~ channel) +
