@@ -226,6 +226,20 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                  "collect-references.snake",
                  "scatter-subreads.snake",
                  "collect-subreads.snake" ]
+                 
+class ConstantArrowWorkflow(Workflow):
+    """
+    Align subreads to the reference and run constant arrow model, generate csv file of errormode.
+    """
+    WORKFLOW_NAME        = "ConstantArrow"
+    CONDITION_TABLE_TYPE = ResequencingConditionTable
+    R_SCRIPTS            = ( "R/constant_arrow.R",
+                             "R/FishbonePlots.R",
+                             "R/Bauhaus2.R" )
+
+    def plan(self):
+        return ["constant-arrow.snake"] + \
+            subreadsMappingPlan(self.conditionTable, self.cliArgs)
 
 
 # ---
@@ -236,7 +250,8 @@ for wfc in (MappingWorkflow,
             MappingReportsWorkflow,
             CCSMappingReportsWorkflow,
             CoverageTitrationWorkflow,
-            UnrolledNoHQMappingWorkflow):
+            UnrolledNoHQMappingWorkflow,
+            ConstantArrowWorkflow):
     assert wfc.WORKFLOW_NAME not in availableWorkflows, "Workflow name collision"
     assert wfc.__doc__ is not None, "All workflows require descriptive docstrings"
     availableWorkflows[wfc.WORKFLOW_NAME] = wfc
