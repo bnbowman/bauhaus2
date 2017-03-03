@@ -225,7 +225,14 @@ makeSamplingPlots <-
       
       for (i in 1:3) {
         tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) +
-          geom_boxplot() + plTheme + themeTilt  + clFillScale +
+          geom_boxplot() + stat_summary(
+            fun.y = median,
+            colour = "black",
+            geom = "text",
+            show.legend = FALSE,
+            vjust = -0.8,
+            aes(label = round(..y.., digits = 4))
+          ) + plTheme + themeTilt  + clFillScale +
           facet_wrap( ~ ref)
         report$ggsave(
           paste("pkMid_Box_", variableTitle[i], ".png", sep = ""),
@@ -407,7 +414,14 @@ makeSamplingPlots <-
     }
     
     # Polymerization Rate measured by template bases per second
-    tp = ggplot(cd4, aes(x = Condition, y = templateSpan / (sumpw + sumipd) * framePerSecond, fill = Condition)) + geom_boxplot(position = "dodge") + 
+    tp = ggplot(cd4, aes(x = Condition, y = templateSpan / (sumpw + sumipd) * framePerSecond, fill = Condition)) + geom_boxplot(position = "dodge") + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y.., digits = 4))
+    ) + 
       plTheme + themeTilt  + clFillScale + 
       labs(x = "Condition", y = "Polymerization Rate (template bases per second)", title = "Polymerization Rate (template bases per second)")
     
@@ -421,7 +435,14 @@ makeSamplingPlots <-
     )
     
     # Polymerization Rate by Reference
-    tp = ggplot(cd3, aes(x = refName, y = PolRate, fill = Condition)) + geom_boxplot(position = "dodge") + 
+    tp = ggplot(cd3, aes(x = refName, y = PolRate, fill = Condition)) + geom_boxplot(position = "dodge") + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y.., digits = 4))
+    ) + 
       plTheme + themeTilt  + clFillScale + 
       labs(x = "Reference", y = "Polymerization Rate", title = "Polymerization Rate by Reference")
     
@@ -508,7 +529,14 @@ makeSamplingPlots <-
     #   tags = c("sampled", "violin", "ipd")
     # )
     
-    tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() +
+    tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y.., digits = 4))
+    ) +
       labs(
         y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
         title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
@@ -557,7 +585,14 @@ makeSamplingPlots <-
     #   tags = c("sampled", "violin", "pw")
     # )
     
-    tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_boxplot() +
+    tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_boxplot() + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y.., digits = 4))
+    ) +
       labs(
         y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
         title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
@@ -591,7 +626,14 @@ makeSamplingPlots <-
                        title = "Median IPD/PW Values by Reference")
     
     # Duty Cycle plot
-    tp = ggplot(cd3, aes(x = Condition, y = DutyCycle, fill = Condition)) + geom_boxplot() +
+    tp = ggplot(cd3, aes(x = Condition, y = DutyCycle, fill = Condition)) + geom_boxplot() + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y.., digits = 4))
+    ) +
       labs(
         y = "median(PW)/(median(PW) + median(IPD))",
         title = paste("Duty Cycle\n(From ", sampleSize, "Sampled Alignments)")
@@ -614,7 +656,14 @@ makeSamplingPlots <-
     )
     
     # Local PolRate plot
-    tp = ggplot(cd3, aes(x = Condition, y = 1 / DC, fill = Condition)) + geom_boxplot() +
+    tp = ggplot(cd3, aes(x = Condition, y = 1 / DC, fill = Condition)) + geom_boxplot() + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y.., digits = 4))
+    ) +
       labs(
         y = "1/(median(PW) + median(IPD))",
         title = paste(
@@ -930,7 +979,14 @@ makeReport <- function(report) {
   )
   
   tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) +
-    geom_boxplot() + plTheme + themeTilt  + clFillScale +
+    geom_boxplot() + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y.., digits = 4))
+    ) + plTheme + themeTilt  + clFillScale +
     facet_wrap( ~ channel)
   report$ggsave(
     "snrBoxNoViolin.png",
