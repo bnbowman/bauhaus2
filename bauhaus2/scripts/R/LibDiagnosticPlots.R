@@ -128,11 +128,6 @@ makeCDFofaStartPlots <- function(report, cd) {
   )
   
   # Template Span by Reference
-  tp = ggplot(cd, aes(x = ref, y = tlen, label = tlen)) + geom_boxplot(aes(fill = Condition), position = position_dodge(.9)) + 
-    geom_text(aes(group=Condition), position = position_dodge(0.9), vjust = 0) +
-    plTheme + themeTilt  + clFillScale + 
-    labs(x = "Reference", y = "Template Span", title = "Template Span by Reference")
-  
   tp <- ggplot(data = cd, aes(x = factor(ref), y = tlen, fill = factor(Condition))) +
     geom_boxplot(position = position_dodge(width = 0.9)) 
   a <- aggregate(tlen ~ ref + Condition , cd, function(i) round(median(i)))

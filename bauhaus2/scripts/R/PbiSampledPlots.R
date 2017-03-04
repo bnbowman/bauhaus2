@@ -231,7 +231,7 @@ makeSamplingPlots <-
             geom = "text",
             show.legend = FALSE,
             vjust = -0.8,
-            aes(label = round(..y.., digits = 4))
+            aes(label = round(..y.., digits = 3))
           ) + plTheme + themeTilt  + clFillScale +
           facet_wrap( ~ ref)
         report$ggsave(
@@ -435,14 +435,11 @@ makeSamplingPlots <-
     )
     
     # Polymerization Rate by Reference
-    tp = ggplot(cd3, aes(x = refName, y = PolRate, fill = Condition)) + geom_boxplot(position = "dodge") + stat_summary(
-      fun.y = median,
-      colour = "black",
-      geom = "text",
-      show.legend = FALSE,
-      vjust = -0.8,
-      aes(label = round(..y.., digits = 4))
-    ) + 
+    tp <- ggplot(data = cd3, aes(x = refName, y = PolRate, fill = Condition)) +
+      geom_boxplot(position = position_dodge(width = 0.9)) 
+    a <- aggregate(PolRate ~ refName + Condition , cd3, function(i) round(median(i)))
+    tp <- tp +  geom_text(data = a, aes(label = PolRate), 
+                          position = position_dodge(width = 0.9), vjust = -0.8) + 
       plTheme + themeTilt  + clFillScale + 
       labs(x = "Reference", y = "Polymerization Rate", title = "Polymerization Rate by Reference")
     
@@ -585,14 +582,11 @@ makeSamplingPlots <-
     #   tags = c("sampled", "violin", "pw")
     # )
     
-    tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_boxplot() + stat_summary(
-      fun.y = median,
-      colour = "black",
-      geom = "text",
-      show.legend = FALSE,
-      vjust = -0.8,
-      aes(label = round(..y.., digits = 4))
-    ) +
+    tp <- ggplot(data = cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) +
+      geom_boxplot(position = position_dodge(width = 0.9)) 
+    a <- aggregate(pw ~ Condition + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i)))
+    tp2 <- tp +  geom_text(data = a, aes(label = pw), 
+                          position = position_dodge(width = 0.9), vjust = -0.8) +
       labs(
         y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
         title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
@@ -600,17 +594,26 @@ makeSamplingPlots <-
       plTheme + themeTilt + clFillScale
     report$ggsave(
       "pw_boxplot.png",
-      tp,
+      tp2,
       id = "pw_boxplot",
       title = "PW Distribution - Boxplot",
       caption = "PW Distribution - Boxplot",
       tags = c("sampled", "boxplot", "pw")
     )
     
-    tp = tp + facet_wrap( ~ ref)
+    tp3 = tp + facet_wrap( ~ ref)
+    b <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i)))
+    tp4 <- tp3 +  geom_text(data = b, aes(label = pw), 
+                           position = position_dodge(width = 0.9), vjust = -0.8) +
+      labs(
+        y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
+        title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
+      ) +
+      plTheme + themeTilt + clFillScale
+      
     report$ggsave(
       "pw_boxplot_by_base.png",
-      tp,
+      tp4,
       id = "pw_boxplot_by_base",
       title = "PW Distribution By Base",
       caption = "PW Distribution",
@@ -637,14 +640,6 @@ makeSamplingPlots <-
       labs(
         y = "median(PW)/(median(PW) + median(IPD))",
         title = paste("Duty Cycle\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      stat_summary(
-        fun.y = median,
-        colour = "black",
-        geom = "text",
-        show.legend = FALSE,
-        vjust = -0.8,
-        aes(label = round(..y.., digits = 3))
       ) + plTheme + themeTilt + clFillScale
     report$ggsave(
       "dutycycle_boxplot.png",
@@ -671,14 +666,6 @@ makeSamplingPlots <-
           sampleSize,
           "Sampled Alignments)"
         )
-      ) +
-      stat_summary(
-        fun.y = median,
-        colour = "black",
-        geom = "text",
-        show.legend = FALSE,
-        vjust = -0.8,
-        aes(label = round(..y.., digits = 3))
       ) + plTheme + themeTilt + clFillScale
     report$ggsave(
       "localpolrate_boxplot.png",
