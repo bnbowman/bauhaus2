@@ -1,0 +1,112 @@
+
+# ---------------------------------------------------------------------------------------------------
+# map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
+
+local_alignmentsets = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+# -- Target rules --
+
+rule map_subreads:
+    input: local_alignmentsets.values()
+
+# -- Worker rules --
+
+sl_host=config["bh2.smrtlink.host"]
+sl_port=config["bh2.smrtlink.services_port"]
+
+rule map_subreads_smrtlink_launch:
+    input:
+        subreadSet="conditions/{condition}/subreads/input.subreadset.xml",
+        referenceSet=lambda wc: ct.referenceSet(wc.condition)
+    output:
+        pbserviceInfo="conditions/{condition}/mapped/pbservice.log"
+    params:
+        presetXmlFile="/home/UNIXHOME/dalexander/Projects/ITG/pbservice/settings.xml"
+    shell:
+        """
+        # Call pbservice; bail out on failure
+        pbservice run-pipeline pbsmrtpipe.pipelines.sa3_ds_align \
+          --host {sl_host} --port {sl_port} \
+          -e {input.subreadSet} \
+          -e {input.referenceSet} \
+          --preset-xml {params.presetXmlFile} --job-title Bauhaus2Job \
+        > {output}
+        """
+
+class JobStatus(object):
+    VALID_STATES = ("CREATED", "SUBMITTED", "RUNNING", "TERMINATED", "SUCCESSFUL", "FAILED", "UNKNOWN")
+    FAILED_STATES = ("TERMINATED", "FAILED", "UNKNOWN")
+    SUCCESS_STATES = ("SUCCESSFUL",)
+
+def extractJobId(launchLog):
+    import re
+    logContent = open(launchLog).read()
+    m = re.search('JOB SUMMARY:$\n^\s+id: (.*)', logContent, re.MULTILINE)
+    if m:
+        return m.group(1)
+    else:
+        raise ValueError("Cannot find job ID in pbservice.log")
+
+def extractJobStatus(pollLog):
+    import re
+    logContent = open(pollLog).read()
+    m = re.search('JOB SUMMARY:.*^\s+state: (\w*)', logContent, re.MULTILINE | re.DOTALL)
+    if not m or m.group(1) not in JobStatus.VALID_STATES:
+        raise ValueError("Cannot find valid job status in pbservice.log")
+    else:
+        return m.group(1)
+
+def extractJobPath(pollLog):
+    import re
+    logContent = open(pollLog).read()
+    m = re.search('JOB SUMMARY:.*^\s+path: (\S*)', logContent, re.MULTILINE | re.DOTALL)
+    if not m:
+        raise ValueError("Cannot find SMRTLink job path in pbservice.log")
+    else:
+        return m.group(1)
+
+def touchFile(fname):
+    open(fname, "a").close()
+
+rule map_subreads_smrtlink_poll:
+    input: "conditions/{condition}/mapped/pbservice.log"
+    output:
+        flagFile="conditions/{condition}/mapped/job_complete",
+        pollFile="conditions/{condition}/mapped/poll.log",
+        localJobLink="conditions/{condition}/mapped/job_link"
+    run:
+        import time, sys, os
+        jobId = extractJobId(input[0])
+        jobRoot = extractJobPath(input[0])
+        os.symlink(smrtlinkJobRoot, output.localJobLink)
+        while True:
+            shell("pbservice get-job %s --host {sl_host} --port {sl_port} > {output.pollFile}" % jobId)
+            status = extractJobStatus(output.pollFile)
+            print("Found status: %s" % status)
+            if status in JobStatus.FAILED_STATES:
+                print("SMRTLink job has failed")
+                sys.exit(1)
+            elif status in JobStatus.SUCCESS_STATES:
+                print("SMRTLink job has succeeded")
+                break
+            else:
+                print("Will sleep")
+                time.sleep(90)
+                continue
+        touchFile(output.flagFile)
+
+rule map_subreads_smrtlink_collect:
+    input:
+        flagFile="conditions/{condition}/mapped/job_complete",
+        pollFile="conditions/{condition}/mapped/poll.log",
+        localJobLink="conditions/{condition}/mapped/job_link"
+    output:
+        "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    params:
+        locationOfAlignmentSet="tasks/pbalign.tasks.consolidate_alignments-0/combined.alignmentset.xml"
+    shell:
+        """
+        dataset create {output} {input.localJobLink}/{params.locationOfAlignmentSet}
+        """

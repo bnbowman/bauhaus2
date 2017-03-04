@@ -40,15 +40,28 @@ def parseArgs():
         "--pdb", action="store_true",
         help="Drop into debugger on exception")
     parser.add_argument(
-        "--noGrid", action="store_true",
-        help="Disable the qsub submission to the grid")
-    parser.add_argument(
         "--chunks", type=int, default=8,
         help="The number of chunks that should be used for scatter-gather compatible workflows (0 means disable chunking)")
+    # -- SMRTLink
+    parser.add_argument(
+        "--smrtlink-host", default="smrtlink-siv",
+        help=("The SMRTLink server we should use for secondary job submission.  "
+              "Must be compatible with the REST API used by pbservice in module smrtanalysis/mainline"))
+    parser.add_argument(
+        "--smrtlink-services-port", default=8081)
+    parser.add_argument(
+        "--no-smrtlink",
+        default=False,
+        action="store_true",
+        help="If applicable, don't use SMRTLink for secondary workflows, use bauhaus2 in-built alternatives")
+    # -- SGE
     parser.add_argument(
         "-q", "--sgeQueue",
         default="sequel-farm", type=str,
         help="Specify destination SGE queue for workflow tasks")
+    parser.add_argument(
+        "--noGrid", action="store_true",
+        help="Disable the qsub submission to the grid; run tasks on local host")
 
     subparsers = parser.add_subparsers(help="sub-command help", dest="subcommand")
     subparsers.required=True
