@@ -7,7 +7,7 @@ until we have a better plan.
 
 Generate mapping reports workflow, starting from subreads.
 
-  $ bauhaus2 --noGrid generate -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies.csv -o mapping-reports
+  $ bauhaus2 --no-smrtlink --noGrid generate -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies.csv -o mapping-reports
   Validation and input resolution succeeded.
   Generated runnable workflow to "mapping-reports"
 

@@ -56,7 +56,10 @@ class Workflow(object):
             shutil.copy(analysisScriptPath(analysisScript), destDir)
 
     def _bundleConfigJson(self, outputDir):
-        acc = {"bh2.workflow_name": self.WORKFLOW_NAME}
+        acc = { "bh2.workflow_name": self.WORKFLOW_NAME }
+        if not self.cliArgs.no_smrtlink:
+            acc["bh2.smrtlink.host"] = self.cliArgs.smrtlink_host
+            acc["bh2.smrtlink.services_port"] = self.cliArgs.smrtlink_services_port
         for snakeFile in self.plan():
             jsonPath = configJsonPath(snakeFile.replace(".snake", ".json"))
             jsonData = json.load(open(jsonPath))
@@ -69,7 +72,7 @@ class Workflow(object):
         if self.cliArgs.noGrid:
             clusterOptions=""
         else:
-            clusterOptions=('-j 999 --cluster-sync="qsub -cwd -q {sge_queue} -pe smp {{threads}} -sync y -e log/ -o log/" --latency-wait 60'
+            clusterOptions=('-j 128 --cluster-sync="qsub -cwd -q {sge_queue} -pe smp {{threads}} -sync y -e log/ -o log/" --latency-wait 60'
                             .format(sge_queue=self.cliArgs.sgeQueue))
         outputPath = op.join(outputDir, "run.sh")
         renderTemplate(runShScriptPath(), outputPath, cluster_options=clusterOptions)
@@ -130,14 +133,22 @@ def subreadsPlan(ct, args):
 
 def subreadsMappingPlan(ct, args):
     if ct.inputsAreMapped:
+        # Mapping already happened, link it.
         return [ "collect-mappings.snake",
                  "collect-references.snake" ]
+    elif not args.no_smrtlink:
+        # Use SMRTLink for mapping
+        return [ "map-subreads-smrtlink.snake",
+                 "collect-references.snake" ] + \
+                 subreadsPlan(ct, args)
     elif args.chunks > 0:
+        # Do our own mapping using scatter/gather
         return [ "map-subreads.snake",
                  "scatter-subreads.snake",
                  "collect-references.snake" ] + \
                 subreadsPlan(ct, args)
     else:
+        # Do our own mapping, naively
         return [ "map-subreads.snake",
                  "collect-references.snake" ] + \
                 subreadsPlan(ct, args)
@@ -226,7 +237,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                  "collect-references.snake",
                  "scatter-subreads.snake",
                  "collect-subreads.snake" ]
-                 
+
 class ConstantArrowWorkflow(Workflow):
     """
     Align subreads to the reference and run constant arrow model, generate csv file of errormode.
