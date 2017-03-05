@@ -43,9 +43,9 @@ class JobStatus(object):
 def extractJobId(launchLog):
     import re
     logContent = open(launchLog).read()
-    m = re.search('JOB SUMMARY:$\n^\s+id: (.*)', logContent, re.MULTILINE)
-    if m:
-        return m.group(1)
+    ms = list(re.finditer('JOB SUMMARY:$\n^\s+id: (.*)', logContent, re.MULTILINE))
+    if ms:
+        return ms[-1].group(1)
     else:
         raise ValueError("Cannot find job ID in pbservice.log")
 
@@ -80,7 +80,7 @@ rule map_subreads_smrtlink_poll:
         import time, sys, os
         jobId = extractJobId(input[0])
         jobRoot = extractJobPath(input[0])
-        os.symlink(smrtlinkJobRoot, output.localJobLink)
+        os.symlink(jobRoot, output.localJobLink)
         while True:
             shell("pbservice get-job %s --host {sl_host} --port {sl_port} > {output.pollFile}" % jobId)
             status = extractJobStatus(output.pollFile)
@@ -101,7 +101,8 @@ rule map_subreads_smrtlink_collect:
     input:
         flagFile="conditions/{condition}/mapped/job_complete",
         pollFile="conditions/{condition}/mapped/poll.log",
-        localJobLink="conditions/{condition}/mapped/job_link"
+        localJobLink="conditions/{condition}/mapped/job_link",
+        reference="conditions/{condition}/reference.fasta"
     output:
         "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:
