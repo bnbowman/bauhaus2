@@ -1,6 +1,6 @@
 
 mapped_chunks = \
-    { c : expand("conditions/{condition}/mapped_unrolledNoHQ_chunks/mapped.chunk{chunkNo}.alignmentset.xml",
+    { c : expand("conditions/{condition}/mapped_unrolledNoHQ/chunks/mapped.chunk{chunkNo}.alignmentset.xml",
                  condition =c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
       for c in ct.conditions }
 
@@ -18,9 +18,9 @@ rule map_chunked_unrolledNoHQ:
 
 rule map_chunked_unrolledNoHQ_one_chunk:
     input:
-        subreads="conditions/{condition}/subreads_chunks/input.chunk{chunkNo}.subreadset.xml",
+        subreads="conditions/{condition}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml",
         reference="conditions/{condition}/reference.fasta"
-    output: "conditions/{condition}/mapped_unrolledNoHQ_chunks/mapped.chunk{chunkNo}.alignmentset.xml"
+    output: "conditions/{condition}/mapped_unrolledNoHQ/chunks/mapped.chunk{chunkNo}.alignmentset.xml"
     threads: 8
     params:
         pbalignOpts="--noSplitSubreads --hitPolicy=leftmost",

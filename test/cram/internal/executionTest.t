@@ -20,102 +20,102 @@ Generate mapping reports workflow, starting from subreads.
   |-- conditions
   |   |-- MovieA
   |   |   |-- mapped
+  |   |   |   |-- chunks
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk0.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk1.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk2.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk3.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk4.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk5.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk6.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
+  |   |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |   `-- mapped.alignmentset.xml
-  |   |   |-- mapped_chunks
-  |   |   |   |-- mapped.chunk0.alignmentset.bam
-  |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk0.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk0.alignmentset.xml
-  |   |   |   |-- mapped.chunk1.alignmentset.bam
-  |   |   |   |-- mapped.chunk1.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk1.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk1.alignmentset.xml
-  |   |   |   |-- mapped.chunk2.alignmentset.bam
-  |   |   |   |-- mapped.chunk2.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk2.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk2.alignmentset.xml
-  |   |   |   |-- mapped.chunk3.alignmentset.bam
-  |   |   |   |-- mapped.chunk3.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk3.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk3.alignmentset.xml
-  |   |   |   |-- mapped.chunk4.alignmentset.bam
-  |   |   |   |-- mapped.chunk4.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk4.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk4.alignmentset.xml
-  |   |   |   |-- mapped.chunk5.alignmentset.bam
-  |   |   |   |-- mapped.chunk5.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk5.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk5.alignmentset.xml
-  |   |   |   |-- mapped.chunk6.alignmentset.bam
-  |   |   |   |-- mapped.chunk6.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk6.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk6.alignmentset.xml
-  |   |   |   |-- mapped.chunk7.alignmentset.bam
-  |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
-  |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- subreads
-  |   |   |   `-- input.subreadset.xml
-  |   |   `-- subreads_chunks
-  |   |       |-- input.chunk0.subreadset.xml
-  |   |       |-- input.chunk1.subreadset.xml
-  |   |       |-- input.chunk2.subreadset.xml
-  |   |       |-- input.chunk3.subreadset.xml
-  |   |       |-- input.chunk4.subreadset.xml
-  |   |       |-- input.chunk5.subreadset.xml
-  |   |       |-- input.chunk6.subreadset.xml
-  |   |       `-- input.chunk7.subreadset.xml
+  |   |   `-- subreads
+  |   |       |-- chunks
+  |   |       |   |-- input.chunk0.subreadset.xml
+  |   |       |   |-- input.chunk1.subreadset.xml
+  |   |       |   |-- input.chunk2.subreadset.xml
+  |   |       |   |-- input.chunk3.subreadset.xml
+  |   |       |   |-- input.chunk4.subreadset.xml
+  |   |       |   |-- input.chunk5.subreadset.xml
+  |   |       |   |-- input.chunk6.subreadset.xml
+  |   |       |   `-- input.chunk7.subreadset.xml
+  |   |       `-- input.subreadset.xml
   |   `-- MovieB
   |       |-- mapped
+  |       |   |-- chunks
+  |       |   |   |-- mapped.chunk0.alignmentset.bam
+  |       |   |   |-- mapped.chunk0.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk0.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk0.alignmentset.xml
+  |       |   |   |-- mapped.chunk1.alignmentset.bam
+  |       |   |   |-- mapped.chunk1.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk1.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk1.alignmentset.xml
+  |       |   |   |-- mapped.chunk2.alignmentset.bam
+  |       |   |   |-- mapped.chunk2.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk2.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk2.alignmentset.xml
+  |       |   |   |-- mapped.chunk3.alignmentset.bam
+  |       |   |   |-- mapped.chunk3.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk3.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk3.alignmentset.xml
+  |       |   |   |-- mapped.chunk4.alignmentset.bam
+  |       |   |   |-- mapped.chunk4.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk4.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk4.alignmentset.xml
+  |       |   |   |-- mapped.chunk5.alignmentset.bam
+  |       |   |   |-- mapped.chunk5.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk5.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk5.alignmentset.xml
+  |       |   |   |-- mapped.chunk6.alignmentset.bam
+  |       |   |   |-- mapped.chunk6.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk6.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk6.alignmentset.xml
+  |       |   |   |-- mapped.chunk7.alignmentset.bam
+  |       |   |   |-- mapped.chunk7.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk7.alignmentset.bam.pbi
+  |       |   |   `-- mapped.chunk7.alignmentset.xml
   |       |   `-- mapped.alignmentset.xml
-  |       |-- mapped_chunks
-  |       |   |-- mapped.chunk0.alignmentset.bam
-  |       |   |-- mapped.chunk0.alignmentset.bam.bai
-  |       |   |-- mapped.chunk0.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk0.alignmentset.xml
-  |       |   |-- mapped.chunk1.alignmentset.bam
-  |       |   |-- mapped.chunk1.alignmentset.bam.bai
-  |       |   |-- mapped.chunk1.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk1.alignmentset.xml
-  |       |   |-- mapped.chunk2.alignmentset.bam
-  |       |   |-- mapped.chunk2.alignmentset.bam.bai
-  |       |   |-- mapped.chunk2.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk2.alignmentset.xml
-  |       |   |-- mapped.chunk3.alignmentset.bam
-  |       |   |-- mapped.chunk3.alignmentset.bam.bai
-  |       |   |-- mapped.chunk3.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk3.alignmentset.xml
-  |       |   |-- mapped.chunk4.alignmentset.bam
-  |       |   |-- mapped.chunk4.alignmentset.bam.bai
-  |       |   |-- mapped.chunk4.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk4.alignmentset.xml
-  |       |   |-- mapped.chunk5.alignmentset.bam
-  |       |   |-- mapped.chunk5.alignmentset.bam.bai
-  |       |   |-- mapped.chunk5.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk5.alignmentset.xml
-  |       |   |-- mapped.chunk6.alignmentset.bam
-  |       |   |-- mapped.chunk6.alignmentset.bam.bai
-  |       |   |-- mapped.chunk6.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk6.alignmentset.xml
-  |       |   |-- mapped.chunk7.alignmentset.bam
-  |       |   |-- mapped.chunk7.alignmentset.bam.bai
-  |       |   |-- mapped.chunk7.alignmentset.bam.pbi
-  |       |   `-- mapped.chunk7.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- subreads
-  |       |   `-- input.subreadset.xml
-  |       `-- subreads_chunks
-  |           |-- input.chunk0.subreadset.xml
-  |           |-- input.chunk1.subreadset.xml
-  |           |-- input.chunk2.subreadset.xml
-  |           |-- input.chunk3.subreadset.xml
-  |           |-- input.chunk4.subreadset.xml
-  |           |-- input.chunk5.subreadset.xml
-  |           |-- input.chunk6.subreadset.xml
-  |           `-- input.chunk7.subreadset.xml
+  |       `-- subreads
+  |           |-- chunks
+  |           |   |-- input.chunk0.subreadset.xml
+  |           |   |-- input.chunk1.subreadset.xml
+  |           |   |-- input.chunk2.subreadset.xml
+  |           |   |-- input.chunk3.subreadset.xml
+  |           |   |-- input.chunk4.subreadset.xml
+  |           |   |-- input.chunk5.subreadset.xml
+  |           |   |-- input.chunk6.subreadset.xml
+  |           |   `-- input.chunk7.subreadset.xml
+  |           `-- input.subreadset.xml
   |-- config.json
   |-- log
   |-- prefix.sh

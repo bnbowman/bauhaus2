@@ -3,7 +3,7 @@
 # ccs-subreads.snake
 
 ccs_chunks = \
-    { c : expand("conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
+    { c : expand("conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
                  condition=c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
       for c in ct.conditions }
 
@@ -22,11 +22,11 @@ rule ccs_chunks:
 # -- Worker rules --
 
 rule ccs_one_chunk:
-    input:  "conditions/{condition}/subreads_chunks/input.chunk{chunkNo}.subreadset.xml"
+    input:  "conditions/{condition}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml"
     output:
-        dset="conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
-        bam= "conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.ccs.bam",
-        ccsDiagnosticsReport="conditions/{condition}/ccs_chunks/ccs.chunk{chunkNo}.report.txt"
+        dset="conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
+        bam= "conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.ccs.bam",
+        ccsDiagnosticsReport="conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.report.txt"
     params:
         modelPath="",
         modelSpec="",

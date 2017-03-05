@@ -3,7 +3,7 @@
 # map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
 
 mapped_chunks = \
-    { c : expand("conditions/{condition}/mapped_chunks/mapped.chunk{chunkNo}.alignmentset.xml",
+    { c : expand("conditions/{condition}/mapped/chunks/mapped.chunk{chunkNo}.alignmentset.xml",
                  condition =c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
       for c in ct.conditions }
 
@@ -23,9 +23,9 @@ rule map_chunked_subreads:
 
 rule map_chunked_subreads_one_chunk:
     input:
-        subreads="conditions/{condition}/subreads_chunks/input.chunk{chunkNo}.subreadset.xml",
+        subreads="conditions/{condition}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml",
         reference="conditions/{condition}/reference.fasta"
-    output: "conditions/{condition}/mapped_chunks/mapped.chunk{chunkNo}.alignmentset.xml"
+    output: "conditions/{condition}/mapped/chunks/mapped.chunk{chunkNo}.alignmentset.xml"
     threads: 8
     shell:
         """
