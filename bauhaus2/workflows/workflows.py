@@ -70,7 +70,7 @@ class Workflow(object):
 
     def _bundleRunSh(self, outputDir):
         if self.cliArgs.noGrid:
-            clusterOptions=""
+            clusterOptions="-j 4"
         else:
             clusterOptions=('-j 128 --cluster-sync="qsub -cwd -q {sge_queue} -pe smp {{threads}} -sync y -e log/ -o log/" --latency-wait 60'
                             .format(sge_queue=self.cliArgs.sgeQueue))
