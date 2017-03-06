@@ -252,7 +252,14 @@ makeAccuracyDensityPlots <- function(report, cd) {
   
   loginfo("Making Template Span Boxplot")
   tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_boxplot() + 
-    plTheme + clFillScale + themeTilt + 
+    plTheme + clFillScale + themeTilt + stat_summary(
+      fun.y = median,
+      colour = "black",
+      geom = "text",
+      show.legend = FALSE,
+      vjust = -0.8,
+      aes(label = round(..y..))
+    ) + 
     labs(y = "Template Span (tend - tstart)", title = "Template Span Boxplot", x = "Condition")
   report$ggsave(
     "tlen_box.png",

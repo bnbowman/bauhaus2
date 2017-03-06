@@ -128,9 +128,11 @@ makeCDFofaStartPlots <- function(report, cd) {
   )
   
   # Template Span by Reference
-  tp = ggplot(cd, aes(x = ref, y = tlen, fill = Condition)) + geom_boxplot(position = "dodge") + 
-    plTheme + themeTilt  + clFillScale + 
-    labs(x = "Reference", y = "Template Span", title = "Template Span by Reference")
+  tp <- ggplot(data = cd, aes(x = factor(ref), y = tlen, fill = factor(Condition))) +
+    geom_boxplot(position = position_dodge(width = 0.9)) 
+  a <- aggregate(tlen ~ ref + Condition , cd, function(i) round(median(i)))
+  tp <- tp +  geom_text(data = a, aes(label = tlen), 
+                 position = position_dodge(width = 0.9), vjust = -0.8)
   
   report$ggsave(
     "template_span_ref_box.png",
@@ -223,7 +225,14 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     caption = "Unrolled template Span Survival (Log-scale)"
   )
   
-  tp = ggplot(cd2, aes(x = Condition, y = UnrolledT, fill = Condition)) + geom_boxplot() +
+  tp = ggplot(cd2, aes(x = Condition, y = UnrolledT, fill = Condition)) + geom_boxplot() + stat_summary(
+    fun.y = median,
+    colour = "black",
+    geom = "text",
+    show.legend = FALSE,
+    vjust = -0.8,
+    aes(label = round(..y.., digits = 4))
+  ) +
     labs(y = "Unrolled template Span", title = "Unrolled template Span") + plTheme + themeTilt + clFillScale
   
   report$ggsave(
