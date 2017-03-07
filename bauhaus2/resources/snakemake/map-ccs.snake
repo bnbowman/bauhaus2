@@ -28,7 +28,7 @@ rule map_ccs:
     input: gathered_mapped_ccs_chunks.values()
 
 rule map_chunked_ccs:
-    input: flatten(mapped_ccs_chunks.values())
+    input: listConcat(mapped_ccs_chunks.values())
 
 
 # -- Worker rules

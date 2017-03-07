@@ -26,16 +26,11 @@ class Workflow(object):
         """
         outFname = op.join(outputDir, "workflow", "Snakefile")
         with open(outFname, "w") as outFile:
-            outFile.write(readFile(runtimeFilePath("stub.py")))
+            outFile.write(readFile(stubFilePath()))
             for sf in self.plan():
                 sfPath = snakemakeFilePath(sf)
                 contents = readFile(sfPath)
                 outFile.write(contents)
-
-    def _bundleSnakemakeStdlib(self, outputDir):
-        sfDestDir = op.join(outputDir, "workflow")
-        for p in snakemakeStdlibFiles():
-            shutil.copy(p, sfDestDir)
 
     def _bundleAnalysisScripts(self, outputDir):
         analysisScripts = self.R_SCRIPTS + self.PYTHON_SCRIPTS + self.MATLAB_SCRIPTS
@@ -86,7 +81,6 @@ class Workflow(object):
         if self.PYTHON_SCRIPTS: mkdirp(op.join(outputDir, "scripts/Python"))
         if self.MATLAB_SCRIPTS: mkdirp(op.join(outputDir, "scripts/MATLAB"))
         self._bundleSnakemakeFiles(outputDir)  # Output relevant snakemake files
-        self._bundleSnakemakeStdlib(outputDir) # Output our python stdlib for snakemake files
         self._bundleAnalysisScripts(outputDir) # Output relevant scripts
         self._bundleConfigJson(outputDir)      # Generate snakemake config.json
         self._bundleRunSh(outputDir)           # Generate driver "run" script

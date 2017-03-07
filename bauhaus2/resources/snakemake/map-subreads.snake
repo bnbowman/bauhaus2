@@ -17,7 +17,7 @@ rule map_subreads:
     input: gathered_mapped_chunks.values()
 
 rule map_chunked_subreads:
-    input: flatten(mapped_chunks.values())
+    input: listConcat(mapped_chunks.values())
 
 # -- Worker rules --
 
