@@ -12,7 +12,7 @@ rule map_unrolledNoHQ:
     input: gathered_mapped_chunks.values()
 
 rule map_chunked_unrolledNoHQ:
-    input: flatten(mapped_chunks.values())
+    input: listConcat(mapped_chunks.values())
 
 # --
 

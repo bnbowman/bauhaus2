@@ -22,11 +22,9 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   |       |-- PbiSampledPlots.R
   |       `-- ReadPlots.R
   `-- workflow
-      |-- Snakefile
-      |-- runtime.py
-      `-- stdlib.py
+      `-- Snakefile
   
-  3 directories, 13 files
+  3 directories, 11 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 

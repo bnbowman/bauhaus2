@@ -33,12 +33,14 @@ setup(
     entry_points = {
         "console_scripts" : [ "bauhaus2 = bauhaus2.main:main" ]
     },
-    package_data={ "bauhaus2.workflows.snakemake" : [ "*.snake" ],
-                   "bauhaus2.workflows.runtime"   : [ "*.py" ],
-                   "bauhaus2.workflows.config"    : [ "*.json" ],
-                   "bauhaus2.scripts"             : [ "run.sh", "prefix.sh" ],
-                   "bauhaus2.scripts.R"           : [ "*.R" ],
-                   "bauhaus2.scripts.Python"      : [ "*.py" ],
-                   "bauhaus2.scripts.MATLAB"      : [ "*.m" ] },
+    package_data={ "bauhaus2.resources.snakemake"         : [ "*.snake", "*.json" ],
+                   "bauhaus2.resources.snakemake_support" : [ "*.py" ],
+                   "bauhaus2.resources.scripts"           : [ "run.sh", "prefix.sh" ],
+                   "bauhaus2.resources.scripts.R"         : [ "*.R" ],
+                   "bauhaus2.resources.scripts.Python"    : [ "*.py" ],
+                   "bauhaus2.resources.scripts.MATLAB"    : [ "*.m" ],
+                   "bauhaus2.resources.extras"            : [ "*.xml", "*.json" ]
+    },
+
     install_requires=_get_local_requirements(REQUIREMENTS_TXT)
 )

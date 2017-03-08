@@ -225,11 +225,9 @@ Generate mapping reports workflow, starting from subreads.
   |       `-- ReadPlots.R
   |-- snakemake.log
   `-- workflow
-      |-- Snakefile
-      |-- runtime.py
-      `-- stdlib.py
+      `-- Snakefile
   
-  21 directories, 191 files
+  21 directories, 189 files
 
 
 

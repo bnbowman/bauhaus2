@@ -17,7 +17,7 @@ rule ccs:
     input: gathered_ccs_chunks.values()
 
 rule ccs_chunks:
-    input: flatten(ccs_chunks.values())
+    input: listConcat(ccs_chunks.values())
 
 # -- Worker rules --
 

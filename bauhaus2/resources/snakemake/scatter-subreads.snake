@@ -9,7 +9,7 @@ chunked_subreads = \
 # -- Target --
 
 rule chunk_subreads:
-    input: flatten(chunked_subreads.values())
+    input: listConcat(chunked_subreads.values())
 
 # -- Worker rules --
 
