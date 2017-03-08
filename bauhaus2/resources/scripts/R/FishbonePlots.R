@@ -172,7 +172,8 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     tp,
     id = "fishboneplot_insertion",
     title = "FishbonePlot - Insertion",
-    caption = "FishbonePlot - Insertion"
+    caption = "FishbonePlot - Insertion",
+    tags = c("fishbone", "hmm", "errormode", "insertion")
   )
   
   dfMM <- dfErr_ %>% filter(move == "Match" & obs != exp)
@@ -189,7 +190,8 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     tp,
     id = "fishboneplot_mismatch",
     title = "FishbonePlot - MisMatch",
-    caption = "FishbonePlot - MisMatch"
+    caption = "FishbonePlot - MisMatch",
+    tags = c("fishbone", "hmm", "errormode", "mismatch")
   )
   
   dfDel <- dfErr_ %>% filter(move == "Dark" | move == "Merge")
@@ -206,7 +208,8 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     tp,
     id = "fishboneplot_deletion",
     title = "FishbonePlot - Deletion",
-    caption = "FishbonePlot - Deletion"
+    caption = "FishbonePlot - Deletion",
+    tags = c("fishbone", "hmm", "errormode", "deletion")
   )
   
   dfErr

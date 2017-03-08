@@ -49,7 +49,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
     height = plotheight,
     id = "template_span_survival",
     title = "Template Span Survival",
-    caption = "Template Span Survival"
+    caption = "Template Span Survival",
+    tags = c("basic", "pbiplots", "survival", "template")
   )
   report$ggsave(
     "template_span_survival (Log-scale).png",
@@ -58,7 +59,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
     height = plotheight,
     id = "template_span_survival(log)",
     title = "Template Span Survival (Log-scale)",
-    caption = "Template Span Survival (Log-scale)"
+    caption = "Template Span Survival (Log-scale)",
+    tags = c("basic", "pbiplots", "survival", "template", "log")
   )
   
   loginfo("Making Aligned Read Length Survival Plots")
@@ -81,7 +83,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
     height = plotheight,
     id = "aligned_read_length_survival",
     title = "Aligned Read Length Survival",
-    caption = "Aligned Read Length Survival"
+    caption = "Aligned Read Length Survival",
+    tags = c("basic", "pbiplots", "survival", "read", "aligned")
   )
   report$ggsave(
     "aligned_read_length_survival (Log-scale).png",
@@ -90,7 +93,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
     height = plotheight,
     id = "aligned_read_length_survival(log)",
     title = "Aligned Read Length Survival (Log-scale)",
-    caption = "Aligned Read Length Survival (Log-scale)"
+    caption = "Aligned Read Length Survival (Log-scale)",
+    tags = c("basic", "pbiplots", "survival", "read", "log", "aligned")
   )
 }
 
@@ -105,7 +109,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     height = plotheight,
     id = "acc_density",
     title = "Accuracy Distribution",
-    caption = "Accuracy Distribution"
+    caption = "Accuracy Distribution",
+    tags = c("basic", "pbiplots", "density", "accuracy")
   )
   
   # loginfo("Making Accuracy Violin Plots")
@@ -167,7 +172,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     width = plotwidth,
     height = img_height,
     title = "Template Length v. Accuracy",
-    caption = "Template Length v. Accuracy"
+    caption = "Template Length v. Accuracy",
+    tags = c("basic", "pbiplots", "accuracy", "template")
   )
   
   tp = ggplot(cd2, aes(x = alen, y = Accuracy, color = Condition)) + geom_point(alpha = .2) +
@@ -187,7 +193,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     width = plotwidth,
     height = img_height,
     title = "Aligned Read Length v. Accuracy",
-    caption = "Aligned Read Length v. Accuracy"
+    caption = "Aligned Read Length v. Accuracy",
+    tags = c("basic", "pbiplots", "accuracy", "read", "aligned")
   )
   
   tp = ggplot(cd2, aes(x = qrlen, y = alen, color = Condition)) + geom_point(alpha = .2) +
@@ -205,7 +212,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     width = plotwidth,
     height = img_height,
     title = "Unaligned Read Length v. Aligned Read Length",
-    caption = "Unaligned Read Length v. Aligned Read Length"
+    caption = "Unaligned Read Length v. Aligned Read Length",
+    tags = c("basic", "pbiplots", "read", "aligned", "unaligned")
   )
   
   # loginfo("Making Template Span Violin Plot")
@@ -233,7 +241,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     width = plotwidth,
     height = plotheight,
     title = "Template Span Density Plot",
-    caption = "Template Span Density Plot"
+    caption = "Template Span Density Plot",
+    tags = c("basic", "pbiplots", "density", "template")
   )
   
   loginfo("Making Aligned Read Length Density Plot")
@@ -247,7 +256,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     width = plotwidth,
     height = plotheight,
     title = "Aligned Read Length Density Plot",
-    caption = "Aligned Read Length Density Plot"
+    caption = "Aligned Read Length Density Plot",
+    tags = c("basic", "pbiplots", "density", "read", "aligned")
   )
   
   loginfo("Making Template Span Boxplot")
@@ -268,7 +278,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     width = plotwidth,
     height = plotheight,
     title = "Template Span Boxplot",
-    caption = "Template Span Boxplot"
+    caption = "Template Span Boxplot",
+    tags = c("basic", "pbiplots", "boxplot", "template")
   )
 }
 
@@ -328,7 +339,8 @@ makeErateBoxPlots <- function(report, cd) {
       height = plotheight,
       id = paste("etype_", "_", vname, "_boxplot", sep = ""),
       title = paste(label, "Rate - Boxplot"),
-      caption = paste(label, "Rate - Boxplot")
+      caption = paste(label, "Rate - Boxplot"),
+      tags = c("basic", "pbiplots", "boxplot", label)
     )
   }
   pv = lapply(1:3, mkErateBox)
@@ -354,7 +366,8 @@ makeBasesDistribution <- function(report, cd) {
     height = plotheight,
     id = "base_count_bar",
     title = "Total Bases",
-    caption = "Total Bases"
+    caption = "Total Bases",
+    tags = c("basic", "pbiplots", "bar", "base")
   )
 }
 
@@ -370,7 +383,8 @@ makeYieldHistogram <- function(report, cd) {
     height = plotheight,
     id = "nreads_histogram",
     title = "nReads Histogram",
-    caption = "nReads Histogram"
+    caption = "nReads Histogram",
+    tags = c("basic", "pbiplots", "histogram", "nreads")
   )
 }
 

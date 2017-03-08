@@ -45,7 +45,8 @@ makeGapSizePlots <- function(report, cd) {
     tp,
     id = "deletion_norm",
     title = "Deletion Sizes",
-    caption = "Deletion Sizes"
+    caption = "Deletion Sizes",
+    tags = c("readplots", "deletion")
   )
   
   loginfo("Plot log Deletion Sizes")
@@ -54,7 +55,8 @@ makeGapSizePlots <- function(report, cd) {
     tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
     id = "deletion_size_log",
     title = "Deletion Sizes (Log)",
-    caption = "Deletion Sizes (Log)"
+    caption = "Deletion Sizes (Log)",
+    tags = c("readplots", "deletion", "log")
   )
   
   
@@ -68,7 +70,8 @@ makeGapSizePlots <- function(report, cd) {
     tp,
     id = "insert_size_norm",
     title = "Insertion Sizes",
-    caption = "Insertion Sizes"
+    caption = "Insertion Sizes",
+    tags = c("readplots", "insertion")
   )
   
   loginfo("Plot log insertion sizes")
@@ -77,7 +80,8 @@ makeGapSizePlots <- function(report, cd) {
     tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
     id = "insert_size_log",
     title = "Insertion Sizes (Log)",
-    caption = "Insertion Sizes (Log)"
+    caption = "Insertion Sizes (Log)",
+    tags = c("readplots", "insertion", "log")
   )
 }
 
@@ -102,7 +106,8 @@ makeMismatchPlots <- function(report, cd) {
     tp,
     id = "mismatch_rate",
     title = "Mismatch Rates",
-    caption = "Mismatch Rates"
+    caption = "Mismatch Rates",
+    tags = c("readplots", "mismatch")
   )
 }
 
@@ -124,7 +129,8 @@ makeIndelPlots <- function(report, cd) {
     tp,
     id = "deletion_rate",
     title = "Deletion Rates",
-    caption = "Deletion Rates"
+    caption = "Deletion Rates",
+    tags = c("readplots", "deletion")
   )
   
   loginfo("Make Insertion Rates Plot")
@@ -136,7 +142,8 @@ makeIndelPlots <- function(report, cd) {
     tp,
     id = "insertion_rate",
     title = "Insertion Rates",
-    caption = "Insertion Rates"
+    caption = "Insertion Rates",
+    tags = c("readplots", "insertion")
   )
 }
 
@@ -155,7 +162,8 @@ makeClippingPlot <- function(report, cd) {
     tp,
     id = "clip_rate",
     title = "Clipping Rates",
-    caption = "Clipping Rates"
+    caption = "Clipping Rates",
+    tags = c("readplots", "clipping")
   )
 }
 
