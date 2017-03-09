@@ -67,9 +67,7 @@ as follows:
   │       ├── PbiPlots.R
   │       └── PbiSampledPlots.R
   └── workflow
-      ├── Snakefile
-      ├── runtime.py
-      └── stdlib.py
+      └── Snakefile
 
   3 directories, 9 files
   ```
@@ -142,4 +140,4 @@ From the user's perspective, the chief differences from the original
 
 [condition-table-spec]: ./ConditionTableSpec.md
 [snakemake]:  https://snakemake.readthedocs.io/en/stable/
-[contribution-tutorial]: ./ContributionTutorial.md
+[contribution-tutorial]: ./WorkflowAuthorTutorial.md
