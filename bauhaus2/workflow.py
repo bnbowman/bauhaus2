@@ -11,6 +11,7 @@ class Workflow(object):
     R_SCRIPTS            = ()
     PYTHON_SCRIPTS       = ()
     MATLAB_SCRIPTS       = ()
+    SMRTPIPE_PRESETS     = ()
 
     @classmethod
     def conditionTableType(cls):
@@ -68,6 +69,12 @@ class Workflow(object):
         renderTemplate(prefixShScriptPath(), outputPath)
         chmodPlusX(outputPath)
 
+    def _bundleSmrtpipePresets(self, outputDir):
+        destDir = op.join(outputDir, "extras")
+        mkdirp(destDir)
+        for presetName in self.SMRTPIPE_PRESETS:
+            shutil.copy(smrtpipePresetXmlPath(presetName), destDir)
+
     def plan(self):
         raise NotImplementedError
 
@@ -85,6 +92,9 @@ class Workflow(object):
         self._bundleConfigJson(outputDir)      # Generate snakemake config.json
         self._bundleRunSh(outputDir)           # Generate driver "run" script
         self._bundlePrefixSh(outputDir)        # Generate task prefix shell code
+
+        if not self.cliArgs.no_smrtlink:
+            self._bundleSmrtpipePresets(outputDir)
 
     def __init__(self, ct, args):
         self.conditionTable = ct
