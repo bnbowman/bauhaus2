@@ -16,6 +16,14 @@ rule map_subreads:
 sl_host=config["bh2.smrtlink.host"]
 sl_port=config["bh2.smrtlink.services_port"]
 
+
+# -- Hack: we need to workaround a problem with SMRTLink where jobs can't
+# -- be submitted simultaneously.  To achieve these, we run all submits
+# -- on the head node (making this a localrule), and then we use a
+# -- semaphore to serialize executions of `pbservice run-pipeline`
+
+localrules: map_subreads_smrtlink_launch
+
 rule map_subreads_smrtlink_launch:
     input:
         subreadSet="conditions/{condition}/subreads/input.subreadset.xml",
@@ -26,7 +34,10 @@ rule map_subreads_smrtlink_launch:
         presetXmlFile="extras/pbsmrtpipe-mappings-preset.xml"
     shell:
         """
+        module add parallel
+
         # Call pbservice; bail out on failure
+        sem --no-notice --id smrtlink-siv-semaphore -j1 --fg \
         pbservice run-pipeline pbsmrtpipe.pipelines.sa3_ds_align \
           --host {sl_host} --port {sl_port} \
           -e {input.subreadSet} \
