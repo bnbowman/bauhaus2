@@ -24,12 +24,17 @@ myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 
 # Define a basic addition to all plots
-plTheme <- theme_bw(base_size = 18)
+plTheme <- theme_bw(base_size = 14)
 clScale <- scale_colour_brewer(palette = "Set1")
 clFillScale <- scale_fill_brewer(palette = "Set1")
-themeTilt = theme(axis.text.x = element_text(size = 11, angle = 45, hjust = 1))
+themeTilt = theme(axis.text.x = element_text(angle = 0, hjust = 1))
+# themeTilt = theme(panel.border = element_blank(),
+#                   panel.grid.minor = element_blank(),
+#                   panel.spacing = unit(4/3, "lines"),
+#                   strip.background = element_blank(),
+#                   strip.text.y = element_text(angle = 0))
 pd <- position_dodge(0.2)
-dpi <- 72
+dpi <- 160
 
 makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   loginfo("making fishbone plots.")
@@ -170,6 +175,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   report$ggsave(
     "fishboneplot_insertion.png",
     tp,
+    width = 2000/dpi, height = 1200/dpi, units = "in",
     id = "fishboneplot_insertion",
     title = "FishbonePlot - Insertion",
     caption = "FishbonePlot - Insertion",
@@ -188,6 +194,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   report$ggsave(
     "fishboneplot_mismatch.png",
     tp,
+    width = 2000/dpi, height = 1200/dpi, units = "in",
     id = "fishboneplot_mismatch",
     title = "FishbonePlot - MisMatch",
     caption = "FishbonePlot - MisMatch",
@@ -206,6 +213,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   report$ggsave(
     "fishboneplot_deletion.png",
     tp,
+    width = 1000/dpi, height = 1200/dpi, units = "in",
     id = "fishboneplot_deletion",
     title = "FishbonePlot - Deletion",
     caption = "FishbonePlot - Deletion",
