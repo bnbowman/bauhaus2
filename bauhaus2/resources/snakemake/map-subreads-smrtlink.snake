@@ -23,7 +23,7 @@ rule map_subreads_smrtlink_launch:
     output:
         pbserviceInfo="conditions/{condition}/mapped/pbservice.log"
     params:
-        presetXmlFile="/home/UNIXHOME/dalexander/Projects/ITG/pbservice/settings.xml"
+        presetXmlFile="extras/pbsmrtpipe-mappings-preset.xml"
     shell:
         """
         # Call pbservice; bail out on failure

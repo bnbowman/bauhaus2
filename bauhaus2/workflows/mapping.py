@@ -47,6 +47,7 @@ class MappingWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "Mapping"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
+    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
 
     def plan(self):
         return subreadsMappingPlan(self.conditionTable, self.cliArgs)
@@ -58,6 +59,7 @@ class MappingReportsWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "MappingReports"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
+    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
     R_SCRIPTS            = ( "R/PbiSampledPlots.R",
                              "R/PbiPlots.R",
                              "R/LibDiagnosticPlots.R",
