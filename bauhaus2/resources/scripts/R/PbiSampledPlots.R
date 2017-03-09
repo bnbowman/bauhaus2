@@ -86,6 +86,8 @@ makeSamplingPlots <-
       grouped_df(alnsTotal, vars = groups(tbl))
     }
     cd2 = cd %>% group_by(Condition, framePerSecond) %>% sample_nigel(size = sampleSize) %>% do(load_alns(.)) %>% ungroup()
+    cd2$ipd = cd2$ipd / cd2$framePerSecond
+    cd2$pw = cd2$pw / cd2$framePerSecond
     cd2$AccuBases <- "Inaccurate"
     cd2$AccuBases[cd2$read == cd2$ref] = "Accurate"
     cd2$DC <- cd2$ipd + cd2$pw
@@ -414,7 +416,7 @@ makeSamplingPlots <-
     }
     
     # Polymerization Rate measured by template bases per second
-    tp = ggplot(cd4, aes(x = Condition, y = templateSpan / (sumpw + sumipd) * framePerSecond, fill = Condition)) + geom_boxplot(position = "dodge") + stat_summary(
+    tp = ggplot(cd4, aes(x = Condition, y = templateSpan / (sumpw + sumipd), fill = Condition)) + geom_boxplot(position = "dodge") + stat_summary(
       fun.y = median,
       colour = "black",
       geom = "text",
@@ -437,7 +439,7 @@ makeSamplingPlots <-
     # Polymerization Rate by Reference
     tp <- ggplot(data = cd3, aes(x = refName, y = PolRate, fill = Condition)) +
       geom_boxplot(position = position_dodge(width = 0.9)) 
-    a <- aggregate(PolRate ~ refName + Condition , cd3, function(i) round(median(i)))
+    a <- aggregate(PolRate ~ refName + Condition , cd3, function(i) round(median(i), digits = 4))
     tp <- tp +  geom_text(data = a, aes(label = PolRate), 
                           position = position_dodge(width = 0.9), vjust = -0.8) + 
       plTheme + themeTilt  + clFillScale + 
@@ -453,10 +455,10 @@ makeSamplingPlots <-
     )
     
     # PW by Template Base
-    tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) + xlim(0, 50) +
+    tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) +
       labs(
         y = "frequency",
-        x = "frames",
+        x = "seconds",
         title = paste("Pulse Width\n(From ", sampleSize, "Sampled Alignments)")
       ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref)
     report$ggsave(
@@ -468,10 +470,10 @@ makeSamplingPlots <-
       tags = c("sampled", "density", "pw")
     )
     
-    tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() + xlim(0, 50) +
+    tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() +
       labs(
         y = "CDF",
-        x = "frames",
+        x = "seconds",
         title = paste("Pulse Width_CDF\n(From ", sampleSize, "Sampled Alignments)")
       ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref)
     report$ggsave(
@@ -497,7 +499,7 @@ makeSamplingPlots <-
     # }
     
     # IPD Plots
-    maxIPD = 100
+    maxIPD = 1.25
     # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
     #   labs(
     #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
@@ -538,14 +540,6 @@ makeSamplingPlots <-
         y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
         title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
       ) +
-      stat_summary(
-        fun.y = median,
-        colour = "black",
-        geom = "text",
-        show.legend = FALSE,
-        vjust = -0.8,
-        aes(label = round(..y.., digits = 3))
-      ) +
       plTheme + themeTilt + clFillScale + facet_wrap( ~ ref)
     report$ggsave(
       "ipddistbybase_boxplot.png",
@@ -557,7 +551,7 @@ makeSamplingPlots <-
     )
     
     # PW Plots
-    maxPW = 20
+    maxPW = 0.25
     cd2$Insertion = cd2$ref == "-"
     # tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_violin() +
     #   labs(
@@ -584,7 +578,7 @@ makeSamplingPlots <-
     
     tp <- ggplot(data = cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) +
       geom_boxplot(position = position_dodge(width = 0.9)) 
-    a <- aggregate(pw ~ Condition + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i)))
+    a <- aggregate(pw ~ Condition + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
     tp2 <- tp +  geom_text(data = a, aes(label = pw), 
                           position = position_dodge(width = 0.9), vjust = -0.8) +
       labs(
@@ -602,7 +596,7 @@ makeSamplingPlots <-
     )
     
     tp3 = tp + facet_wrap( ~ ref)
-    b <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i)))
+    b <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
     tp4 <- tp3 +  geom_text(data = b, aes(label = pw), 
                            position = position_dodge(width = 0.9), vjust = -0.8) +
       labs(
@@ -678,7 +672,7 @@ makeSamplingPlots <-
     
     # Global/Local PolRate plot
     tp = ggplot(cd3, aes(
-      x = PolRate * (medianpw + medianipd) / log(2) / 6400,
+      x = PolRate * (medianpw + medianipd) / log(2),
       colour = Condition
     )) + geom_density(alpha = .5) + xlim(0, 2) +
       labs(
