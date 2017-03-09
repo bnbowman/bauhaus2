@@ -42,21 +42,37 @@ the workflow class:
 
   1. Declare its name using the `WORKFLOW_NAME` class variable;
 
-  2. Declare the *condition table class* using the `CONDITION_TABLE_TYPE` class
-     variable---this tells `bauhaus2` how to validate the condition table
-     provided by users of this workflow.  This is important because different
-     workflows might have different requirements on the table, for example specific additional columns might be required;
+  2. Declare the *condition table class* using the
+     `CONDITION_TABLE_TYPE` class variable---this tells `bauhaus2` how
+     to validate the condition table provided by users of this
+     workflow.  This is important because different workflows might
+     have different requirements on the table, for example specific
+     additional columns might be required;
 
-  3. Declare the files (plotting scripts, `pbsmrtpipe` XML presets) that we
-     you will need `bauhaus2` to bundle into the workflow directory, using the class variables `R_SCRIPTS`, `PYTHON_SCRIPTS`, `SMRTPIPE_PRESETS`, etc.
+  3. Declare the files (plotting scripts, `pbsmrtpipe` XML presets)
+     that we you will need `bauhaus2` to bundle into the workflow
+     directory, using the class variables `R_SCRIPTS`,
+     `PYTHON_SCRIPTS`, `SMRTPIPE_PRESETS`, etc.
 
-  4. Implement the `plan()` method for your workflow class.  The `plan()` method
-     should return a list of Snakemake filenames, referring to files `bauhaus2/resources/snakemake`.  These files are "pieces" which are 
-     concatenated by `bauhaus` to form a whole workflow.
+  4. Implement the `plan()` method for your workflow class.  The
+     `plan()` method should return a list of Snakemake filenames,
+     referring to files `bauhaus2/resources/snakemake`.  These files
+     are "pieces" which are concatenated by `bauhaus` to form a whole
+     workflow.
 
-     A monolithic workflow could just return a single-entry list for its `plan()`, but more typically we will want to leverage other snakemake files to provide mapping, CCS, etc.  Thus, we more generally will list a few snakemake files.  Note that the *first entry in `plan()` determines the "target rule"*, so you should list the "end goal" first.
+     A monolithic workflow could just return a single-entry list for
+     its `plan()`, but more typically we will want to leverage other
+     snakemake files to provide mapping, CCS, etc.  Thus, we more
+     generally will list a few snakemake files.  Note that the *first
+     entry in `plan()` determines the "target rule"*, so you should
+     list the "end goal" first.
 
-     Also Note that the `plan()` method can construct the plan dynamically, after looking at the condition table and the command-line arguments to `bauhaus2`.  This is powerful---it enables us to be smart and skip mapping if we see that the inputs are already mapped, for example; or, it can let us decide whether to use SMRTLink for mapping (vs calling pbalign directly).
+     Also note that the `plan()` method can construct the plan
+     dynamically, after looking at the condition table and the
+     command-line arguments to `bauhaus2`.  This is powerful---it
+     enables us to be smart and skip mapping if we see that the inputs
+     are already mapped, for example; or, it can let us decide whether
+     to use SMRTLink for mapping (vs calling pbalign directly).
 
 ### Step 3: Add your snakemake files, scripts, and other files
 
@@ -75,7 +91,7 @@ refer to the other workflows for examples.
 
 ### Step 6: Pull request
 
-Please submit a pull request for your workflow to be included.  Once the PR is accepted and merged, it will be automatically deployed to the cluster and will be available to Zia. 
+Please submit a pull request for your workflow to be included.  Once the PR is accepted and merged, it will be automatically deployed to the cluster and will be available to Zia.
 
 ### Step 6: Getting help!
 
