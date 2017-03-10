@@ -10,6 +10,7 @@ class ConstantArrowWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "ConstantArrow"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
+    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
     R_SCRIPTS            = ( "R/constant_arrow.R",
                              "R/FishbonePlots.R",
                              "R/Bauhaus2.R" )
