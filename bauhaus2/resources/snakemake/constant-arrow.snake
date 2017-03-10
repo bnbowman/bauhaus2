@@ -1,7 +1,7 @@
 
 # ---------------------------------------------------------------------------------------------------
 # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
-# and make Fishbone plots using teh csv file.
+# and make Fishbone plots using the csv file.
 
 mapped_subreads = \
     { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)

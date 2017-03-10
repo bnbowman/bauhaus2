@@ -33,7 +33,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
-  # and make Fishbone plots using teh csv file.
+  # and make Fishbone plots using the csv file.
   # map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
   # scatter-subreads.snake: split subreadsets into smaller chunks for analysis
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
@@ -49,7 +49,7 @@ Now let's use SMRTLink for mapping.  The plan looks different.
   # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
-  # and make Fishbone plots using teh csv file.
+  # and make Fishbone plots using the csv file.
   # map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
   # collect-subreads.snake: hotlink "remote" subreadsets into the workflow directory
@@ -67,6 +67,6 @@ of a mapping:
   # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
-  # and make Fishbone plots using teh csv file.
+  # and make Fishbone plots using the csv file.
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
