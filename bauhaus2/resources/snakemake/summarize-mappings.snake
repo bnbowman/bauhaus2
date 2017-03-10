@@ -15,7 +15,7 @@ rule summarize_mappings:
         pbiSampledPlots="reports/PbiSampledPlots/report.json",
         libDiagnosticPlots="reports/LibDiagnosticPlots/report.json",
         readPlots="reports/ReadPlots/report.json",
-        constantArrowFishbonePlots="reports/ConstantArrowFishbonePlots/report.json"
+        constantArrowPlots="reports/ConstantArrowFishbonePlots/report.json"
 
 rule PbiPlots:
     input: mapped_subreads.values()
@@ -47,12 +47,4 @@ rule ReadPlots:
     shell:
         """
         Rscript --vanilla scripts/R/ReadPlots.R
-        """
-        
-rule ConstantArrowFishbonePlots:
-    input: mapped_subreads.values()
-    output: "reports/ConstantArrowFishbonePlots/report.json"
-    shell:
-        """
-        Rscript --vanilla scripts/R/ConstantArrowFishbonePlots.R
         """

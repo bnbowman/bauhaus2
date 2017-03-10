@@ -16,21 +16,24 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
-  |       |-- ConstantArrowFishbonePlots.R
+  |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
-  |       `-- ReadPlots.R
+  |       |-- ReadPlots.R
+  |       `-- constant_arrow.R
   `-- workflow
       `-- Snakefile
   
-  3 directories, 11 files
+  3 directories, 12 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
   $ grep -e '^#' mapping-reports/workflow/Snakefile  | grep -v '\-\-'
   # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
+  # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
+  # and make Fishbone plots using the csv file.
   # map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
   # scatter-subreads.snake: split subreadsets into smaller chunks for analysis
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
@@ -45,6 +48,8 @@ Now let's use SMRTLink for mapping.  The plan looks different.
   $ grep -e '^#' mapping-reports2/workflow/Snakefile  | grep -v '\-\-'
   # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
+  # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
+  # and make Fishbone plots using the csv file.
   # map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
   # collect-subreads.snake: hotlink "remote" subreadsets into the workflow directory
@@ -61,5 +66,7 @@ of a mapping:
   $ grep -e '^#' mapping-reports3/workflow/Snakefile  | grep -v '\-\-'
   # stub.py : set up runtime/stdlib and initialize env for the snakemake workflow
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
+  # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
+  # and make Fishbone plots using the csv file.
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory

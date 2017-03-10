@@ -64,9 +64,10 @@ class MappingReportsWorkflow(Workflow):
                              "R/PbiPlots.R",
                              "R/LibDiagnosticPlots.R",
                              "R/ReadPlots.R",
-                             "R/ConstantArrowFishbonePlots.R",
+                             "R/constant_arrow.R",
+                             "R/FishbonePlots.R",
                              "R/Bauhaus2.R" )
 
     def plan(self):
-        return ["summarize-mappings.snake"] + \
+        return ["summarize-mappings.snake", "constant-arrow.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)
