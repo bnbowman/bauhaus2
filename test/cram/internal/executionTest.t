@@ -122,11 +122,11 @@ Generate mapping reports workflow, starting from subreads.
   |-- reports
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
-  |   |   |-- errormode_MovieA.csv
-  |   |   |-- errormode_MovieB.csv
+  |   |   |-- errormode.csv
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_insertion.png
   |   |   |-- fishboneplot_mismatch.png
+  |   |   |-- modelReport.json
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   |-- LibDiagnosticPlots
@@ -218,16 +218,17 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
-  |       |-- ConstantArrowFishbonePlots.R
+  |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
-  |       `-- ReadPlots.R
+  |       |-- ReadPlots.R
+  |       `-- constant_arrow.R
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
   
-  21 directories, 189 files
+  21 directories, 190 files
 
 
 
