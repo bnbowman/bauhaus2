@@ -19,7 +19,7 @@ rule evaluate_hqrf:
     output: "reports/HQRF/report.json"
     shell:
         """
-        #module load primary-toolkit
-        source /home/UNIXHOME/mdsmith/dev_sandboxes/03PrimaryValidator_c7/env/setup-env.sh
+        module use /pbi/dept/primary/modulefiles
+        module load primary-toolkit
         hqrfVgt -s {input.subreads} -a {input.alns} -o {output}
         """
