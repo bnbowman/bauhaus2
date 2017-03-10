@@ -19,4 +19,4 @@ class UnrolledNoHQMappingWorkflow(Workflow):
         return [ "map-unrolledNoHQ.snake",
                  "collect-references.snake",
                  "scatter-subreads.snake" ] + \
-                 subreadsPlan()
+                 subreadsPlan(self.conditionTable, self.cliArgs)
