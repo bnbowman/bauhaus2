@@ -20,6 +20,8 @@ source(file.path(myDir, "Bauhaus2.R"))
 #' Define a basic addition to all plots
 plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
 themeTilt = theme(axis.text.x = element_text(angle = 90, hjust = 1))
+plotwidth = 7.2
+plotheight = 4.2
 
 # These are "global" and do change state at certain points ( <<- is called later on)
 clScale <- scale_colour_brewer(palette = "Set1")
@@ -43,6 +45,8 @@ makeGapSizePlots <- function(report, cd) {
   report$ggsave(
     "deletion_norm.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "deletion_norm",
     title = "Deletion Sizes",
     caption = "Deletion Sizes",
@@ -53,6 +57,8 @@ makeGapSizePlots <- function(report, cd) {
   report$ggsave(
     "deletion_size_log.png",
     tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
+    width = plotwidth,
+    height = plotheight,
     id = "deletion_size_log",
     title = "Deletion Sizes (Log)",
     caption = "Deletion Sizes (Log)",
@@ -68,6 +74,8 @@ makeGapSizePlots <- function(report, cd) {
   report$ggsave(
     "insert_size_norm.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "insert_size_norm",
     title = "Insertion Sizes",
     caption = "Insertion Sizes",
@@ -78,6 +86,8 @@ makeGapSizePlots <- function(report, cd) {
   report$ggsave(
     "insert_size_log.png",
     tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
+    width = plotwidth,
+    height = plotheight,
     id = "insert_size_log",
     title = "Insertion Sizes (Log)",
     caption = "Insertion Sizes (Log)",
@@ -104,6 +114,8 @@ makeMismatchPlots <- function(report, cd) {
   report$ggsave(
     "mismatch_rate.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "mismatch_rate",
     title = "Mismatch Rates",
     caption = "Mismatch Rates",
@@ -127,6 +139,8 @@ makeIndelPlots <- function(report, cd) {
   report$ggsave(
     "deletion_rate.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "deletion_rate",
     title = "Deletion Rates",
     caption = "Deletion Rates",
@@ -140,6 +154,8 @@ makeIndelPlots <- function(report, cd) {
   report$ggsave(
     "insertion_rate.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "insertion_rate",
     title = "Insertion Rates",
     caption = "Insertion Rates",
@@ -160,6 +176,8 @@ makeClippingPlot <- function(report, cd) {
   report$ggsave(
     "clip_rate.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "clip_rate",
     title = "Clipping Rates",
     caption = "Clipping Rates",

@@ -23,6 +23,8 @@ plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.
 clScale <- scale_colour_brewer(palette = "Set1")
 clFillScale <- scale_fill_brewer(palette = "Set1")
 themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
+plotwidth = 7.2
+plotheight = 4.2
 
 ### Custom sampler function to sample min(data, sample) which can't be done with dplyr
 ### it's a modified copy of sample_n.grouped_df
@@ -209,6 +211,8 @@ makeSamplingPlots <-
       report$ggsave(
         "active_zmw_normalized.png",
         tp,
+        width = plotwidth,
+        height = plotheight,
         id = "active_zmw_normalized.png",
         title = "Active ZMW - Normalized",
         caption = "Active ZMW - Normalized",
@@ -239,6 +243,8 @@ makeSamplingPlots <-
         report$ggsave(
           paste("pkMid_Box_", variableTitle[i], ".png", sep = ""),
           tp,
+          width = plotwidth,
+          height = plotheight,
           id = paste("pkMid_boxplot_", variableTitle[i], sep = ""),
           title = paste("pkMid Box Plot - ", variableTitle[i], sep = ""),
           caption = paste(
@@ -273,6 +279,8 @@ makeSamplingPlots <-
         report$ggsave(
           paste("pkMid_Dens_", variableTitle[i], ".png", sep = ""),
           tp,
+          width = plotwidth,
+          height = plotheight,
           id = paste("pkMid_densityplot_", variableTitle[i], sep = ""),
           title = paste("pkMid Density Plot - ", variableTitle[i], sep = ""),
           caption = paste(
@@ -290,6 +298,8 @@ makeSamplingPlots <-
         report$ggsave(
           paste("pkMid_CDF_", variableTitle[i], ".png", sep = ""),
           tp,
+          width = plotwidth,
+          height = plotheight,
           id = paste("pkMid_cdf_", variableTitle[i], sep = ""),
           title = paste("pkMid CDF - ", variableTitle[i], sep = ""),
           caption = paste("Distribution of pkMid for ", variableTitle[i],  " (CDF)", sep = ""),
@@ -302,6 +312,8 @@ makeSamplingPlots <-
         report$ggsave(
           paste("pkMid_Hist_", variableTitle[i], ".png", sep = ""),
           tp,
+          width = plotwidth,
+          height = plotheight,
           id = paste("pkMid_histogram_", variableTitle[i], sep = ""),
           title = paste("pkMid Histogram - ", variableTitle[i], sep = ""),
           caption = paste(
@@ -322,6 +334,8 @@ makeSamplingPlots <-
       report$ggsave(
         "pkMid_Accu_vs_Inaccu_Dens.png",
         tp,
+        width = plotwidth,
+        height = plotheight,
         id = "pkMid_Accu_Inaccu_densityplot",
         title = "pkMid Density Plot - Accurate vs Inaccurate bases",
         caption = "Distribution of pkMid for Accurate vs inaccurate bases (Density plot)",
@@ -351,6 +365,8 @@ makeSamplingPlots <-
       report$ggsave(
         "pw_mean_by_time.png",
         tp,
+        width = plotwidth,
+        height = plotheight,
         id = "pw_mean_by_time",
         title = "Mean Pulse Width by Time",
         caption = "Mean Pulse Width by Time",
@@ -370,6 +386,8 @@ makeSamplingPlots <-
       report$ggsave(
         "pkmid_mean_by_time.png",
         tp,
+        width = plotwidth,
+        height = plotheight,
         id = "pkmid_mean_by_time",
         title = "Mean Pkmid by Time",
         caption = "Mean Pkmid by Time",
@@ -389,6 +407,8 @@ makeSamplingPlots <-
       report$ggsave(
         "pkmid_median_by_time.png",
         tp,
+        width = plotwidth,
+        height = plotheight,
         id = "pkmid_median_by_time",
         title = "Median Pkmid by Time",
         caption = "Median Pkmid by Time",
@@ -408,6 +428,8 @@ makeSamplingPlots <-
       report$ggsave(
         "pkmid_median_by_time_normalized.png",
         tp,
+        width = plotwidth,
+        height = plotheight,
         id = "pkmid_median_by_time_normalized",
         title = "Median Pkmid by Time (Normalized)",
         caption = "Median Pkmid by Time (Normalized)",
@@ -430,6 +452,8 @@ makeSamplingPlots <-
     report$ggsave(
       "polrate_template_per_second.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "polrate_template_per_second",
       title = "Polymerization Rate (template bases per second)",
       caption = "Polymerization Rate (template bases per second)",
@@ -448,6 +472,8 @@ makeSamplingPlots <-
     report$ggsave(
       "polrate_ref_box.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "polrate_ref_box",
       title = "Polymerization Rate by Reference",
       caption = "Polymerization Rate by Reference",
@@ -464,6 +490,8 @@ makeSamplingPlots <-
     report$ggsave(
       "pw_by_template.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "pw_by_template.png",
       title = "Pulse Width by Template Base",
       caption = "Pulse Width by Template Base",
@@ -479,6 +507,8 @@ makeSamplingPlots <-
     report$ggsave(
       "pw_by_template_cdf.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "pw_by_template_cdf.png",
       title = "Pulse Width by Template Base (CDF)",
       caption = "Pulse Width by Template Base (CDF)",
@@ -544,6 +574,8 @@ makeSamplingPlots <-
     report$ggsave(
       "ipddistbybase_boxplot.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "ipd_boxplot_by_base",
       title = "IPD Distribution by Ref Base - Boxplot",
       caption = "IPD Distribution by Ref Base - Boxplot",
@@ -589,6 +621,8 @@ makeSamplingPlots <-
     report$ggsave(
       "pw_boxplot.png",
       tp2,
+      width = plotwidth,
+      height = plotheight,
       id = "pw_boxplot",
       title = "PW Distribution - Boxplot",
       caption = "PW Distribution - Boxplot",
@@ -608,6 +642,8 @@ makeSamplingPlots <-
     report$ggsave(
       "pw_boxplot_by_base.png",
       tp4,
+      width = plotwidth,
+      height = plotheight,
       id = "pw_boxplot_by_base",
       title = "PW Distribution By Base",
       caption = "PW Distribution",
@@ -638,6 +674,8 @@ makeSamplingPlots <-
     report$ggsave(
       "dutycycle_boxplot.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "dutycycle_boxplot",
       title = "Duty Cycle - Boxplot",
       caption = "Duty Cycle - Boxplot",
@@ -664,6 +702,8 @@ makeSamplingPlots <-
     report$ggsave(
       "localpolrate_boxplot.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "localpolrate_boxplot",
       title = "Local PolRate - Boxplot",
       caption = "Local PolRate - Boxplot",
@@ -687,6 +727,8 @@ makeSamplingPlots <-
     report$ggsave(
       "global_localpolrate.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "global_localpolrate",
       title = "Global/Local PolRate",
       caption = "Global/Local PolRate",
@@ -713,6 +755,8 @@ makeSamplingPlots <-
     report$ggsave(
       "bperr_rate_by_snr.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "bp_err_rate_by_snr",
       title = "BP Error Rates by SNR",
       caption = "BP Error Rates by SNR",
@@ -739,6 +783,8 @@ makeSamplingPlots <-
     report$ggsave(
       "bpmm_rate_by_snr.png",
       tp,
+      width = plotwidth,
+      height = plotheight,
       id = "bp_mm_err_rate_by_snr",
       title = "Mismatch Rates by SNR",
       caption = "Mismatch Rates by SNR",
@@ -811,6 +857,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
   report$ggsave(
     "snrvsacc.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "snr_vs_acc",
     title = "SNR vs Accuracy",
     caption = "SNR vs. Accuracy",
@@ -833,6 +881,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
   report$ggsave(
     "snrvsinsertion.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "snr_vs_ins",
     title = "SNR vs Insertion Rate",
     caption = "SNR vs. Insertion Rate",
@@ -855,6 +905,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
   report$ggsave(
     "snrvsdeletion.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "snr_vs_del",
     title = "SNR vs Deletion Rate",
     caption = "SNR vs. Deletion Rate",
@@ -877,6 +929,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
   report$ggsave(
     "snrvsmismatch.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "snr_vs_mm",
     title = "SNR vs Mismatch Rate",
     caption = "SNR vs. Mismatch Rate",
@@ -899,6 +953,8 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
   report$ggsave(
     "snrvsindelrat.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "snr_vs_indel_rat",
     title = "SNR vs Relative Indels",
     caption = "SNR vs. Indel Rate / Deletion Rate",
@@ -953,6 +1009,8 @@ makeReport <- function(report) {
   report$ggsave(
     "snrDensity.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "snr_density",
     title = "SNR Density Plot",
     caption = "Distribution of SNR in Aligned Files (Density plot)",
@@ -972,6 +1030,8 @@ makeReport <- function(report) {
   report$ggsave(
     "snrBoxNoViolin.png",
     tp,
+    width = plotwidth,
+    height = plotheight,
     id = "snr_boxplot",
     title = "SNR Box Plot",
     caption = "Distribution of SNR in Aligned Files (Boxplot)",
