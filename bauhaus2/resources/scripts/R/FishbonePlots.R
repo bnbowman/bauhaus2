@@ -220,6 +220,30 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     tags = c("fishbone", "hmm", "errormode", "deletion")
   )
   
+  # Plot a merged fishbone plot that contains insetion, deletion and mismatch
+  dfMerge <- dfErr_ %>% filter(move == "Dark" | move == "Merge" | move == "Insert" | (move == "Match" & obs != exp))
+  dfMerge$obs_ = as.vector(dfMerge$obs_)
+  dfMerge$obs_[dfMerge$move == "Dark"] = "Dark"
+  dfMerge$obs_[dfMerge$move == "Merge"] = "Merge"
+  dfMerge$obs_ = factor(dfMerge$obs_, levels = c("Insert - A", "Insert - C", "Insert - G", "Insert - T", "Dark", "Merge", "Mismatch - A", "Mismatch - C", "Mismatch - G", "Mismatch - T"))
+  ylim <- limits(dfMerge)
+  breaks <- breaksFn(ylim)
+  tp = ggplot(dfMerge, aes(x = as.numeric(as.character(snr)), y = mu, colour = Condition, group = Condition)) +
+    geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) + geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
+    xlim(0, 20) + scale_y_continuous(limits = ylim, breaks = breaks) +
+    labs(x = "SNR by Event", y = "HMM Error") +
+    facet_grid(exp_ ~ obs_) +
+    plTheme + clScale + themeTilt
+  report$ggsave(
+    "fishboneplot_merge.png",
+    tp,
+    width = 3000/dpi, height = 1200/dpi, units = "in",
+    id = "fishboneplot_merge",
+    title = "FishbonePlot - Merge",
+    caption = "FishbonePlot - Merge",
+    tags = c("fishbone", "hmm", "errormode", "merge")
+  )
+  
   dfErr
 }
 
