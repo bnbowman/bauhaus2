@@ -44,7 +44,7 @@ makeCCSDataFrame <- function(report, wfOutputRoot, sampleFraction=1.0)
     ct <- report$condition.table
     conditions <- unique(ct$Condition)
     dsetXmls <- sapply(conditions, function(condition) {
-        file.path(wfOutputRoot, "conditions", condition, "mapped_ccs/mapped-ccs.alignmentset.xml") })
+        file.path("conditions", condition, "mapped_ccs/mapped-ccs.alignmentset.xml") })
     dfs <- mapply(makeCCSDataFrame1, dsetXmls, conditions, sampleFraction=sampleFraction, SIMPLIFY=F)
     tbl_df(do.call(rbind, dfs))
 }
