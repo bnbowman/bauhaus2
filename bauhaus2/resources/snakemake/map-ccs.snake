@@ -2,7 +2,7 @@
 # ---------------------------------------------------------------------------------------------------
 # map-ccs.snake
 
-from runtime import ct
+from bauhaus2.runtime import ct
 
 mapped_ccs_chunks = \
     { c : expand("conditions/{condition}/mapped_ccs/chunks/mapped-ccs.chunk{chunkNo}.alignmentset.xml",
