@@ -121,12 +121,11 @@ Generate mapping reports workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   `-- HQRF
-  |       `-- report.json
   |-- run.sh
   |-- scripts
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
   
-  16 directories, 95 files
+  16 directories, 94 files
 

@@ -125,6 +125,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- errormode.csv
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_insertion.png
+  |   |   |-- fishboneplot_merge.png
   |   |   |-- fishboneplot_mismatch.png
   |   |   |-- modelReport.json
   |   |   |-- report.Rd
@@ -228,7 +229,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  21 directories, 190 files
+  21 directories, 191 files
 
 
 
