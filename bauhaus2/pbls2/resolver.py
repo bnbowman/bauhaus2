@@ -43,7 +43,7 @@ class Resolver(object):
 
     SMRTLINK_SERVER_TO_JOBS_ROOT = \
         { serverName : ("/pbi/dept/secondary/siv/smrtlink/smrtlink-" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
-          for (serverName, smrtLinkId) in [ ("smrtlink-beta", "beta") ] }
+          for (serverName, smrtLinkId) in [ ("smrtlink-beta", "beta"), ("smrtlink-alpha", "alpha") ] }
 
     def __init__(self):
         self._selfCheck()
@@ -97,7 +97,7 @@ class Resolver(object):
         """
         Given the secondary job path (SMRTlink), find the alignment set within
         """
-        candidates = glob(op.join(jobDir, "tasks/*/combined.alignmentset.xml"))
+        candidates = glob(op.join(jobDir, "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml"))
         if len(candidates) < 1:
             raise DataNotFound("AlignmentSet not found in job directory %s " % jobDir)
         elif len(candidates) > 1:
