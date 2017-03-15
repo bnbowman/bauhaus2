@@ -1,0 +1,124 @@
+
+# ---------------------------------------------------------------------------------------------------
+# map-unrolledNoHQ-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
+
+local_alignmentsets = \
+    { c : expand("conditions/{condition}/mapped_unrolledNoHQ/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+      
+# -- Target rules --
+
+rule map_unrolledNoHQ:
+    input: local_alignmentsets.values()
+
+# -- Worker rules --
+
+sl_host=config["bh2.smrtlink.host"]
+sl_port=config["bh2.smrtlink.services_port"]
+
+
+# -- Hack: we need to workaround a problem with SMRTLink where jobs can't
+# -- be submitted simultaneously.  To achieve these, we run all submits
+# -- on the head node (making this a localrule), and then we use a
+# -- semaphore to serialize executions of `pbservice run-pipeline`
+
+localrules: map_unrolledNoHQ_smrtlink_launch
+
+rule map_unrolledNoHQ_smrtlink_launch:
+    input:
+        subreadSet="conditions/{condition}/subreads/input.subreadset.xml",
+        referenceSet=lambda wc: ct.referenceSet(wc.condition)
+    output:
+        pbserviceInfo="conditions/{condition}/mapped_unrolledNoHQ/pbservice.log"
+    params:
+        presetXmlFile="extras/pbsmrtpipe-mappings-preset.xml"
+    shell:
+        """
+        module add parallel
+
+        # Call pbservice; bail out on failure
+        sem --no-notice --id smrtlink-siv-semaphore -j1 --fg \
+        pbservice run-pipeline pbsmrtpipe.pipelines.sa3_ds_align_unrolled \
+          --host {sl_host} --port {sl_port} \
+          -e {input.subreadSet} \
+          -e {input.referenceSet} \
+          --preset-xml {params.presetXmlFile} --job-title Bauhaus2Job \
+        > {output}
+        """
+
+class JobStatus(object):
+    VALID_STATES = ("CREATED", "SUBMITTED", "RUNNING", "TERMINATED", "SUCCESSFUL", "FAILED", "UNKNOWN")
+    FAILED_STATES = ("TERMINATED", "FAILED", "UNKNOWN")
+    SUCCESS_STATES = ("SUCCESSFUL",)
+
+def extractJobId(launchLog):
+    import re
+    logContent = open(launchLog).read()
+    ms = list(re.finditer('JOB SUMMARY:$\n^\s+id: (.*)', logContent, re.MULTILINE))
+    if ms:
+        return ms[-1].group(1)
+    else:
+        raise ValueError("Cannot find job ID in pbservice.log")
+
+def extractJobStatus(pollLog):
+    import re
+    logContent = open(pollLog).read()
+    m = re.search('JOB SUMMARY:.*^\s+state: (\w*)', logContent, re.MULTILINE | re.DOTALL)
+    if not m or m.group(1) not in JobStatus.VALID_STATES:
+        raise ValueError("Cannot find valid job status in pbservice.log")
+    else:
+        return m.group(1)
+
+def extractJobPath(pollLog):
+    import re
+    logContent = open(pollLog).read()
+    m = re.search('JOB SUMMARY:.*^\s+path: (\S*)', logContent, re.MULTILINE | re.DOTALL)
+    if not m:
+        raise ValueError("Cannot find SMRTLink job path in pbservice.log")
+    else:
+        return m.group(1)
+
+def touchFile(fname):
+    open(fname, "a").close()
+
+rule map_unrolledNoHQ_smrtlink_poll:
+    input: "conditions/{condition}/mapped_unrolledNoHQ/pbservice.log"
+    output:
+        flagFile="conditions/{condition}/mapped_unrolledNoHQ/job_complete",
+        pollFile="conditions/{condition}/mapped_unrolledNoHQ/poll.log",
+        localJobLink="conditions/{condition}/mapped_unrolledNoHQ/job_link"
+    run:
+        import time, sys, os
+        jobId = extractJobId(input[0])
+        jobRoot = extractJobPath(input[0])
+        os.symlink(jobRoot, output.localJobLink)
+        while True:
+            shell("pbservice get-job %s --host {sl_host} --port {sl_port} > {output.pollFile}" % jobId)
+            status = extractJobStatus(output.pollFile)
+            print("Found status: %s" % status)
+            if status in JobStatus.FAILED_STATES:
+                print("SMRTLink job has failed")
+                sys.exit(1)
+            elif status in JobStatus.SUCCESS_STATES:
+                print("SMRTLink job has succeeded")
+                break
+            else:
+                print("Will sleep")
+                time.sleep(90)
+                continue
+        touchFile(output.flagFile)
+
+rule map_unrolledNoHQ_smrtlink_collect:
+    input:
+        flagFile="conditions/{condition}/mapped_unrolledNoHQ/job_complete",
+        pollFile="conditions/{condition}/mapped_unrolledNoHQ/poll.log",
+        localJobLink="conditions/{condition}/mapped_unrolledNoHQ/job_link",
+        reference="conditions/{condition}/reference.fasta"
+    output:
+        "conditions/{condition}/mapped_unrolledNoHQ/mapped.alignmentset.xml"
+    params:
+        locationOfAlignmentSet="tasks/pbalign.tasks.consolidate_alignments-0/combined.alignmentset.xml"
+    shell:
+        """
+        dataset create {output} {input.localJobLink}/{params.locationOfAlignmentSet}
+        """

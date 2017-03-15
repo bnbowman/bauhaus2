@@ -3,6 +3,25 @@ from bauhaus2 import Workflow
 
 from .subreads import subreadsPlan
 
+def UnrolledNoHQMappingPlan(ct, args):
+    if ct.inputsAreMapped:
+        # Mapping already happened, link it.
+        return [ "collect-mappings.snake",
+                 "collect-references.snake",
+                 "scatter-subreads.snake" ]
+    elif not args.no_smrtlink:
+        # Use SMRTLink for mapping
+        return [ "map-unrolledNoHQ-smrtlink.snake",
+                 "collect-references.snake",
+                 "scatter-subreads.snake" ] + \
+                 subreadsPlan(ct, args)
+    else:
+        # Do our own unrolledNoHQ mapping
+        return [ "map-unrolledNoHQ.snake",
+                 "collect-references.snake",
+                 "scatter-subreads.snake" ] + \
+                 subreadsPlan(ct, args)
+
 class UnrolledNoHQMappingWorkflow(Workflow):
     """
     Map "unrolled" ZMW reads to an unrolled reference.
@@ -14,9 +33,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "UnrolledNoHQMapping"
     CONDITION_TABLE_TYPE = UnrolledMappingConditionTable
+    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
 
     def plan(self):
-        return [ "map-unrolledNoHQ.snake",
-                 "collect-references.snake",
-                 "scatter-subreads.snake" ] + \
-                 subreadsPlan(self.conditionTable, self.cliArgs)
+        return UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)
