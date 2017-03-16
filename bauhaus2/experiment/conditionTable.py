@@ -292,7 +292,7 @@ class UnrolledMappingConditionTable(ResequencingConditionTable):
             raise TableValidationError("Unrolled mapping workflow requires unmapped inputs.")
 
         for genome in self.tbl.Genome:
-            if "unrolled" in genome or "circular" in genome:
+            if "unrolled" in genome.lower() or "circular" in genome.lower():
                 continue
             else:
                 raise TableValidationError("Unrolled mapping requires an unrolled reference")
