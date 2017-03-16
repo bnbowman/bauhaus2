@@ -31,7 +31,7 @@ rule map_unrolledNoHQ_smrtlink_launch:
     output:
         pbserviceInfo="conditions/{condition}/mapped_unrolledNoHQ/pbservice.log"
     params:
-        presetXmlFile="extras/pbsmrtpipe-mappings-preset.xml"
+        presetXmlFile="extras/pbsmrtpipe-unrolled-mappings-preset.xml"
     shell:
         """
         module add parallel
