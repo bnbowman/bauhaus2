@@ -12,6 +12,7 @@ def UnrolledNoHQMappingPlan(ct, args):
     elif not args.no_smrtlink:
         # Use SMRTLink for mapping
         return [ "map-unrolledNoHQ-smrtlink.snake",
+                 "smrtlink-job-status.snake",
                  "collect-references.snake",
                  "scatter-subreads.snake" ] + \
                  subreadsPlan(ct, args)
@@ -33,7 +34,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "UnrolledNoHQMapping"
     CONDITION_TABLE_TYPE = UnrolledMappingConditionTable
-    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
+    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-unrolled-mappings-preset.xml",)
 
     def plan(self):
         return UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)

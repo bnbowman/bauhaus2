@@ -26,6 +26,7 @@ def subreadsMappingPlan(ct, args):
     elif not args.no_smrtlink:
         # Use SMRTLink for mapping
         return [ "map-subreads-smrtlink.snake",
+                 "smrtlink-job-status.snake",
                  "collect-references.snake" ] + \
                  subreadsPlan(ct, args)
     elif args.chunks > 0:

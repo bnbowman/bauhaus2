@@ -46,41 +46,6 @@ rule map_unrolledNoHQ_smrtlink_launch:
         > {output}
         """
 
-class JobStatus(object):
-    VALID_STATES = ("CREATED", "SUBMITTED", "RUNNING", "TERMINATED", "SUCCESSFUL", "FAILED", "UNKNOWN")
-    FAILED_STATES = ("TERMINATED", "FAILED", "UNKNOWN")
-    SUCCESS_STATES = ("SUCCESSFUL",)
-
-def extractJobId(launchLog):
-    import re
-    logContent = open(launchLog).read()
-    ms = list(re.finditer('JOB SUMMARY:$\n^\s+id: (.*)', logContent, re.MULTILINE))
-    if ms:
-        return ms[-1].group(1)
-    else:
-        raise ValueError("Cannot find job ID in pbservice.log")
-
-def extractJobStatus(pollLog):
-    import re
-    logContent = open(pollLog).read()
-    m = re.search('JOB SUMMARY:.*^\s+state: (\w*)', logContent, re.MULTILINE | re.DOTALL)
-    if not m or m.group(1) not in JobStatus.VALID_STATES:
-        raise ValueError("Cannot find valid job status in pbservice.log")
-    else:
-        return m.group(1)
-
-def extractJobPath(pollLog):
-    import re
-    logContent = open(pollLog).read()
-    m = re.search('JOB SUMMARY:.*^\s+path: (\S*)', logContent, re.MULTILINE | re.DOTALL)
-    if not m:
-        raise ValueError("Cannot find SMRTLink job path in pbservice.log")
-    else:
-        return m.group(1)
-
-def touchFile(fname):
-    open(fname, "a").close()
-
 rule map_unrolledNoHQ_smrtlink_poll:
     input: "conditions/{condition}/mapped_unrolledNoHQ/pbservice.log"
     output:
