@@ -4,6 +4,5 @@
   ConstantArrow
   CoverageTitration
   EvaluateHQRF
-  Mapping
   MappingReports
   UnrolledNoHQMapping
