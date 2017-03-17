@@ -42,17 +42,6 @@ def subreadsMappingPlan(ct, args):
                 subreadsPlan(ct, args)
 
 
-class MappingWorkflow(Workflow):
-    """
-    Align subreads to the reference.
-    """
-    WORKFLOW_NAME        = "Mapping"
-    CONDITION_TABLE_TYPE = ResequencingConditionTable
-    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
-
-    def plan(self):
-        return subreadsMappingPlan(self.conditionTable, self.cliArgs)
-
 class MappingReportsWorkflow(Workflow):
     """
     Align subreads to the reference and generate comprehensive
