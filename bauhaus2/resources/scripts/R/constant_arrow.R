@@ -145,7 +145,7 @@ constantArrow <-
                          id = "errormode",
                          title = "Constant Arrow Errormode")
       logging::loginfo(paste("Wrote empty CSV for ", Condition))
-      return(0)
+      return(errormode)
     }
     # Decide the sampling size
     ZMWS_TO_SAMPLE = min(nrow(indFilter), as.numeric(SAMPLING_SIZE))
@@ -249,6 +249,7 @@ makeReport <- function(report) {
   errormodeList = lapply(1:n, function(i) {
     constantArrow(as.character(conditions$MappedSubreads[i]), as.character(conditions$Reference[i]), as.character(conditions$Condition[i]), report)
   })
+  
   errormodeCombine = rbindlist(errormodeList)
   loginfo("Making constant Arrow CSV file")
   report$write.table("errormode.csv",

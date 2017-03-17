@@ -35,6 +35,14 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     WORKFLOW_NAME        = "UnrolledNoHQMapping"
     CONDITION_TABLE_TYPE = UnrolledMappingConditionTable
     SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-unrolled-mappings-preset.xml",)
+    R_SCRIPTS            = ( "R/PbiSampledPlots.R",
+                             "R/PbiPlots.R",
+                             "R/LibDiagnosticPlots.R",
+                             "R/ReadPlots.R",
+                             "R/constant_arrow.R",
+                             "R/FishbonePlots.R",
+                             "R/Bauhaus2.R" )
 
     def plan(self):
-        return UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)
+        return ["summarize-mappings.snake", "constant-arrow.snake"] + \
+            UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)

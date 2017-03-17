@@ -19,7 +19,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
-  |   |   |-- mapped_unrolledNoHQ
+  |   |   |-- mapped
   |   |   |   |-- chunks
   |   |   |   |   |-- mapped.chunk0.alignmentset.bam
   |   |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
@@ -68,7 +68,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   `-- input.chunk7.subreadset.xml
   |   |       `-- input.subreadset.xml
   |   `-- MovieB
-  |       |-- mapped_unrolledNoHQ
+  |       |-- mapped
   |       |   |-- chunks
   |       |   |   |-- mapped.chunk0.alignmentset.bam
   |       |   |   |-- mapped.chunk0.alignmentset.bam.bai
@@ -120,11 +120,41 @@ Generate mapping reports workflow, starting from subreads.
   |-- log
   |-- prefix.sh
   |-- reports
+  |   |-- ConstantArrowFishbonePlots
+  |   |   |-- errormode.csv
+  |   |   |-- errormode_MovieA.csv
+  |   |   |-- errormode_MovieB.csv
+  |   |   |-- modelReport.json
+  |   |   |-- report.Rd
+  |   |   `-- report.json
+  |   |-- LibDiagnosticPlots
+  |   |   |-- report.Rd
+  |   |   `-- report.json
+  |   |-- PbiPlots
+  |   |   |-- report.Rd
+  |   |   `-- report.json
+  |   |-- PbiSampledPlots
+  |   |   |-- report.Rd
+  |   |   `-- report.json
+  |   `-- ReadPlots
+  |       |-- deletion_rate.png
+  |       |-- insertion_rate.png
+  |       |-- mismatch_rate.png
+  |       |-- report.Rd
+  |       `-- report.json
   |-- run.sh
   |-- scripts
+  |   `-- R
+  |       |-- Bauhaus2.R
+  |       |-- FishbonePlots.R
+  |       |-- LibDiagnosticPlots.R
+  |       |-- PbiPlots.R
+  |       |-- PbiSampledPlots.R
+  |       |-- ReadPlots.R
+  |       `-- constant_arrow.R
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
   
-  15 directories, 94 files
+  21 directories, 118 files
 

@@ -19,7 +19,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
-  |   |   |-- mapped_unrolledNoHQ
+  |   |   |-- mapped
   |   |   |   |-- chunks
   |   |   |   |   |-- mapped.chunk0.alignmentset.bam
   |   |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
@@ -68,7 +68,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   `-- input.chunk7.subreadset.xml
   |   |       `-- input.subreadset.xml
   |   `-- MovieB
-  |       |-- mapped_unrolledNoHQ
+  |       |-- mapped
   |       |   |-- chunks
   |       |   |   |-- mapped.chunk0.alignmentset.bam
   |       |   |   |-- mapped.chunk0.alignmentset.bam.bai

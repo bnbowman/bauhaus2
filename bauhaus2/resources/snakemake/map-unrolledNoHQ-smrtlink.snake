@@ -3,7 +3,7 @@
 # map-unrolledNoHQ-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
 
 local_alignmentsets = \
-    { c : expand("conditions/{condition}/mapped_unrolledNoHQ/mapped.alignmentset.xml", condition=c)
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
       for c in ct.conditions }
       
 # -- Target rules --
@@ -29,7 +29,7 @@ rule map_unrolledNoHQ_smrtlink_launch:
         subreadSet="conditions/{condition}/subreads/input.subreadset.xml",
         referenceSet=lambda wc: ct.referenceSet(wc.condition)
     output:
-        pbserviceInfo="conditions/{condition}/mapped_unrolledNoHQ/pbservice.log"
+        pbserviceInfo="conditions/{condition}/mapped/pbservice.log"
     params:
         presetXmlFile="extras/pbsmrtpipe-unrolled-mappings-preset.xml"
     shell:
@@ -47,11 +47,11 @@ rule map_unrolledNoHQ_smrtlink_launch:
         """
 
 rule map_unrolledNoHQ_smrtlink_poll:
-    input: "conditions/{condition}/mapped_unrolledNoHQ/pbservice.log"
+    input: "conditions/{condition}/mapped/pbservice.log"
     output:
-        flagFile="conditions/{condition}/mapped_unrolledNoHQ/job_complete",
-        pollFile="conditions/{condition}/mapped_unrolledNoHQ/poll.log",
-        localJobLink="conditions/{condition}/mapped_unrolledNoHQ/job_link"
+        flagFile="conditions/{condition}/mapped/job_complete",
+        pollFile="conditions/{condition}/mapped/poll.log",
+        localJobLink="conditions/{condition}/mapped/job_link"
     run:
         import time, sys, os
         jobId = extractJobId(input[0])
@@ -75,12 +75,12 @@ rule map_unrolledNoHQ_smrtlink_poll:
 
 rule map_unrolledNoHQ_smrtlink_collect:
     input:
-        flagFile="conditions/{condition}/mapped_unrolledNoHQ/job_complete",
-        pollFile="conditions/{condition}/mapped_unrolledNoHQ/poll.log",
-        localJobLink="conditions/{condition}/mapped_unrolledNoHQ/job_link",
+        flagFile="conditions/{condition}/mapped/job_complete",
+        pollFile="conditions/{condition}/mapped/poll.log",
+        localJobLink="conditions/{condition}/mapped/job_link",
         reference="conditions/{condition}/reference.fasta"
     output:
-        "conditions/{condition}/mapped_unrolledNoHQ/mapped.alignmentset.xml"
+        "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:
         locationOfAlignmentSet="tasks/pbalign.tasks.consolidate_alignments-0/combined.alignmentset.xml"
     shell:
