@@ -121,15 +121,27 @@ Generate mapping reports workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- ConstantArrowFishbonePlots
+  |   |   |-- errormode.csv
   |   |   |-- errormode_MovieA.csv
-  |   |   `-- errormode_MovieB.csv
+  |   |   |-- errormode_MovieB.csv
+  |   |   |-- modelReport.json
+  |   |   |-- report.Rd
+  |   |   `-- report.json
+  |   |-- LibDiagnosticPlots
+  |   |   |-- report.Rd
+  |   |   `-- report.json
   |   |-- PbiPlots
-  |   |   `-- sumtable.csv
+  |   |   |-- report.Rd
+  |   |   `-- report.json
   |   |-- PbiSampledPlots
+  |   |   |-- report.Rd
+  |   |   `-- report.json
   |   `-- ReadPlots
-  |       |-- deletion_norm.png
-  |       |-- deletion_size_log.png
-  |       `-- mismatch_rate.png
+  |       |-- deletion_rate.png
+  |       |-- insertion_rate.png
+  |       |-- mismatch_rate.png
+  |       |-- report.Rd
+  |       `-- report.json
   |-- run.sh
   |-- scripts
   |   `-- R
@@ -144,5 +156,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  20 directories, 107 files
+  21 directories, 118 files
 
