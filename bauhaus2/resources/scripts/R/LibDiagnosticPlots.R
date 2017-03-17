@@ -508,10 +508,14 @@ makeReport <- function(report) {
   cd$tlen = as.numeric(cd$tend - cd$tstart)
   cd$alen = as.numeric(cd$aend - cd$astart)
 
-  # Make Plots
-  makeCDFofaStartPlots(report, cd)
-  makeMaxVsUnrolledPlots(report, cd)
-  makeCDFofTemplatePlots(report, cd)
+  if (nrow(cd) == 0) {
+    warning("No ZMW has been loaded from the alignment set!")
+  } else {
+    # Make Plots
+    makeCDFofaStartPlots(report, cd)
+    makeMaxVsUnrolledPlots(report, cd)
+    makeCDFofTemplatePlots(report, cd)
+  }
   
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))

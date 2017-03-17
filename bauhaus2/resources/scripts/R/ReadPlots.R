@@ -37,62 +37,69 @@ makeGapSizePlots <- function(report, cd) {
   gapf = gaps %>% group_by(Condition) %>% mutate(refFreq = refCnts / sum(refCnts),
                                                  readFreq = readCnts / sum(readCnts)) %>% ungroup()
   
-  ## Plot Deletion Sizes
-  loginfo("Plot Deletion Sizes")
-  tp = ggplot(gapf, aes(x=gapSize, y = refFreq, group=Condition, color=Condition)) + geom_line() + geom_point() +
-    clScale + plTheme + labs(x="Deletion Size", y="Relative Frequency (Sum = 1)",
-                             title = "Deletion Sizes")
-  report$ggsave(
-    "deletion_norm.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "deletion_norm",
-    title = "Deletion Sizes",
-    caption = "Deletion Sizes",
-    tags = c("readplots", "deletion")
-  )
+  if (sum(gapf$refCnts) == 0) {
+    warning("The sum of reference Counts cannot be 0!")
+  } else {
+    ## Plot Deletion Sizes
+    loginfo("Plot Deletion Sizes")
+    tp = ggplot(gapf, aes(x=gapSize, y = refFreq, group=Condition, color=Condition)) + geom_line() + geom_point() +
+      clScale + plTheme + labs(x="Deletion Size", y="Relative Frequency (Sum = 1)",
+                               title = "Deletion Sizes")
+    report$ggsave(
+      "deletion_norm.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "deletion_norm",
+      title = "Deletion Sizes",
+      caption = "Deletion Sizes",
+      tags = c("readplots", "deletion")
+    )
+    
+    loginfo("Plot log Deletion Sizes")
+    report$ggsave(
+      "deletion_size_log.png",
+      tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
+      width = plotwidth,
+      height = plotheight,
+      id = "deletion_size_log",
+      title = "Deletion Sizes (Log)",
+      caption = "Deletion Sizes (Log)",
+      tags = c("readplots", "deletion", "log")
+    )
+  }
   
-  loginfo("Plot log Deletion Sizes")
-  report$ggsave(
-    "deletion_size_log.png",
-    tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
-    width = plotwidth,
-    height = plotheight,
-    id = "deletion_size_log",
-    title = "Deletion Sizes (Log)",
-    caption = "Deletion Sizes (Log)",
-    tags = c("readplots", "deletion", "log")
-  )
-  
-  
-  ## Now plot insertion sizes
-  loginfo("Plot insertion sizes")
-  tp = ggplot(gapf, aes(x=gapSize, y = readFreq, group=Condition, color=Condition)) + geom_line() + geom_point() +
-    clScale + plTheme + labs(x="Insertion Size", y="Relative Frequency (Sum = 1)",
-                             title = "Insertion Sizes")
-  report$ggsave(
-    "insert_size_norm.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "insert_size_norm",
-    title = "Insertion Sizes",
-    caption = "Insertion Sizes",
-    tags = c("readplots", "insertion")
-  )
-  
-  loginfo("Plot log insertion sizes")
-  report$ggsave(
-    "insert_size_log.png",
-    tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
-    width = plotwidth,
-    height = plotheight,
-    id = "insert_size_log",
-    title = "Insertion Sizes (Log)",
-    caption = "Insertion Sizes (Log)",
-    tags = c("readplots", "insertion", "log")
-  )
+  if (sum(gapf$readCnts) == 0) {
+    warning("The sum of read Counts cannot be 0!")
+  } else {
+    ## Now plot insertion sizes
+    loginfo("Plot insertion sizes")
+    tp = ggplot(gapf, aes(x=gapSize, y = readFreq, group=Condition, color=Condition)) + geom_line() + geom_point() +
+      clScale + plTheme + labs(x="Insertion Size", y="Relative Frequency (Sum = 1)",
+                               title = "Insertion Sizes")
+    report$ggsave(
+      "insert_size_norm.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "insert_size_norm",
+      title = "Insertion Sizes",
+      caption = "Insertion Sizes",
+      tags = c("readplots", "insertion")
+    )
+    
+    loginfo("Plot log insertion sizes")
+    report$ggsave(
+      "insert_size_log.png",
+      tp + scale_y_log10() + labs(y = "Log10 Relative Frequency"),
+      width = plotwidth,
+      height = plotheight,
+      id = "insert_size_log",
+      title = "Insertion Sizes (Log)",
+      caption = "Insertion Sizes (Log)",
+      tags = c("readplots", "insertion", "log")
+    )
+  }
 }
 
 makeMismatchPlots <- function(report, cd) {
@@ -170,19 +177,23 @@ makeClippingPlot <- function(report, cd) {
   # Convert to relative frequencies
   clipsf = clips %>% group_by(Condition) %>% mutate(freq = cnts / sum(cnts)) %>% ungroup()
   
-  tp = ggplot(clipsf[clipsf$state=="Clipped", ], aes(x=Condition, y=freq, fill=Condition)) + geom_bar(stat="identity") +
-    clFillScale + plTheme + labs(x="Condition", y="Soft Clipping Frequency", title = "Percentage of Bases Soft Clipped in Alignments") +
-    themeTilt
-  report$ggsave(
-    "clip_rate.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "clip_rate",
-    title = "Clipping Rates",
-    caption = "Clipping Rates",
-    tags = c("readplots", "clipping")
-  )
+  if (sum(clipsf$cnts) == 0) {
+    warning("The sum of Counts for cliping cannot be 0!")
+  } else {
+    tp = ggplot(clipsf[clipsf$state=="Clipped", ], aes(x=Condition, y=freq, fill=Condition)) + geom_bar(stat="identity") +
+      clFillScale + plTheme + labs(x="Condition", y="Soft Clipping Frequency", title = "Percentage of Bases Soft Clipped in Alignments") +
+      themeTilt
+    report$ggsave(
+      "clip_rate.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "clip_rate",
+      title = "Clipping Rates",
+      caption = "Clipping Rates",
+      tags = c("readplots", "clipping")
+    )
+  }
 }
 
 # The core function, change the implementation in this to add new features.

@@ -976,88 +976,91 @@ makeReport <- function(report) {
   ##browser()
   cd = combineConditions(dfs, as.character(conditions$Condition))
   
-  # Subsample cd to get a smaller data frame, load SNR values for this dataframe
-  cd = loadSNRforSubset(cd)
-  cd = as.data.table(cd)
-  
   ## Let's set the graphic defaults
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
   
-  
-  # Let's look at SNR distributions
-  logging::loginfo("Making SNR Distribution Plots")
-  snrs = cd[, .(Condition, hole, snrA, snrC, snrG, snrT)]
-  colnames(snrs) = sub("snr", "", colnames(snrs))
-  snrs = snrs %>% gather(channel, SNR, A, C, G, T)
-  # tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) + geom_violin() +
-  #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
-  #   facet_wrap(~ channel)
-  # report$ggsave(
-  #   "snrViolin.png",
-  #   tp,
-  #   id = "snr_violin",
-  #   title = "SNR Violin Plot",
-  #   caption = "Distribution of SNR in Aligned Files (Violin plot)",
-  #   tags = c("sampled", "snr", "violin")
-  # )
-  
-  tp = ggplot(snrs, aes(x = SNR, colour = Condition)) + geom_density(alpha = .5) +
-    plTheme + themeTilt  + clScale + facet_wrap(~ channel) +
-    labs(x = "SNR", title = "Distribution of SNR in Aligned Files (Density plot)")
-  report$ggsave(
-    "snrDensity.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "snr_density",
-    title = "SNR Density Plot",
-    caption = "Distribution of SNR in Aligned Files (Density plot)",
-    tags = c("sampled", "snr", "density")
-  )
-  
-  tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) +
-    geom_boxplot() + stat_summary(
-      fun.y = median,
-      colour = "black",
-      geom = "text",
-      show.legend = FALSE,
-      vjust = -0.8,
-      aes(label = round(..y.., digits = 4))
-    ) + plTheme + themeTilt  + clFillScale +
-    facet_wrap( ~ channel)
-  report$ggsave(
-    "snrBoxNoViolin.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "snr_boxplot",
-    title = "SNR Box Plot",
-    caption = "Distribution of SNR in Aligned Files (Boxplot)",
-    tags = c("sampled", "snr", "boxplot")
-  )
-  
-  snrs = NULL # make available for GC
-  tp = NULL
-  
-  # Get Errors by SNR plot
-  makeErrorsBySNRPlots(report, cd)
-  
-  # Now plots from sampling alignments
-  makeSamplingPlots(report, cd, conditions, sampleSize = 1000)
-  
-  # Make a median SNR table
-  summaries = cd[, .(
-    A.Median = median(snrA),
-    C.Median = median(snrC),
-    G.Median = median(snrG),
-    T.Median = median(snrT)
-  ),  by = Condition]
-  report$write.table("medianSNR.csv",
-                     summaries,
-                     id = "medianSNR",
-                     title = "Median SNR values")
+  if (nrow(cd) == 0) {
+    warning("No ZMW has been loaded from the alignment set!")
+  } else {
+    # Subsample cd to get a smaller data frame, load SNR values for this dataframe
+    cd = loadSNRforSubset(cd)
+    cd = as.data.table(cd)
+    
+    # Let's look at SNR distributions
+    logging::loginfo("Making SNR Distribution Plots")
+    snrs = cd[, .(Condition, hole, snrA, snrC, snrG, snrT)]
+    colnames(snrs) = sub("snr", "", colnames(snrs))
+    snrs = snrs %>% gather(channel, SNR, A, C, G, T)
+    # tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) + geom_violin() +
+    #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
+    #   facet_wrap(~ channel)
+    # report$ggsave(
+    #   "snrViolin.png",
+    #   tp,
+    #   id = "snr_violin",
+    #   title = "SNR Violin Plot",
+    #   caption = "Distribution of SNR in Aligned Files (Violin plot)",
+    #   tags = c("sampled", "snr", "violin")
+    # )
+    
+    tp = ggplot(snrs, aes(x = SNR, colour = Condition)) + geom_density(alpha = .5) +
+      plTheme + themeTilt  + clScale + facet_wrap(~ channel) +
+      labs(x = "SNR", title = "Distribution of SNR in Aligned Files (Density plot)")
+    report$ggsave(
+      "snrDensity.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "snr_density",
+      title = "SNR Density Plot",
+      caption = "Distribution of SNR in Aligned Files (Density plot)",
+      tags = c("sampled", "snr", "density")
+    )
+    
+    tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) +
+      geom_boxplot() + stat_summary(
+        fun.y = median,
+        colour = "black",
+        geom = "text",
+        show.legend = FALSE,
+        vjust = -0.8,
+        aes(label = round(..y.., digits = 4))
+      ) + plTheme + themeTilt  + clFillScale +
+      facet_wrap( ~ channel)
+    report$ggsave(
+      "snrBoxNoViolin.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "snr_boxplot",
+      title = "SNR Box Plot",
+      caption = "Distribution of SNR in Aligned Files (Boxplot)",
+      tags = c("sampled", "snr", "boxplot")
+    )
+    
+    snrs = NULL # make available for GC
+    tp = NULL
+    
+    # Get Errors by SNR plot
+    makeErrorsBySNRPlots(report, cd)
+    
+    # Now plots from sampling alignments
+    makeSamplingPlots(report, cd, conditions, sampleSize = 1000)
+    
+    # Make a median SNR table
+    summaries = cd[, .(
+      A.Median = median(snrA),
+      C.Median = median(snrC),
+      G.Median = median(snrG),
+      T.Median = median(snrT)
+    ),  by = Condition]
+    report$write.table("medianSNR.csv",
+                       summaries,
+                       id = "medianSNR",
+                       title = "Median SNR values")
+  }
   
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))

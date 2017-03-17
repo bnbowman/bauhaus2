@@ -413,59 +413,63 @@ makeReport <- function(report) {
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
   
-  cd$tlen = as.numeric(cd$tend - cd$tstart)
-  cd$alen = as.numeric(cd$aend - cd$astart)
-  cd$errors = as.numeric(cd$mismatches + cd$inserts + cd$dels)
-  cd$Accuracy = 1 - cd$errors / cd$tlen
-  cd$mmrate = cd$mismatches / cd$tlen
-  cd$irate  = cd$inserts / cd$tlen
-  cd$drate  = cd$dels / cd$tlen
-  cd$qrlen = as.numeric(cd$qend - cd$qstart)
-  
-  summaries = cd[, .(
-    AccuracyRate.Median = median(Accuracy),
-    AlnLength = median(tlen),
-    ReadLength = median(alen),
-    QReadLength = median(qrlen),
-    InsertRate = median(irate),
-    DeletionRate = median(drate),
-    MismatchRate = median(mmrate),
-    NumberZMWs = nrow(distinct(cd, hole)),
-    NumberAlns = length(hole),
-    TotalAlignedBases = sum(tlen),
-    TotalReadBases = sum(alen),
-    BAMFiles = length(unique(file))
-  ),
-  by = Condition]
-  colnames(summaries) <-
-    c(
-      "Condition",
-      "Accuracy",
-      "Aln Length",
-      "Aln Read Length (a)",
-      "Aln Read Length (q)",
-      "Insert Rate",
-      "Deletion Rate",
-      "Mismatch Rate",
-      "# ZMWs",
-      "# Alignments",
-      "Total Template Bases",
-      "Total Read Bases",
-      "Total BAM Files"
-    )
-  report$write.table("sumtable.csv",
-                     summaries,
-                     id = "sumtable",
-                     title = "Summary Statistics (Median Values)")
-  
-  # Make Plots
-  makeReadLengthSurvivalPlots(report, cd)
-  makeAccuracyDensityPlots(report, cd)
-  # makeErateViolinPlots(report, cd)
-  makeErateBoxPlots(report, cd)
-  makeBasesDistribution(report, cd)
-  makeYieldHistogram(report, cd)
-  
+  if (nrow(cd) == 0) {
+    warning("No ZMW has been loaded from the alignment set!")
+  } else {
+    cd$tlen = as.numeric(cd$tend - cd$tstart)
+    cd$alen = as.numeric(cd$aend - cd$astart)
+    cd$errors = as.numeric(cd$mismatches + cd$inserts + cd$dels)
+    cd$Accuracy = 1 - cd$errors / cd$tlen
+    cd$mmrate = cd$mismatches / cd$tlen
+    cd$irate  = cd$inserts / cd$tlen
+    cd$drate  = cd$dels / cd$tlen
+    cd$qrlen = as.numeric(cd$qend - cd$qstart)
+    
+    summaries = cd[, .(
+      AccuracyRate.Median = median(Accuracy),
+      AlnLength = median(tlen),
+      ReadLength = median(alen),
+      QReadLength = median(qrlen),
+      InsertRate = median(irate),
+      DeletionRate = median(drate),
+      MismatchRate = median(mmrate),
+      NumberZMWs = nrow(distinct(cd, hole)),
+      NumberAlns = length(hole),
+      TotalAlignedBases = sum(tlen),
+      TotalReadBases = sum(alen),
+      BAMFiles = length(unique(file))
+    ),
+    by = Condition]
+    colnames(summaries) <-
+      c(
+        "Condition",
+        "Accuracy",
+        "Aln Length",
+        "Aln Read Length (a)",
+        "Aln Read Length (q)",
+        "Insert Rate",
+        "Deletion Rate",
+        "Mismatch Rate",
+        "# ZMWs",
+        "# Alignments",
+        "Total Template Bases",
+        "Total Read Bases",
+        "Total BAM Files"
+      )
+    report$write.table("sumtable.csv",
+                       summaries,
+                       id = "sumtable",
+                       title = "Summary Statistics (Median Values)")
+    
+    # Make Plots
+    makeReadLengthSurvivalPlots(report, cd)
+    makeAccuracyDensityPlots(report, cd)
+    # makeErateViolinPlots(report, cd)
+    makeErateBoxPlots(report, cd)
+    makeBasesDistribution(report, cd)
+    makeYieldHistogram(report, cd)
+  }
+
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
   

@@ -256,8 +256,13 @@ makeReport <- function(report) {
   
   # Load csv files
   errormodeMerge = read.csv("reports/ConstantArrowFishbonePlots/errormode.csv")
-  # Make Fishbone Plots
-  makeFishbonePlots(errormodeMerge, report)
+  
+  if (nrow(errormodeMerge) == 0) {
+    warning("The Errormode CSV file is empty!")
+  } else {
+    # Make Fishbone Plots
+    makeFishbonePlots(errormodeMerge, report)
+  }
   
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
