@@ -175,7 +175,10 @@ makeReport <- function(report) {
     args <- commandArgs(TRUE)
     wfRootDir <- args[1]
     ccsDf <- makeCCSDataFrame(report, wfRootDir)  
-    # write_feather(ccsDf, "ccs-mapping.feather")
+    report$write.table("ccs-mapping.csv",
+                       ccsDf,
+                       id = "ccs",
+                       title = "CCS Mapping CSV")
     doAllCCSPlots(report, ccsDf)
     
     # Save the report object for later debugging
