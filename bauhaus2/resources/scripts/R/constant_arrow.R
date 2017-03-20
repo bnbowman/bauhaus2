@@ -93,7 +93,8 @@ csv_names = c(
   "AlnTLength",
   "Time",
   "Iterations",
-  "Condition"
+  "Condition",
+  "Reference"
 )
 
 ##' Filters out data with large length discrepencies
@@ -162,6 +163,7 @@ constantArrow <-
     colnames(errormode) <- csv_names
     errormode$ZMW = sampled_ZMW
     errormode$Condition = Condition
+    errormode$Reference = indFilter$ref
     
     # Aggregate the pmf matrix
     baseAgg <- function(pmf) {
