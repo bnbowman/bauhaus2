@@ -56,6 +56,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |   |   |-- sts.h5 -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -105,6 +106,7 @@ Generate mapping reports workflow, starting from subreads.
   |       |   `-- mapped.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |       |-- sts.h5 -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -204,15 +206,18 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- snrvsindelrat.png
   |   |   |-- snrvsinsertion.png
   |   |   `-- snrvsmismatch.png
-  |   `-- ReadPlots
-  |       |-- clip_rate.png
-  |       |-- deletion_norm.png
-  |       |-- deletion_rate.png
-  |       |-- deletion_size_log.png
-  |       |-- insert_size_log.png
-  |       |-- insert_size_norm.png
-  |       |-- insertion_rate.png
-  |       |-- mismatch_rate.png
+  |   |-- ReadPlots
+  |   |   |-- clip_rate.png
+  |   |   |-- deletion_norm.png
+  |   |   |-- deletion_rate.png
+  |   |   |-- deletion_size_log.png
+  |   |   |-- insert_size_log.png
+  |   |   |-- insert_size_norm.png
+  |   |   |-- insertion_rate.png
+  |   |   |-- mismatch_rate.png
+  |   |   |-- report.Rd
+  |   |   `-- report.json
+  |   `-- ZMWstsPlots
   |       |-- report.Rd
   |       `-- report.json
   |-- run.sh
@@ -224,12 +229,13 @@ Generate mapping reports workflow, starting from subreads.
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
   |       |-- ReadPlots.R
+  |       |-- ZMWstsPlots.R
   |       `-- constant_arrow.R
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
   
-  21 directories, 191 files
+  22 directories, 196 files
 
 
 

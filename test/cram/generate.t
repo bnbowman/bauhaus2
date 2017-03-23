@@ -21,11 +21,12 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
   |       |-- ReadPlots.R
+  |       |-- ZMWstsPlots.R
   |       `-- constant_arrow.R
   `-- workflow
       `-- Snakefile
   
-  3 directories, 12 files
+  3 directories, 13 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
