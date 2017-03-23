@@ -150,9 +150,9 @@ class ConditionTable(object):
                 elif any("subreadset.xml" in s for s in inputs):
                     self._inputsH5ByCondition[condition] = [name.replace("subreadset.xml", "sts.h5") for name in inputs]
                 if all([op.isfile(f) for f in self._inputsH5ByCondition[condition]]) is False:
-                    self._inputsH5ByCondition[condition] = {"/home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5"}
+                    self._inputsH5ByCondition[condition] = {"/home/ytian/bauhaus2/no_sts.h5"}
             except:
-                self._inputsH5ByCondition[condition] = {"/home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5"}
+                self._inputsH5ByCondition[condition] = {"/home/ytian/bauhaus2/no_sts.h5"}
 
     @property
     def conditions(self):
