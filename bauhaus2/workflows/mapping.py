@@ -56,6 +56,7 @@ class MappingReportsWorkflow(Workflow):
                              "R/ReadPlots.R",
                              "R/constant_arrow.R",
                              "R/FishbonePlots.R",
+                             "R/ZMWstsPlots.R",
                              "R/Bauhaus2.R" )
 
     def plan(self):

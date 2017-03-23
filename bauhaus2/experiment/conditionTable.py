@@ -134,6 +134,7 @@ class ConditionTable(object):
 
     def _resolveInputs(self, resolver):
         self._inputsByCondition = {}
+        self._inputsH5ByCondition = {}
         for condition in self.conditions:
             subDf = self.condition(condition)
             inputs = []
@@ -143,6 +144,15 @@ class ConditionTable(object):
                 except DataNotFound as e:
                     raise InputResolutionError(str(e))
             self._inputsByCondition[condition] = inputs
+            try:
+                if any("subreads.bam" in s for s in inputs):
+                    self._inputsH5ByCondition[condition] = [name.replace("subreads.bam", "sts.h5") for name in inputs]
+                elif any("subreadset.xml" in s for s in inputs):
+                    self._inputsH5ByCondition[condition] = [name.replace("subreadset.xml", "sts.h5") for name in inputs]
+                if all([op.isfile(f) for f in self._inputsH5ByCondition[condition]]) is False:
+                    self._inputsH5ByCondition[condition] = {"/home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5"}
+            except:
+                self._inputsH5ByCondition[condition] = {"/home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5"}
 
     @property
     def conditions(self):
@@ -197,6 +207,9 @@ class ConditionTable(object):
 
     def inputs(self, condition):
         return self._inputsByCondition[condition]
+    
+    def inputsH5(self, condition):
+        return self._inputsH5ByCondition[condition]
 
 
 class ResequencingConditionTable(ConditionTable):
