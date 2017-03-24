@@ -1,0 +1,33 @@
+
+# ---------------------------------------------------------------------------------------------------
+# collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
+
+from bauhaus2.runtime import ct
+
+assert ct.inputsAreMapped, "collect-mappings.snake is for workflows with pre-mapped data"
+
+local_alignmentset = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+remote_alignmentsets = \
+    { c : ct.inputs(c)
+      for c in ct.conditions }
+
+
+# -- Target rules --
+
+rule collect_mappings:
+    input: local_alignmentset.values()
+
+# -- Worker rules --
+
+rule collect_mappings_one_condition:
+    input:
+        remoteAset=lambda wc: remote_alignmentsets[wc.condition],
+        remoteRef="conditions/{condition}/reference.fasta"
+    output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    shell:
+        """
+        dataset create {output} {input.remoteAset}
+        """

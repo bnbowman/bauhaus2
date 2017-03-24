@@ -1,0 +1,52 @@
+
+# ---------------------------------------------------------------------------------------------------
+# map-ccs.snake
+
+from bauhaus2.runtime import ct
+
+mapped_ccs_chunks = \
+    { c : expand("conditions/{condition}/mapped_ccs/chunks/mapped-ccs.chunk{chunkNo}.alignmentset.xml",
+                 condition=c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
+      for c in ct.conditions }
+
+gathered_mapped_ccs_chunks = \
+    { c : expand("conditions/{condition}/mapped_ccs/mapped-ccs.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+
+# -- Target rules --
+
+rule map_ccs_and_report:
+    output: "reports/CCSMappingReports/report.json"
+    input: gathered_mapped_ccs_chunks.values()
+    shell:
+        """
+        Rscript --vanilla scripts/R/ccsMappingPlots.R
+        """
+
+rule map_ccs:
+    input: gathered_mapped_ccs_chunks.values()
+
+rule map_chunked_ccs:
+    input: listConcat(mapped_ccs_chunks.values())
+
+
+# -- Worker rules
+
+rule map_chunked_ccs_one_chunk:
+    input:
+        ccsreads="conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
+        reference="conditions/{condition}/reference.fasta"
+    output: "conditions/{condition}/mapped_ccs/chunks/mapped-ccs.chunk{chunkNo}.alignmentset.xml"
+    shell:
+        """
+        pbalign --tmpDir=/scratch --nproc 8 {input.ccsreads} {input.reference} {output}
+        """
+
+rule map_chunked_ccs_and_gather_one_condition:
+    input: lambda wc: mapped_ccs_chunks[wc.condition]
+    output: "conditions/{condition}/mapped_ccs/mapped-ccs.alignmentset.xml"
+    shell:
+        """
+        dataset merge {output} {input}
+        """

@@ -1,0 +1,40 @@
+
+mapped_chunks = \
+    { c : expand("conditions/{condition}/mapped/chunks/mapped.chunk{chunkNo}.alignmentset.xml",
+                 condition =c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
+      for c in ct.conditions }
+
+gathered_mapped_chunks = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+rule map_unrolledNoHQ:
+    input: gathered_mapped_chunks.values()
+
+rule map_chunked_unrolledNoHQ:
+    input: listConcat(mapped_chunks.values())
+
+# --
+
+rule map_chunked_unrolledNoHQ_one_chunk:
+    input:
+        subreads="conditions/{condition}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml",
+        reference="conditions/{condition}/reference.fasta"
+    output: "conditions/{condition}/mapped/chunks/mapped.chunk{chunkNo}.alignmentset.xml"
+    threads: 8
+    params:
+        pbalignOpts="--noSplitSubreads --hitPolicy=leftmost",
+        blasrOpts="--bestn 1 --forwardOnly --fastMaxInterval --maxAnchorsPerPosition 30000 --minPctIdentity 60"
+    shell:
+        """
+        pbalign {params.pbalignOpts} --algorithmOptions=\'{params.blasrOpts}\' \
+          --tmpDir=/scratch --nproc {threads} {input.subreads} {input.reference} {output}
+        """
+
+rule map_chunked_unrolledNoHQ_and_gather_one_condition:
+    input: lambda wc: mapped_chunks[wc.condition]
+    output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    shell:
+        """
+        dataset merge {output} {input}
+        """

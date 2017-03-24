@@ -4,25 +4,25 @@
 
 First, try a couple cases where there's heterogeneity within a condition.
 
-  $ bauhaus2 -m validate -w Mapping -t ${BH_ROOT}test/data/bad-cts/nonuniform-conditions-1.csv
+  $ bauhaus2 -m validate -w MappingReports -t ${BH_ROOT}test/data/bad-cts/nonuniform-conditions-1.csv
   Condition table validation error: Conditions must be homogeneous--no variation allowed in variables/settings within a condition.  (Offending condition: "ControlChem"; offending column: "Genome")
   [1]
 
 
-  $ bauhaus2 -m validate -w Mapping -t ${BH_ROOT}test/data/bad-cts/nonuniform-conditions-2.csv
+  $ bauhaus2 -m validate -w MappingReports -t ${BH_ROOT}test/data/bad-cts/nonuniform-conditions-2.csv
   Condition table validation error: Conditions must be homogeneous--no variation allowed in variables/settings within a condition.  (Offending condition: "SparklyChem"; offending column: "p_Chemistry")
   [1]
 
 
 Try a case where a genome can't be found:
 
-  $ bauhaus2 -m validate  -w Mapping -t ${BH_ROOT}test/data/bad-cts/unrecognized-genome.csv
+  $ bauhaus2 -m validate  -w MappingReports -t ${BH_ROOT}test/data/bad-cts/unrecognized-genome.csv
   Condition table validation error: Reference not found: WillyWonka
   [1]
 
 Try a case where an input can't be found:
 
-  $ bauhaus2 -m validate -w Mapping -t ${BH_ROOT}test/data/bad-cts/nonexistent-data.csv
+  $ bauhaus2 -m validate -w MappingReports -t ${BH_ROOT}test/data/bad-cts/nonexistent-data.csv
   Condition table validation error: Input data not found: 3150128-0002/WillyWonka
   [1]
 

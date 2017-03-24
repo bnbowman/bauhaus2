@@ -7,7 +7,7 @@ until we have a better plan.
 
 Generate mapping reports workflow, starting from subreads.
 
-  $ bauhaus2 --noGrid generate -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies.csv -o mapping-reports
+  $ bauhaus2 --no-smrtlink --noGrid generate -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies.csv -o mapping-reports
   Validation and input resolution succeeded.
   Generated runnable workflow to "mapping-reports"
 
@@ -20,113 +20,114 @@ Generate mapping reports workflow, starting from subreads.
   |-- conditions
   |   |-- MovieA
   |   |   |-- mapped
+  |   |   |   |-- chunks
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk0.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk1.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk2.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk3.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk4.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk5.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk6.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
+  |   |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |   `-- mapped.alignmentset.xml
-  |   |   |-- mapped_chunks
-  |   |   |   |-- mapped.chunk0.alignmentset.bam
-  |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk0.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk0.alignmentset.xml
-  |   |   |   |-- mapped.chunk1.alignmentset.bam
-  |   |   |   |-- mapped.chunk1.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk1.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk1.alignmentset.xml
-  |   |   |   |-- mapped.chunk2.alignmentset.bam
-  |   |   |   |-- mapped.chunk2.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk2.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk2.alignmentset.xml
-  |   |   |   |-- mapped.chunk3.alignmentset.bam
-  |   |   |   |-- mapped.chunk3.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk3.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk3.alignmentset.xml
-  |   |   |   |-- mapped.chunk4.alignmentset.bam
-  |   |   |   |-- mapped.chunk4.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk4.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk4.alignmentset.xml
-  |   |   |   |-- mapped.chunk5.alignmentset.bam
-  |   |   |   |-- mapped.chunk5.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk5.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk5.alignmentset.xml
-  |   |   |   |-- mapped.chunk6.alignmentset.bam
-  |   |   |   |-- mapped.chunk6.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk6.alignmentset.bam.pbi
-  |   |   |   |-- mapped.chunk6.alignmentset.xml
-  |   |   |   |-- mapped.chunk7.alignmentset.bam
-  |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
-  |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
-  |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- subreads
-  |   |   |   `-- input.subreadset.xml
-  |   |   `-- subreads_chunks
-  |   |       |-- input.chunk0.subreadset.xml
-  |   |       |-- input.chunk1.subreadset.xml
-  |   |       |-- input.chunk2.subreadset.xml
-  |   |       |-- input.chunk3.subreadset.xml
-  |   |       |-- input.chunk4.subreadset.xml
-  |   |       |-- input.chunk5.subreadset.xml
-  |   |       |-- input.chunk6.subreadset.xml
-  |   |       `-- input.chunk7.subreadset.xml
+  |   |   `-- subreads
+  |   |       |-- chunks
+  |   |       |   |-- input.chunk0.subreadset.xml
+  |   |       |   |-- input.chunk1.subreadset.xml
+  |   |       |   |-- input.chunk2.subreadset.xml
+  |   |       |   |-- input.chunk3.subreadset.xml
+  |   |       |   |-- input.chunk4.subreadset.xml
+  |   |       |   |-- input.chunk5.subreadset.xml
+  |   |       |   |-- input.chunk6.subreadset.xml
+  |   |       |   `-- input.chunk7.subreadset.xml
+  |   |       `-- input.subreadset.xml
   |   `-- MovieB
   |       |-- mapped
+  |       |   |-- chunks
+  |       |   |   |-- mapped.chunk0.alignmentset.bam
+  |       |   |   |-- mapped.chunk0.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk0.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk0.alignmentset.xml
+  |       |   |   |-- mapped.chunk1.alignmentset.bam
+  |       |   |   |-- mapped.chunk1.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk1.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk1.alignmentset.xml
+  |       |   |   |-- mapped.chunk2.alignmentset.bam
+  |       |   |   |-- mapped.chunk2.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk2.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk2.alignmentset.xml
+  |       |   |   |-- mapped.chunk3.alignmentset.bam
+  |       |   |   |-- mapped.chunk3.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk3.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk3.alignmentset.xml
+  |       |   |   |-- mapped.chunk4.alignmentset.bam
+  |       |   |   |-- mapped.chunk4.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk4.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk4.alignmentset.xml
+  |       |   |   |-- mapped.chunk5.alignmentset.bam
+  |       |   |   |-- mapped.chunk5.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk5.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk5.alignmentset.xml
+  |       |   |   |-- mapped.chunk6.alignmentset.bam
+  |       |   |   |-- mapped.chunk6.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk6.alignmentset.bam.pbi
+  |       |   |   |-- mapped.chunk6.alignmentset.xml
+  |       |   |   |-- mapped.chunk7.alignmentset.bam
+  |       |   |   |-- mapped.chunk7.alignmentset.bam.bai
+  |       |   |   |-- mapped.chunk7.alignmentset.bam.pbi
+  |       |   |   `-- mapped.chunk7.alignmentset.xml
   |       |   `-- mapped.alignmentset.xml
-  |       |-- mapped_chunks
-  |       |   |-- mapped.chunk0.alignmentset.bam
-  |       |   |-- mapped.chunk0.alignmentset.bam.bai
-  |       |   |-- mapped.chunk0.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk0.alignmentset.xml
-  |       |   |-- mapped.chunk1.alignmentset.bam
-  |       |   |-- mapped.chunk1.alignmentset.bam.bai
-  |       |   |-- mapped.chunk1.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk1.alignmentset.xml
-  |       |   |-- mapped.chunk2.alignmentset.bam
-  |       |   |-- mapped.chunk2.alignmentset.bam.bai
-  |       |   |-- mapped.chunk2.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk2.alignmentset.xml
-  |       |   |-- mapped.chunk3.alignmentset.bam
-  |       |   |-- mapped.chunk3.alignmentset.bam.bai
-  |       |   |-- mapped.chunk3.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk3.alignmentset.xml
-  |       |   |-- mapped.chunk4.alignmentset.bam
-  |       |   |-- mapped.chunk4.alignmentset.bam.bai
-  |       |   |-- mapped.chunk4.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk4.alignmentset.xml
-  |       |   |-- mapped.chunk5.alignmentset.bam
-  |       |   |-- mapped.chunk5.alignmentset.bam.bai
-  |       |   |-- mapped.chunk5.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk5.alignmentset.xml
-  |       |   |-- mapped.chunk6.alignmentset.bam
-  |       |   |-- mapped.chunk6.alignmentset.bam.bai
-  |       |   |-- mapped.chunk6.alignmentset.bam.pbi
-  |       |   |-- mapped.chunk6.alignmentset.xml
-  |       |   |-- mapped.chunk7.alignmentset.bam
-  |       |   |-- mapped.chunk7.alignmentset.bam.bai
-  |       |   |-- mapped.chunk7.alignmentset.bam.pbi
-  |       |   `-- mapped.chunk7.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- subreads
-  |       |   `-- input.subreadset.xml
-  |       `-- subreads_chunks
-  |           |-- input.chunk0.subreadset.xml
-  |           |-- input.chunk1.subreadset.xml
-  |           |-- input.chunk2.subreadset.xml
-  |           |-- input.chunk3.subreadset.xml
-  |           |-- input.chunk4.subreadset.xml
-  |           |-- input.chunk5.subreadset.xml
-  |           |-- input.chunk6.subreadset.xml
-  |           `-- input.chunk7.subreadset.xml
+  |       `-- subreads
+  |           |-- chunks
+  |           |   |-- input.chunk0.subreadset.xml
+  |           |   |-- input.chunk1.subreadset.xml
+  |           |   |-- input.chunk2.subreadset.xml
+  |           |   |-- input.chunk3.subreadset.xml
+  |           |   |-- input.chunk4.subreadset.xml
+  |           |   |-- input.chunk5.subreadset.xml
+  |           |   |-- input.chunk6.subreadset.xml
+  |           |   `-- input.chunk7.subreadset.xml
+  |           `-- input.subreadset.xml
   |-- config.json
   |-- log
   |-- prefix.sh
   |-- reports
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
-  |   |   |-- errormode_MovieA.csv
-  |   |   |-- errormode_MovieB.csv
+  |   |   |-- errormode.csv
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_insertion.png
+  |   |   |-- fishboneplot_merge.png
   |   |   |-- fishboneplot_mismatch.png
+  |   |   |-- modelReport.json
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   |-- LibDiagnosticPlots
@@ -218,16 +219,15 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
-  |       |-- ConstantArrowFishbonePlots.R
+  |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
-  |       `-- ReadPlots.R
+  |       |-- ReadPlots.R
+  |       `-- constant_arrow.R
   |-- snakemake.log
   `-- workflow
-      |-- Snakefile
-      |-- runtime.py
-      `-- stdlib.py
+      `-- Snakefile
   
   21 directories, 191 files
 

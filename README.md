@@ -17,12 +17,12 @@ environment will be properly configured and the workflow will execute.
 
 ## How to get started using `bauhaus2`?
 
-   Please read the [tutorial](./doc/UsageTutorial.md).
+   Please read the [usage tutorial](./doc/UsageTutorial.md).
 
 
 ## How to contribute a workflow or analysis?
 
-   (TODO)
+   Please read the [workflow author tutorial](./doc/WorkflowAuthorTutorial.md
 
 
 ## What happened to the original `bauhaus`?

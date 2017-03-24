@@ -1,0 +1,25 @@
+
+raw_subreads = {
+    c: expand("conditions/{condition}/subreads/input.subreadset.xml",
+              condition=c)
+    for c in ct.conditions }
+
+mapped_subreads = {
+    c: expand("conditions/{condition}/mapped/mapped.alignmentset.xml",
+              condition=c)
+    for c in ct.conditions }
+
+rule hqrf_plots:
+    input: "reports/HQRF/report.json"
+
+rule evaluate_hqrf:
+    input:
+        subreads=raw_subreads.values(),
+        alns=mapped_subreads.values()
+    output: "reports/HQRF/report.json"
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module load primary-toolkit
+        hqrfVgt -s {input.subreads} -a {input.alns} -o {output}
+        """

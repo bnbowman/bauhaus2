@@ -3,6 +3,6 @@
   CCSMappingReports
   ConstantArrow
   CoverageTitration
-  Mapping
+  EvaluateHQRF
   MappingReports
   UnrolledNoHQMapping
