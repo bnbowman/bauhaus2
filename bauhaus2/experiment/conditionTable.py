@@ -13,6 +13,7 @@ import eztable
 import io,codecs
 
 from bauhaus2.pbls2 import DataNotFound, InvalidDataset
+from pkg_resources import Requirement, resource_filename
 
 # TODO: we are using the non-public method ._get_columns on
 # eztable.Table objects.  That method should really be public--maybe
@@ -150,9 +151,9 @@ class ConditionTable(object):
                 elif any("subreadset.xml" in s for s in inputs):
                     self._inputsH5ByCondition[condition] = [name.replace("subreadset.xml", "sts.h5") for name in inputs]
                 if all([op.isfile(f) for f in self._inputsH5ByCondition[condition]]) is False:
-                    self._inputsH5ByCondition[condition] = {"/home/ytian/bauhaus2/no_sts.h5"}
+                    self._inputsH5ByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.h5')
             except:
-                self._inputsH5ByCondition[condition] = {"/home/ytian/bauhaus2/no_sts.h5"}
+                self._inputsH5ByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.h5')
 
     @property
     def conditions(self):
