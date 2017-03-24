@@ -31,7 +31,8 @@ rule map_unrolledNoHQ_smrtlink_launch:
     output:
         pbserviceInfo="conditions/{condition}/mapped/pbservice.log"
     params:
-        presetXmlFile="extras/pbsmrtpipe-unrolled-mappings-preset.xml"
+        presetXmlFile="extras/pbsmrtpipe-unrolled-mappings-preset.xml",
+        jobid = "Bauhaus2_Job_{condition}"
     shell:
         """
         module add parallel
@@ -42,7 +43,7 @@ rule map_unrolledNoHQ_smrtlink_launch:
           --host {sl_host} --port {sl_port} \
           -e {input.subreadSet} \
           -e {input.referenceSet} \
-          --preset-xml {params.presetXmlFile} --job-title Bauhaus2Job \
+          --preset-xml {params.presetXmlFile} --job-title {params.jobid} \
         > {output}
         """
 
