@@ -71,7 +71,7 @@ loadConditionTable <- function(conditionTableCSV,
     ## going to need:
     ##  - Reference      (path to reference FASTA)
     ##  - MappedSubreads (path to the mapped subreads)
-    ##  - more??
+    ##  - sts.h5
     ## (These files should all found in the wfOutRoot)
     ct <- read.csv(conditionTableCSV)
     data.table(ct)
@@ -79,6 +79,7 @@ loadConditionTable <- function(conditionTableCSV,
     ct$MappedSubreads <- mappedSubreads
     referenceFasta <- file.path(wfOutRoot, "conditions", ct$Condition, "reference.fasta")
     ct$Reference <- referenceFasta
+    ct$sts_h5 <- file.path(wfOutRoot, "conditions", ct$Condition, "sts.h5")
     ct
 }
 

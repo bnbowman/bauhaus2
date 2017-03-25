@@ -39,7 +39,7 @@ setup(
                    "bauhaus2.resources.scripts.R"         : [ "*.R" ],
                    "bauhaus2.resources.scripts.Python"    : [ "*.py" ],
                    "bauhaus2.resources.scripts.MATLAB"    : [ "*.m" ],
-                   "bauhaus2.resources.extras"            : [ "*.xml", "*.json" ]
+                   "bauhaus2.resources.extras"            : [ "*.xml", "*.json", "*.h5" ]
     },
 
     install_requires=_get_local_requirements(REQUIREMENTS_TXT)

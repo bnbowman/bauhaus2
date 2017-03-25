@@ -56,6 +56,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta.fai
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -105,6 +106,7 @@ Generate mapping reports workflow, starting from subreads.
   |       |   `-- mapped.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta.fai
+  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -136,10 +138,13 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- PbiSampledPlots
   |   |   |-- report.Rd
   |   |   `-- report.json
-  |   `-- ReadPlots
-  |       |-- deletion_rate.png
-  |       |-- insertion_rate.png
-  |       |-- mismatch_rate.png
+  |   |-- ReadPlots
+  |   |   |-- deletion_rate.png
+  |   |   |-- insertion_rate.png
+  |   |   |-- mismatch_rate.png
+  |   |   |-- report.Rd
+  |   |   `-- report.json
+  |   `-- ZMWstsPlots
   |       |-- report.Rd
   |       `-- report.json
   |-- run.sh
@@ -151,10 +156,11 @@ Generate mapping reports workflow, starting from subreads.
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
   |       |-- ReadPlots.R
+  |       |-- ZMWstsPlots.R
   |       `-- constant_arrow.R
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
   
-  21 directories, 118 files
+  22 directories, 123 files
 
