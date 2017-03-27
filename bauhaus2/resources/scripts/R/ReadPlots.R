@@ -222,6 +222,14 @@ makeReport <- function(report) {
   })
   names(cd) <- names(dfs[[1]])
   
+  # Convert the integers in cd to numeric values to get rid of "integer overflow" caused by the integer maximum limit in R
+  cd$mismatches$cnts = as.numeric(cd$mismatches$cnts)
+  cd$gapSizes$refCnts = as.numeric(cd$gapSizes$refCnts)
+  cd$gapSizes$readCnts = as.numeric(cd$gapSizes$readCnts)
+  cd$indelCnts$delFromRefCnt = as.numeric(cd$indelCnts$delFromRefCnt)
+  cd$indelCnts$insertIntoReadCnt = as.numeric(cd$indelCnts$insertIntoReadCnt)
+  cd$clipping$cnts = as.numeric(cd$clipping$cnts)
+  
   # Make Plots
   makeMismatchPlots(report, cd)
   makeGapSizePlots(report, cd)
