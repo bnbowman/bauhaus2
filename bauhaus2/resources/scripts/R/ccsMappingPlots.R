@@ -21,8 +21,12 @@ makeCCSDataFrame1 <- function(datasetXmlFile, conditionName, sampleFraction=1.0)
     pbi <- pbbamr::loadPBI(datasetXmlFile, loadSNR = TRUE, loadNumPasses = TRUE, loadRQ = TRUE)
     ## TODO: readlength not yet available, unfortunately, due to the
     ## qstart/qend convention for CCS reads.
-    with(pbi,
-         tbl_df(data.frame(
+    if (nrow(pbi) == 0) {
+      warning("No data in the Xml file!")
+      0
+    } else {
+      with(pbi,
+           tbl_df(data.frame(
              Condition=conditionName,
              NumPasses = np,
              HoleNumber = hole,
@@ -37,6 +41,7 @@ makeCCSDataFrame1 <- function(datasetXmlFile, conditionName, sampleFraction=1.0)
              SnrC = snrC,
              SnrG = snrG,
              SnrT = snrT)))
+    }
 }
 
 makeCCSDataFrame <- function(report, wfOutputRoot, sampleFraction=1.0)
@@ -171,15 +176,21 @@ doAllCCSPlots <- function(report, ccsDf)
 }
 
 makeReport <- function(report) {
-  if (!interactive()){
+  if (!interactive()) {
     args <- commandArgs(TRUE)
     wfRootDir <- args[1]
     ccsDf <- makeCCSDataFrame(report, wfRootDir)  
-    report$write.table("ccs-mapping.csv",
-                       ccsDf,
-                       id = "ccs",
-                       title = "CCS Mapping CSV")
-    doAllCCSPlots(report, ccsDf)
+    # When no data is loaded from the xml files
+    if (ncol(ccsDf) == 1) {
+      warning("Empty alignments!")
+      0
+    } else {
+      report$write.table("ccs-mapping.csv",
+                         ccsDf,
+                         id = "ccs",
+                         title = "CCS Mapping CSV")
+      doAllCCSPlots(report, ccsDf)
+    }
     
     # Save the report object for later debugging
     save(report, file = file.path(report$outputDir, "report.Rd"))
