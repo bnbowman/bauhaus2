@@ -199,6 +199,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   dfSNR_ <- do.call(rbind, lapply(bases, function(b) { dfSNR %>% transform(exp_ = b) })) %>%
     filter(obs_ != exp_) %>%
     addMove("Mismatch")
+  dfSNRM_ <- dfSNR_
   
   dfMM <- dfErr_ %>% filter(move == "Match" & obs != exp)
   breaks <- breaksFn(ylimits)
@@ -223,7 +224,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     tags = c("fishbone", "hmm", "errormode", "mismatch")
   )
   
-  dfSNR_ <- rbind(dfSNR %>% transform(move = "Dark"), dfSNR %>% transform(move = "Merge")) %>% dplyr::rename(exp_ = obs_)
+  dfSNR_ <- rbind(dfSNR %>% transform(move = "Dark"), dfSNR %>% transform(move = "Merge")) %>% dplyr::rename(exp_ = obs_, obs_ = move)
   dfDel <- dfErr_ %>% filter(move == "Dark" | move == "Merge")
   breaks <- breaksFn(ylimits)
   tp = ggplot(dfDel, aes(x = as.numeric(as.character(snr)), y = mu, group = Condition, colour = Condition)) +
@@ -248,6 +249,8 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   )
   
   # Plot a merged fishbone plot that contains insetion, deletion and mismatch
+  dfSNRM_ = rbind((do.call(rbind, lapply(bases, function(b) { dfSNR %>% transform(exp_ = b) })) %>% addMove("Insert")), dfSNR_, dfSNRM_)
+  dfSNRM_ = dfSNRM_[order(dfSNRM_$exp_), , drop = FALSE]
   dfMerge <- dfErr_ %>% filter(move == "Dark" | move == "Merge" | move == "Insert" | (move == "Match" & obs != exp))
   dfMerge$obs_ = as.vector(dfMerge$obs_)
   dfMerge$obs_[dfMerge$move == "Dark"] = "Dark"
@@ -256,6 +259,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   breaks <- breaksFn(ylimits)
   tp = ggplot(dfMerge, aes(x = as.numeric(as.character(snr)), y = mu, colour = Condition, group = Condition)) +
     geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) + geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
+    geom_vline(aes(xintercept = value, colour = Condition), dfSNRM_) +
     xlim(xlimits) + scale_y_continuous(limits = ylimits, breaks = breaks) +
     labs(x = "SNR by Event", y = "HMM Error") +
     coord_fixed(ratio = ratio) +
