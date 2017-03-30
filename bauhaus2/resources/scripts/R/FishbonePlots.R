@@ -251,6 +251,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   # Plot a merged fishbone plot that contains insetion, deletion and mismatch
   dfSNRM_ = rbind((do.call(rbind, lapply(bases, function(b) { dfSNR %>% transform(exp_ = b) })) %>% addMove("Insert")), dfSNR_, dfSNRM_)
   dfSNRM_ = dfSNRM_[order(dfSNRM_$exp_), , drop = FALSE]
+  dfSNRM_$obs_ = factor(dfSNRM_$obs_, levels = c("Insert A", "Insert C", "Insert G", "Insert T", "Dark", "Merge", "Mismatch A", "Mismatch C", "Mismatch G", "Mismatch T"))
   dfMerge <- dfErr_ %>% filter(move == "Dark" | move == "Merge" | move == "Insert" | (move == "Match" & obs != exp))
   dfMerge$obs_ = as.vector(dfMerge$obs_)
   dfMerge$obs_[dfMerge$move == "Dark"] = "Dark"
