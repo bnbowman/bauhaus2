@@ -21,9 +21,9 @@ library(lazyeval)
 myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 
-# load sample size for argument, default sample size = 500
+# load sample size for argument, default sample size = 1000
 parser <- ArgumentParser()
-parser$add_argument("--sampleSize", nargs = 1, default = 500, help = "number of samples (ZMWs) for each condition")
+parser$add_argument("--sampleSize", nargs = 1, default = 1000, help = "number of samples (ZMWs) for each condition")
 try(args <- parser$parse_args())
 set.seed(args$seed)
 
