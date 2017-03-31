@@ -97,9 +97,11 @@ class Resolver(object):
         """
         Given the secondary job path (SMRTlink), find the alignment set within
         """
-        candidates = list(set().union(glob(op.join(jobDir,
-            "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml")), glob(op.join(jobDir,
-            "tasks/pbcoretools.tasks.gather_ccs_alignmentset-1/file.consensusalignmentset.xml"))))
+        candidates = list(set().union(
+            	glob(op.join(jobDir,
+            				 "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml")), 
+          		glob(op.join(jobDir,
+            				 "tasks/pbcoretools.tasks.gather_ccs_alignmentset-1/file.consensusalignmentset.xml"))))
         if len(candidates) < 1:
             raise DataNotFound("AlignmentSet not found in job directory %s " % jobDir)
         elif len(candidates) > 1:
