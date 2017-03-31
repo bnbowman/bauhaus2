@@ -97,7 +97,9 @@ class Resolver(object):
         """
         Given the secondary job path (SMRTlink), find the alignment set within
         """
-        candidates = glob(op.join(jobDir, "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml"))
+        candidates = list(set().union(glob(op.join(jobDir,
+            "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml")), glob(op.join(jobDir,
+            "tasks/pbcoretools.tasks.gather_ccs_alignmentset-1/file.consensusalignmentset.xml"))))
         if len(candidates) < 1:
             raise DataNotFound("AlignmentSet not found in job directory %s " % jobDir)
         elif len(candidates) > 1:
@@ -169,7 +171,8 @@ class Resolver(object):
             return subreadSet
 
     def ensureAlignmentSet(self, alignmentSet):
-        if not (alignmentSet.endswith(".alignmentset.xml") or alignmentSet.endswith(".aligned_subreads.bam")):
+        if not (alignmentSet.endswith(".alignmentset.xml") or alignmentSet.endswith(".aligned_subreads.bam") 
+                or alignmentSet.endswith(".consensusalignmentset.xml")):
             raise InvalidDataset("%s not an alignmentset" % alignmentSet)
         elif not op.isfile(alignmentSet):
             raise DataNotFound("AlignmentSet %s not found" % alignmentSet)

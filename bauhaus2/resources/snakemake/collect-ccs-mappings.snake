@@ -1,0 +1,38 @@
+
+# ---------------------------------------------------------------------------------------------------
+# collect-ccs-mappings.snake: hotlink pre-existing ccs mappings into our workflow directory
+
+from bauhaus2.runtime import ct
+
+assert ct.inputsAreMapped, "collect-mappings.snake is for workflows with pre-mapped data"
+
+local_alignmentset = \
+    { c : expand("conditions/{condition}/mapped_ccs/mapped-ccs.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+remote_alignmentsets = \
+    { c : ct.inputs(c)
+      for c in ct.conditions }
+
+
+# -- Target rules --
+
+rule map_ccs_and_report:
+    output: "reports/CCSMappingReports/report.json"
+    input: local_alignmentset.values()
+    shell:
+        """
+        Rscript --vanilla scripts/R/ccsMappingPlots.R
+        """
+
+# -- Worker rules --
+
+rule collect_mappings_one_condition:
+    input:
+        remoteAset=lambda wc: remote_alignmentsets[wc.condition],
+        remoteRef="conditions/{condition}/reference.fasta"
+    output: "conditions/{condition}/mapped_ccs/mapped-ccs.alignmentset.xml"
+    shell:
+        """
+        dataset create {output} {input.remoteAset}
+        """
