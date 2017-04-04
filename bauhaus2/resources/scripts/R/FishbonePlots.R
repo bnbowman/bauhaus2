@@ -180,21 +180,31 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
     geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
     geom_vline(aes(xintercept = value, colour = Condition), dfSNR %>% addMove("Insert")) +
-    xlim(xlimits) + scale_y_continuous(limits = ylimits, breaks = breaks) +
+    scale_y_continuous(limits = ylimits, breaks = breaks) +
     labs(x = "SNR", y = "Error Rate") +
     coord_fixed(ratio = ratio) +
-    facet_grid(exp_ ~ obs_) +
     plTheme + clScale + themeTilt +
     annotate("segment", x = -Inf, xend = Inf, y = -Inf, yend = -Inf, size=1) +
     annotate("segment", x = -Inf, xend = -Inf, y = -Inf, yend = Inf, size=1)
+  tp1 = tp + xlim(xlimits) + facet_grid(exp_ ~ obs_)
   report$ggsave(
     "fishboneplot_insertion.png",
-    tp,
+    tp1,
     width = 2000/dpi, height = 1200/dpi, units = "in",
     id = "fishboneplot_insertion",
     title = "FishbonePlot - Insertion",
     caption = "FishbonePlot - Insertion",
     tags = c("fishbone", "hmm", "errormode", "insertion")
+  )
+  tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free_x")
+  report$ggsave(
+    "fishboneplot_insertion_enlarged.png",
+    tp2,
+    width = 2000/dpi, height = 1200/dpi, units = "in",
+    id = "fishboneplot_insertion_enlarged",
+    title = "FishbonePlot - Insertion (Enlarged)",
+    caption = "FishbonePlot - Insertion (Enlarged)",
+    tags = c("fishbone", "hmm", "errormode", "insertion", "enlarged")
   )
   dfSNR_ <- do.call(rbind, lapply(bases, function(b) { dfSNR %>% transform(exp_ = b) })) %>%
     filter(obs_ != exp_) %>%
@@ -207,21 +217,31 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
     geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
     geom_vline(aes(xintercept = value, colour = Condition), dfSNR_) +
-    xlim(xlimits) + scale_y_continuous(limits = ylimits, breaks = breaks) +
+    scale_y_continuous(limits = ylimits, breaks = breaks) +
     labs(x = "SNR", y = "Error Rate") +
     coord_fixed(ratio = ratio) +
-    facet_grid(exp_ ~ obs_) +
     plTheme + clScale + themeTilt +
     annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size=1) +
     annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, size=1)
+  tp1 = tp + facet_grid(exp_ ~ obs_) + xlim(xlimits)
   report$ggsave(
     "fishboneplot_mismatch.png",
-    tp,
+    tp1,
     width = 2000/dpi, height = 1200/dpi, units = "in",
     id = "fishboneplot_mismatch",
     title = "FishbonePlot - MisMatch",
     caption = "FishbonePlot - MisMatch",
     tags = c("fishbone", "hmm", "errormode", "mismatch")
+  )
+  tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free_x")
+  report$ggsave(
+    "fishboneplot_mismatch_enlarged.png",
+    tp2,
+    width = 2000/dpi, height = 1200/dpi, units = "in",
+    id = "fishboneplot_mismatch_enlarged",
+    title = "FishbonePlot - MisMatch (Enlarged)",
+    caption = "FishbonePlot - MisMatch (Enlarged)",
+    tags = c("fishbone", "hmm", "errormode", "mismatch", "enlarged")
   )
   
   dfSNR_ <- rbind(dfSNR %>% transform(move = "Dark"), dfSNR %>% transform(move = "Merge")) %>% dplyr::rename(exp_ = obs_, obs_ = move)
@@ -231,21 +251,31 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
     geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
     geom_vline(aes(xintercept = value, colour = Condition), dfSNR_) +
-    xlim(xlimits) + scale_y_continuous(limits = ylimits, breaks = breaks) +
+    scale_y_continuous(limits = ylimits, breaks = breaks) +
     labs(x = "SNR", y = "Error Rate") +
     coord_fixed(ratio = ratio) +
-    facet_grid(exp_ ~ move) +
     plTheme + clScale + themeTilt +
     annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size=1) +
     annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, size=1)
+  tp1 = tp + facet_grid(exp_ ~ move) + xlim(xlimits)
   report$ggsave(
     "fishboneplot_deletion.png",
-    tp,
+    tp1,
     width = 1000/dpi, height = 1200/dpi, units = "in",
     id = "fishboneplot_deletion",
     title = "FishbonePlot - Deletion",
     caption = "FishbonePlot - Deletion",
     tags = c("fishbone", "hmm", "errormode", "deletion")
+  )
+  tp2 = tp + facet_grid(exp_ ~ move, scales = "free_x")
+  report$ggsave(
+    "fishboneplot_deletion_enlarged.png",
+    tp2,
+    width = 1000/dpi, height = 1200/dpi, units = "in",
+    id = "fishboneplot_deletion_enlarged",
+    title = "FishbonePlot - Deletion (Enlarged)",
+    caption = "FishbonePlot - Deletion (Enlarged)",
+    tags = c("fishbone", "hmm", "errormode", "deletion", "enlarged")
   )
   
   # Plot a merged fishbone plot that contains insetion, deletion and mismatch
@@ -261,21 +291,31 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
   tp = ggplot(dfMerge, aes(x = as.numeric(as.character(snr)), y = mu, colour = Condition, group = Condition)) +
     geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) + geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
     geom_vline(aes(xintercept = value, colour = Condition), dfSNRM_) +
-    xlim(xlimits) + scale_y_continuous(limits = ylimits, breaks = breaks) +
+    scale_y_continuous(limits = ylimits, breaks = breaks) +
     labs(x = "SNR by Event", y = "HMM Error") +
     coord_fixed(ratio = ratio) +
-    facet_grid(exp_ ~ obs_) +
     plTheme + clScale + themeTilt +
     annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size=1) +
     annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, size=1)
+  tp1 = tp + facet_grid(exp_ ~ obs_) + xlim(xlimits)
   report$ggsave(
     "fishboneplot_merge.png",
-    tp,
+    tp1,
     width = 3000/dpi, height = 1200/dpi, units = "in",
     id = "fishboneplot_merge",
     title = "FishbonePlot - Merge",
     caption = "FishbonePlot - Merge",
     tags = c("fishbone", "hmm", "errormode", "merge")
+  )
+  tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free_x")
+  report$ggsave(
+    "fishboneplot_merge_enlarged.png",
+    tp2,
+    width = 3000/dpi, height = 1200/dpi, units = "in",
+    id = "fishboneplot_merge_enlarged",
+    title = "FishbonePlot - Merge (Enlarged)",
+    caption = "FishbonePlot - Merge (Enlarged)",
+    tags = c("fishbone", "hmm", "errormode", "merge", "enlarged")
   )
   
   dfErr
