@@ -42,8 +42,11 @@ class Resolver(object):
     REFERENCES_ROOT = "/pbi/dept/secondary/siv/references"              # This is a central location for SA3+ references
 
     SMRTLINK_SERVER_TO_JOBS_ROOT = \
-        { serverName : ("/pbi/dept/secondary/siv/smrtlink/smrtlink-" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
-          for (serverName, smrtLinkId) in [ ("smrtlink-beta", "beta"), ("smrtlink-alpha", "alpha") ] }
+        { serverName : ("/pbi/" + smrtLinkJobPath + "/smrtlink/" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
+          for (serverName, smrtLinkJobPath, smrtLinkId) in [ ("smrtlink-beta", "dept/secondary/siv", "smrtlink-beta"), 
+                                                             ("smrtlink-alpha", "dept/secondary/siv", "smrtlink-alpha"), 
+                                                             ("smrtlink-siv", "dept/secondary/siv", "smrtlink-siv"), 
+                                                             ("smrtlink-release", "analysis", "release") ] }
 
     def __init__(self):
         self._selfCheck()
