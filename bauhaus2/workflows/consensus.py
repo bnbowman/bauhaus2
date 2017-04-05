@@ -15,6 +15,7 @@ class CoverageTitrationWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "CoverageTitration"
     CONDITION_TABLE_TYPE = CoverageTitrationConditionTable
+    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
     R_SCRIPTS = ("R/coverageTitrationPlots.R", "R/Bauhaus2.R")
 
     def plan(self):
