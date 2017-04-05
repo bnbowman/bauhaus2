@@ -238,7 +238,7 @@ doResidualErrorsPlot <- function(report, varTypeCounts, variables)
         id.free <- sprintf("residual-errors-free-y-coverage-%dx", coverage)
         title.free <- sprintf("Residual errors in %dx consensus sequence (free y-axis)", coverage)
         plt.free_y <- (plt + facet_grid(facet.formula, scale="free_y")
-                       + ggtitle())
+                       + ggtitle(title.free))
         report$ggsave(id.free, plt.free_y, id.free, title.free, title.free)
     }
 }
