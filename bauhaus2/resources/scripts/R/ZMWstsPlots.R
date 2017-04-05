@@ -16,6 +16,7 @@ library(tidyr, quietly = TRUE)
 library(survival)
 library(ggfortify)
 library(rhdf5)
+library(grid)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
@@ -165,6 +166,98 @@ makeYieldPlots <- function(report, cdH5) {
   )
 }
 
+makeEmptyPlots <- function(report) {
+  df <- data.frame()
+  tp = ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 10) + plTheme +
+    annotate(
+      geom = "text",
+      x = 5,
+      y = 5,
+      label = 'Missing sts.h5',
+      color = 'red',
+      angle = 45,
+      fontface = 'bold',
+      size = 16,
+      alpha = 0.5,
+      family = 'Arial'
+    )
+  
+  report$ggsave(
+    "unrolled_template_length_by_readtype_boxplot.png",
+    tp + labs(title = "Unrolled Alignments Length (Summation) by Read Type"),
+    width = plotwidth,
+    height = plotheight,
+    id = "unrolled_template_length_by_readtype_boxplot",
+    title = "Unrolled Alignments Length (Summation) by Read Type",
+    caption = "Unrolled Alignments Length (Summation) by Read Type",
+    tags = c(
+      "sts",
+      "h5",
+      "boxplot",
+      "unrolled",
+      "template",
+      "readtype",
+      "missing"
+    )
+  )
+  
+  report$ggsave(
+    "accuracy_by_readtype_boxplot.png",
+    tp + labs(title = "Accuracy (per ZMW) by Read Type"),
+    width = plotwidth,
+    height = plotheight,
+    id = "accuracy_by_readtype_boxplot",
+    title = "Accuracy (per ZMW) by Read Type",
+    caption = "Accuracy (per ZMW) by Read Type",
+    tags = c(
+      "sts",
+      "h5",
+      "boxplot",
+      "accuracy",
+      "readtype",
+      "missing"
+    )
+  )
+  
+  report$ggsave(
+    "nzmws_readtype_hist_percentage.png",
+    tp + labs(title = "Yield (ZMWs) Percentage by Read Type"),
+    width = plotwidth,
+    height = plotheight,
+    id = "nzmws_readtype_hist_percentage",
+    title = "Yield (ZMWs) Percentage by Read Type",
+    caption = "Yield (ZMWs) Percentage by Read Type",
+    tags = c(
+      "sts",
+      "h5",
+      "histogram",
+      "readtype",
+      "zmws",
+      "percentage",
+      "missing"
+    )
+  )
+  
+  report$ggsave(
+    "nzmws_productivity_hist_percentage.png",
+    tp + labs(title = "Yield (ZMWs) Percentage by Productivity"),
+    width = plotwidth,
+    height = plotheight,
+    id = "nzmws_productivity_hist_percentage",
+    title = "Yield (ZMWs) Percentage by Productivity",
+    caption = "Yield (ZMWs) Percentage by Productivity",
+    tags = c(
+      "sts",
+      "h5",
+      "histogram",
+      "productivity",
+      "zmws",
+      "percentage",
+      "missing"
+    )
+  )
+}
+
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
   conditions = report$condition.table
@@ -218,6 +311,7 @@ makeReport <- function(report) {
     
   } else {
     warning("sts.h5 file does not exsit for at least one condition!")
+    makeEmptyPlots(report)
   }
   
   # Save the report object for later debugging
