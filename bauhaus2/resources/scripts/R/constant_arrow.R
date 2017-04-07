@@ -164,6 +164,7 @@ constantArrow <-
     errormode$ZMW = sampled_ZMW
     errormode$Condition = Condition
     errormode$Reference = indFilter$ref
+    errormode$AlnTLength = indFilter$tend - indFilter$tstart
     
     # Aggregate the pmf matrix
     baseAgg <- function(pmf) {
@@ -179,6 +180,7 @@ constantArrow <-
       }
       singleZMW = loadSingleZmwHMMfromBAM(indFilter$offset[i], as.character(indFilter$file[i]), input_ref)
       errormode[i, paste("SNR.", bases, sep = "")] = as.numeric(attributes(singleZMW)[[1]])
+      
       ## Filter out really discordant alignments, they create numeric issues
       singleZMW <- filterData(singleZMW)
       # Handle case where all data is filtered
@@ -230,9 +232,6 @@ constantArrow <-
         branchVals$CTX <- fit$bPmf$CTX
         errormode[i, branchCols] = diag(as.matrix(baseAgg(branchVals)[, bases]))
         
-        
-        # Get the alignment length, accounting for any filtered bases
-        errormode[i, "AlnTLength"] = sum(sapply(singleZMW, function(x) sum(x$ref != "-")))
         errormode[i, "Time"] = fit$time_s
         errormode[i, "Iterations"] = length(fit$likelihoodHistory)
       }
