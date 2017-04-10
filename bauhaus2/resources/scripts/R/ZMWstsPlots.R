@@ -11,8 +11,8 @@ library(pbbamr)
 library(pbcommandR, quietly = TRUE)
 library(uuid, quietly = TRUE)
 library(gridExtra)
-library(dplyr, quietly = TRUE)
-library(tidyr, quietly = TRUE)
+library(dplyr)
+library(tidyr)
 library(survival)
 library(ggfortify)
 library(rhdf5)
@@ -38,6 +38,18 @@ loadstsH5 <- function(stsH5file) {
     productivity = h5read(stsH5file, "/ZMWMetrics/Productivity")
   )
   stsH5
+}
+
+poissonPlot <- function(d, title) {
+  lambdas <- seq(0, 4, length = 100)
+  poissonCurve <- data.frame(x = 1 - dpois(0, lambdas), y = dpois(1, lambdas))
+  p <- ggplot(poissonCurve, aes(x = x, y = y)) + geom_line() + ggtitle(title) +
+    scale_x_continuous('Not Empty') + scale_y_continuous('Single Loads', limits = c(0, .80)) +
+    geom_vline(xintercept = 1 - dpois(0,1)) + geom_hline(yintercept = dpois(1,1)) + 
+    geom_point(data = data.frame(empty = 1 - d[,'empty'], single = d[,'single'], 
+                                 Condition = d$Condition), aes(empty, single, col = Condition), size = 8) + 
+    plTheme + themeTilt  + clFillScale
+  return(p)
 }
 
 makeReadTypePlots <- function(report, cd2) {
@@ -108,6 +120,84 @@ makeReadTypePlots <- function(report, cd2) {
       "readtype"
     )
   )
+  
+  # Primary readType metric and agg plots
+  if (any(!is.na(cd2$readType))) {
+    cd2$readTypeAgg.1 <-
+      ifelse(
+        cd2$readType %in% c("Empty", "Indeterminate"),
+        "Empty",
+        ifelse(
+          cd2$readType %in% c(
+            'FullHqRead0',
+            'FullHqRead1',
+            'PartialHqRead1',
+            'PartialHqRead2'
+          ),
+          "Single",
+          "Other"
+        )
+      )
+    
+    cd2$readTypeAgg.2 <-
+      ifelse(
+        cd2$readType %in% c("Empty"),
+        "Empty",
+        ifelse(
+          cd2$readType %in% c(
+            'FullHqRead0',
+            'FullHqRead1',
+            'PartialHqRead1',
+            'PartialHqRead2'
+          ),
+          "Single",
+          "Other"
+        )
+      )
+    
+    emptyVals = "Empty"
+    singleVals = "Single"
+    d1 = cd2 %>% group_by(Condition) %>% summarise(empty  = mean(readTypeAgg.1 %in% emptyVals),
+                                                  single = mean(readTypeAgg.1 %in% singleVals))
+    d2 = cd2 %>% group_by(Condition) %>% summarise(empty  = mean(readTypeAgg.2 %in% emptyVals),
+                                                   single = mean(readTypeAgg.2 %in% singleVals))
+    
+    tp1 <- poissonPlot(d1, "readTypeAgg.1")
+    report$ggsave(
+      "readTypeAgg.1.png",
+      tp1,
+      width = plotwidth,
+      height = plotheight,
+      id = "readTypeAgg.1",
+      title = "readTypeAgg.1",
+      caption = "readTypeAgg.1",
+      tags = c(
+        "sts",
+        "h5",
+        "agg",
+        "readTypeAgg.1",
+        "readtype"
+      )
+    )
+    
+    tp2 <- poissonPlot(d2, "readTypeAgg.2")
+    report$ggsave(
+      "readTypeAgg.2.png",
+      tp2,
+      width = plotwidth,
+      height = plotheight,
+      id = "readTypeAgg.2",
+      title = "readTypeAgg.2",
+      caption = "readTypeAgg.2",
+      tags = c(
+        "sts",
+        "h5",
+        "agg",
+        "readTypeAgg.2",
+        "readtype"
+      )
+    )
+  }
 }
 
 makeYieldPlots <- function(report, cdH5) {
@@ -177,7 +267,7 @@ makeEmptyPlots <- function(report) {
       color = 'red',
       angle = 45,
       fontface = 'bold',
-      size = 16,
+      size = 14,
       alpha = 0.5,
       family = 'Arial'
     )
@@ -256,6 +346,42 @@ makeEmptyPlots <- function(report) {
       "missing"
     )
   )
+  
+  report$ggsave(
+    "readTypeAgg.1.png",
+    tp + labs(title = "readTypeAgg.1"),
+    width = plotwidth,
+    height = plotheight,
+    id = "readTypeAgg.1",
+    title = "readTypeAgg.1",
+    caption = "readTypeAgg.1",
+    tags = c(
+      "sts",
+      "h5",
+      "agg",
+      "readTypeAgg.1",
+      "readtype",
+      "missing"
+    )
+  )
+  
+  report$ggsave(
+    "readTypeAgg.2.png",
+    tp + labs(title = "readTypeAgg.2"),
+    width = plotwidth,
+    height = plotheight,
+    id = "readTypeAgg.2",
+    title = "readTypeAgg.2",
+    caption = "readTypeAgg.2",
+    tags = c(
+      "sts",
+      "h5",
+      "agg",
+      "readTypeAgg.2",
+      "readtype",
+      "missing"
+    )
+  )
 }
 
 # The core function, change the implementation in this to add new features.
@@ -296,10 +422,6 @@ makeReport <- function(report) {
       loadPBI2(s)
     })
     cd = combineConditions(dfs, as.character(conditions$Condition))
-    
-    length(unique(cdH5$hole))
-    length(unique(cd$hole))
-    length(intersect(unique(cdH5$hole), unique(cd$hole)))
     
     # Now combine into one large data frame
     cd2 = left_join(cd, cdH5, by = c("hole", "Condition"))
