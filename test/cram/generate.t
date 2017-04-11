@@ -69,5 +69,5 @@ of a mapping:
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # collect-smrtlink-references.snake: hotlink "remote" smrtlink reference FASTAs into our workflow directory
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
-  # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
