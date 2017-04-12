@@ -27,8 +27,9 @@ rule collect_smrtlink_reference_one_condition:
         sts="conditions/{condition}/sts.h5"
     shell:
         """
+        module load xpath
         alignment={input.alignment}
-        ref="$(awk '/ReferenceFastaFile/ {{print $3}}' $alignment | awk 'NR==1{{print $0}}' | awk -F '[""]' '{{print $2}}')"
+        ref="$(xpath -q -e '(//pbbase:ExternalResource[@MetaType="PacBio.ReferenceFile.ReferenceFastaFile"]/@ResourceId)[1]' $alignment | awk -F '[""]' '{{print $2}}')"
         ln -s $ref {output.fasta}
         ref+=".fai"
         ln -s $ref {output.fai}
