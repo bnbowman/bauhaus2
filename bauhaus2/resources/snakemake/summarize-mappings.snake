@@ -6,6 +6,9 @@ mapped_subreads = \
     { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
       for c in ct.conditions }
 
+local_fasta_files = \
+    { c : expand("conditions/{condition}/reference.fasta", condition=c)
+      for c in ct.conditions }
 
 # -- Target rules --
 
@@ -19,7 +22,8 @@ rule summarize_mappings:
         ZMWstsPlots="reports/ZMWstsPlots/report.json"
 
 rule PbiPlots:
-    input: mapped_subreads.values()
+    input: mapped_subreads.values(),
+           local_fasta_files.values()
     output: "reports/PbiPlots/report.json"
     shell:
         """
@@ -27,7 +31,8 @@ rule PbiPlots:
         """
 
 rule PbiSampledPlots:
-    input: mapped_subreads.values()
+    input: mapped_subreads.values(),
+           local_fasta_files.values()
     output: "reports/PbiSampledPlots/report.json"
     shell:
         """
@@ -35,7 +40,8 @@ rule PbiSampledPlots:
         """
 
 rule LibDiagnosticPlots:
-    input: mapped_subreads.values()
+    input: mapped_subreads.values(),
+           local_fasta_files.values()
     output: "reports/LibDiagnosticPlots/report.json"
     shell:
         """
@@ -43,7 +49,8 @@ rule LibDiagnosticPlots:
         """
 
 rule ReadPlots:
-    input: mapped_subreads.values()
+    input: mapped_subreads.values(),
+           local_fasta_files.values()
     output: "reports/ReadPlots/report.json"
     shell:
         """
@@ -51,7 +58,8 @@ rule ReadPlots:
         """
 
 rule ZMWstsPlots:
-    input: mapped_subreads.values()
+    input: mapped_subreads.values(),
+           local_fasta_files.values()
     output: "reports/ZMWstsPlots/report.json"
     shell:
         """

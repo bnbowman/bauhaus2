@@ -24,8 +24,7 @@ rule collect_mappings:
 
 rule collect_mappings_one_condition:
     input:
-        remoteAset=lambda wc: remote_alignmentsets[wc.condition],
-        remoteRef="conditions/{condition}/reference.fasta"
+        remoteAset=lambda wc: remote_alignmentsets[wc.condition]
     output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
     shell:
         """
