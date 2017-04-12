@@ -126,6 +126,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- errormode.csv
   |   |   |-- errormode_MovieA.csv
   |   |   |-- errormode_MovieB.csv
+  |   |   |-- mapped-metrics.csv
   |   |   |-- modelReport.json
   |   |   |-- report.Rd
   |   |   `-- report.json
@@ -149,6 +150,8 @@ Generate mapping reports workflow, starting from subreads.
   |       `-- report.json
   |-- run.sh
   |-- scripts
+  |   |-- Python
+  |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
@@ -162,5 +165,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  22 directories, 123 files
+  23 directories, 125 files
 
