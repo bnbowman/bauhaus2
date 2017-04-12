@@ -70,4 +70,6 @@ of a mapping:
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
   # collect-smrtlink-references.snake: hotlink "remote" smrtlink reference FASTAs into our workflow directory
+  # Here the sts.h5 file is fetched at the same time as the reference, just to simplify the process 
+  # When more sts or other data files are collected, they should be separated to a new snakemake file
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory

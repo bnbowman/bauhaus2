@@ -17,6 +17,8 @@ local_alignmentset = \
 rule collect_smrtlink_references:
     input: local_fasta_files.values()
 
+# Here the sts.h5 file is fetched at the same time as the reference, just to simplify the process 
+# When more sts or other data files are collected, they should be separated to a new snakemake file
 rule collect_smrtlink_reference_one_condition:
     input:
         alignment=lambda wc: local_alignmentset[wc.condition],
