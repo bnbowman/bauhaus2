@@ -34,7 +34,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "UnrolledNoHQMapping"
     CONDITION_TABLE_TYPE = UnrolledMappingConditionTable
-    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-unrolled-mappings-preset.xml",)
+    SMRTPIPE_PRESETS     = ( "extras/pbsmrtpipe-unrolled-mappings-preset.xml", )
     R_SCRIPTS            = ( "R/PbiSampledPlots.R",
                              "R/PbiPlots.R",
                              "R/LibDiagnosticPlots.R",
@@ -43,6 +43,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/FishbonePlots.R",
                              "R/ZMWstsPlots.R",
                              "R/Bauhaus2.R" )
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
 
     def plan(self):
         return ["summarize-mappings.snake", "constant-arrow.snake"] + \
