@@ -169,4 +169,6 @@ Generate mapping reports workflow, starting from subreads.
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
+  
+  23 directories, 130 files
 
