@@ -157,8 +157,8 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
     """
     index = alignments.index
     # alignment_indices of ZMWs fit w/ Arrow
-    intersect_indices = np.arange(index.shape[0])[np.in1d(index['holeNumber'], 
-                                                  arrow_zmws)]
+    intersect_indices = np.flatnonzero(np.in1d(index['holeNumber'], 
+                                       arrow_zmws))
 
     mapped_metrics = initializeMappedMetricsDictionary(arrow_zmws)
     for cnt, alignment_id in enumerate(intersect_indices):
