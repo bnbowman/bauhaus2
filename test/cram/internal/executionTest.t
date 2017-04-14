@@ -222,8 +222,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   `-- ZMWstsPlots
+  |       |-- accuracy_by_readtype_boxplot.png
+  |       |-- nzmws_productivity_hist_percentage.png
+  |       |-- nzmws_readtype_hist_percentage.png
+  |       |-- readTypeAgg.1.png
+  |       |-- readTypeAgg.2.png
   |       |-- report.Rd
-  |       `-- report.json
+  |       |-- report.json
+  |       `-- unrolled_template_length_by_readtype_boxplot.png
   |-- run.sh
   |-- scripts
   |   `-- R
@@ -239,7 +245,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  22 directories, 200 files
+  22 directories, 206 files
 
 
 

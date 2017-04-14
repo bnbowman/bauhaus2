@@ -7,8 +7,8 @@ def CCSMappingReportsPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
         return [ "collect-ccs-mappings.snake",
-                "collect-references.snake",
-                "scatter-subreads.snake" ]
+                 "collect-references.snake",
+                 "scatter-subreads.snake" ]
     else:
         # Do our own ccs mapping
         return [ "map-ccs.snake",

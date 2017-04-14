@@ -21,8 +21,8 @@ from .subreads import subreadsPlan
 def subreadsMappingPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
-        return [ "collect-mappings.snake",
-                 "collect-references.snake" ]
+        return [ "collect-smrtlink-references.snake",
+                 "collect-mappings.snake" ]
     elif not args.no_smrtlink:
         # Use SMRTLink for mapping
         return [ "map-subreads-smrtlink.snake",
@@ -40,6 +40,7 @@ def subreadsMappingPlan(ct, args):
         return [ "map-subreads.snake",
                  "collect-references.snake" ] + \
                 subreadsPlan(ct, args)
+
 
 
 class MappingReportsWorkflow(Workflow):

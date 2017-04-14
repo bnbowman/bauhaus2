@@ -6,8 +6,8 @@ from .subreads import subreadsPlan
 def UnrolledNoHQMappingPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
-        return [ "collect-mappings.snake",
-                 "collect-references.snake",
+        return [ "collect-smrtlink-references.snake",
+                 "collect-mappings.snake",
                  "scatter-subreads.snake" ]
     elif not args.no_smrtlink:
         # Use SMRTLink for mapping

@@ -57,7 +57,10 @@ sample_nigel <-
 
 # Subsample the data set to load SNR values
 loadSNRforSubset <- function(cd, SNRsampleSize = 5000) {
-  cd = cd %>% group_by(file) %>% mutate(framePerSecond = as.numeric(as.character(loadHeader(as.character(file[1]))$readgroups$framerate))) %>% ungroup()
+  cd <-
+    cd %>% group_by(file) %>% mutate(framePerSecond = as.numeric(as.character(
+      unique(loadHeader(as.character(file[1]))$readgroups$framerate)
+    ))) %>% ungroup()
   cd2 = cd %>% group_by(Condition, framePerSecond) %>% sample_nigel(size = SNRsampleSize) %>% ungroup()
   cd2snr = loadExtras(cd2, loadSNR = TRUE)
   cd2 = cbind(cd2, cd2snr)
