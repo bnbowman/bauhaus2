@@ -1,7 +1,9 @@
+import os
 import csv
 import argparse
 import numpy as np
 from pbcore.io import AlignmentSet
+
 
 def parseArgs():
     """
@@ -9,24 +11,16 @@ def parseArgs():
     aset  -> path to alignmentset.xml
     arrow -> path to constantArrow output csv
     """
-    parser = argparse.ArgumentParser(description='Generate mapping metrics CSV')
+    parser = argparse.ArgumentParser(description = \
+                                     'Generate mapping metrics CSV')
     parser.add_argument('--asets',
-                        dest='asets', 
-                        metavar='asets', 
-                        action='store', 
                         required=True,
                         nargs='+',
                         help='alignmentset to grab metrics from')
-    parser.add_argument('--arrow_csv',
-                        dest='arrow_csv',
-                        metavar='arrow_csv',
-                        action='store',
+    parser.add_argument('--arrow-csv',
                         required=True,
                         help='arrow csv for choosing ZMWs')
     parser.add_argument('--output',
-                        dest='output',
-                        metavar='output',
-                        action='store',
                         required=True,
                         help='output csv for storing mapped metrics')
     args = parser.parse_args()
@@ -46,7 +40,8 @@ def grabArrowZmwsByCondition(arrow_csv, condition):
     return arrow_zmws
 
 def grabConditionName(aset):
-    condition = aset.split('/')[1] # path to aset is structured, split string to get condition name
+    # path to aset is structured, split string to get condition name
+    condition = aset.split(os.path.sep)[1]
     return condition
 
 def openAlignmentSet(aset):
@@ -77,11 +72,14 @@ def initializeMappedMetricsDictionary(zmws):
 
 def grabAlignmentPulseWidths(alignment):
     """
-    retrieve pulsewidths from alignment. if pulsewidth tag not present, return list of nans
+    retrieve pulsewidths from alignment. if pulsewidth tag not present, 
+    return list of nans
     """
-    if 'pw' in [tag[0] for tag in alignment.peer.tags]: # check if pw info is available
+    if 'pw' in [tag[0] for tag in alignment.peer.tags]:
+        # check if pw info is available
         pws = alignment.PulseWidth()
-    else: # if pw is not available, initialize to array of nans
+    else: 
+        # if pw is not available, initialize to array of nans
         pws = np.empty((len(alignment.reference()), ))
         pws[:] = np.nan
 
@@ -90,12 +88,15 @@ def grabAlignmentPulseWidths(alignment):
 def grabAlignmentStartFrames(alignment):
 
     """
-    retrieve start frames from alignment. if start frames tag not present, return list of nans
+    retrieve start frames from alignment. if start frames tag not present, 
+    return list of nans
     """
-    if 'sf' in [tag[0] for tag in alignment.peer.tags]: # check if sf info is available
+    if 'sf' in [tag[0] for tag in alignment.peer.tags]:
+        # check if sf info is available
         sfs = alignment.peer.get_tag('sf')
     else:
-        sfs = np.empty((alignment.aEnd+1, )) # if sf is not available, initialize to array of nans
+        # if sf is not available, initialize to array of nans
+        sfs = np.empty((alignment.aEnd+1, ))
         sfs[:] = np.nan
 
     return sfs
@@ -106,52 +107,77 @@ def sortPwAndIpdByBase(pws, ipds, reference):
     """
     pw = {'A': [], 'C': [], 'G': [], 'T': [], '-': []}
     ipd = {'A': [], 'C': [], 'G': [], 'T': [], '-': []}
+    EXCLUDED = 65535
     for i,base in enumerate(reference):
-        if pws[i] != 65535 and ipds[i] != 65535: # they weren't detected (deleted)
+        if pws[i] != EXCLUDED and ipds[i] != EXCLUDED:
+            # they weren't detected (i.e. deletions). 65535 is a placeholder
             pw[base].append(pws[i])
             ipd[base].append(ipds[i])
     return pw, ipd
 
-def addAlignmentMetrics(mapped_metrics, cnt, alignment, pw, ipd, sfs, framerate, condition):
+def addAlignmentMetrics(mapped_metrics, cnt, alignment, 
+                        pw, ipd, sfs, framerate, condition):
     """
 
     """
     mapped_metrics['zmw'][cnt] = alignment.HoleNumber
     mapped_metrics['condition'].append(condition)
-    mapped_metrics['median-pw-A'][cnt] = np.divide(np.median(pw['A']), framerate)
-    mapped_metrics['median-pw-C'][cnt] = np.divide(np.median(pw['C']), framerate)
-    mapped_metrics['median-pw-G'][cnt] = np.divide(np.median(pw['G']), framerate)
-    mapped_metrics['median-pw-T'][cnt] = np.divide(np.median(pw['T']), framerate)
-    mapped_metrics['median-ipd-A'][cnt] = np.divide(np.median(ipd['A']), framerate)
-    mapped_metrics['median-ipd-C'][cnt] = np.divide(np.median(ipd['C']), framerate)
-    mapped_metrics['median-ipd-G'][cnt] = np.divide(np.median(ipd['G']), framerate)
-    mapped_metrics['median-ipd-T'][cnt] = np.divide(np.median(ipd['T']), framerate)
-    mapped_metrics['start-time'][cnt] = np.divide(sfs[alignment.aStart], framerate)
-    mapped_metrics['end-time'][cnt] = np.divide(sfs[alignment.aEnd-1], framerate)
+    mapped_metrics['median-pw-A'][cnt] = np.divide(np.median(pw['A']), 
+                                                   framerate)
+    mapped_metrics['median-pw-C'][cnt] = np.divide(np.median(pw['C']), 
+                                                   framerate)
+    mapped_metrics['median-pw-G'][cnt] = np.divide(np.median(pw['G']), 
+                                                   framerate)
+    mapped_metrics['median-pw-T'][cnt] = np.divide(np.median(pw['T']), 
+                                                   framerate)
+    mapped_metrics['median-ipd-A'][cnt] = np.divide(np.median(ipd['A']), 
+                                                    framerate)
+    mapped_metrics['median-ipd-C'][cnt] = np.divide(np.median(ipd['C']), 
+                                                    framerate)
+    mapped_metrics['median-ipd-G'][cnt] = np.divide(np.median(ipd['G']), 
+                                                    framerate)
+    mapped_metrics['median-ipd-T'][cnt] = np.divide(np.median(ipd['T']), 
+                                                    framerate)
+    mapped_metrics['start-time'][cnt] = np.divide(sfs[alignment.aStart], 
+                                                  framerate)
+    mapped_metrics['end-time'][cnt] = np.divide(sfs[alignment.aEnd-1], 
+                                                framerate)
     mapped_metrics['aStart'][cnt] = alignment.aStart
     mapped_metrics['aEnd'][cnt] = alignment.aEnd
-    mapped_metrics['spasmid'][cnt] = 1. - np.divide(alignment.nMM + alignment.nDel + alignment.nIns, 
-                                                    alignment.tEnd - alignment.tStart, dtype='f')
+    nErrs = alignment.nMM + alignment.nDel + alignment.nIns
+    mapped_metrics['spasmid'][cnt] = 1. - np.divide(nErrs, 
+                                                    alignment.tEnd - \
+                                                    alignment.tStart, 
+                                                    dtype='f')
     return mapped_metrics
 
 def grabMappedMetrics(condition, alignments, arrow_zmws):
     """ 
     grab mapped metrics from ZMWs fit with constant Arrow model
     """
-    framerate = alignments.resourceReaders()[0].readGroupTable.FrameRate[0]
     index = alignments.index
-    intersect_indices = np.arange(index.shape[0])[np.in1d(index['holeNumber'], arrow_zmws)] # alignment_indices of ZMWs fit w/ Arrow
+    # alignment_indices of ZMWs fit w/ Arrow
+    intersect_indices = np.arange(index.shape[0])[np.in1d(index['holeNumber'], 
+                                                  arrow_zmws)]
 
     mapped_metrics = initializeMappedMetricsDictionary(arrow_zmws)
-    cnt = 0
-    for alignment_id in intersect_indices:
+    for cnt, alignment_id in enumerate(intersect_indices):
         alignment = alignments[alignment_id]
+        framerate = alignments.readGroupTable['MovieName' == 
+                                                alignment.movieName
+                                            ]['FrameRate']
         pws = grabAlignmentPulseWidths(alignment)
         sfs = grabAlignmentStartFrames(alignment)
         ipds = alignment.IPD() # ipds are always stored
         pw, ipd = sortPwAndIpdByBase(pws, ipds, alignment.reference())
-        mapped_metrics = addAlignmentMetrics(mapped_metrics, cnt, alignment, pw, ipd, sfs, framerate, condition)
-        cnt += 1
+        mapped_metrics = addAlignmentMetrics(mapped_metrics, 
+                                             cnt, 
+                                             alignment, 
+                                             pw, 
+                                             ipd, 
+                                             sfs, 
+                                             framerate, 
+                                             condition)
 
     return mapped_metrics
 
@@ -159,9 +185,10 @@ def writeMappedMetricsCsv(mapped_metrics, output):
     """
     write mapped metrics to csv file
     """
-    columns = ['zmw', 'condition', 'spasmid', 'aStart', 'aEnd', 'start-time', 'end-time', 
-               'median-pw-A', 'median-pw-C', 'median-pw-G', 'median-pw-T',
-               'median-ipd-A', 'median-ipd-C', 'median-ipd-G', 'median-ipd-T']
+    columns = ['zmw', 'condition', 'spasmid', 'aStart', 'aEnd',
+               'start-time', 'end-time', 'median-pw-A', 'median-pw-C',
+               'median-pw-G', 'median-pw-T', 'median-ipd-A', 'median-ipd-C',
+               'median-ipd-G', 'median-ipd-T']
 
     with open(output, 'wb') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
@@ -175,10 +202,15 @@ def writeMappedMetricsCsv(mapped_metrics, output):
 def main():
     asets, arrow_csv, output = parseArgs()
     conditions = [grabConditionName(aset) for aset in asets]
-    arrow_zmws_by_condition = [grabArrowZmwsByCondition(arrow_csv, condition) for condition in conditions]
+    arrow_zmws_by_condition = [grabArrowZmwsByCondition(arrow_csv, 
+                                                        condition) \ 
+                                    for condition in conditions]
     alignments_by_condition = [openAlignmentSet(aset) for aset in asets]
     args = zip(conditions, alignments_by_condition, arrow_zmws_by_condition)
-    mapped_metrics = [grabMappedMetrics(arg[0], arg[1], arg[2]) for arg in args]
+    mapped_metrics = [grabMappedMetrics(arg[0], arg[1], arg[2]) \
+                                    for arg in zip(conditions, 
+                                                   alignments_by_condition, 
+                                                   arrow_zmws_by_condition)]
     writeMappedMetricsCsv(mapped_metrics, output)
     return None
 
