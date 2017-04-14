@@ -163,9 +163,9 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
     mapped_metrics = initializeMappedMetricsDictionary(arrow_zmws)
     for cnt, alignment_id in enumerate(intersect_indices):
         alignment = alignments[alignment_id]
-        framerate = alignments.readGroupTable['MovieName' == 
-                                                alignment.movieName
-                                            ]['FrameRate']
+        framerate = framerate = alignments.readGroupTable[
+                        'MovieName' == alignment.movieName][
+                        'FrameRate']
         pws = grabAlignmentPulseWidths(alignment)
         sfs = grabAlignmentStartFrames(alignment)
         ipds = alignment.IPD() # ipds are always stored
@@ -206,7 +206,6 @@ def main():
                                                         condition) \ 
                                     for condition in conditions]
     alignments_by_condition = [openAlignmentSet(aset) for aset in asets]
-    args = zip(conditions, alignments_by_condition, arrow_zmws_by_condition)
     mapped_metrics = [grabMappedMetrics(arg[0], arg[1], arg[2]) \
                                     for arg in zip(conditions, 
                                                    alignments_by_condition, 
