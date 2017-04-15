@@ -6,9 +6,9 @@ from .subreads import subreadsPlan
 def CCSMappingReportsPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
-        return [ "collect-ccs-mappings.snake",
-                 "collect-references.snake",
-                 "scatter-subreads.snake" ]
+        return [ "collect-smrtlink-references.snake",
+                 "ccs-alignmentset.snake",
+                 "collect-ccs-mappings.snake" ]
     else:
         # Do our own ccs mapping
         return [ "map-ccs.snake",
@@ -28,4 +28,5 @@ class CCSMappingReportsWorkflow(Workflow):
     R_SCRIPTS = ("R/ccsMappingPlots.R", "R/Bauhaus2.R")
 
     def plan(self):
-        return CCSMappingReportsPlan(self.conditionTable, self.cliArgs)
+        return ["summarize-ccs.snake"] + \
+            CCSMappingReportsPlan(self.conditionTable, self.cliArgs)

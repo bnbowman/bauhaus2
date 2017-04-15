@@ -9,10 +9,6 @@ local_fasta_files = \
 remote_sts_h5 = \
     { c : ct.inputsH5(c)
       for c in ct.conditions }
-      
-local_alignmentset = \
-    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
-      for c in ct.conditions }
 
 rule collect_smrtlink_references:
     input: local_fasta_files.values()

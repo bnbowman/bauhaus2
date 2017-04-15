@@ -22,6 +22,7 @@ def subreadsMappingPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
         return [ "collect-smrtlink-references.snake",
+                 "mapping-alignmentset.snake",
                  "collect-mappings.snake" ]
     elif not args.no_smrtlink:
         # Use SMRTLink for mapping
