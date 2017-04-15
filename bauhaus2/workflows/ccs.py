@@ -6,7 +6,8 @@ from .subreads import subreadsPlan
 def CCSMappingReportsPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
-        return [ "collect-ccs-smrtlink-references.snake",
+        return [ "collect-smrtlink-references.snake",
+                 "ccs-alignmentset.snake",
                  "collect-ccs-mappings.snake" ]
     else:
         # Do our own ccs mapping
