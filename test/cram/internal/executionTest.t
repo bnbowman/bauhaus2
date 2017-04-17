@@ -232,6 +232,8 @@ Generate mapping reports workflow, starting from subreads.
   |       `-- unrolled_template_length_by_readtype_boxplot.png
   |-- run.sh
   |-- scripts
+  |   |-- Python
+  |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
@@ -245,7 +247,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  22 directories, 206 files
+  23 directories, 207 files
 
 
 

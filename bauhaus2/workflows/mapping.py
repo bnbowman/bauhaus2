@@ -60,6 +60,7 @@ class MappingReportsWorkflow(Workflow):
                              "R/FishbonePlots.R",
                              "R/ZMWstsPlots.R",
                              "R/Bauhaus2.R" )
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
 
     def plan(self):
         return ["summarize-mappings.snake", "constant-arrow.snake"] + \
