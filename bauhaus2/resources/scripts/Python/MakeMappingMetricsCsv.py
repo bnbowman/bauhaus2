@@ -203,10 +203,10 @@ def main():
     asets, arrow_csv, output = parseArgs()
     conditions = [grabConditionName(aset) for aset in asets]
     arrow_zmws_by_condition = [grabArrowZmwsByCondition(arrow_csv, 
-                                                        condition) \ 
+                                                        condition)
                                     for condition in conditions]
     alignments_by_condition = [openAlignmentSet(aset) for aset in asets]
-    mapped_metrics = [grabMappedMetrics(arg[0], arg[1], arg[2]) \
+    mapped_metrics = [grabMappedMetrics(arg[0], arg[1], arg[2])
                                     for arg in zip(conditions, 
                                                    alignments_by_condition, 
                                                    arrow_zmws_by_condition)]
