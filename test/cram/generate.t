@@ -17,6 +17,7 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   |   |-- Python
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
+  |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
@@ -28,7 +29,7 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   `-- workflow
       `-- Snakefile
   
-  4 directories, 14 files
+  4 directories, 15 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
