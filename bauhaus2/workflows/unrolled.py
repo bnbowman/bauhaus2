@@ -42,6 +42,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/constant_arrow.R",
                              "R/FishbonePlots.R",
                              "R/ZMWstsPlots.R",
+                             "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
 
