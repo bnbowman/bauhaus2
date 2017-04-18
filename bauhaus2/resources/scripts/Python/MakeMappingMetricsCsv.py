@@ -41,7 +41,7 @@ def grabArrowZmwsByCondition(arrow_csv, condition):
 
 def grabConditionName(aset):
     # path to aset is structured, split string to get condition name
-    condition = aset.split(os.path.sep)[1]
+    condition = aset.split(os.path.sep)[3]
     return condition
 
 def openAlignmentSet(aset):
@@ -111,6 +111,7 @@ def sortPwAndIpdByBase(pws, ipds, reference):
     for i,base in enumerate(reference):
         if pws[i] != EXCLUDED and ipds[i] != EXCLUDED:
             # they weren't detected (i.e. deletions). 65535 is a placeholder
+            base = base.upper()
             pw[base].append(pws[i])
             ipd[base].append(ipds[i])
     return pw, ipd
@@ -160,7 +161,7 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
     intersect_indices = np.flatnonzero(np.in1d(index['holeNumber'], 
                                        arrow_zmws))
 
-    mapped_metrics = initializeMappedMetricsDictionary(arrow_zmws)
+    mapped_metrics = initializeMappedMetricsDictionary(intersect_indices)
     for cnt, alignment_id in enumerate(intersect_indices):
         alignment = alignments[alignment_id]
         framerate = framerate = alignments.readGroupTable[
