@@ -211,7 +211,6 @@ def main():
                       for arg in zip(conditions,
                                      alignments_by_condition,
                                      arrow_zmws_by_condition)]
-
     writeMappedMetricsCsv(mapped_metrics, output)
     return None
 
