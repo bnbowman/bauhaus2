@@ -41,7 +41,7 @@ def grabArrowZmwsByCondition(arrow_csv, condition):
 
 def grabConditionName(aset):
     # path to aset is structured, split string to get condition name
-    condition = aset.split(os.path.sep)[1]
+    condition = aset.split(os.path.sep)[3]
     return condition
 
 def openAlignmentSet(aset):
