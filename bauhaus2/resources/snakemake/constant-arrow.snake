@@ -11,8 +11,7 @@ mapped_subreads = \
 
 rule constant_arrow_plots:
     input:
-        constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json",
-        makeMappingMetricsCsv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
+        constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
 
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode.csv"

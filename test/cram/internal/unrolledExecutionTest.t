@@ -122,6 +122,9 @@ Generate mapping reports workflow, starting from subreads.
   |-- log
   |-- prefix.sh
   |-- reports
+  |   |-- AlignmentBasedHeatmaps
+  |   |   |-- report.RData
+  |   |   `-- report.json
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- errormode.csv
   |   |   |-- errormode_MovieA.csv
@@ -159,6 +162,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- Python
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
+  |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
@@ -171,5 +175,9 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
+<<<<<<< HEAD
   23 directories, 131 files
+=======
+  24 directories, 133 files
+>>>>>>> d9cdb983e2b293c529e2e62a8f4050aa6fa6e0c8
 

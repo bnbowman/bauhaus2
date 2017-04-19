@@ -122,6 +122,73 @@ Generate mapping reports workflow, starting from subreads.
   |-- log
   |-- prefix.sh
   |-- reports
+  |   |-- AlignmentBasedHeatmaps
+  |   |   |-- Accuracy_Heatmap_MovieA.png
+  |   |   |-- Accuracy_Heatmap_MovieB.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieA.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- AlnReadLen_Heatmap_MovieA.png
+  |   |   |-- AlnReadLen_Heatmap_MovieB.png
+  |   |   |-- Count_Heatmap_MovieA.png
+  |   |   |-- Count_Heatmap_MovieB.png
+  |   |   |-- DeletionRate_Heatmap_MovieA.png
+  |   |   |-- DeletionRate_Heatmap_MovieB.png
+  |   |   |-- InsertionRate_Heatmap_MovieA.png
+  |   |   |-- InsertionRate_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieB.png
+  |   |   |-- MismatchRate_Heatmap_MovieA.png
+  |   |   |-- MismatchRate_Heatmap_MovieB.png
+  |   |   |-- NumBases_A_Heatmap_MovieA.png
+  |   |   |-- NumBases_A_Heatmap_MovieB.png
+  |   |   |-- NumBases_C_Heatmap_MovieA.png
+  |   |   |-- NumBases_C_Heatmap_MovieB.png
+  |   |   |-- NumBases_G_Heatmap_MovieA.png
+  |   |   |-- NumBases_G_Heatmap_MovieB.png
+  |   |   |-- NumBases_T_Heatmap_MovieA.png
+  |   |   |-- NumBases_T_Heatmap_MovieB.png
+  |   |   |-- PW_A_Heatmap_MovieA.png
+  |   |   |-- PW_A_Heatmap_MovieB.png
+  |   |   |-- PW_C_Heatmap_MovieA.png
+  |   |   |-- PW_C_Heatmap_MovieB.png
+  |   |   |-- PW_G_Heatmap_MovieA.png
+  |   |   |-- PW_G_Heatmap_MovieB.png
+  |   |   |-- PW_T_Heatmap_MovieA.png
+  |   |   |-- PW_T_Heatmap_MovieB.png
+  |   |   |-- PolRate_Heatmap_MovieA.png
+  |   |   |-- PolRate_Heatmap_MovieB.png
+  |   |   |-- Reference_Heatmap_MovieA.png
+  |   |   |-- Reference_Heatmap_MovieB.png
+  |   |   |-- SNR_A_Heatmap_MovieA.png
+  |   |   |-- SNR_A_Heatmap_MovieB.png
+  |   |   |-- SNR_C_Heatmap_MovieA.png
+  |   |   |-- SNR_C_Heatmap_MovieB.png
+  |   |   |-- SNR_G_Heatmap_MovieA.png
+  |   |   |-- SNR_G_Heatmap_MovieB.png
+  |   |   |-- SNR_T_Heatmap_MovieA.png
+  |   |   |-- SNR_T_Heatmap_MovieB.png
+  |   |   |-- TotalTime_Heatmap_MovieA.png
+  |   |   |-- TotalTime_Heatmap_MovieB.png
+  |   |   |-- Uniformity_histogram_MovieA.png
+  |   |   |-- Uniformity_histogram_MovieB.png
+  |   |   |-- Uniformity_metrics_MovieA.csv
+  |   |   |-- Uniformity_metrics_MovieB.csv
+  |   |   |-- rEnd_Heatmap_MovieA.png
+  |   |   |-- rEnd_Heatmap_MovieB.png
+  |   |   |-- rStartExtRange_Heatmap_MovieA.png
+  |   |   |-- rStartExtRange_Heatmap_MovieB.png
+  |   |   |-- rStart_Heatmap_MovieA.png
+  |   |   |-- rStart_Heatmap_MovieB.png
+  |   |   |-- report.RData
+  |   |   |-- report.json
+  |   |   |-- tEnd_Heatmap_MovieA.png
+  |   |   |-- tEnd_Heatmap_MovieB.png
+  |   |   |-- tStart_Heatmap_MovieA.png
+  |   |   `-- tStart_Heatmap_MovieB.png
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
@@ -232,7 +299,10 @@ Generate mapping reports workflow, starting from subreads.
   |       `-- unrolled_template_length_by_readtype_boxplot.png
   |-- run.sh
   |-- scripts
+  |   |-- Python
+  |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
+  |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
@@ -245,7 +315,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  22 directories, 206 files
+  24 directories, 274 files
 
 
 

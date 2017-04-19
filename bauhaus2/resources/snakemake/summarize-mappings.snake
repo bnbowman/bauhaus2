@@ -19,8 +19,8 @@ rule summarize_mappings:
         libDiagnosticPlots="reports/LibDiagnosticPlots/report.json",
         readPlots="reports/ReadPlots/report.json",
         constantArrowPlots="reports/ConstantArrowFishbonePlots/report.json",
-        makeMappingMetricsCsv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv",
-        ZMWstsPlots="reports/ZMWstsPlots/report.json"
+        ZMWstsPlots="reports/ZMWstsPlots/report.json",
+        AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json"
 
 rule PbiPlots:
     input: mapped_subreads.values(),
@@ -65,4 +65,13 @@ rule ZMWstsPlots:
     shell:
         """
         Rscript --vanilla scripts/R/ZMWstsPlots.R
+        """
+        
+rule AlignmentBasedHeatmaps:
+    input: mapped_subreads.values(),
+           local_fasta_files.values()
+    output: "reports/AlignmentBasedHeatmaps/report.json"
+    shell:
+        """
+        Rscript --vanilla scripts/R/AlignmentBasedHeatmaps.R
         """
