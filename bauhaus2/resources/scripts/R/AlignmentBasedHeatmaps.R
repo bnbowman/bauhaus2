@@ -1195,27 +1195,11 @@ drawSummarizedHeatmaps = function(report, res, label, N)
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "AlnReadLen", label, N, limits = c(500, 9000)),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report,
-                                  df,
-                                  "AlnReadLenExtRange",
-                                  label,
-                                  N,
-                                  limits = c(500, 30000)),
-      silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "rStart", label, N, limits = c(0, 9000)),
-      silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "rStartExtRange", label, N, limits = c(0, 25000)),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "SNR_C", label, N, limits = c(5, 13)),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "Pkmid_C", label, N, limits = c(100, 500)),
-      silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report,
-                                  df,
-                                  "MaxSubreadLenExtRange",
-                                  label,
-                                  N,
-                                  limits = c(0, 15000)),
       silent = FALSE)
   
   excludeColumns = c(
