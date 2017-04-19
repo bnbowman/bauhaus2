@@ -166,7 +166,7 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
         alignment = alignments[alignment_id]
         framerate = alignments.readGroupTable[
                                 'MovieName' == alignment.movieName][
-                                'FrameRate']
+                                    'FrameRate']
         pws = grabAlignmentPulseWidths(alignment)
         sfs = grabAlignmentStartFrames(alignment)
         ipds = alignment.IPD() # ipds are always stored
