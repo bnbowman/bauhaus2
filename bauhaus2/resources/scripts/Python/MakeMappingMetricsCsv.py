@@ -164,7 +164,7 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
     mapped_metrics = initializeMappedMetricsDictionary(intersect_indices)
     for cnt, alignment_id in enumerate(intersect_indices):
         alignment = alignments[alignment_id]
-        framerate = framerate = alignments.readGroupTable[
+        framerate = alignments.readGroupTable[
                                 'MovieName' == alignment.movieName][
                                 'FrameRate']
         pws = grabAlignmentPulseWidths(alignment)
