@@ -29,7 +29,6 @@ rule MakeMappingMetricsCsv:
     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
     shell:
         """
-        module load smrttools/mainline
         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
         """
 
