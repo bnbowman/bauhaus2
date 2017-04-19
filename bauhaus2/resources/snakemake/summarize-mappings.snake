@@ -19,6 +19,7 @@ rule summarize_mappings:
         libDiagnosticPlots="reports/LibDiagnosticPlots/report.json",
         readPlots="reports/ReadPlots/report.json",
         constantArrowPlots="reports/ConstantArrowFishbonePlots/report.json",
+        makeMappingMetricsCsv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv",
         ZMWstsPlots="reports/ZMWstsPlots/report.json",
         AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json"
 
