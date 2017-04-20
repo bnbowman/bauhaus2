@@ -111,6 +111,7 @@ def sortPwAndIpdByBase(pws, ipds, reference):
     for i,base in enumerate(reference):
         if pws[i] != EXCLUDED and ipds[i] != EXCLUDED:
             # they weren't detected (i.e. deletions). 65535 is a placeholder
+            base = base.upper()
             pw[base].append(pws[i])
             ipd[base].append(ipds[i])
     return pw, ipd
@@ -157,26 +158,26 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
     """
     index = alignments.index
     # alignment_indices of ZMWs fit w/ Arrow
-    intersect_indices = np.flatnonzero(np.in1d(index['holeNumber'], 
-                                       arrow_zmws))
+    intersect_indices = np.flatnonzero(np.in1d(index['holeNumber'],
+                                               arrow_zmws))
 
-    mapped_metrics = initializeMappedMetricsDictionary(arrow_zmws)
+    mapped_metrics = initializeMappedMetricsDictionary(intersect_indices)
     for cnt, alignment_id in enumerate(intersect_indices):
         alignment = alignments[alignment_id]
-        framerate = framerate = alignments.readGroupTable[
-                        'MovieName' == alignment.movieName][
-                        'FrameRate']
+        framerate = alignments.readGroupTable[
+                                'MovieName' == alignment.movieName][
+                                    'FrameRate']
         pws = grabAlignmentPulseWidths(alignment)
         sfs = grabAlignmentStartFrames(alignment)
         ipds = alignment.IPD() # ipds are always stored
         pw, ipd = sortPwAndIpdByBase(pws, ipds, alignment.reference())
-        mapped_metrics = addAlignmentMetrics(mapped_metrics, 
-                                             cnt, 
-                                             alignment, 
-                                             pw, 
-                                             ipd, 
-                                             sfs, 
-                                             framerate, 
+        mapped_metrics = addAlignmentMetrics(mapped_metrics,
+                                             cnt,
+                                             alignment,
+                                             pw,
+                                             ipd,
+                                             sfs,
+                                             framerate,
                                              condition)
 
     return mapped_metrics
@@ -196,20 +197,21 @@ def writeMappedMetricsCsv(mapped_metrics, output):
         for metrics in mapped_metrics:
             for row_index, zmw in enumerate(metrics[columns[0]]):
                 dump = {column: metrics[column][row_index]
-                               for column in columns}
+                        for column in columns}
                 writer.writerow(dump)
 
 def main():
     asets, arrow_csv, output = parseArgs()
     conditions = [grabConditionName(aset) for aset in asets]
-    arrow_zmws_by_condition = [grabArrowZmwsByCondition(arrow_csv, 
-                                                        condition)
-                                    for condition in conditions]
+    arrow_zmws_by_condition = [grabArrowZmwsByCondition(arrow_csv,
+                                                        condition) 
+                               for condition in conditions]
     alignments_by_condition = [openAlignmentSet(aset) for aset in asets]
     mapped_metrics = [grabMappedMetrics(arg[0], arg[1], arg[2])
-                                    for arg in zip(conditions, 
-                                                   alignments_by_condition, 
-                                                   arrow_zmws_by_condition)]
+                      for arg in zip(conditions,
+                                     alignments_by_condition,
+                                     arrow_zmws_by_condition)]
+
     writeMappedMetricsCsv(mapped_metrics, output)
     return None
 
