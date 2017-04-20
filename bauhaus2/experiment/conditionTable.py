@@ -275,6 +275,9 @@ class CoverageTitrationConditionTable(ResequencingConditionTable):
     def _validateTable(self):
         super(CoverageTitrationConditionTable, self)._validateTable()
         self._validateAtLeastOnePVariable()
+        
+        if self.inputsAreMapped:
+            raise TableValidationError("Coverage Titration workflow requires unmapped inputs.")
 
     def referenceMask(self, condition):
         return self._referenceMaskByCondition[condition]
