@@ -49,9 +49,9 @@ rule constant_arrow_plots:
 #         """
 
 rule FindNumberOfReferences:
-    input: mapped_subreads.values()
+    input: expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions)
     output: expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions)
     shell:
         """
-        python scripts/Python/FindNumberOfReferences.py --aset {input} --output {output}
+        python scripts/Python/FindNumberOfReferences.py --asets {input} --outputs {output}
         """

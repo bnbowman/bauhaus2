@@ -10,15 +10,17 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description= \
                                      'Retrieve number of references/contigs')
-    parser.add_argument('--aset',
+    parser.add_argument('--asets',
                         required=True,
+                        nargs='+',
                         help='alignmentset')
-    parser.add_argument('--output',
+    parser.add_argument('--outputs',
                         required=True,
+                        nargs='+',
                         help='output textfile ' + \
                         'for storing number of references/contigs')
     args = parser.parse_args()
-    return args.aset, args.output
+    return args.asets, args.outputs
 
 def retrieve_num_contigs(aset_path):
     """
@@ -40,9 +42,10 @@ def main():
     """
     perform above tasks
     """
-    aset_path, output_path = parse_args()
-    num_contigs = retrieve_num_contigs(aset_path)
-    write_output(num_contigs, output_path)
+    aset_paths, output_paths = parse_args()
+    for aset_path, output_path in zip(aset_paths, output_paths):
+        num_contigs = retrieve_num_contigs(aset_path)
+        write_output(num_contigs, output_path)
     return None
 
 if __name__ == '__main__':
