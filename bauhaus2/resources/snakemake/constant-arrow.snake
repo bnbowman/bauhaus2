@@ -11,30 +11,47 @@ mapped_subreads = \
 
 rule constant_arrow_plots:
     input:
-        constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
+        constantArrowPlots = expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions)#"reports/ConstantArrowFishbonePlots/report.json"
 
-rule ConstantArrowPlots:
-    input: "reports/ConstantArrowFishbonePlots/errormode.csv"
-    output: "reports/ConstantArrowFishbonePlots/report.json"
-    shell:
-        """
-        Rscript --vanilla scripts/R/FishbonePlots.R
-        """
+# rule ConstantArrowPlots:
+#     input: "reports/ConstantArrowFishbonePlots/errormode.csv"
+#     output: "reports/ConstantArrowFishbonePlots/report.json"
+#     shell:
+#         """
+#         Rscript --vanilla scripts/R/FishbonePlots.R
+#         """
 
-rule MakeMappingMetricsCsv:
-    input: 
-        asets = mapped_subreads.values(),
-        arrow_csv = "reports/ConstantArrowFishbonePlots/errormode.csv"
-    output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
-    shell:
-        """
-        python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
-        """
+# rule MakeMappingMetricsCsv:
+#     input: 
+#         asets = mapped_subreads.values(),
+#         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode.csv"
+#     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
+#     shell:
+#         """
+#         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
+#         """
 
-rule ConstantArrow:
+# rule ConstantArrow:
+#     input: expand("conditions/{condition}/mapped/chunk/mapped.refchunkchunkNo.alignmentset.xml", condition=ct.conditions)
+#     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
+#     shell:
+#         """
+#         Rscript --vanilla scripts/R/constant_arrow.R
+#         """
+
+# rule ScatterMappedReadsByReference:
+#     input: mapped_subreads.values(),
+#            expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions)
+#     output: expand("conditions/{condition}/mapped/chunk/mapped.refchunkchunkNo.alignmentset.xml", condition=ct.conditions)
+#     shell:
+#         """
+#         dataset split --contigs --outdir {output} {input}
+#         """
+
+rule FindNumberOfReferences:
     input: mapped_subreads.values()
-    output: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    output: expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions)
     shell:
         """
-        Rscript --vanilla scripts/R/constant_arrow.R
+        python scripts/Python/FindNumberOfReferences.py --aset {input} --output {output}
         """
