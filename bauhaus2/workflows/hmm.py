@@ -14,8 +14,7 @@ class ConstantArrowWorkflow(Workflow):
     R_SCRIPTS            = ( "R/constant_arrow.R",
                              "R/FishbonePlots.R",
                              "R/Bauhaus2.R" )
-    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", 
-                             "Python/FindNumberOfReferences.py" )
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",)
 
     def plan(self):
         return ["constant-arrow.snake"] + \

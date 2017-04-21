@@ -3,55 +3,48 @@
 # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
 # and make Fishbone plots using the csv file.
 
-mapped_subreads = \
-    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
-      for c in ct.conditions }
+import glob
+import os
 
 # -- Target rules --
 
 rule constant_arrow_plots:
     input:
-        constantArrowPlots = expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions)#"reports/ConstantArrowFishbonePlots/report.json"
+        constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
 
-# rule ConstantArrowPlots:
-#     input: "reports/ConstantArrowFishbonePlots/errormode.csv"
-#     output: "reports/ConstantArrowFishbonePlots/report.json"
-#     shell:
-#         """
-#         Rscript --vanilla scripts/R/FishbonePlots.R
-#         """
-
-# rule MakeMappingMetricsCsv:
-#     input: 
-#         asets = mapped_subreads.values(),
-#         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode.csv"
-#     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
-#     shell:
-#         """
-#         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
-#         """
-
-# rule ConstantArrow:
-#     input: expand("conditions/{condition}/mapped/chunk/mapped.refchunkchunkNo.alignmentset.xml", condition=ct.conditions)
-#     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
-#     shell:
-#         """
-#         Rscript --vanilla scripts/R/constant_arrow.R
-#         """
-
-# rule ScatterMappedReadsByReference:
-#     input: mapped_subreads.values(),
-#            expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions)
-#     output: expand("conditions/{condition}/mapped/chunk/mapped.refchunkchunkNo.alignmentset.xml", condition=ct.conditions)
-#     shell:
-#         """
-#         dataset split --contigs --outdir {output} {input}
-#         """
-
-rule FindNumberOfReferences:
-    input: expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions)
-    output: expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions)
+rule ConstantArrowPlots:
+    input: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    output: "reports/ConstantArrowFishbonePlots/report.json"
     shell:
         """
-        python scripts/Python/FindNumberOfReferences.py --asets {input} --outputs {output}
+        Rscript --vanilla scripts/R/FishbonePlots.R
+        """
+
+rule MakeMappingMetricsCsv:
+    input: 
+        asets = expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions),
+        arrow_csv = "reports/ConstantArrowFishbonePlots/errormode.csv"
+    output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
+    shell:
+        """
+        python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
+        """
+
+rule ConstantArrow:
+    input: [dynamic("conditions/%s/mapped/chunk/mapped.chunk{num}.alignmentset.xml" % (c) for c in ct.conditions)]
+    output: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    shell:
+        """
+        Rscript --vanilla scripts/R/constant_arrow.R
+        """
+
+rule ScatterMappedReadsByReference:
+    input: 
+        asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    params:
+        chunk_path = "conditions/{condition}/mapped/chunk"
+    output: dynamic("conditions/{condition}/mapped/chunk/mapped.chunk{num}.alignmentset.xml")
+    shell:
+        """
+        dataset split --contigs --outdir {params.chunk_path} {input.asets}
         """
