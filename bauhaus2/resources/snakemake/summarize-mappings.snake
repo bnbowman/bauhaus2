@@ -20,7 +20,6 @@ rule summarize_mappings:
         readPlots="reports/ReadPlots/report.json",
         constantArrowPlots="reports/ConstantArrowFishbonePlots/report.json",
         makeMappingMetricsCsv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv",
-        FindNumberOfReferences = expand("conditions/{condition}/mapped/refNo.txt", condition=ct.conditions),
         ZMWstsPlots="reports/ZMWstsPlots/report.json",
         AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json"
 

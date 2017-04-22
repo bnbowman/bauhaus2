@@ -6,3 +6,4 @@
   EvaluateHQRF
   MappingReports
   UnrolledNoHQMapping
+  UnrolledNoHQMappingArrowByReference

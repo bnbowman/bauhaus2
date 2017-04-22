@@ -3,10 +3,6 @@
 # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
 # and make Fishbone plots using the csv file.
 
-mapped_subreads = \
-    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
-      for c in ct.conditions }
-
 # -- Target rules --
 
 rule constant_arrow_plots:
@@ -23,7 +19,7 @@ rule ConstantArrowPlots:
 
 rule MakeMappingMetricsCsv:
     input: 
-        asets = mapped_subreads.values(),
+        asets = expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions),
         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode.csv"
     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
     shell:
@@ -32,9 +28,20 @@ rule MakeMappingMetricsCsv:
         """
 
 rule ConstantArrow:
-    input: mapped_subreads.values()
+    input: [dynamic("conditions/%s/mapped/chunk/mapped.chunk{num}.alignmentset.xml" % (c) for c in ct.conditions)]
     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
         Rscript --vanilla scripts/R/constant_arrow.R
+        """
+
+rule ScatterMappedReadsByReference:
+    input: 
+        asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    params:
+        chunk_path = "conditions/{condition}/mapped/chunk"
+    output: dynamic("conditions/{condition}/mapped/chunk/mapped.chunk{num}.alignmentset.xml")
+    shell:
+        """
+        dataset split --contigs --outdir {params.chunk_path} {input.asets}
         """
