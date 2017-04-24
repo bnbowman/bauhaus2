@@ -1,0 +1,41 @@
+
+# ------------------------------------------------------------------
+# arrow-training.snake : train an arrow model from mapped alignments
+
+
+training_alignments = \
+    { c : expand("training/{condition}.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+training_references = \
+    { c : expand("training/{condition}.alignmentset.xml.ref.fa", condition=c)
+      for c in ct.conditions }
+
+# -- report!
+
+rule coverage_titration_report:
+    output: "reports/ArrowTraining/report.json"
+    input:
+        trainingAlignments=training_alignments.values(),
+        trainingReferences=training_references.values()
+    shell:
+        """
+        Rscript --vanilla scripts/R/arrowTraining.R .
+        """
+
+rule link_alignments:
+    output: "training/{condition}.alignmentset.xml"
+    input: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    shell:
+        """
+        ln -s {input} {output}
+        """
+
+rule link_references:
+    output: "training/{condition}.alignmentset.xml.ref.fa"
+    input: lambda wc: ct.reference(wc.condition)
+    shell:
+        """
+        ln -s {input} {output}
+        ln -s {input}.fai {output}.fai
+        """
