@@ -23,6 +23,7 @@ source(file.path(myDir, "Bauhaus2.R"))
 
 # load sample size for argument, default sample size = 1000
 parser <- ArgumentParser()
+parser$add_argument("--conditionTable", nargs = 1, default = "condition-table.csv", help = "condition table")
 parser$add_argument("--sampleSize", nargs = 1, default = 1000, help = "number of samples (ZMWs) for each condition")
 try(args <- parser$parse_args())
 set.seed(args$seed)
@@ -32,6 +33,11 @@ set.seed(args$seed)
 MIN_ALN_LENGTH = 1000 # Should be larger, but test data was ~930 bp in size and wanted to keep that working.
 # Set up sample size of the sampled ZMW for each condition:
 SAMPLING_SIZE = args$sampleSize
+# Set up the condition table
+# Through the condition table imported from Zia is generally used as "default",
+# the enzymology group may use a resolved condition table, which chunks the data set by reference.
+# To enable running constant arrow model for each reference, loading a different condition table from CLI is allowed.
+CONDITION_TABLE = args$conditionTable
 
 # Define a basic addition to all plots
 plTheme <- theme_bw(base_size = 18)
@@ -268,7 +274,7 @@ makeReport <- function(report) {
 main <- function()
 {
   report <- bh2Reporter(
-    "condition-table.csv",
+    CONDITION_TABLE,
     "reports/ConstantArrowFishbonePlots/modelReport.json",
     "Constant Arrow csv file")
   makeReport(report)
