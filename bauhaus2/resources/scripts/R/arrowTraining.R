@@ -28,12 +28,7 @@ source(file.path(myDir, "Bauhaus2.R"))
 ###### DEFINITIONS #######
 use8Contexts = F
 predictPw = T
-
-if (predictPw) {
-  nOutcome <- 12
-} else {
-  nOutcome <- 4
-}
+nOutcome = 12
 
 
 ## Encode an outcome variable for the 'Emmission' in the HMM model
@@ -283,11 +278,20 @@ if (!interactive()) {
   parser$add_argument("--seed", nargs = 1, type = "integer", default = 42, help = "seed value for setSeed")
   parser$add_argument("--zmwsPerBam", nargs = 1, type = "integer", default = 5000, help = "number of ZMWs to sample ber BAM file")
   parser$add_argument("--targetAlnLength", nargs = 1, type = "integer", default = 140, help = "target length of alignment slices")
+  parser$add_argument("--noPw", dest = "predictPw", action = "store_false", help = "omit PulseWidth emissions from the model")
+  parser$add_argument("--use8Contexts", action = "store_true", help = "use 8 context model instead of the default 16")
   parser$add_argument("-o", "--output", nargs = 1, default = getwd(), help = "output directory [default = \"%(default)s\"]")
 
   # args <- list(alnFilesDir = "training", seed = 42, zmwsPerBam = 5000, targetAlnLength = 140)
   args <- parser$parse_args()
   set.seed(args$seed)
+  predictPw <<- args$predictPw
+  use8Contexts <<- args$use8Contexts
+  if (predictPw) {
+    nOutcome <<- 12
+  } else {
+    nOutcome <<- 4
+  }
 
   training <- doTrain(args)
 
