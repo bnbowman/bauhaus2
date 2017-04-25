@@ -23,7 +23,11 @@ source(file.path(myDir, "Bauhaus2.R"))
 
 # load sample size for argument, default sample size = 1000
 parser <- ArgumentParser()
+<<<<<<< HEAD
 parser$add_argument("--conditionTable", nargs = 1, default = "condition-table.csv", help = "condition table")
+=======
+parser$add_argument("--sampleByRef", nargs = 1, default = FALSE, help = "subsample ZMWs for different references or not")
+>>>>>>> 83d32ebb9797ac8f8d009bd59998fffe519114f8
 parser$add_argument("--sampleSize", nargs = 1, default = 1000, help = "number of samples (ZMWs) for each condition")
 try(args <- parser$parse_args())
 set.seed(args$seed)
@@ -33,11 +37,10 @@ set.seed(args$seed)
 MIN_ALN_LENGTH = 1000 # Should be larger, but test data was ~930 bp in size and wanted to keep that working.
 # Set up sample size of the sampled ZMW for each condition:
 SAMPLING_SIZE = args$sampleSize
-# Set up the condition table
-# Through the condition table imported from Zia is generally used as "default",
-# the enzymology group may use a resolved condition table, which chunks the data set by reference.
-# To enable running constant arrow model for each reference, loading a different condition table from CLI is allowed.
-CONDITION_TABLE = args$conditionTable
+# Check whether the arrow model samples from each condition or from each condition and reference
+# the enzymology group may rewrite the condition table, which chunks the data set by reference.
+# To enable running constant arrow model for each reference, loading this option from CLI is allowed.
+SAMPLE_BY_REF = args$sampleByRef
 
 # Define a basic addition to all plots
 plTheme <- theme_bw(base_size = 18)
@@ -246,8 +249,12 @@ constantArrow <-
   }
 
 makeReport <- function(report) {
-  
-  conditions = report$condition.table
+  # Load the revised condition table if the sample needs to be subsampled by references
+  if (SAMPLE_BY_REF) {
+    conditions = read.csv("contig-chunked-condition-table.csv")
+  } else {
+    conditions = report$condition.table
+  }
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)

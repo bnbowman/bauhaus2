@@ -28,11 +28,20 @@ rule MakeMappingMetricsCsv:
         """
 
 rule ConstantArrow:
-    input: [dynamic("conditions/%s/mapped/chunk/mapped.chunk{num}.alignmentset.xml" % (c) for c in ct.conditions)]
+    input: "contig-chunked-condition-table.csv"
     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
         Rscript --vanilla scripts/R/constant_arrow.R
+        """
+
+rule CreateArrowConditionTable:
+    input: chunked_asets = [dynamic("conditions/%s/mapped/chunk/mapped.chunk{num}.alignmentset.xml" % (c) for c in ct.conditions)],
+           condition-table = "condition-table.csv"
+    output: "contig-chunked-condition-table.csv"
+    shell:
+        """
+        python scripts/Python/MakeChunkedConditionTable.csv --asets {input.chunked_asets} --condition-table {input.condition-table} --output {output}
         """
 
 rule ScatterMappedReadsByReference:
