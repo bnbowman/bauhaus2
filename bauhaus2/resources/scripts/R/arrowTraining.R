@@ -171,7 +171,6 @@ outputModelToJson <- function(fit, snrRanges) {
   x$EmissionParameters <- array(data = as.array(list(data.matrix(fit$mPmf)[, 1:nOutcome], data.matrix(fit$bPmf)[, 1:nOutcome], data.matrix(fit$sPmf)[,
     1:nOutcome])))
   x$TransitionParameters <- extractTransitionArray(fit)
-  x$CounterWeight <- unbox(3)  # TODO: how do we get this right?
   jsonOut <- file(file.path(args$output, "fit.json"), "wt")
   cat(toJSON(x, digits = I(9), pretty = TRUE), file = jsonOut)
   close(jsonOut)
