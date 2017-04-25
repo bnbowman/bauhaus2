@@ -24,10 +24,7 @@ source(file.path(myDir, "Bauhaus2.R"))
 # load sample size for argument, default sample size = 1000
 parser <- ArgumentParser()
 <<<<<<< HEAD
-parser$add_argument("--conditionTable", nargs = 1, default = "condition-table.csv", help = "condition table")
-=======
 parser$add_argument("--sampleByRef", nargs = 1, default = FALSE, help = "subsample ZMWs for different references or not")
->>>>>>> 83d32ebb9797ac8f8d009bd59998fffe519114f8
 parser$add_argument("--sampleSize", nargs = 1, default = 1000, help = "number of samples (ZMWs) for each condition")
 try(args <- parser$parse_args())
 set.seed(args$seed)
