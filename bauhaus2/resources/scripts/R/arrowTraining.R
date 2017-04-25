@@ -35,17 +35,6 @@ if (predictPw) {
   nOutcome <- 4
 }
 
-## Sample the BAMs and trim, to get alignment windows of ~140 bp from each of 3000 ZMWs per BAM
-getSamples <- function(i) {
-  alnFile = alnFiles[[i]]
-  loginfo("Loading samples from %s", alnFile)
-  pbi = indexes[[i]]
-  sampled_data = pbi[sample(nrow(pbi), min(nrow(pbi), args$zmwsPerBam)), ]
-  large_alns = loadAlnsFromIndex(sampled_data, paste(alnFile, ".ref.fa", sep = ""))
-  f_large_alns = Filter(function(x) nrow(x) > args$targetAlnLength, large_alns)
-  small_alns = lapply(f_large_alns, function(x) trimAlignment(x, trimToLength = args$targetAlnLength))
-  small_alns
-}
 
 ## Encode an outcome variable for the 'Emmission' in the HMM model
 mkOutcome <- function(aln) {
@@ -79,6 +68,7 @@ mkOutcome <- function(aln) {
   aln$snr = snr
   aln
 }
+
 
 ## Filter alignents where read/reference differ by more than 50%
 filterData <- function(data) {
@@ -244,6 +234,17 @@ doTrain <- function(args) {
   # remove empty indices
   indexes = Filter(nrow, indexes)
 
+  # sample the BAMs and trim, to get alignment windows of ~140 bp from each of 3000 ZMWs per BAM
+  getSamples <- function(i) {
+    alnFile = alnFiles[[i]]
+    loginfo("Loading samples from %s", alnFile)
+    pbi = indexes[[i]]
+    sampled_data = pbi[sample(nrow(pbi), min(nrow(pbi), args$zmwsPerBam)), ]
+    large_alns = loadAlnsFromIndex(sampled_data, paste(alnFile, ".ref.fa", sep = ""))
+    f_large_alns = Filter(function(x) nrow(x) > args$targetAlnLength, large_alns)
+    small_alns = lapply(f_large_alns, function(x) trimAlignment(x, trimToLength = args$targetAlnLength))
+    small_alns
+  }
   alns = lapply(1:length(indexes), getSamples)
   alns = unlist(alns, recursive = FALSE)
 
