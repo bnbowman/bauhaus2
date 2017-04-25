@@ -1,5 +1,6 @@
 
   $ bauhaus2 list-workflows
+  ArrowTraining
   CCSMappingReports
   ConstantArrow
   CoverageTitration
