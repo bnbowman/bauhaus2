@@ -222,9 +222,9 @@ plotTransitions <- function(fit, report) {
     ctx = fit$models[[i]]$ctx
     tp = reshape2::melt(tg, id.vars = "SNR", value.name = "rate", variable.name = "Transition")
     q = ggplot(tp, aes(x = SNR, y = rate)) + geom_smooth(fill = NA) + facet_wrap(~Transition, scales = "free") + labs(title = paste(ctx,
-      "Rate Estimates")) + theme_bw() + scale_y_continuous(label = percent)
+      "Rates")) + theme_bw() + scale_y_continuous(label = percent)
     id = paste0(ctx, "-transition-rates")
-    title = paste(ctx, "Transition Rate Estimates")
+    title = paste(ctx, "Transition Rates")
     report$ggsave(
         paste0(id, ".png"),
         q,

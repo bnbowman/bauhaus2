@@ -13,14 +13,14 @@ training_references = \
 
 # -- report!
 
-rule coverage_titration_report:
+rule arrow_training:
     output: "reports/ArrowTraining/report.json"
     input:
         trainingAlignments=training_alignments.values(),
         trainingReferences=training_references.values()
     shell:
         """
-        Rscript --vanilla scripts/R/arrowTraining.R .
+        Rscript --vanilla scripts/R/arrowTraining.R training
         """
 
 rule link_alignments:
@@ -28,7 +28,7 @@ rule link_alignments:
     input: "conditions/{condition}/mapped/mapped.alignmentset.xml"
     shell:
         """
-        ln -s {input} {output}
+        ln -s ../{input} {output}
         """
 
 rule link_references:
