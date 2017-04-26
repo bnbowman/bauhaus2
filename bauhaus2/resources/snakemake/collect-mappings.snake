@@ -11,7 +11,7 @@ local_alignmentset = \
       for c in ct.conditions }
 
 remote_alignmentsets = \
-    { c : ct.inputs(c)
+    { c : ct.inputs(c)[0]
       for c in ct.conditions }
 
 
@@ -24,7 +24,7 @@ rule collect_mappings:
 
 rule collect_mappings_one_condition:
     input:
-        remoteAset=lambda wc: remote_alignmentsets[wc.condition]
+        remoteAset=lambda wc: remote_alignmentsets[wc.condition][0]
     output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
     shell:
         """
