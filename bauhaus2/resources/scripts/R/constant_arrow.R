@@ -277,7 +277,7 @@ makeReport <- function(report) {
 main <- function()
 {
   report <- bh2Reporter(
-    CONDITION_TABLE,
+    "condition-table.csv",
     "reports/ConstantArrowFishbonePlots/modelReport.json",
     "Constant Arrow csv file")
   makeReport(report)

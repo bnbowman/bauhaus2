@@ -25,16 +25,28 @@ def parseArgs():
                         help='output csv chunked condition table')
     args = parser.parse_args()
 
-    return args.asets, args.conditions, args.output
+    return args.asets, args.condition_table, args.output
 
-def generateChunkedConditionTable(asets, conditions, output):
+def readOriginalConditionTable(condition_table):
+    """
+    
+    """
+    ct = {'Condition': [],
+          'Genome': []}
+
+    with open(condition_table, 'rb') as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            ct['Condition'].append(row['Condition'])
+            ct['Genome'].append(row['Genome'])
+
+    return ct
+
+def generateChunkedConditionTable(asets, ct, output):
     """
     description of def goes here
     """
-    cct = {'Condition': [],
-           'MappedRecord': [],
-           'Genome': []}
-
+    cct = []
 
     cnt = 0
     condition = asets[0].split(os.path.sep)[1]
@@ -46,13 +58,36 @@ def generateChunkedConditionTable(asets, conditions, output):
         else:
             cnt = 0
         condition = aset.split(os.path.sep)[1]
-        mapped_record = aset
-        alignments = AlignmentSet(mapped_record)
+        # find ref name based on comparison to original condition table
+        for index, c in enumerate(ct['Condition']):
+            if condition == c:
+                ref = ct['Genome'][index]
+                break
+            else:
+                print 'Condition/Reference not found.'
+                return None
+        cct.append({'Condition': condition + '_' + str(cnt),
+                    'MappedRecord': aset,
+                    'Genome': ref})
 
+    return cct
+
+def writeContigChunkedConditionTable(cct):
+    """
+    description goes here
+    """
+    with open('contig-chunked-condition-table.csv', 'wb') as csvfile:
+        fieldnames = cct[0].keys()
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        for row in cct:
+            writer.writerow(row)
 
 def main():
-    asets, conditions, output = parseArgs()
-    cct = generateChunkedConditionTable(asets, conditions, output)
+    asets, condition_table, output = parseArgs()
+    ct = readOriginalConditionTable(condition_table)
+    cct = generateChunkedConditionTable(asets, ct, output)
+    writeContigChunkedConditionTable(cct)
     
     return None
 

@@ -32,7 +32,7 @@ rule ConstantArrow:
     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
-        Rscript --vanilla scripts/R/constant_arrow.R
+        Rscript --vanilla scripts/R/constant_arrow.R --sampleByRef TRUE
         """
 
 rule CreateArrowConditionTable:
