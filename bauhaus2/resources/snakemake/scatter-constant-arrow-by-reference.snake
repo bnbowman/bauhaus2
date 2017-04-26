@@ -1,4 +1,7 @@
 
+import glob
+import os
+
 # ---------------------------------------------------------------------------------------------------
 # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
 # and make Fishbone plots using the csv file.
@@ -48,8 +51,9 @@ rule ScatterMappedReadsByReference:
     input: 
         asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:
-        chunk_path = "conditions/{condition}/mapped/chunk"
+        chunk_path = "conditions/{condition}/mapped/chunk/"
     output: dynamic("conditions/{condition}/mapped/chunk/mapped.chunk{num}.alignmentset.xml")
     run:
         shell("dataset split --contigs --outdir {params.chunk_path} {input.asets}")
-        shell("python scripts/Python/RefilterMappedReadsByReference.py --asets {input.asets}")
+        chunked_asets = [file for file in glob.glob(params.chunk_path + "*alignmentset.xml")]
+        shell("python scripts/Python/RefilterMappedReadsByReference.py --asets {chunked_asets}")
