@@ -122,7 +122,8 @@ class ConditionTable(object):
         elif {"RunCode", "ReportsFolder"}.issubset(cols):
             return resolver.resolveSubreadSet(rowRecord.RunCode, rowRecord.ReportsFolder)
         elif {"SMRTLinkServer", "JobId"}.issubset(cols):
-            return resolver.resolveAlignmentSet(rowRecord.SMRTLinkServer, rowRecord.JobId)
+            return [resolver.resolveAlignmentSet(rowRecord.SMRTLinkServer, rowRecord.JobId),
+                   resolver.resolveSmrtlinkSubreadSet(rowRecord.SMRTLinkServer, rowRecord.JobId)]
         elif {"JobPath"}.issubset(cols):
             return resolver.findAlignmentSet(rowRecord.JobPath)
         elif {"SubreadSet"}.issubset(cols):
@@ -276,9 +277,6 @@ class CoverageTitrationConditionTable(ResequencingConditionTable):
         super(CoverageTitrationConditionTable, self)._validateTable()
         self._validateAtLeastOnePVariable()
         
-        if self.inputsAreMapped:
-            raise TableValidationError("Coverage Titration workflow requires unmapped inputs.")
-
     def referenceMask(self, condition):
         return self._referenceMaskByCondition[condition]
 

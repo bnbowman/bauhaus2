@@ -1,0 +1,28 @@
+
+# ---------------------------------------------------------------------------------------------------
+# collect-smrtlink-subreads.snake: hotlink "remote" smrtlink subreadsets into our workflow directory for re-mapping
+
+assert ct.inputsAreMapped, "collect-smrtlink-subreads.snake is for workflows with pre-mapped data"
+
+local_subreadset = \
+    { c : "conditions/{condition}/subreads/input.subreadset.xml".format(condition=c)
+      for c in ct.conditions }
+
+remote_alignmentsets = \
+    { c : ct.inputs(c)[0]
+      for c in ct.conditions }
+
+# -- Target --
+
+rule collect_smrtlink_subreads:
+    input: local_subreadset.values()
+
+# -- Worker rules ---
+
+rule collect_smrtlink_subreads_one_condition:
+    input: remoteSset=lambda wc: remote_alignmentsets[wc.condition][1]
+    output: "conditions/{condition}/subreads/input.subreadset.xml"
+    shell:
+        """
+        dataset create {output} {input.remoteSset}
+        """

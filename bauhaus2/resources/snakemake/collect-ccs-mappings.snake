@@ -7,7 +7,7 @@ from bauhaus2.runtime import ct
 assert ct.inputsAreMapped, "collect-mappings.snake is for workflows with pre-mapped data"
 
 remote_alignmentsets = \
-    { c : ct.inputs(c)
+    { c : ct.inputs(c)[0]
       for c in ct.conditions }
 
 
@@ -15,7 +15,7 @@ remote_alignmentsets = \
 
 rule collect_mappings_one_condition:
     input:
-        remoteAset=lambda wc: remote_alignmentsets[wc.condition]
+        remoteAset=lambda wc: remote_alignmentsets[wc.condition][0]
     output: "conditions/{condition}/mapped_ccs/mapped-ccs.alignmentset.xml"
     shell:
         """
