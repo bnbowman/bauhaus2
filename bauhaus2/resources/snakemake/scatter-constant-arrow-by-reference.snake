@@ -37,11 +37,11 @@ rule ConstantArrow:
 
 rule CreateArrowConditionTable:
     input: chunked_asets = [dynamic("conditions/%s/mapped/chunk/mapped.chunk{num}.alignmentset.xml" % (c) for c in ct.conditions)],
-           condition-table = "condition-table.csv"
+           condition_table = "condition-table.csv"
     output: "contig-chunked-condition-table.csv"
     shell:
         """
-        python scripts/Python/MakeChunkedConditionTable.csv --asets {input.chunked_asets} --condition-table {input.condition-table} --output {output}
+        python scripts/Python/MakeChunkedConditionTable.py --asets {input.chunked_asets} --condition-table {input.condition_table} --output {output}
         """
 
 rule ScatterMappedReadsByReference:
@@ -50,7 +50,6 @@ rule ScatterMappedReadsByReference:
     params:
         chunk_path = "conditions/{condition}/mapped/chunk"
     output: dynamic("conditions/{condition}/mapped/chunk/mapped.chunk{num}.alignmentset.xml")
-    shell:
-        """
-        dataset split --contigs --outdir {params.chunk_path} {input.asets}
-        """
+    run:
+        shell("dataset split --contigs --outdir {params.chunk_path} {input.asets}")
+        shell("python scripts/Python/RefilterMappedReadsByReference.py --asets {input.asets}")

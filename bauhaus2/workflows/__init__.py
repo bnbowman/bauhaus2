@@ -4,6 +4,7 @@ from .hmm       import *
 from .mapping   import *
 from .subreads  import *
 from .unrolled  import *
+from .unrolledArrowByReference import *
 from .hqrf      import *
 
 from bauhaus2 import Workflow

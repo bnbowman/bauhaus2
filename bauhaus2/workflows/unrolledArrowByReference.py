@@ -44,7 +44,9 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/ZMWstsPlots.R",
                              "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
-    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
+                             "Python/MakeChunkedConditionTable.py",
+                             "Python/RefilterMappedReadsByReference.py" )
 
     def plan(self):
         return ["summarize-mappings.snake", "scatter-constant-arrow-by-reference.snake"] + \
