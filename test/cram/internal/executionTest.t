@@ -205,6 +205,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   |-- LibDiagnosticPlots
+  |   |   |-- MovieA_Tau_Estimates.csv
+  |   |   |-- MovieB_Tau_Estimates.csv
   |   |   |-- cdf_astart.png
   |   |   |-- cdf_astart_log.png
   |   |   |-- cdf_hqlenmax.png
@@ -214,6 +216,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- density_max_region.png
   |   |   |-- density_unroll.png
   |   |   |-- density_unroll_summation.png
+  |   |   |-- first_pass_tau.png
   |   |   |-- hist_max.png
   |   |   |-- hist_unroll.png
   |   |   |-- max_hqlen.png
@@ -316,7 +319,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  24 directories, 275 files
+  24 directories, 278 files
 
 
 
