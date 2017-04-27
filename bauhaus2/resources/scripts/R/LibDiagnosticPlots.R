@@ -480,6 +480,684 @@ makeCDFofTemplatePlots <- function(report, cd) {
   )
 }
 
+#'--------------------------------------------------------------
+#' Functions for segmented linear regression upon input vector x and corresponding vector y
+#'--------------------------------------------------------------
+#' Fit a single line of regression for a given input vector
+#
+#' @param x vector of data
+#' @param y vector of responses - same length as x
+#' @param a scalar integer - starting index for fitting line
+#' @param b scalar integer - stopping index for fitting line
+#' @param min_sep = minimum required separation between two breakpoints
+#'
+#' @return vector of length four: intercept, slope, residual, average residual
+#
+#' @references \url{http://en.wikipedia.org/wiki/Simple_linear_regression}
+#' @export
+
+fit_A_to_B = function(x, y, a, b, min_sep)
+{
+  b = round(b)
+  a = round(a)
+  N = b - a + 1
+  if (N < min_sep)
+    return(c(0, 0, 99e99, 99e99, NA, NA))
+  start = x[a]
+  stop = x[b]
+  
+  x = x[a:b]
+  y = y[a:b]
+  mX = sum(x) / N
+  mY = sum(y) / N
+  
+  #' Get slope of segment:
+  x = x - mX
+  y = y - mY
+  beta = sum(x * y) / sum(x * x)
+  
+  #' Get intercept:
+  alpha = mY - beta * mX
+  
+  #' Compute and return total and average residual
+  #' Not subtracting alpha from y since x and y have been centered
+  tmp = y - beta * x
+  res = sum(tmp * tmp)
+  c(alpha, beta, res, res / N, start, stop)
+}
+
+#' Slightly faster version of \code{\link{fit_A_to_B}} for the case where y is 1:N
+#
+#' @param x vector of data
+#' @param y indices of data
+#' @param a scalar integer - starting index for fitting line
+#' @param b scalar integer - stopping index for fitting line
+#' @param min_sep = minimum required separation between two breakpoints
+#'
+#' @return vector of length four: intercept, slope, residual, average residual
+#
+#' @references \url{http://en.wikipedia.org/wiki/Simple_linear_regression}
+#' @export
+
+fit_A_to_B_fast = function(x, y, a, b, min_sep)
+{
+  b = round(b)
+  a = round(a)
+  N = b - a + 1
+  if (N < min_sep)
+    return(c(0, 0, 99e99, 99e99))
+  x = x[a:b]
+  
+  #' The sole difference from fit_A_to_B:
+  y = a:b
+  mX = sum(x) / N
+  mY = sum(y) / N
+  
+  #' Get slope of segment:
+  x = x - mX
+  y = y - mY
+  beta = sum(x * y) / sum(x * x)
+  
+  #' Get intercept:
+  alpha = mY - beta * mX
+  
+  #' Compute and return total and average residual
+  #' Not subtracting alpha from y since x and y have been centered
+  tmp = y - beta * x
+  res = sum(tmp * tmp)
+  c(alpha, beta, res, res / N)
+}
+
+#' Get residuals corresponding to a particular breakpoint, b
+#'
+#' @param simple_lin_reg function, either \code{\link{fit_A_to_B}} or \code{\link{fit_A_to_B_fast}}
+#' @param b scalar double - breakpoint, must be between 1 and length of input vector
+#' @param x vector of input data
+#' @param y vector of response data, must be same length as x
+#' @param N scalar integer length of x and of y
+#' @param min_sep = minimum required separation between two breakpoints
+#'
+#' @return sum of residuals from fitting two lines, with a breakpoint at b
+#' @seealso \code{\link{find_2_seg_breakpoint}} which minimizes the value returned by this function
+#' @export
+
+res_2_seg_breakpoint = function(b, x, y, N, simple_lin_reg, min_sep)
+{
+  simple_lin_reg(x, y, 1, b, min_sep)[4] +
+    simple_lin_reg(x, y, b + 1, N, min_sep)[4]
+}
+
+#' Find breakpoint that minimizes the total residuals from fitting two linear segments
+#'
+#' @param simple_lin_reg function, either \code{\link{fit_A_to_B}} or \code{\link{fit_A_to_B_fast}}
+#' @param x vector of input data
+#' @param y vector of response data, must be same length as x
+#' @param N scalar integer length of x and of y
+#' @param min_sep = minimum required separation between two breakpoints
+#'
+#' @return list with elements min (minimizing breakpont) and obj (minimum total residual)
+#' @export
+
+find_2_seg_breakpoint = function(x, y, N, simple_lin_reg, min_sep)
+{
+  res = try(optimize(
+    f = res_2_seg_breakpoint,
+    interval = c(1, N),
+    x = x,
+    y = y,
+    N = N,
+    simple_lin_reg = simple_lin_reg,
+    min_sep = min_sep,
+    maximum = FALSE
+  ),
+  silent = FALSE)
+  if (class(res) == "try-error")
+  {
+    b = floor(N / 2)
+    return(min = b, obj = res_2_seg_breakpoint(b, x, y, N, simple_lin_reg))
+  }
+  res
+}
+
+#' Get residuals corresponding to a particular breakpoint, b
+#'
+#' @param simple_lin_reg function, either \code{\link{fit_A_to_B}} or \code{\link{fit_A_to_B_fast}}
+#' @param b vector of length two - specifying two breakpoints in data
+#' @param x vector of input data
+#' @param y vector of response data, must be same length as x
+#' @param N scalar integer length of x and of y
+#' @param min_sep = minimum required separation between two breakpoints
+#'
+#' @return sum of residuals from fitting three lines, with breakpoints at b[1] and b[2]
+#' @seealso \code{\link{find_3_seg_breakpoint}} which optimizes this function
+#'
+#' @export
+
+res_3_seg_breakpoint = function(b, x, y, N, simple_lin_reg, min_sep)
+{
+  simple_lin_reg(x, y, 1, b[1], min_sep)[4] +
+    simple_lin_reg(x, y, b[1] + 1, b[2], min_sep)[4] +
+    simple_lin_reg(x, y, b[2] + 1, N, min_sep)[4]
+}
+
+#' Select three initial points for two-dimensional optimization
+#'
+#' A simple variation of multistart will help overcome local minima
+#'
+#' @param opt = optimal breakpoint if we were only looking for a single breakpoint
+#' @param N = length of input data vectors
+#' @param min_sep = minimum required separation between two breakpoints
+#'
+#' @return list of three vectors of length two
+#' @seealso \code{\link{find_2_seg_breakpoint}} which is used to compute input opt
+#' @export
+
+get_initial_points = function(opt, N, min_sep)
+{
+  #' Make sure initial points meet minimum separation criteria:
+  opt = max(opt, 2 * min_sep + 1)
+  opt = min(opt, N - 2 * min_sep)
+  
+  #' Evenly spaced around guess opt:
+  vec = c(1, opt, N)
+  pt1 = (vec[-1] - vec[-3]) / 2 + vec[-3]
+  
+  #' The guess opt, and a point to the right:
+  pt2 = c(opt, pt1[2])
+  
+  #' The guess opt, and a point ot the left:
+  pt3 = c(pt1[1], opt)
+  lapply(list(pt1, pt2, pt3), round)
+}
+
+#' Find breakpoint that minimizes the total residuals from fitting three linear segments
+#'
+#' @param simple_lin_reg function, either \code{\link{fit_A_to_B}} or \code{\link{fit_A_to_B_fast}}
+#' @param x vector of input data
+#' @param y vector of response data, must be same length as x
+#' @param N scalar integer length of x and of y
+#'
+#' @return list with tau, yBreakPoints, residuals, breakPoints
+#' @return yBreakPoints vector of length two with optimal breakpoints
+#' @return breakPoints vector of length two -- corresponding points in x
+#' @return tau matrix consisting of output of \code{\link{fit_A_to_B}} for the three segments
+#' @return residuals vector with total residuals from fitting one, two, and three segments
+#'
+#' @export
+
+fit_3_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
+{
+  loginfo("Negative x?")
+  loginfo(range(x))
+  
+  #' Make sure minimum separation between two breakpoints is not too large relative to size of data:
+  min_sep = min(min_sep, floor((N - 3) / 4))
+  
+  #' Calculate average residual for a single fitted segment:
+  res = simple_lin_reg(x, y, 1, N, min_sep)[4]
+  
+  #' Solve problem for two segments:
+  tmp = find_2_seg_breakpoint(x, y, N, simple_lin_reg, min_sep)
+  res = c(res, tmp$obj)
+  
+  #' Linear constraints on optimization:
+  #' Breakpoint in vector b must be: b[1] < b[2] - min_sep + 1; 1 < b[1]; and b[2] < N
+  
+  ui = as.matrix(rbind(c(-1, 1), c(1, 0), c(0,-1)))
+  ci = matrix(c(min_sep - 1, 1,-N) , ncol = 1)
+  
+  #' Get three initial points
+  init = get_initial_points(tmp$min, N, min_sep)
+  
+  #' Solve problem corresponding to three initial points
+  L = lapply(init, function(p)
+  {
+    res = try(constrOptim(
+      p,
+      f = res_3_seg_breakpoint,
+      grad = NULL,
+      ui = ui,
+      ci = ci,
+      x = x,
+      y = y,
+      N = N,
+      simple_lin_reg = simple_lin_reg,
+      min_sep = min_sep
+    ),
+    silent = FALSE)
+    
+    if (class(res) == "try-error")
+    {
+      return(list(value = 99e99, opt = init[[2]]))
+    }
+    res
+  })
+  
+  #' Identify the best of three solutions:
+  opt = L[[which.min(vapply(L, function(x)
+    x$value, 0))]]
+  bpt = round(opt$par)
+  res = c(res, opt$value)
+  
+  tau = rbind(
+    simple_lin_reg(x, y, 1, bpt[1], min_sep),
+    simple_lin_reg(x, y, bpt[1] + 1, bpt[2], min_sep),
+    simple_lin_reg(x, y, bpt[2] + 1, N, min_sep)
+  )
+  
+  list(
+    tau = tau,
+    yBreakPoints = bpt,
+    residuals = res,
+    breakPoints = x[bpt]
+  )
+}
+
+#' Find breakpoint that minimizes the total residuals from fitting two linear segments
+#'
+#' @param simple_lin_reg function, either \code{\link{fit_A_to_B}} or \code{\link{fit_A_to_B_fast}}
+#' @param x vector of input data
+#' @param y vector of response data, must be same length as x
+#' @param N scalar integer length of x and of y
+#'
+#' @return list with tau, yBreakPoints, residuals, breakPoints
+#' @return yBreakPoints scalar double optimal breakpoint
+#' @return breakPoints scalar double -- corresponding point in x
+#' @return tau matrix consisting of output of \code{\link{fit_A_to_B}} for the two segments
+#' @return residuals vector with total residuals from fitting one, two segments
+#'
+#' @export
+
+fit_2_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
+{
+  #' Calculate average residual for a single fitted segment:
+  res = simple_lin_reg(x, y, 1, N, min_sep)[4]
+  
+  tmp = find_2_seg_breakpoint(x, y, N, simple_lin_reg, min_sep)
+  opt = round(tmp$min)
+  tau = rbind(simple_lin_reg(x, y, 1, opt, min_sep),
+              simple_lin_reg(x, y, opt + 1, N, min_sep))
+  
+  list(
+    tau = tau,
+    residuals = c(res, tmp$obj),
+    yBreakPoints = opt,
+    breakPoints = x[opt]
+  )
+}
+
+#'---------------------------------------------------------------
+#' Censoring
+#'---------------------------------------------------------------
+
+#' General function to compute CDF with optional censoring.
+#'
+#' @param r vector of input values
+#' @param ce boolean vector the length of r -- those entries that are TRUE are censored
+#' @param what either "F" (to return CDF) or "1-F" (to return CDF complement)
+#' @param eps = 1 -- at what intervals should we compute CDF values?
+#'
+#' @return List with x and y values for CDF function.
+#'
+#' @examples
+#' censoredCDF( , what = "1-F", matchOriginalPoints = TRUE )
+#'
+#' @export
+
+censoredCDF = function(r,
+                       ce = rep(FALSE, length(r)),
+                       what = "F",
+                       eps = 1,
+                       matchOriginalPoints = TRUE)
+{
+  #' Compute hazard function, h :
+  
+  x = seq(min(r, na.rm = TRUE), max(r, na.rm = TRUE) + eps, eps)
+  censoredCounts = hist(r[!ce],
+                        breaks = x,
+                        right = FALSE,
+                        plot = FALSE)$counts
+  uncensoredCounts = hist(r,
+                          breaks = x,
+                          right = FALSE,
+                          plot = FALSE)$counts
+  h = censoredCounts / rev(cumsum(rev(uncensoredCounts)))
+  
+  #' Prepare x and y values for plotting
+  
+  x = x[-length(x)]
+  if (what == "F") {
+    y = 1 - cumprod(1 - h)
+  } else {
+    y = cumprod(1 - h)
+  }
+  
+  
+  #' Select out points in the original vector  of inputs, r:
+  
+  if (matchOriginalPoints)
+  {
+    m = match(sort(unique(r), decreasing = FALSE), x)
+    m = m[!is.na(m)]
+    x = x[m]
+    y = y[m]
+  }
+  
+  list(x = c(min(x, na.rm = TRUE), x), y = c(ifelse(what == 'F', 0, 1), y))
+}
+
+#'---------------------------------------------------------------
+#' Fit one, two, three segments to CDF
+#'---------------------------------------------------------------
+
+#' Fit tau values to censored CDF
+#'
+#' Returns matrix with 1, 2, or 3 rows corresponding to the number of segments desired.
+#'
+#' @param nTaus integer 1, 2, or 3 specifying number of segments to fit
+#' @param templateSpanLims either NULL or a vector of length two specifying a region of the x-axis
+#' @param list with elements x and y, for example output of \code{link{censoredCDF}}
+#' @param simple_lin_reg function, \code{\link{fit_A_to_B}} or \code{\link{fit_A_to_B_fast}}
+#'
+#' @return matrix with four columns: intercept, slope, total residual, average residual
+#' @seealso \code{\link{fit_A_to_B}}, \code{\link{fit_2_segments}}, and \code{\link{fit_3_segments}}
+#' @export
+
+fitTausToRegions = function(nTaus,
+                            p,
+                            templateSpanLims = NULL,
+                            simple_lin_reg = fit_A_to_B)
+{
+  x = p$x
+  y = log(ifelse(p$y == 0, min(p$y[p$y > 0], na.rm = TRUE), p$y))
+  
+  if (!is.null(templateSpanLims))
+  {
+    w = which(x <= templateSpanLims[2] & x >= templateSpanLims[1])
+    x = x[w]
+    y = y[w]
+  }
+  N = length(x)
+  
+  if (nTaus == 1)
+  {
+    tau = simple_lin_reg(x, y, 1, N)
+  }
+  else if (nTaus == 2)
+  {
+    tau = fit_2_segments(simple_lin_reg, x, y, N)$tau
+  }
+  else
+  {
+    tau = fit_3_segments(simple_lin_reg, x, y, N)$tau
+  }
+  tau
+}
+
+#' Estimate a specified number of tau values, with confidence intervals for each estimate.
+#'
+#' @param a = vector of values for which we'll calculate the censored CDF
+#' @param ce.a = boolean vector -- censor corresponding element of a?
+#' @param nRegions = 1, 2, or 3 regions to fit?
+#' @param nBoot = number of bootstraps for obtaining confidence interval
+#'
+#' @return confidence interval for tau for each of the three regions.
+#' @seealso \code{\link{viewTau}} which calls this function
+#' @export
+
+getTauConfidenceInterval = function(a,
+                                    ce.a = rep(FALSE, length(a)),
+                                    matchOriginalPoints = FALSE,
+                                    nRegions = 2,
+                                    nBoot = 100)
+{
+  n = length(a)
+  L = sapply(1:nBoot, function(i)
+  {
+    tmp = sample.int(n, replace = TRUE)
+    
+    p = censoredCDF(a[tmp],
+                    ce.a[tmp],
+                    what = "1-F",
+                    matchOriginalPoints = matchOriginalPoints)
+    tmp = try(fitTausToRegions(nRegions, p, NULL), silent = FALSE)
+    if (class(tmp) == "try-error") {
+      return(rep(NA, 3))
+    }
+    - 1 / tmp[, 2]
+  })
+  apply(L, 1, function(x)
+    quantile(na.omit(x), c(0.025, 0.5, 0.975)))
+}
+
+#'---------------------------------------------------------------
+#' Miscellaneous convenience functions
+#'---------------------------------------------------------------
+
+#' Convenience function to create a file if none exists
+#'
+#' @param dir directory path
+#' @param subdir subdirectory name
+#'
+#' @return file.path( dir, subdir )
+#' @export
+
+createFile = function(dir, subdir)
+{
+  tmp = file.path(dir, subdir)
+  if (!file.exists(tmp))
+  {
+    dir.create(tmp, showWarnings = TRUE)
+  }
+  tmp
+}
+
+#'--------------------------------------------------------------
+#' Add from here: plot first pass survival and write tau estimates with confidence intervals to csv
+#'--------------------------------------------------------------
+
+#' Write table for template span values for each conditions with one column for
+#'	each region: tau, 2.5th %ile, and 95.5th %ile.
+#'
+#' @param report = use report$write.table to save table for Zia
+#' @param values = Template Span values
+#' @param censored = boolean vector same length as values - if TRUE then censor that value
+#' @param condition = string identifier for condition
+#' @param nRegions = 1, 2, or 3 taus to fit?
+#'
+#' @return - write table to report object and return table as a data frame
+#' @export
+
+writeTauEstimatesToCsv = function(report,
+                                  values,
+                                  censored,
+                                  condition,
+                                  nRegions)
+{
+  p = censoredCDF(values,
+                  censored,
+                  what = "1-F",
+                  matchOriginalPoints = TRUE)
+  tau = fitTausToRegions(nRegions, p, NULL)
+  loginfo("Investiage tau:")
+  loginfo(dim(tau))
+  loginfo(format(tau[, 5], digits = 4))
+  loginfo(format(tau[, 6], digits = 4))
+  tmp = getTauConfidenceInterval(values,
+                                 censored,
+                                 matchOriginalPoints = TRUE,
+                                 nRegions = nRegions)
+  taus = data.frame(rbind(
+    tau = -1 / tau[, 2],
+    tmp[-2, ],
+    start = tau[, 5],
+    stop = tau[, 6]
+  ))
+  names(taus) = paste("Region", c(1:nRegions), sep = "_")
+  
+  title = paste(condition, "Tau_Estimates", sep = "_")
+  csvfile = paste(title, "csv", sep = ".")
+  
+  report$write.table(
+    csvfile,
+    taus,
+    id = "tau_estimate_table",
+    title = title,
+    tags = c("tau", "first", "pass", "first_pass", "survival", "table")
+  )
+  taus
+}
+
+#' Try to censor values in a pileup at the end, since movie length information is not
+#'	easily available now -- replace with movie length censoring later.
+#'
+#' @param values = Template Span values
+#'
+#' @return boolean vector same length as values - if TRUE then censor that value
+#' @export
+
+adHocCensoring = function(values)
+{
+  censored = rep(FALSE, length(values))
+  b = boxplot(values, plot = FALSE)$stat
+  if ((b[5] - b[4]) / b[4] < 0.01)
+  {
+    censored = values >= b[4]
+  }
+  else
+  {
+    censored = values >= b[5]
+  }
+  censored
+}
+
+#' Return data frame with 1 - CDF values: x, y, and Condition
+#'
+#' @param report = use report$write.table to save table with tau estimates
+#' @param cd = data frame containing Template Span values for all conditions
+#' @param nRegions = 1, 2, or 3 taus to fit?
+#'
+#' @seealso \code{\link{makeReport}} in LibDiagnosticsPlots.R where cd is defined.
+#' @export
+
+getCensoredCDFDataFrame = function(report, cd, nRegions)
+{
+  condition = cd$Condition[1]
+  values = cd$tend - cd$tstart
+  censored = adHocCensoring(values)
+  tau = writeTauEstimatesToCsv(report, values, censored, condition, nRegions)
+  r = censoredCDF(values,
+                  censored,
+                  what = "1-F",
+                  matchOriginalPoints = TRUE)
+  data.frame(x = r$x,
+             y = r$y,
+             Condition = condition)
+}
+
+#' Put fitted taus into a data frame that can be plotted over the 1 - CDF plot for illustration.
+#'
+#' @param p = output of \code{\link{censoredCDF}} list with elements x and y of equal length.
+#' @param nRegions = 1, 2, or 3 taus to fit?
+#'
+#' @return data frame with columns x, y, Region (corresponding to tau fitting region), and Condition
+#' @export
+
+getTauFittingLinesForGGplot = function(p, nRegions)
+{
+  condition = p$Condition[1]
+  tau = fitTausToRegions(nRegions, p, NULL)
+  bind_rows(lapply(1:nRegions, function(i)
+  {
+    d = data.frame(
+      x = p$x,
+      y = exp(tau[i, 1] + tau[i, 2] * p$x),
+      Region = paste(condition, i, sep = "_"),
+      Condition = condition
+    )
+    subset(d, 0 <= y & y <= 1)
+  }))
+}
+
+#' Get just the first pass of each read
+#'
+#' @param x = output of pbbamr::loadPBI, with columns hole and astart
+#'
+#' @return only those rows of x corrsponding to the first subread for each ZMW
+#' @export
+
+getFirstPassSubreads = function(x)
+{
+  x = x[order(x$hole, x$astart, decreasing = FALSE),]
+  x[!duplicated(x$hole),]
+}
+
+#' Estimate tau values for three regions of the first pass, along with confidence intervals for each tau.
+#'
+#' @param report = use report$write.table to save tau estimates and report$ggsave to save an illustrative plot
+#' @param cd = data frame containing Template Span values for all conditions
+#' @param nRegions = 1, 2, or 3 taus to fit?
+#'
+#' @return one plot showing tau fittings, and through \code{\link{writeTauEstimatesToCsv}}, one table per condition.
+#'
+#' @seealso \code{\link{makeReport}} in LibDiagnosticsPlots.R where cd is defined.
+#' @export
+
+plotFirstPassTau = function(report, cd, nRegions = 3)
+{
+  loginfo("Draw first pass survival and estimate tau values.\n")
+  s = split(1:nrow(cd), cd$Condition)
+  tm = lapply(s, function(r)
+    getFirstPassSubreads(cd[r,]))
+  
+  loginfo("Use simple bootstrapping to get confidence intervals for tau estimates.\n")
+  l0 = lapply(tm, function(x)
+    getCensoredCDFDataFrame(report, x, nRegions))
+  n0 = bind_rows(lapply(l0, function(p)
+    getTauFittingLinesForGGplot(p, nRegions)))
+  l0 = bind_rows(l0)
+  
+  loginfo("Plot survival curves with dotted lines showing tau fittings.\n")
+  tb = ggplot(l0, aes(x = x, y = y, colour = Condition)) +
+    scale_y_log10(limits = c(1e-8, 1)) +
+    geom_line() +
+    plTheme +
+    clScale +
+    labs(x = "Template Span", y = "1 - CDF (with ad-hoc censoring)", title = "First Pass Template Span") +
+    geom_line(
+      data = n0,
+      aes(
+        x = x,
+        y = y,
+        group = Region,
+        colour = Condition
+      ),
+      linetype = "dotted",
+      show.legend = FALSE
+    )
+  
+  report$ggsave(
+    "first_pass_tau.png",
+    tb,
+    id = "first_pass_taus",
+    width = plotwidth,
+    height = plotheight,
+    title = "1 - CDF of 1st Pass",
+    caption = "1 - CDF of 1st Pass",
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "template",
+      "cdf",
+      "tau",
+      "survival",
+      "first",
+      "pass"
+    )
+  )
+}
+
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
   # Make fake data - for debugging
@@ -515,6 +1193,7 @@ makeReport <- function(report) {
     makeCDFofaStartPlots(report, cd)
     makeMaxVsUnrolledPlots(report, cd)
     makeCDFofTemplatePlots(report, cd)
+    plotFirstPassTau(report, cd)
   }
   
   # Save the report object for later debugging
