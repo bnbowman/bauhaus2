@@ -33,7 +33,7 @@ def parseArgs():
 
 def readOriginalConditionTable(condition_table):
     """
-    
+    Read the original condition-table.csv
     """
     ct = {'Condition': [],
           'Genome': []}
@@ -48,7 +48,8 @@ def readOriginalConditionTable(condition_table):
 
 def generateChunkedConditionTable(asets, ct, refs, output):
     """
-    description of def goes here
+    Generate new condition-table.csv with chunked-by-reference alignmentsets
+    Compatible as constant_arrow.R input
     """
     cct = []
 
@@ -76,7 +77,7 @@ def generateChunkedConditionTable(asets, ct, refs, output):
 
 def writeContigChunkedConditionTable(cct, output):
     """
-    description goes here
+    Write the new condition-table.csv
     """
     with open(output, 'wb') as csvfile:
         fieldnames = cct[0].keys()
