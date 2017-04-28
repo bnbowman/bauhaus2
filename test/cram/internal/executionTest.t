@@ -219,7 +219,11 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- first_pass_tau.png
   |   |   |-- hist_max.png
   |   |   |-- hist_unroll.png
+  |   |   |-- long_library_metrics.csv
   |   |   |-- max_hqlen.png
+  |   |   |-- max_subread_len_cdf_with_N50.png
+  |   |   |-- max_subread_len_density.png
+  |   |   |-- max_subread_len_survival.png
   |   |   |-- max_unrolled.png
   |   |   |-- maxt_unrolledt.png
   |   |   |-- nsubreads_ref_hist_percentage.png
@@ -319,7 +323,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  24 directories, 278 files
+  24 directories, 282 files
 
 
 

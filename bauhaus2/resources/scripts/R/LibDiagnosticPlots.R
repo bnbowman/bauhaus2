@@ -1158,6 +1158,286 @@ plotFirstPassTau = function(report, cd, nRegions = 3)
   )
 }
 
+#'--------------------------------------------------------------
+#' Long library metrics
+#'--------------------------------------------------------------
+
+#' Generate density plot of max subread length for all conditions
+#'
+#' @param report = use method ggsave to save plot of density
+#' @param maxSubreadLens = list - one data frame per condition - with columns MaxSubreadLen and Condition
+#' @param deNovo = if TRUE then plots will be labeled as de novo.
+#' @param searchTags = vector of short strings that would allow this plot to appear in a search
+#'
+#' @seealso \code{\link{collectTemplateSpan}} where maxSubreadLens is defined
+#' @return vector of mean max subread lengths, one mean per condition
+#' @export
+
+plotDensityOfMaxSubreadLength = function(report,
+                                         maxSubreadLens,
+                                         deNovo,
+                                         searchTags)
+{
+  label = ifelse(deNovo,
+                 "de_novo_max_subread_len_density",
+                 "max_subread_len_density")
+  title = ifelse(deNovo,
+                 "de Novo Max Subread Length Density",
+                 "Max Subread Length Density")
+  
+  loginfo("Generate density plot of max subread length for all conditions:")
+  tb = ggplot(bind_rows(maxSubreadLens),
+              aes(x = MaxSubreadLen, colour = Condition)) +
+    geom_line(lwd = 0.5, stat = "density") +
+    scale_x_log10() +
+    plTheme +
+    clScale +
+    labs(x = "Max Subread Length", y = "Density", title = title)
+  
+  report$ggsave(
+    paste(label, "png", sep = "."),
+    tb,
+    id = label,
+    width = plotwidth,
+    height = plotheight,
+    title = title,
+    caption = title,
+    tags = c("density", searchTags)
+  )
+  vapply(maxSubreadLens, function(x)
+    mean(x$MaxSubreadLen, na.rm = TRUE), 0)
+}
+
+#' Compute N(k) using only the longest subread for each ZMW.
+#' N(k) := length N such that k percent of all bases are in sequences of length < N
+#'
+#' Plot CDF of max subread lengths with one horizontal bar at N(k) for each value of k.
+#'
+#' @param report = use method ggsave to save illustrative plot with CDF and horizontal lines
+#' @param maxSubreadLenCDFs = list of data frames, one per condition, with CDFs for max subread lengths.
+#' @param perc = desired values of k, in percent form.  Default: c( 0.5, 0.25 ) for N50 and N25
+#' @param deNovo = if TRUE then plots will be labeled as de novo.
+#' @param searchTags = vector of short strings that would allow this plot to appear in a search
+#'
+#' @seealso \code{\link{getMaxSubreadLenCDF}} where maxSubreadLenCDFs is defined
+#' @return data frame with N(k) for each specified value in perc - one row per condition.
+#' @export
+
+plot_N_k_UsingLongestSubreads = function(report,
+                                         maxSubreadLenCDFs,
+                                         perc,
+                                         deNovo,
+                                         searchTags)
+{
+  label = ifelse(deNovo,
+                 "de_novo_max_subread_len_cdf_with_N50",
+                 "max_subread_len_cdf_with_N50")
+  title = ifelse(deNovo,
+                 "de Novo Max Subread Length CDFs and N(k)",
+                 "Max Subread Length CDFs and N(k)")
+  
+  loginfo("Plot CDF of max subread lengths with one horizontal bar at N(k) for each value of k:")
+  tb = ggplot(bind_rows(maxSubreadLenCDFs),
+              aes(x = x, y = y, colour = Condition)) +
+    geom_line(lwd = 0.5) +
+    plTheme +
+    clScale +
+    labs(x = "Max Subread Lengths", y = "CDF", title = title)
+  for (p in perc)
+  {
+    tb = tb + geom_hline(yintercept = p)
+  }
+  
+  report$ggsave(
+    paste(label, "png", sep = "."),
+    tb,
+    id = label,
+    width = plotwidth,
+    height = plotheight,
+    title = title,
+    caption = title,
+    tags = c("N50", "N25", "CDF", searchTags)
+  )
+  
+  loginfo("For each condition, compute N(k) for each value of k:")
+  res = data.frame(t(sapply(maxSubreadLenCDFs,
+                            function(z)
+                              vapply(perc, function(p)
+                                z$x[which.min(abs(z$y - p))], 0))))
+  
+  names(res) = paste("N", perc * 100, sep = "")
+  res$nZMWs = vapply(maxSubreadLenCDFs, function(z)
+    z$nReads[1], 0)
+  res
+}
+
+#' Plot ( 1 - CDF ) of max subread lengths with one vertical bar at each desired benchmark value
+#'
+#' @param report = use method ggsave to save illustrative plot with 1 - CDF and vertical lines
+#' @param maxSubreadLenCDFs = list of data frames, one per condition, with CDFs for max subread lengths.
+#' @param benchmark = max subread length values to mark out on plot
+#' @param deNovo = if TRUE then plots will be labeled as de novo.
+#' @param searchTags = vector of short strings that would allow this plot to appear in a search
+#'
+#' @seealso \code{\link{getMaxSubreadLenCDF}} where maxSubreadLenCDFs is defined
+#' @return data frame with fraction of reads greater than each benchmark value - one row per condition.
+#' @export
+
+plotSurvivalUsingLongestSubreads = function(report,
+                                            maxSubreadLenCDFs,
+                                            benchmark,
+                                            deNovo,
+                                            searchTags)
+{
+  maxSubreadLenSurvival = lapply(maxSubreadLenCDFs, function(z) {
+    z$y = 1 - z$y
+    z
+  })
+  
+  label = ifelse(deNovo,
+                 "de_novo_max_subread_len_survival",
+                 "max_subread_len_survival")
+  title = ifelse(deNovo,
+                 "de Novo Max Subread Length Survival",
+                 "Max Subread Length Survival")
+  
+  loginfo("Plot survival of longest subread per ZMW:")
+  tb = ggplot(bind_rows(maxSubreadLenSurvival),
+              aes(x = x, y = y, colour = Condition)) +
+    geom_line(lwd = 0.5) +
+    plTheme +
+    clScale +
+    labs(x = "Max Subread Length", y = "1 - CDF", title = title)
+  for (b in benchmark)
+  {
+    tb = tb + geom_vline(xintercept = b)
+  }
+  
+  report$ggsave(
+    paste(label, "png", sep = "."),
+    tb,
+    id = label,
+    width = plotwidth,
+    height = plotheight,
+    title = title,
+    caption = title,
+    tags = c("CDF", "survival", "benchmark", searchTags)
+  )
+  
+  loginfo("What percentage of ZMWs have max subread length above each benchmark value?")
+  res = data.frame(t(sapply(maxSubreadLenSurvival,
+                            function(z)
+                              vapply(benchmark,
+                                     function(b)
+                                     {
+                                       w = which(z$x >= b)
+                                       ifelse(length(w) == 0, NA, z$y[min(w)])
+                                     }, 0))))
+  
+  names(res) = paste("Greater_Than", benchmark, sep = "_")
+  res
+}
+
+#' For a single condition, get max subread length per ZMW
+#'
+#' @param bam - output of pbbamr::loadPBI2 for one condition
+#'	with additional columns tlen := tend - tstart and alen.
+#'
+#' @return data frame with columns MaxSubreadLen and Condition
+#' @seealso \code{\link{createLongLibraryPlots}} which calls this function
+#' @export
+
+getMaxSubreadLengths = function(bam)
+{
+  z = setDT(bam)
+  setkey(z, hole)
+  tmp = z[z[, .I[which.max(tlen)], by = hole]$V1]
+  data.frame(Condition = tmp$Condition,
+             MaxSubreadLen = tmp$tlen)
+}
+
+#' For each condition, get CDF of max subread lengths
+#'
+#' @param data = output of \code{\link{getMaxSubreadLengths}} for one condition
+#' @param nPoints = number of points to use in CDF
+#'
+#' @return data frame with columns nReads, Condition, x and y
+#'
+#' @seealso \code{\link{createLongLibraryPlots}} which calls this function
+#' @export
+
+getMaxSubreadLenCDF = function(data, nPoints = 1000)
+{
+  loginfo("For each condition, get CDF of max subread lengths:")
+  E = ecdf(data$MaxSubreadLen)
+  r = range(data$MaxSubreadLen, na.rm = TRUE)
+  x = seq(r[1], r[2], length.out = nPoints)
+  y = vapply(x, E, 0)
+  data.frame(
+    Condition = data$Condition[1],
+    nReads = nrow(data),
+    x = x,
+    y = y
+  )
+}
+
+#' Generate long library metrics and plots
+#'
+#' @param report = use write.table and ggsave methods to save tables and plots.
+#' @param alnxmls = vector of paths to alignment xml files - one per file per condition.
+#' @param cd = data table output of pbbamr::loadPBI2 and \code{\link{combineConditions}}
+#' @param perc = vector of percentiles for N(k);  0.5 corresponds to N50, 0.25 to N25.
+#' @param benchmark = vector listing benchmark read lengths for comparison
+#' @param deNovo = if TRUE then plots will be labeled as de novo
+#'
+#' @return table with metrics
+#' @export
+
+generateLongLibraryMetricsAndPlots = function(report, cd, perc, benchmark, deNovo = FALSE)
+{
+  searchTags = c(
+    "library",
+    "diagnostics",
+    "lib_diagnostics",
+    "subread",
+    "max",
+    "max_subread",
+    "libdiagnostics",
+    "subread_length",
+    "length"
+  )
+  
+  #' Get and plot density for max subread lengths:
+  
+  rows = split(1:nrow(cd), cd$Condition)
+  maxSubreadLens = lapply(rows, function(r)
+    getMaxSubreadLengths(cd[r,]))
+  meanMaxSubread = plotDensityOfMaxSubreadLength(report, maxSubreadLens, deNovo, searchTags)
+  
+  #' Get and plot CDF and survival for max subread lengths:
+  
+  maxSubreadLenCDFs = lapply(maxSubreadLens, getMaxSubreadLenCDF)
+  N50values = plot_N_k_UsingLongestSubreads(report, maxSubreadLenCDFs, perc, deNovo, searchTags)
+  vsBenchmark = plotSurvivalUsingLongestSubreads(report, maxSubreadLenCDFs, benchmark, deNovo, searchTags)
+  
+  loginfo("Write metrics to table:")
+  tbl = merge(N50values, vsBenchmark, by = 0)
+  tbl$MeanMaxSubreadLen = meanMaxSubread
+  names(tbl)[names(tbl) == "Row.names"] = "Condition"
+  row.names(tbl) = NULL
+  
+  label = ifelse(deNovo,
+                 "de_novo_long_library_metrics",
+                 "long_library_metrics")
+  report$write.table(
+    paste(label, "csv", sep = "."),
+    tbl,
+    id = label,
+    title = "Long Library Metrics",
+    tags = c("table", "metrics", "long_library_metrics", searchTags)
+  )
+}
+
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
   # Make fake data - for debugging
@@ -1194,6 +1474,12 @@ makeReport <- function(report) {
     makeMaxVsUnrolledPlots(report, cd)
     makeCDFofTemplatePlots(report, cd)
     plotFirstPassTau(report, cd)
+    generateLongLibraryMetricsAndPlots(
+      report,
+      cd,
+      perc = c(0.5, 0.25, 0.1),
+      benchmark = c(5e3, 8e3, 1e4, 1.5e4)
+    )
   }
   
   # Save the report object for later debugging
