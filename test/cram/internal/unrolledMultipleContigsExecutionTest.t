@@ -65,7 +65,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- scatterdone.empty
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
-  |   |   |-- sts.h5 -> /pbi/dept/enzymology/Kristofor/repos/bauhaus2/bauhaus2/resources/extras/no_sts.h5
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -124,7 +124,7 @@ Generate mapping reports workflow, starting from subreads.
   |       |   `-- scatterdone.empty
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
-  |       |-- sts.h5 -> /pbi/dept/enzymology/Kristofor/repos/bauhaus2/bauhaus2/resources/extras/no_sts.h5
+  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
