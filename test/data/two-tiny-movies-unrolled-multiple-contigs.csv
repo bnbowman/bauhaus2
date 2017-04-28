@@ -1,0 +1,3 @@
+Condition,SubreadSet,Genome
+MovieA,/pbi/dept/secondary/siv/testdata/itg/multiple-contigs-bam/m54004_170322_195608-50zmws.subreadset.xml,All5Mers_unrolled_circular_22x_l50600
+MovieB,/pbi/dept/secondary/siv/testdata/itg/multiple-contigs-bam/m54004_170322_191820-50zmws.subreadset.xml,All5Mers_unrolled_circular_22x_l50600

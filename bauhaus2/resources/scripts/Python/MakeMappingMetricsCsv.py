@@ -37,7 +37,7 @@ def grabArrowZmwsByCondition(arrow_csv, condition):
         for row in reader:
             if row['Condition'] == condition:
                 arrow_zmws.append(row['ZMW'])
-    return arrow_zmws
+    return np.array(arrow_zmws, dtype=int)
 
 def grabConditionName(aset):
     # path to aset is structured, split string to get condition name

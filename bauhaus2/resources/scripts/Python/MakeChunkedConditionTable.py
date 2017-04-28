@@ -20,12 +20,16 @@ def parseArgs():
     parser.add_argument('--condition-table',
                         required=True,
                         help='list of conditions')
+    parser.add_argument('--refs',
+                        required=True,
+                        nargs='+',
+                        help='list of reference fastas')
     parser.add_argument('--output',
                         required=True,
                         help='output csv chunked condition table')
     args = parser.parse_args()
 
-    return args.asets, args.condition_table, args.output
+    return args.asets, args.condition_table, args.refs, args.output
 
 def readOriginalConditionTable(condition_table):
     """
@@ -42,7 +46,7 @@ def readOriginalConditionTable(condition_table):
 
     return ct
 
-def generateChunkedConditionTable(asets, ct, output):
+def generateChunkedConditionTable(asets, ct, refs, output):
     """
     description of def goes here
     """
@@ -59,24 +63,22 @@ def generateChunkedConditionTable(asets, ct, output):
             cnt = 0
         condition = aset.split(os.path.sep)[1]
         # find ref name based on comparison to original condition table
-        for index, c in enumerate(ct['Condition']):
+        for r in refs:
+            c = r.split(os.path.sep)[1]
             if condition == c:
-                ref = ct['Genome'][index]
+                ref = r
                 break
-            else:
-                print 'Condition/Reference not found.'
-                return None
         cct.append({'Condition': condition + '_' + str(cnt),
-                    'MappedRecord': aset,
-                    'Genome': ref})
+                    'MappedSubreads': aset,
+                    'Reference': ref})
 
     return cct
 
-def writeContigChunkedConditionTable(cct):
+def writeContigChunkedConditionTable(cct, output):
     """
     description goes here
     """
-    with open('contig-chunked-condition-table.csv', 'wb') as csvfile:
+    with open(output, 'wb') as csvfile:
         fieldnames = cct[0].keys()
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
@@ -84,10 +86,10 @@ def writeContigChunkedConditionTable(cct):
             writer.writerow(row)
 
 def main():
-    asets, condition_table, output = parseArgs()
+    asets, condition_table, refs, output = parseArgs()
     ct = readOriginalConditionTable(condition_table)
-    cct = generateChunkedConditionTable(asets, ct, output)
-    writeContigChunkedConditionTable(cct)
+    cct = generateChunkedConditionTable(asets, ct, refs, output)
+    writeContigChunkedConditionTable(cct, output)
     
     return None
 

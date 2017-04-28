@@ -46,7 +46,8 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/Bauhaus2.R" )
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
                              "Python/MakeChunkedConditionTable.py",
-                             "Python/RefilterMappedReadsByReference.py" )
+                             "Python/RefilterMappedReadsByReference.py",
+                             "Python/ConsolidateArrowConditions.py" )
 
     def plan(self):
         return ["summarize-mappings.snake", "scatter-constant-arrow-by-reference.snake"] + \
