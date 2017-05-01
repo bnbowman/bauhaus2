@@ -5,8 +5,7 @@ import csv
 def parseArgs():
     """
     parse command-line arguments
-    aset  -> path to alignmentset.xml
-    arrow -> path to constantArrow output csv
+    arrow-csv  -> path to constant_arrow output csv
     """
     parser = argparse.ArgumentParser(description=\
                                      'Generate mapping metrics CSV')
@@ -39,6 +38,10 @@ def writeSimpleArrowCsv(errormodes, fieldnames, output):
             writer.writerow(row)
 
 def main():
+    """
+    strips away the _n end of the condition
+    required for running constant_arrow.R
+    """
     arrow_csv, output = parseArgs()
     errormodes, fieldnames = readArrowCsv(arrow_csv)
     writeSimpleArrowCsv(errormodes, fieldnames, output)

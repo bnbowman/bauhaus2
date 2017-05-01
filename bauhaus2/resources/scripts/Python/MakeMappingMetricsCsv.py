@@ -8,8 +8,8 @@ from pbcore.io import AlignmentSet
 def parseArgs():
     """
     parse command-line arguments
-    aset  -> path to alignmentset.xml
-    arrow -> path to constantArrow output csv
+    asets  -> paths to alignmentset.xmls
+    arrow-csv -> path to constantArrow output csv
     """
     parser = argparse.ArgumentParser(description = \
                                      'Generate mapping metrics CSV')

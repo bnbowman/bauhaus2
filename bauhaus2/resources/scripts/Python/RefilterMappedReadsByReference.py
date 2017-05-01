@@ -7,8 +7,10 @@ from pbcore.io import AlignmentSet
 def parseArgs():
     """
     parse command-line arguments
-    aset  -> path to alignmentset.xml
-    arrow -> path to constantArrow output csv
+    asets -> chunked-by-reference asets
+
+    Recasts rname filter in terms of whitelist zmw filter
+    for pbbam compatibility
     """
     parser = argparse.ArgumentParser(description = \
                                      'Generate mapping metrics CSV')
