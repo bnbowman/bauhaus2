@@ -1,5 +1,6 @@
 import argparse
 import random
+import numpy as np
 from pbcore.io import AlignmentSet
 
 
@@ -26,7 +27,7 @@ def reDefineFilter(aset):
     into a list of zmws
     """
     alignments = AlignmentSet(aset)
-    zmws = alignments.index['holeNumber']
+    zmws = np.unique(alignments.index['holeNumber'])
     if len(zmws) > 1000:
         zmws = random.sample(zmws, 1000)
     alignments.filters.addRequirement(zm=[('=', zmws)])
