@@ -77,3 +77,6 @@ of a mapping:
   # When more sts or other data files are collected, they should be separated to a new snakemake file
   # Define local mapping alignemntset
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
+  # When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
+  # So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset
+  # Later in this workflow, only the alignmentset (remote_alignmentsets[wc.condition][0]) is used

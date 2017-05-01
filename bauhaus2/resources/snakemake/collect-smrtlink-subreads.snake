@@ -8,6 +8,9 @@ local_subreadset = \
     { c : "conditions/{condition}/subreads/input.subreadset.xml".format(condition=c)
       for c in ct.conditions }
 
+# When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
+# So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset
+# Later in this workflow, only the subreadset (remote_alignmentsets[wc.condition][1]) is used
 remote_alignmentsets = \
     { c : ct.inputs(c)[0]
       for c in ct.conditions }
