@@ -11,8 +11,8 @@ def parseArgs():
     asets  -> paths to alignmentset.xmls
     arrow-csv -> path to constantArrow output csv
     """
-    parser = argparse.ArgumentParser(description= \
-                                     'Generate mapping metrics CSV')
+    parser = argparse.ArgumentParser(
+        description='Generate mapping metrics CSV')
     parser.add_argument('--asets',
                         required=True,
                         nargs='+',
@@ -87,13 +87,13 @@ def grabAlignmentPulseCalls(alignment):
 
 def grabAlignmentPulseWidths(alignment):
     """
-    retrieve pulsewidths from alignment. if pulsewidth tag not present, 
+    retrieve pulsewidths from alignment. if pulsewidth tag not present,
     return list of nans
     """
     if 'pw' in [tag[0] for tag in alignment.peer.tags]:
         # check if pw info is available
         pws = alignment.PulseWidth()
-    else: 
+    else:
         # if pw is not available, initialize to array of nans
         pws = np.empty((len(alignment.reference()), ))
         pws[:] = np.nan
@@ -103,7 +103,7 @@ def grabAlignmentPulseWidths(alignment):
 def grabAlignmentStartFrames(alignment):
 
     """
-    retrieve start frames from alignment. if start frames tag not present, 
+    retrieve start frames from alignment. if start frames tag not present,
     return list of nans. Note that start-frames are pulse-indexed.
     """
     if 'sf' in [tag[0] for tag in alignment.peer.tags]:
