@@ -70,6 +70,21 @@ def initializeMappedMetricsDictionary(zmws):
 
     return mapped_metrics
 
+def grabAlignmentPulseCalls(alignment):
+    """
+    retrieve pulsecalls from alignment. if pulsecall tag not present,
+    return list of nans
+    """
+    if 'pc' in [tag[0] for tag in alignment.peer.tags]:
+        # check if pc info is available
+        pcs = alignment.peer.get_tag('pc')
+    else:
+        # if pc is not available, initialize array of capital Ns
+        pcs = np.empty((alignment.aEnd+1, ), dtype='a1')
+        pcs[:] = 'N'
+
+    return pcs
+
 def grabAlignmentPulseWidths(alignment):
     """
     retrieve pulsewidths from alignment. if pulsewidth tag not present, 
@@ -171,7 +186,7 @@ def addAlignmentMetrics(mapped_metrics, cnt, alignment,
     mapped_metrics['aStart'][cnt] = alignment.aStart
     mapped_metrics['aEnd'][cnt] = alignment.aEnd
     nErrs = alignment.nMM + alignment.nDel + alignment.nIns
-    mapped_metrics['spasmid'][cnt] = 1. - np.divide(nErrs, 
+    mapped_metrics['spasmid'][cnt] = 1. - np.divide(nErrs,
                                                     alignment.tEnd - \
                                                     alignment.tStart,
                                                     dtype='f')
@@ -192,7 +207,7 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
         framerate = alignments.readGroupTable[
                                     'MovieName' == alignment.movieName][
                                     'FrameRate']
-        pcs = alignment.peer.get_tag('pc')
+        pcs = grabAlignmentPulseCalls(alignment)
         pws = grabAlignmentPulseWidths(alignment)
         sfs = grabAlignmentStartFrames(alignment)
         ipds = alignment.IPD() # ipds are always stored
