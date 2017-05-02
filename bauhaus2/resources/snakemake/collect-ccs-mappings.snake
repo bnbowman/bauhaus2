@@ -6,8 +6,11 @@ from bauhaus2.runtime import ct
 
 assert ct.inputsAreMapped, "collect-mappings.snake is for workflows with pre-mapped data"
 
+# When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
+# So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset
+# Later in this workflow, only the alignmentset (remote_alignmentsets[wc.condition][0]) is used
 remote_alignmentsets = \
-    { c : ct.inputs(c)
+    { c : ct.inputs(c)[0]
       for c in ct.conditions }
 
 
@@ -15,7 +18,7 @@ remote_alignmentsets = \
 
 rule collect_mappings_one_condition:
     input:
-        remoteAset=lambda wc: remote_alignmentsets[wc.condition]
+        remoteAset=lambda wc: remote_alignmentsets[wc.condition][0]
     output: "conditions/{condition}/mapped_ccs/mapped-ccs.alignmentset.xml"
     shell:
         """

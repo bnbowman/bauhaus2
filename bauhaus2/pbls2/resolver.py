@@ -111,6 +111,18 @@ class Resolver(object):
             raise DataNotFound("Multiple AlignmentSets present in job directory %s" % jobDir)
         else:
             return candidates[0]
+            
+    def findSmrtlinkSubreadSet(self, jobDir):
+        """
+        Given the secondary job path (SMRTlink), find the subread set within
+        """
+        with open(op.join(jobDir,"pbscala-job.sh")) as f:
+            for line in f:
+                if "eid_subread" in line:
+                    list_of_words = line.split()
+                    for string in list_of_words:
+                        if ('eid_subread' in string):
+                            return string.rsplit(':')[1].rsplit('xml')[0]+'xml'
 
     def resolveSubreadSet(self, runCode, reportsFolder=""):
         reportsPath = self.resolvePrimaryPath(runCode, reportsFolder)
@@ -166,6 +178,10 @@ class Resolver(object):
     def resolveAlignmentSet(self, smrtLinkServer, jobId):
         jobDir = self.resolveJob(smrtLinkServer, jobId)
         return self.findAlignmentSet(jobDir)
+    
+    def resolveSmrtlinkSubreadSet(self, smrtLinkServer, jobId):
+        jobDir = self.resolveJob(smrtLinkServer, jobId)
+        return self.findSmrtlinkSubreadSet(jobDir)
 
     def ensureSubreadSet(self, subreadSet):
         if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".subreads.bam")):
