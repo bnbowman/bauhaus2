@@ -233,6 +233,8 @@ makeSamplingPlots <-
           "inaccurate reference reads")
       
       for (i in 1:3) {
+        img_height = min(49.5, 3 * length(levels(reads[[i]]$ref)))
+        
         tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) +
           geom_boxplot() + stat_summary(
             fun.y = median,
@@ -242,12 +244,12 @@ makeSamplingPlots <-
             vjust = -0.8,
             aes(label = round(..y.., digits = 3))
           ) + plTheme + themeTilt  + clFillScale +
-          facet_wrap( ~ ref)
+          facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref)))
         report$ggsave(
           paste("pkMid_Box_", variableTitle[i], ".png", sep = ""),
           tp,
           width = plotwidth,
-          height = plotheight,
+          height = img_height,
           id = paste("pkMid_boxplot_", variableTitle[i], sep = ""),
           title = paste("pkMid Box Plot - ", variableTitle[i], sep = ""),
           caption = paste(
@@ -277,13 +279,13 @@ makeSamplingPlots <-
         # )
         
         tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + geom_density(alpha = .5) +
-          plTheme + themeTilt  + clScale + facet_wrap( ~ ref) +
+          plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
           labs(x = "pkMid (after normalization)", title = "pkMid by Condition")
         report$ggsave(
           paste("pkMid_Dens_", variableTitle[i], ".png", sep = ""),
           tp,
           width = plotwidth,
-          height = plotheight,
+          height = img_height,
           id = paste("pkMid_densityplot_", variableTitle[i], sep = ""),
           title = paste("pkMid Density Plot - ", variableTitle[i], sep = ""),
           caption = paste(
@@ -296,13 +298,13 @@ makeSamplingPlots <-
         )
         
         tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + stat_ecdf() +
-          plTheme + themeTilt  + clScale + facet_wrap( ~ ref) +
+          plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
           labs(x = "pkMid", y = "CDF", title = "pkMid by Condition (CDF)")
         report$ggsave(
           paste("pkMid_CDF_", variableTitle[i], ".png", sep = ""),
           tp,
           width = plotwidth,
-          height = plotheight,
+          height = img_height,
           id = paste("pkMid_cdf_", variableTitle[i], sep = ""),
           title = paste("pkMid CDF - ", variableTitle[i], sep = ""),
           caption = paste("Distribution of pkMid for ", variableTitle[i],  " (CDF)", sep = ""),
@@ -310,13 +312,13 @@ makeSamplingPlots <-
         )
         
         tp = ggplot(reads[[i]], aes(x = pkmid, fill = Condition)) + geom_histogram() +
-          plTheme + themeTilt  + clFillScale + facet_wrap( ~ ref) +
+          plTheme + themeTilt  + clFillScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
           labs(x = "pkMid", title = "pkMid by Condition")
         report$ggsave(
           paste("pkMid_Hist_", variableTitle[i], ".png", sep = ""),
           tp,
           width = plotwidth,
-          height = plotheight,
+          height = img_height,
           id = paste("pkMid_histogram_", variableTitle[i], sep = ""),
           title = paste("pkMid Histogram - ", variableTitle[i], sep = ""),
           caption = paste(
@@ -337,8 +339,8 @@ makeSamplingPlots <-
       report$ggsave(
         "pkMid_Accu_vs_Inaccu_Dens.png",
         tp,
-        width = plotwidth,
-        height = plotheight,
+        width = plotwidth * 5,
+        height = img_height,
         id = "pkMid_Accu_Inaccu_densityplot",
         title = "pkMid Density Plot - Accurate vs Inaccurate bases",
         caption = "Distribution of pkMid for Accurate vs inaccurate bases (Density plot)",
@@ -483,18 +485,20 @@ makeSamplingPlots <-
       tags = c("sampled", "boxplot", "polrate", "reference")
     )
     
+    img_height = min(49.5, 3 * length(levels(cd2$ref)))
+    
     # PW by Template Base
     tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) +
       labs(
         y = "frequency",
         x = "seconds",
         title = paste("Pulse Width\n(From ", sampleSize, "Sampled Alignments)")
-      ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref)
+      ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
     report$ggsave(
       "pw_by_template.png",
       tp,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "pw_by_template.png",
       title = "Pulse Width by Template Base",
       caption = "Pulse Width by Template Base",
@@ -506,12 +510,12 @@ makeSamplingPlots <-
         y = "CDF",
         x = "seconds",
         title = paste("Pulse Width_CDF\n(From ", sampleSize, "Sampled Alignments)")
-      ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref)
+      ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
     report$ggsave(
       "pw_by_template_cdf.png",
       tp,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "pw_by_template_cdf.png",
       title = "Pulse Width by Template Base (CDF)",
       caption = "Pulse Width by Template Base (CDF)",
@@ -573,12 +577,12 @@ makeSamplingPlots <-
         y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
         title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
       ) +
-      plTheme + themeTilt + clFillScale + facet_wrap( ~ ref)
+      plTheme + themeTilt + clFillScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
     report$ggsave(
       "ipddistbybase_boxplot.png",
       tp,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "ipd_boxplot_by_base",
       title = "IPD Distribution by Ref Base - Boxplot",
       caption = "IPD Distribution by Ref Base - Boxplot",
@@ -632,7 +636,7 @@ makeSamplingPlots <-
       tags = c("sampled", "boxplot", "pw")
     )
     
-    tp3 = tp + facet_wrap( ~ ref)
+    tp3 = tp + facet_wrap( ~ ref, nrow = length(levels(cd2[cd2$pw < maxPW,]$ref)))
     b <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
     tp4 <- tp3 +  geom_text(data = b, aes(label = pw), 
                            position = position_dodge(width = 0.9), vjust = -0.8) +
@@ -646,7 +650,7 @@ makeSamplingPlots <-
       "pw_boxplot_by_base.png",
       tp4,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "pw_boxplot_by_base",
       title = "PW Distribution By Base",
       caption = "PW Distribution",
@@ -745,6 +749,9 @@ makeSamplingPlots <-
                 incorrect = sum(read != ref)) %>%
       mutate(erate = incorrect / (correct + incorrect)) %>%
       ungroup()
+    
+    img_height = min(49.5, 3 * length(levels(errorRates$read)))
+    
     tp = ggplot(errorRates,
                 aes(
                   x = snrCfac,
@@ -754,12 +761,12 @@ makeSamplingPlots <-
                 )) + geom_point() +
       geom_line()  + clScale + plTheme + themeTilt + labs(y = "Error Rate (per called BP)\nFrom Sampled Alignments",
                                                           x = "SNR C Bin",
-                                                          title = "Error Rates By Called Base") +  facet_wrap(~ read)
+                                                          title = "Error Rates By Called Base") + facet_wrap(~read, nrow = length(levels(errorRates$read)))
     report$ggsave(
       "bperr_rate_by_snr.png",
       tp,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "bp_err_rate_by_snr",
       title = "BP Error Rates by SNR",
       caption = "BP Error Rates by SNR",
@@ -773,6 +780,9 @@ makeSamplingPlots <-
                 incorrect = sum(read != ref)) %>%
       mutate(erate = incorrect / (correct + incorrect)) %>%
       ungroup()
+    
+    img_height = min(49.5, 3 * length(levels(mmRates$ref)))
+    
     tp = ggplot(mmRates,
                 aes(
                   x = snrCfac,
@@ -782,12 +792,12 @@ makeSamplingPlots <-
                 )) + geom_point() +
       geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mismatch Rate (per ref BP)\nFrom Sampled Alignments",
                                                           x = "SNR C Bin",
-                                                          title = "Mismatch Rates By Template Base") +  facet_wrap(~ ref)
+                                                          title = "Mismatch Rates By Template Base") + facet_wrap(~ ref, nrow = length(levels(mmRates$ref)))
     report$ggsave(
       "bpmm_rate_by_snr.png",
       tp,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "bp_mm_err_rate_by_snr",
       title = "Mismatch Rates by SNR",
       caption = "Mismatch Rates by SNR",
@@ -996,6 +1006,9 @@ makeReport <- function(report) {
     snrs = cd[, .(Condition, hole, snrA, snrC, snrG, snrT)]
     colnames(snrs) = sub("snr", "", colnames(snrs))
     snrs = snrs %>% gather(channel, SNR, A, C, G, T)
+    
+    img_height = min(49.5, 3 * length(levels(as.factor(snrs$channel))))
+    
     # tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) + geom_violin() +
     #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
     #   facet_wrap(~ channel)
@@ -1009,13 +1022,13 @@ makeReport <- function(report) {
     # )
     
     tp = ggplot(snrs, aes(x = SNR, colour = Condition)) + geom_density(alpha = .5) +
-      plTheme + themeTilt  + clScale + facet_wrap(~ channel) +
+      plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(snrs$channel)))) +
       labs(x = "SNR", title = "Distribution of SNR in Aligned Files (Density plot)")
     report$ggsave(
       "snrDensity.png",
       tp,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "snr_density",
       title = "SNR Density Plot",
       caption = "Distribution of SNR in Aligned Files (Density plot)",
@@ -1031,12 +1044,12 @@ makeReport <- function(report) {
         vjust = -0.8,
         aes(label = round(..y.., digits = 4))
       ) + plTheme + themeTilt  + clFillScale +
-      facet_wrap( ~ channel)
+      facet_wrap( ~ channel, nrow = length(levels(as.factor(snrs$channel))))
     report$ggsave(
       "snrBoxNoViolin.png",
       tp,
       width = plotwidth,
-      height = plotheight,
+      height = img_height,
       id = "snr_boxplot",
       title = "SNR Box Plot",
       caption = "Distribution of SNR in Aligned Files (Boxplot)",
