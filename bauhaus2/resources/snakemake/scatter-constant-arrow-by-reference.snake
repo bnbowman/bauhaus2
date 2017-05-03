@@ -1,6 +1,6 @@
 # ---------------------------------------------------------------------------------------------------
-# constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
-# and make Fishbone plots using the csv file.
+# scatter-constant-arrow-by-reference.snake: fit constant arrow model separately by reference, 
+# generating csv file of errormodes, and make Fishbone plots using the csv file.
 
 # -- Target rules --
 
