@@ -52,8 +52,8 @@ def initializeMappedMetricsDictionary(zmws):
     """
     initialize dictionary for storing the mapped metrics for the arrow ZMWs
     """
-    mapped_metrics = {'zmw': np.empty((len(zmws), ), dtype=int),
-                      'condition': [],
+    mapped_metrics = {'ZMW': np.empty((len(zmws), ), dtype=int),
+                      'Condition': [],
                       'median-pw-A': np.empty((len(zmws), ), dtype='f'),
                       'median-pw-C': np.empty((len(zmws), ), dtype='f'),
                       'median-pw-G': np.empty((len(zmws), ), dtype='f'),
@@ -155,8 +155,8 @@ def addAlignmentMetrics(mapped_metrics, cnt, alignment,
     """
     store metrics from particular alignment
     """
-    mapped_metrics['zmw'][cnt] = alignment.HoleNumber
-    mapped_metrics['condition'].append(condition)
+    mapped_metrics['ZMW'][cnt] = alignment.HoleNumber
+    mapped_metrics['Condition'].append(condition)
     mapped_metrics['median-pw-A'][cnt] = np.divide(np.median(pw['A']),
                                                    framerate)
     mapped_metrics['median-pw-C'][cnt] = np.divide(np.median(pw['C']),
@@ -234,7 +234,7 @@ def writeMappedMetricsCsv(mapped_metrics, output):
     """
     write mapped metrics to csv file
     """
-    columns = ['zmw', 'condition', 'spasmid', 'aStart', 'aEnd',
+    columns = ['ZMW', 'Condition', 'spasmid', 'aStart', 'aEnd',
                'start-time', 'end-time', 'median-pw-A', 'median-pw-C',
                'median-pw-G', 'median-pw-T', 'median-ipd-A', 'median-ipd-C',
                'median-ipd-G', 'median-ipd-T']
