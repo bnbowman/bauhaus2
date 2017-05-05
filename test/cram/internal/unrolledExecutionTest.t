@@ -7,7 +7,7 @@ until we have a better plan.
 
 Generate mapping reports workflow, starting from subreads.
 
-  $ bauhaus2 --no-smrtlink --noGrid generate -w UnrolledNoHQMapping -t ${BH_ROOT}test/data/two-tiny-movies-unrolled.csv -o unrolled-mapping
+  $ bauhaus2 --no-smrtlink --noGrid generate -w UnrolledNoHQMapping -t ${BH_ROOT}test/data/two-tiny-movies-unrolled-multiple-contigs.csv -o unrolled-mapping
   Validation and input resolution succeeded.
   Generated runnable workflow to "unrolled-mapping"
 
@@ -54,8 +54,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |   `-- mapped.alignmentset.xml
-  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta
-  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta.fai
+  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
+  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
   |   |   `-- subreads
   |   |       |-- chunks
@@ -104,8 +104,8 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |       |   |   `-- mapped.chunk7.alignmentset.xml
   |       |   `-- mapped.alignmentset.xml
-  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta
-  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta.fai
+  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
+  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
   |       `-- subreads
   |           |-- chunks
@@ -123,27 +123,194 @@ Generate mapping reports workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
+  |   |   |-- Accuracy_Heatmap_MovieA.png
+  |   |   |-- Accuracy_Heatmap_MovieB.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieA.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- AlnReadLen_Heatmap_MovieA.png
+  |   |   |-- AlnReadLen_Heatmap_MovieB.png
+  |   |   |-- Count_Heatmap_MovieA.png
+  |   |   |-- Count_Heatmap_MovieB.png
+  |   |   |-- DeletionRate_Heatmap_MovieA.png
+  |   |   |-- DeletionRate_Heatmap_MovieB.png
+  |   |   |-- InsertionRate_Heatmap_MovieA.png
+  |   |   |-- InsertionRate_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieB.png
+  |   |   |-- MismatchRate_Heatmap_MovieA.png
+  |   |   |-- MismatchRate_Heatmap_MovieB.png
+  |   |   |-- NumBases_A_Heatmap_MovieA.png
+  |   |   |-- NumBases_A_Heatmap_MovieB.png
+  |   |   |-- NumBases_C_Heatmap_MovieA.png
+  |   |   |-- NumBases_C_Heatmap_MovieB.png
+  |   |   |-- NumBases_G_Heatmap_MovieA.png
+  |   |   |-- NumBases_G_Heatmap_MovieB.png
+  |   |   |-- NumBases_T_Heatmap_MovieA.png
+  |   |   |-- NumBases_T_Heatmap_MovieB.png
+  |   |   |-- PW_A_Heatmap_MovieA.png
+  |   |   |-- PW_A_Heatmap_MovieB.png
+  |   |   |-- PW_C_Heatmap_MovieA.png
+  |   |   |-- PW_C_Heatmap_MovieB.png
+  |   |   |-- PW_G_Heatmap_MovieA.png
+  |   |   |-- PW_G_Heatmap_MovieB.png
+  |   |   |-- PW_T_Heatmap_MovieA.png
+  |   |   |-- PW_T_Heatmap_MovieB.png
+  |   |   |-- Pkmid_A_Heatmap_MovieA.png
+  |   |   |-- Pkmid_A_Heatmap_MovieB.png
+  |   |   |-- Pkmid_C_Heatmap_MovieA.png
+  |   |   |-- Pkmid_C_Heatmap_MovieB.png
+  |   |   |-- Pkmid_G_Heatmap_MovieA.png
+  |   |   |-- Pkmid_G_Heatmap_MovieB.png
+  |   |   |-- Pkmid_T_Heatmap_MovieA.png
+  |   |   |-- Pkmid_T_Heatmap_MovieB.png
+  |   |   |-- PolRate_Heatmap_MovieA.png
+  |   |   |-- PolRate_Heatmap_MovieB.png
+  |   |   |-- Reference_Heatmap_MovieA.png
+  |   |   |-- Reference_Heatmap_MovieB.png
+  |   |   |-- SNR_A_Heatmap_MovieA.png
+  |   |   |-- SNR_A_Heatmap_MovieB.png
+  |   |   |-- SNR_C_Heatmap_MovieA.png
+  |   |   |-- SNR_C_Heatmap_MovieB.png
+  |   |   |-- SNR_G_Heatmap_MovieA.png
+  |   |   |-- SNR_G_Heatmap_MovieB.png
+  |   |   |-- SNR_T_Heatmap_MovieA.png
+  |   |   |-- SNR_T_Heatmap_MovieB.png
+  |   |   |-- StartTime_Heatmap_MovieA.png
+  |   |   |-- StartTime_Heatmap_MovieB.png
+  |   |   |-- TotalTime_Heatmap_MovieA.png
+  |   |   |-- TotalTime_Heatmap_MovieB.png
+  |   |   |-- Uniformity_histogram_MovieA.png
+  |   |   |-- Uniformity_histogram_MovieB.png
+  |   |   |-- Uniformity_metrics_MovieA.csv
+  |   |   |-- Uniformity_metrics_MovieB.csv
+  |   |   |-- rEnd_Heatmap_MovieA.png
+  |   |   |-- rEnd_Heatmap_MovieB.png
+  |   |   |-- rStartExtRange_Heatmap_MovieA.png
+  |   |   |-- rStartExtRange_Heatmap_MovieB.png
+  |   |   |-- rStart_Heatmap_MovieA.png
+  |   |   |-- rStart_Heatmap_MovieB.png
   |   |   |-- report.RData
-  |   |   `-- report.json
+  |   |   |-- report.json
+  |   |   |-- tEnd_Heatmap_MovieA.png
+  |   |   |-- tEnd_Heatmap_MovieB.png
+  |   |   |-- tStart_Heatmap_MovieA.png
+  |   |   `-- tStart_Heatmap_MovieB.png
   |   |-- ConstantArrowFishbonePlots
+  |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
-  |   |   |-- errormode_MovieA.csv
-  |   |   |-- errormode_MovieB.csv
   |   |   |-- mapped-metrics.csv
   |   |   |-- modelReport.json
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   |-- LibDiagnosticPlots
+  |   |   |-- MovieA_Tau_Estimates.csv
+  |   |   |-- MovieB_Tau_Estimates.csv
+  |   |   |-- cdf_astart.png
+  |   |   |-- cdf_astart_log.png
+  |   |   |-- cdf_hqlenmax.png
+  |   |   |-- cdf_ratio.png
+  |   |   |-- cdf_tlen.png
+  |   |   |-- density_max.png
+  |   |   |-- density_max_region.png
+  |   |   |-- density_unroll.png
+  |   |   |-- density_unroll_summation.png
+  |   |   |-- first_pass_tau.png
+  |   |   |-- hist_max.png
+  |   |   |-- hist_unroll.png
+  |   |   |-- long_library_metrics.csv
+  |   |   |-- max_hqlen.png
+  |   |   |-- max_subread_len_cdf_with_N50.png
+  |   |   |-- max_subread_len_density.png
+  |   |   |-- max_subread_len_survival.png
+  |   |   |-- max_unrolled.png
+  |   |   |-- maxt_unrolledt.png
+  |   |   |-- nsubreads_ref_hist_percentage.png
   |   |   |-- report.Rd
-  |   |   `-- report.json
+  |   |   |-- report.json
+  |   |   |-- subreads_ref_hist.png
+  |   |   |-- sumtable.csv
+  |   |   |-- template_span_ref_box.png
+  |   |   |-- unrolled_ref_hist.png
+  |   |   |-- unrolled_ref_hist_percentage.png
+  |   |   |-- unrolled_template.png
+  |   |   |-- unrolled_template_boxplot.png
+  |   |   |-- unrolled_template_densityplot.png
+  |   |   |-- unrolled_template_densityplot_summation.png
+  |   |   `-- unrolled_template_log.png
   |   |-- PbiPlots
+  |   |   |-- acc_accvrl.png
+  |   |   |-- acc_accvtl.png
+  |   |   |-- acc_density.png
+  |   |   |-- alen_density.png
+  |   |   |-- alen_v_qlen.png
+  |   |   |-- aligned_read_length_survival\ (Log-scale).png
+  |   |   |-- aligned_read_length_survival.png
+  |   |   |-- base_count_bar.png
+  |   |   |-- etype__drate_boxplot.png
+  |   |   |-- etype__irate_boxplot.png
+  |   |   |-- etype__mmrate_boxplot.png
+  |   |   |-- nreads_hist.png
   |   |   |-- report.Rd
-  |   |   `-- report.json
+  |   |   |-- report.json
+  |   |   |-- sumtable.csv
+  |   |   |-- template_span_survival\ (Log-scale).png
+  |   |   |-- template_span_survival.png
+  |   |   |-- tlen_box.png
+  |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
+  |   |   |-- active_zmw_normalized.png
+  |   |   |-- bperr_rate_by_snr.png
+  |   |   |-- bpmm_rate_by_snr.png
+  |   |   |-- dutycycle_boxplot.png
+  |   |   |-- global_localpolrate.png
+  |   |   |-- ipddistbybase_boxplot.png
+  |   |   |-- localpolrate_boxplot.png
+  |   |   |-- medianIPD.csv
+  |   |   |-- medianPolymerizationRate.csv
+  |   |   |-- medianSNR.csv
+  |   |   |-- pkMid_Accu_vs_Inaccu_Dens.png
+  |   |   |-- pkMid_Box_accurate\ reference\ reads.png
+  |   |   |-- pkMid_Box_all\ reference\ reads.png
+  |   |   |-- pkMid_Box_inaccurate\ reference\ reads.png
+  |   |   |-- pkMid_CDF_accurate\ reference\ reads.png
+  |   |   |-- pkMid_CDF_all\ reference\ reads.png
+  |   |   |-- pkMid_CDF_inaccurate\ reference\ reads.png
+  |   |   |-- pkMid_Dens_accurate\ reference\ reads.png
+  |   |   |-- pkMid_Dens_all\ reference\ reads.png
+  |   |   |-- pkMid_Dens_inaccurate\ reference\ reads.png
+  |   |   |-- pkMid_Hist_accurate\ reference\ reads.png
+  |   |   |-- pkMid_Hist_all\ reference\ reads.png
+  |   |   |-- pkMid_Hist_inaccurate\ reference\ reads.png
+  |   |   |-- pkmid_mean_by_time.png
+  |   |   |-- pkmid_median_by_time.png
+  |   |   |-- pkmid_median_by_time_normalized.png
+  |   |   |-- polrate_ref_box.png
+  |   |   |-- polrate_template_per_second.png
+  |   |   |-- pw_boxplot.png
+  |   |   |-- pw_boxplot_by_base.png
+  |   |   |-- pw_by_template.png
+  |   |   |-- pw_by_template_cdf.png
+  |   |   |-- pw_mean_by_time.png
   |   |   |-- report.Rd
-  |   |   `-- report.json
+  |   |   |-- report.json
+  |   |   |-- snrBoxNoViolin.png
+  |   |   |-- snrDensity.png
+  |   |   |-- snrvsacc.png
+  |   |   |-- snrvsdeletion.png
+  |   |   |-- snrvsindelrat.png
+  |   |   |-- snrvsinsertion.png
+  |   |   `-- snrvsmismatch.png
   |   |-- ReadPlots
+  |   |   |-- clip_rate.png
+  |   |   |-- deletion_norm.png
   |   |   |-- deletion_rate.png
+  |   |   |-- deletion_size_log.png
+  |   |   |-- insert_size_log.png
+  |   |   |-- insert_size_norm.png
   |   |   |-- insertion_rate.png
   |   |   |-- mismatch_rate.png
   |   |   |-- report.Rd
@@ -175,5 +342,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  24 directories, 134 files
+  24 directories, 301 files
 
