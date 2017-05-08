@@ -918,6 +918,43 @@ applySummarization = function(res)
 # Summarize chips into N[1] x N[2] blocks of ZMWs
 #------------------------------------------------------------
 
+#' Suppose that the number of pols loading into a ZMWs falls into a discrete Poisson distribution.
+#' Return an estimate of the average number of loaded pols, lambda
+#'
+#' @param x = fraction of ZMWs in a given block that have an alignment:
+#' @return lambda = scalar estimate of loading rate
+#'
+#' @export
+
+estimateLocalLoadingRate = function(x)
+{
+  lambda = -log(1 - x)
+  f = function(lambda, x)
+    lambda * exp(-lambda) - x
+  a = optimize(
+    f = f,
+    interval = c(0, 10),
+    x = x,
+    maximum = TRUE
+  )
+  b = optimize(
+    f = f,
+    interval = c(0, 10),
+    x = x,
+    maximum = FALSE
+  )
+  if (a$obj > 0 & b$obj < 0)
+  {
+    l1 = uniroot(f = f,
+                 interval = c(0, a$max),
+                 x = x)$root
+    l2 = uniroot(f = f,
+                 interval = c(a$max, 10),
+                 x = x)$root
+    lambda = ifelse(x > exp(-1), l2, l1)
+  }
+  lambda
+}
 
 #' Called by \code{\link{convenientSummarizer}} if data.table library is installed
 #'
@@ -1011,6 +1048,7 @@ convenientSummarizer = function(res, N, key = 1e3)
   z$HoleNumber = res$X[match(z$ID, res$ID)]
   z$X = z$ID %/% key
   z$Y = z$ID %% key
+  z$Lambda = vapply(as.numeric(z$Count)/(N[1] * N[2]), estimateLocalLoadingRate, 0)
   z[, which(names(z) != "ID")]
 }
 
@@ -1221,23 +1259,12 @@ drawSummarizedHeatmaps = function(report, res, label, N)
     1
   })
   
-  addLoadingUniformityPlots(report, res, N, label)
+  addLoadingUniformityPlots(report, df, N, label)
 }
 
 #----------------------------------------------------------------
-
-
-
-
-#----------------------------------------------------------------
 # Loading uniformity histogram and metrics
 #----------------------------------------------------------------
-
-
-#----------------------------------------------------------------
-# Loading uniformity histogram and metrics
-#----------------------------------------------------------------
-
 
 #' Plot histogram showing number of ZMWs that produced an alignment in each block of N[1] x N[2].
 #'
@@ -1304,6 +1331,137 @@ getLoadingEfficiency = function(counts, N)
   100 * max(total, na.rm = TRUE) * exp(1)
 }
 
+#' Return 100 * p-value for Moran's I statistic
+#'
+#' Copied from ape::moran.I to avoid installing package:
+#' \link{https://cran.r-project.org/web/packages/ape}
+#' \link{https://en.wikipedia.org/wiki/Moran%27s_I}
+#'
+#' @param x = vector of observations
+#' @param weights = square matrix same dimension as x
+#' @param scaled = if TRUE, then statistic is scaled by sample standard dev.
+#' @param na.rm = if TRUE, remove NA values from x
+#' @param n = length( x )
+#'
+#' @return scalar: 100 * p-value
+#'	score ranges from 0 to 100
+#'	score of 100 means no spatial autocorrelation
+#'
+#' @seealso \link{http://www.lpc.uottawa.ca/publications/moransi/moran.htm} for formulas
+#' @export
+
+ape.moranI = function(x,
+                      weight,
+                      scaled = FALSE,
+                      na.rm = FALSE,
+                      n = length(x))
+{
+  #' Error handling steps:
+  d = dim(weight)
+  if (d[1] != d[2])
+    stop("weight matrix must be square")
+  if (n != d[1])
+    stop("nrow( weight ) must equal length( x ).")
+  
+  if (na.rm)
+  {
+    nas = is.na(x)
+    x = x[!nas]
+    n = length(x)
+    weight = weight[!nas,!nas]
+  }
+  
+  #' Normalize weight matrix by row sums:
+  r = rowSums(weight)
+  r[r == 0] <- 1
+  weight = weight / r
+  
+  #' Observed value of statistic, obs:
+  y = x - sum(x) / n
+  y2 = y * y
+  var = sum(y2)
+  obs = sum(weight * y %o% y) / var
+  
+  if (scaled)
+  {
+    i.max = sd(y) / sqrt(var / (n - 1))
+    obs = obs / i.max
+  }
+  
+  #' Expected value of statistic if there is no spatial autocorrelation:
+  expected = -1 / (n - 1)
+  
+  #' Calculate standard deviation of Moran's I statistic:
+  tmp = weight + t(weight)
+  S1 = sum(tmp * tmp) / 2
+  tmp = 1 + colSums(weight)
+  S2 = sum(tmp * tmp)
+  S0.2 = n * n
+  k = (sum(y2 * y2) / n) / (var * var / S0.2)
+  num.1 = n * ((n ^ 2 - 3 * n + 3) * S1 - n * S2 + 3 * S0.2)
+  num.2 = k * (n * (n - 1) * S1 - 2 * n * S2 + 6 * S0.2)
+  den = ((n - 1) * (n - 2) * (n - 3) * S0.2)
+  sd = sqrt((num.1 - num.2) / den - expected ^ 2)
+  
+  #' Return 100 * two-tailed p-value
+  #' obs ~ N( expected, sd ):
+  200 * pnorm(
+    obs,
+    mean = expected,
+    sd = sd,
+    lower.tail = (obs <= expected)
+  )
+}
+
+
+#' Calculate Moran's I statistic ( R. Beckman )
+#'
+#' @param D = matrix with two columns, x and y
+#' @param counts = vector with number of alignments for each corresponding pair x, y in D
+#'
+#' @return vector with two values: moran's I score
+#'	using inverse weights and using step function
+#'
+#' @seealso \code{\link{ape.moranI}} where moran's I score is computed
+#' @seealso \code{\link{getUniformityMetricsTable}} which calls this function
+#' @export
+
+getRBeckmanUniformity = function(D, counts)
+{
+  m = as.matrix(dist(D))
+  n = m
+  diag(n) <- 1 
+  n = 1/n
+  diag(n) <- 0
+  
+  #' Calculate score using inverse distance weight matrix:
+  s1 = ape.moranI(statistic, n)
+  
+  #' Calculate score using step function weight matrix:
+  m[m < 1.5] <- 1
+  m[m >= 1.5] <- 0
+  diag(m) <- 0
+  s2 = ape.moranI(statistic, m)
+  
+  c(s1, s2)
+}
+
+#' (K. Voss) If the entire chip loaded as well as one of the best regions, what would the loading be?
+#'
+#' @param res = data frame, summarized into blocks of ZMWs
+#' @param qnt = quantile to use
+#' @param nZMWs = number of ZMWs per chip
+#'
+#' @return two metrics: 95th percentile loading and observed loading percentile
+#' @export
+
+getKVossMetric = function(res, qnt = 0.95, nZMWs = 1032000)
+{
+  v = as.numeric(res$Lambda)
+  n = round(nZMWs * v * exp(-v))
+  r = sum(as.numeric(res$Count), na.rm = TRUE)
+  c(quantile(n, qnt), round(100 * sum(r >= n) / nrow(res)))
+}
 
 #' Return a data frame containing uniformity metrics for tracking uniformity across chips, including overdispersion.
 #'
@@ -1314,15 +1472,18 @@ getLoadingEfficiency = function(counts, N)
 #' @param nSubreads number of subreads -- note this is not correct here.
 #' @param com vector of length two containing center of mass estimate for alignments.
 #' @param SNR vector of length four containing mean SNR for A, C, G, and T.
+#' 
 #' @seealso \code{\link{addLoadingUniformityPlots}} which calls this function.
-#' @export
 #' @examples
 #' getUniformityMetricsTable( "Condition_A", counts, c( 10, 8 ), nrow( res ), nrow( res ), com, SNR )
+#' 
+#' @export
 
-getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SNR)
+getUniformityMetricsTable = function(res, label, N, nAlns, nSubreads, com, SNR, cutoff = 2)
 {
   loginfo(paste("\t Write uniformity metrics table for condition:", label))
-  cutoff = round(max(1, boxplot(counts, plot = FALSE)$stat[1]))
+  counts = as.numeric(res$Count)
+  # cutoff = round(max(1, boxplot(counts, plot = FALSE)$stat[1]))
   y = counts[counts >= cutoff]
   
   n.counts = length(counts)
@@ -1334,6 +1495,8 @@ getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SN
   dispersion = vr / mu - 1
   t1 = dispersion * sqrt(2 / n.y)
   le = getLoadingEfficiency(counts, N)
+  mi = getRBeckmanUniformity(as.matrix(res[,c("X", "Y")]), counts)
+  kv = getKVossMetric(res)
   
   data.frame(
     ID = label,
@@ -1353,7 +1516,13 @@ getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SN
     SNR_A = SNR[1],
     SNR_C = SNR[2],
     SNR_G = SNR[3],
-    SNR_T = SNR[4]
+    SNR_T = SNR[4],
+    MoransI.Inv = mi[1],
+    MoransI.Inv.p = mi[2],
+    MoransI.N = mi[3],
+    MoransI.N.p = mi[4],
+    ProjectedMaxLoading = kv[1],
+    ObservedLoadingPercentile = kv[2]
   )
 }
 
@@ -1361,9 +1530,9 @@ getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SN
 
 #' The length of a string (in characters).
 #'
-#' @param res data frame output of \code{\link{convenientSummarizer}}
+#' @param res data frame output of \code{\link{convenientSummarizer}}, summarized into blocks
 #' @param N vector of length two describing dimensions of blocks of ZMWs
-#' @param lable string containing label for histogram and metrics table.
+#' @param label string containing label for histogram and metrics table.
 #' @seealso \code{\link{drawSummarizedHeatmaps}} which calls this function.
 #' @export
 #' @examples
@@ -1371,7 +1540,7 @@ getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SN
 #' res = convenientSummarizer( res, N )
 #' addLoadingUniformityPlots( report, res, c(10, 8), "Condition_A" )
 
-addLoadingUniformityPlots = function(report, res, N, label)
+addLoadingUniformityPlots = function(report, tmp, N, label)
 {
   if (is.null(N))
     return(0)
@@ -1379,27 +1548,21 @@ addLoadingUniformityPlots = function(report, res, N, label)
     N = c(N, N)
   }
   
-  tmp = res
   SNR_A = mean(tmp$SNR_A, na.rm = TRUE)
   SNR_C = mean(tmp$SNR_C, na.rm = TRUE)
   SNR_G = mean(tmp$SNR_G, na.rm = TRUE)
   SNR_T = mean(tmp$SNR_T, na.rm = TRUE)
   SNR = c(SNR_A, SNR_C, SNR_G, SNR_T)
   
-  tmp = tmp[!duplicated(tmp$HoleNumber),]
+  #' Compute center of mass
   x = as.numeric(tmp$X)
   y = as.numeric(tmp$Y)
+  com = c(mean(x, na.rm = TRUE), mean(y, na.rm = TRUE)) - c(595 %/% N[1], 544 %/% N[2])
   
-  # center of mass
-  com = c(mean(x, na.rm = TRUE), mean(y, na.rm = TRUE)) - c(595, 544)
+  tbl = getUniformityMetricsTable(tmp, label, N, nrow(tmp), nrow(tmp), com, SNR)
+  drawHistogramForUniformity(label, as.numeric(tmp$Count), N, dir, tbl)
   
-  a = floor(seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), N[1]))
-  b = floor(seq(min(y, na.rm = TRUE), max(y, na.rm = TRUE), N[2]))
-  tab = table(findInterval(x, a), findInterval(y, b))
-  drawHistogramForUniformity(report, label, as.numeric(tab), N)
-  
-  tbl = getUniformityMetricsTable(label, tab, N, nrow(tmp), nrow(res), com, SNR)
-  csvfile = paste("Uniformity_metrics_", label, ".csv", sep = "")
+  csvfile = paste("Uniformity_metrics.csv") 
   
   report$write.table(
     csvfile,
