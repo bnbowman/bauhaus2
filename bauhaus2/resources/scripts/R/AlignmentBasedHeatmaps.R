@@ -9,9 +9,6 @@ require(pbbamr)
 require(pbcommandR)
 require(doParallel)
 
-# require( BiocParallel )
-# BiocParallel::register( MulticoreParam( workers = 6 ) )
-
 source("./scripts/R/Bauhaus2.R")
 
 #' Use the following aspect ratio, width, and height for all heatmaps
@@ -668,7 +665,6 @@ writeSummaryTable = function(bamFile, fastaname, blockSize = 5e3)
   L = parLapply(cl, s, function(rows)
     getDetailedInformation(bam, fastaname, rows))
   stopCluster(cl)
-  # L = bplapply( s, function( rows ) getDetailedInformation( bam, fastaname, rows ) )
   
   loginfo("Combine basic and kinetic/pkmid information:")
   tmp = bind_rows(L)
@@ -740,10 +736,6 @@ sumUpByMolecule = function(x, colList)
   colList$nMax = intersect(colList$nMax, names(x))
   
   # Sum elements by hole number for columns listed in nSum:
-  loginfo("********")
-  loginfo(names(x))
-  loginfo(x$HoleNumber[1:10])
-  
   m = as.matrix(x[, colList$nSum])
   res = data.frame(rowsum(m, x$HoleNumber))
   res$HoleNumber = as.numeric(row.names(res))
@@ -899,7 +891,7 @@ postSummation = function(res, refTable, dna)
 applySummarization = function(res)
 {
   # check to make sure there are enough rows in the input data frame:
-  if (is.null(res) || nrow(res) < 5) {
+  if (nrow(res) < 5) {
     return(NULL)
   }
   dna = c("A", "C", "G", "T")
@@ -1195,11 +1187,27 @@ drawSummarizedHeatmaps = function(report, res, label, N)
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "AlnReadLen", label, N, limits = c(500, 9000)),
       silent = FALSE)
+  try(plotSingleSummarizedHeatmap(report,
+                                  df,
+                                  "AlnReadLenExtRange",
+                                  label,
+                                  N,
+                                  limits = c(500, 30000)),
+      silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "rStart", label, N, limits = c(0, 9000)),
+      silent = FALSE)
+  try(plotSingleSummarizedHeatmap(report, df, "rStartExtRange", label, N, limits = c(0, 25000)),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "SNR_C", label, N, limits = c(5, 13)),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "Pkmid_C", label, N, limits = c(100, 500)),
+      silent = FALSE)
+  try(plotSingleSummarizedHeatmap(report,
+                                  df,
+                                  "MaxSubreadLenExtRange",
+                                  label,
+                                  N,
+                                  limits = c(0, 15000)),
       silent = FALSE)
   
   excludeColumns = c(
@@ -1212,7 +1220,10 @@ drawSummarizedHeatmaps = function(report, res, label, N)
     "rStart",
     "SNR_C",
     "Pkmid_C",
-    "Reference"
+    "Reference",
+    "AlnReadLenExtRange",
+    "MaxSubreadLenExtRange",
+    "rStartExtRange"
   )
   lapply(setdiff(names(df), excludeColumns), function(n)
   {
@@ -1228,10 +1239,6 @@ drawSummarizedHeatmaps = function(report, res, label, N)
 
 
 
-
-#----------------------------------------------------------------
-# Loading uniformity histogram and metrics
-#----------------------------------------------------------------
 
 
 #----------------------------------------------------------------
@@ -1305,6 +1312,125 @@ getLoadingEfficiency = function(counts, N)
 }
 
 
+
+#' Return 100 * p-value for Moran's I statistic
+#'
+#' Copied from ape::moran.I to avoid installing package:
+#' \link{https://cran.r-project.org/web/packages/ape}
+#' \link{https://en.wikipedia.org/wiki/Moran%27s_I}
+#'
+#' @param x = vector of observations
+#' @param weights = square matrix same dimension as x
+#' @param scaled = if TRUE, then statistic is scaled by sample standard dev.
+#' @param na.rm = if TRUE, remove NA values from x
+#' @param n = length( x )
+#'
+#' @return scalar: 100 * p-value
+#'	score ranges from 0 to 100
+#'	score of 100 means no spatial autocorrelation
+#'
+#' @seealso \link{http://www.lpc.uottawa.ca/publications/moransi/moran.htm} for formulas
+#' @export
+
+ape.moranI = function(x,
+                      weight,
+                      scaled = FALSE,
+                      na.rm = FALSE,
+                      n = length(x))
+{
+  #' Error handling steps:
+  d = dim(weight)
+  if (d[1] != d[2])
+    stop("weight matrix must be square")
+  if (n != d[1])
+    stop("nrow( weight ) must equal length( x ).")
+  
+  if (na.rm)
+  {
+    nas = is.na(x)
+    x = x[!nas]
+    n = length(x)
+    weight = weight[!nas,!nas]
+  }
+  
+  #' Normalize weight matrix by row sums:
+  r = rowSums(weight)
+  r[r == 0] <- 1
+  weight = weight / r
+  
+  #' Observed value of statistic, obs:
+  y = x - sum(x) / n
+  y2 = y * y
+  var = sum(y2)
+  obs = sum(weight * y %o% y) / var
+  
+  if (scaled)
+  {
+    i.max = sd(y) / sqrt(var / (n - 1))
+    obs = obs / i.max
+  }
+  
+  #' Expected value of statistic if there is no spatial autocorrelation:
+  expected = -1 / (n - 1)
+  
+  #' Calculate standard deviation of Moran's I statistic:
+  tmp = weight + t(weight)
+  S1 = sum(tmp * tmp) / 2
+  tmp = 1 + colSums(weight)
+  S2 = sum(tmp * tmp)
+  S0.2 = n * n
+  k = (sum(y2 * y2) / n) / (var * var / S0.2)
+  num.1 = n * ((n ^ 2 - 3 * n + 3) * S1 - n * S2 + 3 * S0.2)
+  num.2 = k * (n * (n - 1) * S1 - 2 * n * S2 + 6 * S0.2)
+  den = ((n - 1) * (n - 2) * (n - 3) * S0.2)
+  sd = sqrt((num.1 - num.2) / den - expected ^ 2)
+  
+  #' obs ~ N( expected, sd ):
+  c(obs, pnorm(
+    obs,
+    mean = expected,
+    sd = sd,
+    lower.tail = (obs <= expected)
+  ))
+}
+
+
+#' Calculate Moran's I statistic ( R. Beckman )
+#'
+#' @param tab = table of values -- X vs. Y
+#'
+#' @return vector with two values: moran's I score
+#'	using inverse weights and using step function
+#'
+#' @seealso \code{\link{ape.moranI}} where moran's I score is computed
+#' @seealso \code{\link{getUniformityMetricsTable}} which calls this function
+#' @export
+
+getRBeckmanUniformity = function(tab)
+{
+  statistic = as.numeric(tab)
+  X = 1:nrow(tab)
+  Y = 1:ncol(tab)
+  D = cbind(rep(X, length(Y)), rep(Y, each = length(X)))
+  m = as.matrix(dist(D))
+  n = m
+  diag(n) <- 1
+  n = 1 / n
+  diag(n) <- 0
+  
+  #' Calculate score using inverse distance weight matrix:
+  s1 = ape.moranI(statistic, n)
+  
+  #' Calculate score using step function weight matrix:
+  m[m < 1.5] <- 1
+  m[m >= 1.5] <- 0
+  diag(m) <- 0
+  s2 = ape.moranI(statistic, m)
+  
+  c(s1, s2)
+}
+
+
 #' Return a data frame containing uniformity metrics for tracking uniformity across chips, including overdispersion.
 #'
 #' @param label string label for identification
@@ -1314,15 +1440,24 @@ getLoadingEfficiency = function(counts, N)
 #' @param nSubreads number of subreads -- note this is not correct here.
 #' @param com vector of length two containing center of mass estimate for alignments.
 #' @param SNR vector of length four containing mean SNR for A, C, G, and T.
+#'
 #' @seealso \code{\link{addLoadingUniformityPlots}} which calls this function.
-#' @export
 #' @examples
 #' getUniformityMetricsTable( "Condition_A", counts, c( 10, 8 ), nrow( res ), nrow( res ), com, SNR )
+#'
+#' @export
 
-getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SNR)
+getUniformityMetricsTable = function(label,
+                                     counts,
+                                     N,
+                                     nAlns,
+                                     nSubreads,
+                                     com,
+                                     SNR,
+                                     cutoff = 2)
 {
   loginfo(paste("\t Write uniformity metrics table for condition:", label))
-  cutoff = round(max(1, boxplot(counts, plot = FALSE)$stat[1]))
+  # cutoff = round( max( 1, boxplot( counts, plot = FALSE )$stat[1] ) )
   y = counts[counts >= cutoff]
   
   n.counts = length(counts)
@@ -1334,6 +1469,7 @@ getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SN
   dispersion = vr / mu - 1
   t1 = dispersion * sqrt(2 / n.y)
   le = getLoadingEfficiency(counts, N)
+  mi = getRBeckmanUniformity(counts)
   
   data.frame(
     ID = label,
@@ -1353,7 +1489,11 @@ getUniformityMetricsTable = function(label, counts, N, nAlns, nSubreads, com, SN
     SNR_A = SNR[1],
     SNR_C = SNR[2],
     SNR_G = SNR[3],
-    SNR_T = SNR[4]
+    SNR_T = SNR[4],
+    MoransI.Inv = mi[1],
+    MoransI.Inv.p = mi[2],
+    MoransI.N = mi[3],
+    MoransI.N.p = mi[4]
   )
 }
 
@@ -1390,7 +1530,7 @@ addLoadingUniformityPlots = function(report, res, N, label)
   x = as.numeric(tmp$X)
   y = as.numeric(tmp$Y)
   
-  # center of mass
+  #' Compute center of mass
   com = c(mean(x, na.rm = TRUE), mean(y, na.rm = TRUE)) - c(595, 544)
   
   a = floor(seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), N[1]))
@@ -1399,6 +1539,7 @@ addLoadingUniformityPlots = function(report, res, N, label)
   drawHistogramForUniformity(report, label, as.numeric(tab), N)
   
   tbl = getUniformityMetricsTable(label, tab, N, nrow(tmp), nrow(res), com, SNR)
+  
   csvfile = paste("Uniformity_metrics_", label, ".csv", sep = "")
   
   report$write.table(
@@ -1437,7 +1578,7 @@ generateHeatmapsPerCondition = function(report, alnxml, reference, label)
   fastaname = getReferencePath(reference)
   res = simpleErrorHandling(alnxml, fastaname)
   
-  if (is.null(res) || nrow(res) < 5)
+  if (nrow(res) < 5)
   {
     loginfo("[WARNING] - Too few rows in BAM file.")
     return(0)
