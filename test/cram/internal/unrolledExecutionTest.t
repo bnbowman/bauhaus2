@@ -129,6 +129,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- AlnReadLenExtRange_Heatmap_MovieB.png
   |   |   |-- AlnReadLen_Heatmap_MovieA.png
   |   |   |-- AlnReadLen_Heatmap_MovieB.png
+  |   |   |-- AvgPolsPerZMW_Heatmap_MovieA.png
+  |   |   |-- AvgPolsPerZMW_Heatmap_MovieB.png
   |   |   |-- Count_Heatmap_MovieA.png
   |   |   |-- Count_Heatmap_MovieB.png
   |   |   |-- DeletionRate_Heatmap_MovieA.png
@@ -143,32 +145,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- MaxSubreadLen_Heatmap_MovieB.png
   |   |   |-- MismatchRate_Heatmap_MovieA.png
   |   |   |-- MismatchRate_Heatmap_MovieB.png
-  |   |   |-- NumBases_A_Heatmap_MovieA.png
-  |   |   |-- NumBases_A_Heatmap_MovieB.png
-  |   |   |-- NumBases_C_Heatmap_MovieA.png
-  |   |   |-- NumBases_C_Heatmap_MovieB.png
-  |   |   |-- NumBases_G_Heatmap_MovieA.png
-  |   |   |-- NumBases_G_Heatmap_MovieB.png
-  |   |   |-- NumBases_T_Heatmap_MovieA.png
-  |   |   |-- NumBases_T_Heatmap_MovieB.png
-  |   |   |-- PW_A_Heatmap_MovieA.png
-  |   |   |-- PW_A_Heatmap_MovieB.png
-  |   |   |-- PW_C_Heatmap_MovieA.png
-  |   |   |-- PW_C_Heatmap_MovieB.png
-  |   |   |-- PW_G_Heatmap_MovieA.png
-  |   |   |-- PW_G_Heatmap_MovieB.png
-  |   |   |-- PW_T_Heatmap_MovieA.png
-  |   |   |-- PW_T_Heatmap_MovieB.png
-  |   |   |-- Pkmid_A_Heatmap_MovieA.png
-  |   |   |-- Pkmid_A_Heatmap_MovieB.png
-  |   |   |-- Pkmid_C_Heatmap_MovieA.png
-  |   |   |-- Pkmid_C_Heatmap_MovieB.png
-  |   |   |-- Pkmid_G_Heatmap_MovieA.png
-  |   |   |-- Pkmid_G_Heatmap_MovieB.png
-  |   |   |-- Pkmid_T_Heatmap_MovieA.png
-  |   |   |-- Pkmid_T_Heatmap_MovieB.png
-  |   |   |-- PolRate_Heatmap_MovieA.png
-  |   |   |-- PolRate_Heatmap_MovieB.png
   |   |   |-- Reference_Heatmap_MovieA.png
   |   |   |-- Reference_Heatmap_MovieB.png
   |   |   |-- SNR_A_Heatmap_MovieA.png
@@ -179,14 +155,9 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- SNR_G_Heatmap_MovieB.png
   |   |   |-- SNR_T_Heatmap_MovieA.png
   |   |   |-- SNR_T_Heatmap_MovieB.png
-  |   |   |-- StartTime_Heatmap_MovieA.png
-  |   |   |-- StartTime_Heatmap_MovieB.png
-  |   |   |-- TotalTime_Heatmap_MovieA.png
-  |   |   |-- TotalTime_Heatmap_MovieB.png
   |   |   |-- Uniformity_histogram_MovieA.png
   |   |   |-- Uniformity_histogram_MovieB.png
-  |   |   |-- Uniformity_metrics_MovieA.csv
-  |   |   |-- Uniformity_metrics_MovieB.csv
+  |   |   |-- Uniformity_metrics.csv
   |   |   |-- rEnd_Heatmap_MovieA.png
   |   |   |-- rEnd_Heatmap_MovieB.png
   |   |   |-- rStartExtRange_Heatmap_MovieA.png
@@ -342,5 +313,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  24 directories, 301 files
+  24 directories, 272 files
 
