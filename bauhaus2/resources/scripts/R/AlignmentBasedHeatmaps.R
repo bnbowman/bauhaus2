@@ -7,7 +7,6 @@ require(logging)
 require(ggplot2)
 require(pbbamr)
 require(pbcommandR)
-require(doParallel)
 
 source("./scripts/R/Bauhaus2.R")
 
@@ -532,102 +531,6 @@ getBasicInformation = function(bam)
   cbind(res, getSNR(bam))
 }
 
-#' Return data frame containing total Pkmid ( or IPD, Pulse Width ) by base for each subread
-#'
-#' @param data a list of vectors containing either IPDs, pulse widths, or pkmid values
-#' @param name a string describing the data contained in the list data (for example, "IPD")
-#' @param mA a list of vectors containing indices for corresponding elements of data; locations of A bases
-#' @param mC a list of vectors containing indices for corresponding elements of data; locations of C bases
-#' @param mG a list of vectors containing indices for corresponding elements of data; locations of G bases
-#' @param mT a list of vectors containing indices for corresponding elements of data; locations of T bases
-#' @seealso \code{\link{getDetailedInformation}} which calls this function.
-#' @export
-#' @examples
-#' bam = pbbamr::loadPBI( bamFileName )
-#' tmp = loadAlnsFromIndex( bam, fastaname, rows )
-#' ipd = getIPD( tmp )
-#' getSumByBase( ipd, "IPD", mA, mC, mG, mT )
-
-getSumByBase = function(data, name, mA, mC, mG, mT)
-{
-  mmed = function(x)
-    sum(x, na.rm = TRUE)
-  
-  res = data.frame(cbind(
-    vapply(mapply(`[`, data, mA, SIMPLIFY = FALSE), mmed, 0),
-    vapply(mapply(`[`, data, mC, SIMPLIFY = FALSE), mmed, 0),
-    vapply(mapply(`[`, data, mG, SIMPLIFY = FALSE), mmed, 0),
-    vapply(mapply(`[`, data, mT, SIMPLIFY = FALSE), mmed, 0)
-  ))
-  
-  dna = c("A", "C", "G", "T")
-  names(res) = paste(name, dna, sep = "_")
-  res
-}
-
-#' Return data frame containing median pulse widths by base, median pkmids by base and other data from PacBio bam file
-#'
-#' @param bam data frame returned by pbbamr::loadPBI
-#' @param fastaname fasta file path
-#' @param rows vector containing desired set of rows of bam
-#' @seealso \code{\link{writeSummaryTable}} which calls this function.
-#' @export
-#' @examples
-#' bam = pbbamr::loadPBI( bamFileName )
-#' getDetailedInformation( bam, fastaname, rows )
-
-getDetailedInformation = function(bam, fastaname, rows)
-{
-  tmp = loadAlnsFromIndex(bam, fastaname, rows)
-  holenumber = bam$hole[rows]
-  
-  # Get indices of A, C, G, and T for each row in rows:
-  
-  bcs = getBasecalls(tmp)
-  p = lapply(bcs, function(x)
-    split(1:length(x), x))
-  mA = lapply(p, function(x)
-    x[["A"]])
-  mC = lapply(p, function(x)
-    x[["C"]])
-  mG = lapply(p, function(x)
-    x[["G"]])
-  mT = lapply(p, function(x)
-    x[["T"]])
-  
-  ipds = getIPD(tmp)
-  pws = getPulseWidth(tmp)
-  
-  # Include total pulse width by base -- will compute average later.
-  
-  m = getSumByBase(pws, "PW", mA, mC, mG, mT)
-  m$TotalTime = getTotalTime(ipds, pws)
-  
-  # Include total pkmid by base -- will compute average later.
-  
-  if ("pkmid" %in% names(tmp[[1]]))
-  {
-    pkm = getPkmid(tmp)
-    m = cbind(m, getSumByBase(pkm, "Pkmid", mA, mC, mG, mT))
-  }
-  
-  if ("sf" %in% names(tmp[[1]]))
-  {
-    m$StartFrames = vapply(getStartFrames(tmp), function(x)
-      x[1], 0)
-  }
-  
-  # Get number of A's, C's, G's, and T's:
-  
-  m$NumBases_A = vapply(mA, length, 0)
-  m$NumBases_C = vapply(mC, length, 0)
-  m$NumBases_G = vapply(mG, length, 0)
-  m$NumBases_T = vapply(mT, length, 0)
-  m$HoleNumber = holenumber
-  m
-}
-
-
 
 #' Return data frame containing hole number, accuracy, pulse widths by base, and all other statistics from PacBio bam file
 #'
@@ -650,36 +553,7 @@ writeSummaryTable = function(bamFile, fastaname, blockSize = 5e3)
     return(NULL)
   }
   
-  res = getBasicInformation(bam)
-  loginfo("Get kinetic and pkmid information, blockSize rows at a time:")
-  blockSize = min(blockSize, nrow(bam) - 1)
-  s = seq(1, nrow(bam), blockSize)
-  s[length(s)] = s[length(s)] + 1
-  s = lapply(1:(length(s) - 1), function(i)
-    c(s[i]:(s[i + 1] - 1)))
-  
-  loginfo("Prepare to parallelize:")
-  noCores = detectCores() - 1
-  registerDoParallel(cores = noCores)
-  cl = makeCluster(noCores, type = "FORK")
-  L = parLapply(cl, s, function(rows)
-    getDetailedInformation(bam, fastaname, rows))
-  stopCluster(cl)
-  
-  loginfo("Combine basic and kinetic/pkmid information:")
-  tmp = bind_rows(L)
-  tmp = tmp[, -which(colnames(tmp) == "HoleNumber")]
-  res = bind_rows(lapply(s, function(rows)
-    res[rows,]))
-  res = cbind(res, tmp)
-  
-  res$FrameRate = getFrameRate(getBAMNamesFromDatasetFile(bamFile)[1])
-  res$TotalTime = res$TotalTime / res$FrameRate
-  if ("StartFrames" %in% names(res))
-  {
-    res$StartTime = res$StartFrames / res$FrameRate
-  }
-  res
+  getBasicInformation(bam)
 }
 
 
@@ -717,7 +591,7 @@ simpleErrorHandling = function(bamFile, fastaname, blockSize = 5e3)
 
 #' Summarize the data frame contained in x by HoleNumber
 #'
-#' @param x data frame, output of \code{\link{writeSummaryTable}}
+#' @param res data frame, output of \code{\link{writeSummaryTable}}
 #' @param colList list with elements: nSum, nFirst, nMin, and nMax.  Each contains a list of names of columns of x.
 #' @export
 #' @examples
@@ -726,82 +600,30 @@ simpleErrorHandling = function(bamFile, fastaname, blockSize = 5e3)
 #' colList = getColumnsForSummarization( names( res ), dna = c("A", "C", "G", "T") )
 #' sumUpByMolecule( res, colList )
 
-sumUpByMolecule = function(x, colList)
+sumUpByMolecule = function(res, colList)
 {
   # Make sure only columns actually contained in data frame x are listed in nSum and so on.
   
-  colList$nSum = intersect(colList$nSum, names(x))
-  colList$nFirst = intersect(colList$nFirst, names(x))
-  colList$nMin = intersect(colList$nMin, names(x))
-  colList$nMax = intersect(colList$nMax, names(x))
+  nms = names(res)
+  colList = lapply(colList, function(x)
+    intersect(x, nms))
   
-  # Sum elements by hole number for columns listed in nSum:
-  m = as.matrix(x[, colList$nSum])
-  res = data.frame(rowsum(m, x$HoleNumber))
-  res$HoleNumber = as.numeric(row.names(res))
+  res = data.table(res)
+  x = res[, lapply(.SD, function(x)
+    sum(x, na.rm = TRUE)), by = .(HoleNumber), .SDcols = colList$nSum]
+  y = res[, lapply(.SD, function(x)
+    x[1]), by = .(HoleNumber), .SDcols = colList$nFirst]
+  z = res[, lapply(.SD, function(x)
+    min(x, na.rm = TRUE)), by = .(HoleNumber), .SDcols = colList$nMin]
+  w = res[, lapply(.SD, function(x)
+    max(x, na.rm = TRUE)), by = .(HoleNumber), .SDcols = colList$nMax]
   
-  # Take first elements by hole number for columns listed in nFirst:
-  
-  m = match(res$HoleNumber, x$HoleNumber)
-  for (nms in colList$nFirst)
-  {
-    res[, nms] = x[m, nms]
-  }
-  
-  # Take minimum per hole number for columns listed in nMin ( if any ):
-  
-  if (length(colList$nMin) > 0)
-  {
-    for (n in colList$nMin)
-    {
-      tmp = x[, c("HoleNumber", n)]
-      tmp = tmp[order(tmp[, 1], tmp[, 2], decreasing = FALSE),]
-      d = which(!duplicated(tmp$HoleNumber))
-      res = merge(res, tmp[d, ], by = "HoleNumber")
-    }
-  }
-  
-  # Take maximum per hole number for columns listed in nMax ( if any ):
-  
-  if (length(colList$nMax) > 0)
-  {
-    for (n in colList$nMax)
-    {
-      tmp = x[, c("HoleNumber", n)]
-      tmp = tmp[order(tmp[, 1], tmp[, 2], decreasing = TRUE),]
-      d = which(!duplicated(tmp$HoleNumber))
-      res = merge(res, tmp[d, ], by = "HoleNumber")
-    }
-  }
-  res
+  #' Merge together and return:
+  m = merge(x, y, by = "HoleNumber")
+  m = merge(m, z, by = "HoleNumber")
+  data.frame(merge(m, w, by = "HoleNumber"))
 }
 
-#' Return average IPD, Pulse Width, Pkmid by base, starting from total values.
-#'
-#' @param res, output of \code{\link{sumUpByMolecule}}
-#' @param name, string containing column name (minus the specified base)
-#' @param dna = c("A", "C", "G", "T")
-#' @seealso \code{\link{postSummation}} which calls this function
-#' @export
-#' @examples
-#' res = writeSummaryTable( bamFile, fastaname )
-#' colList = getColumnsForSummarization( names( res ), "A", "C", "G", "T") )
-#' res = sumUpByMolecule( res, colList )
-#' res = averagePerBase( res, "IPD", c("A", "C", "G", "T") )
-
-averagePerBase = function(res, name, dna)
-{
-  num = vapply(dna, function(x)
-    paste(name, x, sep = "_"), "")
-  den = vapply(dna, function(x)
-    paste("NumBases", x, sep = "_"), "")
-  
-  for (i in 1:length(dna))
-  {
-    res[, num[i]] = res[, num[i]] / res[, den[i]]
-  }
-  res
-}
 
 #' To obtain lists of columns for summarization for \code{\link{sumUpByBase}}
 #'
@@ -817,30 +639,15 @@ getColumnsForSummarization = function(names.res, dna)
 {
   list(
     nFirst = c(
-      "HoleNumber",
       "X",
       "Y",
       "Reference",
-      "FrameRate",
       "SMRTlinkID",
       paste("SNR", dna, sep = "_")
     ),
-    
     nMax = c("MaxSubreadLen", "rEnd", "tEnd"),
-    nMin = c("rStart", "tStart", "StartTime"),
-    
-    nSum = c(
-      "Matches",
-      "Mismatches",
-      "Inserts",
-      "Dels",
-      "AlnReadLen",
-      "TotalTime",
-      paste("NumBases", dna, sep = "_"),
-      paste("IPD", dna, sep = "_"),
-      paste("PW", dna, sep = "_"),
-      paste("Pkmid", dna, sep = "_")
-    )
+    nMin = c("rStart", "tStart"),
+    nSum = c("Matches", "Mismatches", "Inserts", "Dels", "AlnReadLen")
   )
 }
 
@@ -855,17 +662,8 @@ getColumnsForSummarization = function(names.res, dna)
 #' @examples
 #' postSummation( res, refTable, c("A", "C", "G", "T")
 
-postSummation = function(res, refTable, dna)
+postSummation = function(res, refTable)
 {
-  for (name in c("IPD", "PW", "Pkmid"))
-  {
-    if (paste(name, "A", sep = "_") %in% names(res))
-    {
-      res = averagePerBase(res, name, dna)
-    }
-  }
-  
-  res$PolRate = res$AlnReadLen / res$TotalTime
   res$Reference = refTable[res$Reference]
   res$MismatchRate = res$Mismatches / res$AlnReadLen
   res$InsertionRate = res$Inserts / res$AlnReadLen
@@ -900,7 +698,7 @@ applySummarization = function(res)
   res$MaxSubreadLen = res$AlnReadLen
   colList = getColumnsForSummarization(names(res), dna)
   res = sumUpByMolecule(res, colList)
-  postSummation(res, refTable, dna)
+  postSummation(res, refTable)
 }
 
 #----------------------------------------------------------------
@@ -911,45 +709,42 @@ applySummarization = function(res)
 #------------------------------------------------------------
 
 
-#' Called by \code{\link{convenientSummarizer}} if data.table library is installed
+#' Suppose that the number of pols loading into a ZMWs falls into a discrete Poisson distribution.
+#' Return an estimate of the average number of loaded pols, lambda
 #'
-#' @param z data frame, output of \code{\link{applySummarization}} with an ID column appended, to identify the block to which a ZMW belongs.
-#' @seealso \code{\link{convenientSummarizer}} which calls this function
+#' @param x = fraction of ZMWs in a given block that have an alignment:
+#' @return lambda = scalar estimate of loading rate
+#'
 #' @export
 
-forConvenientSummarizer.datatable = function(z)
+estimateLocalLoadingRate = function(x)
 {
-  cols = which(names(z) != "ID")
-  FUN = function(x, na.rm = TRUE)
-    as.double(median(x, na.rm))
-  z = data.table(z)
-  setkey(z, ID)
-  u = data.frame(z[, .N, by = ID])
-  names(u)[which(names(u) != "ID")] = "Count"
-  z = data.frame(z[, lapply(.SD, FUN), by = ID, .SDcols = cols])
-  merge(u, z, by = "ID")
-}
-
-
-#' Called by \code{\link{convenientSummarizer}} if data.table library is not installed -- slightly slower
-#'
-#' @param z data frame, output of \code{\link{applySummarization}} with an ID column appended, to identify the block to which a ZMW belongs.
-#' @seealso \code{\link{convenientSummarizer}} which calls this function
-#' @export
-
-forConvenientSummarizer = function(z)
-{
-  cols = which(names(z) != "ID")
-  FUN = function(x, na.rm = TRUE)
-    median(x, na.rm)
-  y = z[, cols]
-  s = split(1:nrow(y), z$ID)
-  a = lapply(s, function(k)
-    apply(y[k, ], 2, FUN))
-  a = data.frame(do.call(rbind, a))
-  a$Count = vapply(s, length, 0)
-  a$ID = as.numeric(row.names(a))
-  a
+  lambda = -log(1 - x)
+  f = function(lambda, x)
+    lambda * exp(-lambda) - x
+  a = optimize(
+    f = f,
+    interval = c(0, 10),
+    x = x,
+    maximum = TRUE
+  )
+  b = optimize(
+    f = f,
+    interval = c(0, 10),
+    x = x,
+    maximum = FALSE
+  )
+  if (a$obj > 0 & b$obj < 0)
+  {
+    l1 = uniroot(f = f,
+                 interval = c(0, a$max),
+                 x = x)$root
+    l2 = uniroot(f = f,
+                 interval = c(a$max, 10),
+                 x = x)$root
+    lambda = ifelse(x > exp(-1), l2, l1)
+  }
+  lambda
 }
 
 
@@ -958,53 +753,62 @@ forConvenientSummarizer = function(z)
 #' @param res data frame output of \code{\link{applySummarization}}
 #' @param N vector of length two, containing dimensions of ZMW blocks for summarization
 #' @param key (optional) - use to create a unique ID number for each block of ZMWs.
-#' @export
+#'
 #' @examples
 #' res = writeSummaryTable( bamFile, fastaname )
 #' res = applySummarization( res )
 #' convenientSummarizer( res, N = c( 10, 8 ) )
+#'
+#' @export
 
-convenientSummarizer = function(res, N, key = 1e3)
+convenientSummarizer = function(res,
+                                N,
+                                x.min = 64,
+                                y.min = 64,
+                                key = 1e3)
 {
   if (length(N) == 1) {
     N = c(N, N)
   }
-  FUNC = forConvenientSummarizer
-  r = try(require(data.table), silent = FALSE)
-  r = ifelse(class(r) != "try-error", r, FALSE)
-  if (r) {
-    FUNC = forConvenientSummarizer.datatable
+  x = as.numeric(res$X) - x.min + 1
+  y = as.numeric(res$Y) - y.min + 1
+  X = (x %/% N[1]) + (x %% N[1] > 0)
+  Y = (y %/% N[2]) + (y %% N[2] > 0)
+  z = data.frame(data.table(X, Y)[, .N, by = .(X, Y)])
+  # z$N contains the number of alignments per N[1] x N[2] block
+  
+  if ("SNR_A" %in% names(res))
+  {
+    res$SNR_A[res$SNR_A == -1] <- NA
+    res$SNR_C[res$SNR_C == -1] <- NA
+    res$SNR_G[res$SNR_G == -1] <- NA
+    res$SNR_T[res$SNR_T == -1] <- NA
+    excl = c(
+      "Matches",
+      "Mismatches",
+      "Inserts",
+      "Dels",
+      "HoleNumber",
+      "Reference",
+      "SMRTlinkID"
+    )
+    u = data.table(res[,-which(names(res) %in% excl)])
+    u$X = X
+    u$Y = Y
+    FUN = function(x, na.rm = TRUE)
+      as.double(median(x, na.rm))
+    cols = setdiff(names(u), c("X", "Y"))
+    tmp = data.frame(u[, lapply(.SD, FUN), by = .(X, Y), .SDcols = cols])
+    m = match(key * tmp$X + tmp$Y, key * z$X + z$Y)
+    tmp$Count = z$N[m]
   }
   
-  exclude = c(
-    "HoleNumber",
-    "X",
-    "Y",
-    "Reference",
-    "FrameRate",
-    "SMRTlinkID",
-    "Matches",
-    "Mismatches",
-    "Inserts",
-    "Dels",
-    "Scraps"
-  )
-  
-  x = as.numeric(res$X)
-  y = as.numeric(res$Y)
-  a = floor(seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), N[1]))
-  b = floor(seq(min(y, na.rm = TRUE), max(y, na.rm = TRUE), N[2]))
-  kx = findInterval(x, a)
-  ky = findInterval(y, b)
-  
-  res$ID = ky + kx * key
-  nms = setdiff(names(res), exclude)
-  z = FUNC(res[, nms])
-  z$HoleNumber = res$X[match(z$ID, res$ID)]
-  z$X = z$ID %/% key
-  z$Y = z$ID %% key
-  z[, which(names(z) != "ID")]
+  tmp$HoleNumber = res$HoleNumber[match(key * tmp$X + tmp$Y, key * res$X + res$Y)]
+  yield = as.numeric(tmp$Count) / (N[1] * N[2])
+  tmp$AvgPolsPerZMW = unlist(lapply(yield, estimateLocalLoadingRate))
+  tmp
 }
+
 
 #----------------------------------------------------------------
 
@@ -1172,15 +976,16 @@ drawSummarizedHeatmaps = function(report, res, label, N)
     loginfo(paste("[ERROR] -- Too few rows for condition:", label))
     return(NULL)
   }
-  plotReferenceHeatmap(report, res, label)
   
   loginfo(paste("Summarize into", N[1], "x", N[2], "blocks for condition:", label))
   df = convenientSummarizer(res, N)
   df$AlnReadLenExtRange = df$AlnReadLen
   df$rStartExtRange = df$rStart
   df$MaxSubreadLenExtRange = df$MaxSubreadLen
+  addLoadingUniformityPlots(report, df, N, label)
   
   loginfo(paste("Plot individual heatmaps for condition:", label))
+  plotReferenceHeatmap(report, res, label)
   try(plotSingleSummarizedHeatmap(report, df, "Count", label, N, limits = c(0, 60)),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "Accuracy", label, N, limits = c(0.70, 0.85)),
@@ -1200,8 +1005,6 @@ drawSummarizedHeatmaps = function(report, res, label, N)
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "SNR_C", label, N, limits = c(5, 13)),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "Pkmid_C", label, N, limits = c(100, 500)),
-      silent = FALSE)
   try(plotSingleSummarizedHeatmap(report,
                                   df,
                                   "MaxSubreadLenExtRange",
@@ -1219,20 +1022,22 @@ drawSummarizedHeatmaps = function(report, res, label, N)
     "AlnReadLen",
     "rStart",
     "SNR_C",
-    "Pkmid_C",
     "Reference",
+    "Matches",
+    "Mismatches",
+    "Inserts",
+    "Dels",
     "AlnReadLenExtRange",
     "MaxSubreadLenExtRange",
     "rStartExtRange"
   )
+  
   lapply(setdiff(names(df), excludeColumns), function(n)
   {
     try(plotSingleSummarizedHeatmap(report, df, n, label, N),
         silent = FALSE)
     1
   })
-  
-  addLoadingUniformityPlots(report, res, N, label)
 }
 
 #----------------------------------------------------------------
@@ -1256,7 +1061,7 @@ drawSummarizedHeatmaps = function(report, res, label, N)
 #' @examples
 #' drawHistogramForUniformity( report, "Condition_A", counts, c( 10, 8 ) )
 
-drawHistogramForUniformity = function(report, label, counts, N)
+drawHistogramForUniformity = function(report, label, counts, N, tbl)
 {
   title = paste("Uniformity_histogram", label, sep = "_")
   pngfile = paste(title, "png", sep = ".")
@@ -1397,7 +1202,8 @@ ape.moranI = function(x,
 
 #' Calculate Moran's I statistic ( R. Beckman )
 #'
-#' @param tab = table of values -- X vs. Y
+#' @param D = matrix with two columns, x and y
+#' @param statistic = vector with number of alignments for each corresponding pair x, y in D
 #'
 #' @return vector with two values: moran's I score
 #'	using inverse weights and using step function
@@ -1406,12 +1212,8 @@ ape.moranI = function(x,
 #' @seealso \code{\link{getUniformityMetricsTable}} which calls this function
 #' @export
 
-getRBeckmanUniformity = function(tab)
+getRBeckmanUniformity = function(D, statistic)
 {
-  statistic = as.numeric(tab)
-  X = 1:nrow(tab)
-  Y = 1:ncol(tab)
-  D = cbind(rep(X, length(Y)), rep(Y, each = length(X)))
   m = as.matrix(dist(D))
   n = m
   diag(n) <- 1
@@ -1431,6 +1233,24 @@ getRBeckmanUniformity = function(tab)
 }
 
 
+#' (K. Voss) If the entire chip loaded as well as one of the best regions, what would the loading be?
+#'
+#' @param res = data frame, summarized into blocks of ZMWs
+#' @param qnt = quantile to use
+#' @param nZMWs = number of ZMWs per chip
+#'
+#' @return two metrics: 95th percentile loading and observed loading percentile
+#' @export
+
+getKVossMetric = function(res, qnt = 0.95, nZMWs = 1032000)
+{
+  v = as.numeric(res$AvgPolsPerZMW)
+  n = round(nZMWs * v * exp(-v))
+  r = sum(as.numeric(res$Count), na.rm = TRUE)
+  c(quantile(n, qnt, na.rm = TRUE), round(100 * sum(r >= n, na.rm = TRUE) / nrow(res)))
+}
+
+
 #' Return a data frame containing uniformity metrics for tracking uniformity across chips, including overdispersion.
 #'
 #' @param label string label for identification
@@ -1447,8 +1267,8 @@ getRBeckmanUniformity = function(tab)
 #'
 #' @export
 
-getUniformityMetricsTable = function(label,
-                                     counts,
+getUniformityMetricsTable = function(res,
+                                     label,
                                      N,
                                      nAlns,
                                      nSubreads,
@@ -1457,6 +1277,8 @@ getUniformityMetricsTable = function(label,
                                      cutoff = 2)
 {
   loginfo(paste("\t Write uniformity metrics table for condition:", label))
+  counts = as.numeric(res$Count)
+  
   # cutoff = round( max( 1, boxplot( counts, plot = FALSE )$stat[1] ) )
   y = counts[counts >= cutoff]
   
@@ -1469,7 +1291,8 @@ getUniformityMetricsTable = function(label,
   dispersion = vr / mu - 1
   t1 = dispersion * sqrt(2 / n.y)
   le = getLoadingEfficiency(counts, N)
-  mi = getRBeckmanUniformity(counts)
+  mi = getRBeckmanUniformity(as.matrix(res[, c("X", "Y")]), counts)
+  kv = getKVossMetric(res)
   
   data.frame(
     ID = label,
@@ -1493,55 +1316,53 @@ getUniformityMetricsTable = function(label,
     MoransI.Inv = mi[1],
     MoransI.Inv.p = mi[2],
     MoransI.N = mi[3],
-    MoransI.N.p = mi[4]
+    MoransI.N.p = mi[4],
+    ProjectedMaxLoading = kv[1],
+    ObservedLoadingPercentile = kv[2]
   )
 }
 
 
-
 #' The length of a string (in characters).
 #'
-#' @param res data frame output of \code{\link{convenientSummarizer}}
+#' @param res data frame output of \code{\link{convenientSummarizer}}, summarized into blocks
 #' @param N vector of length two describing dimensions of blocks of ZMWs
-#' @param lable string containing label for histogram and metrics table.
+#' @param label string containing label for histogram and metrics table.
+#'
 #' @seealso \code{\link{drawSummarizedHeatmaps}} which calls this function.
+#'
 #' @export
 #' @examples
 #' N = c( 10, 8 )
 #' res = convenientSummarizer( res, N )
 #' addLoadingUniformityPlots( report, res, c(10, 8), "Condition_A" )
 
-addLoadingUniformityPlots = function(report, res, N, label)
+addLoadingUniformityPlots = function(report, tmp, N, label)
 {
+  loginfo("here:")
+  loginfo(head(tmp))
+  
   if (is.null(N))
     return(0)
   if (length(N) == 1) {
     N = c(N, N)
   }
   
-  tmp = res
   SNR_A = mean(tmp$SNR_A, na.rm = TRUE)
   SNR_C = mean(tmp$SNR_C, na.rm = TRUE)
   SNR_G = mean(tmp$SNR_G, na.rm = TRUE)
   SNR_T = mean(tmp$SNR_T, na.rm = TRUE)
   SNR = c(SNR_A, SNR_C, SNR_G, SNR_T)
   
-  tmp = tmp[!duplicated(tmp$HoleNumber),]
+  #' Compute center of mass
   x = as.numeric(tmp$X)
   y = as.numeric(tmp$Y)
+  com = c(mean(x, na.rm = TRUE), mean(y, na.rm = TRUE)) - c(595 %/% N[1], 544 %/% N[2])
   
-  #' Compute center of mass
-  com = c(mean(x, na.rm = TRUE), mean(y, na.rm = TRUE)) - c(595, 544)
-  
-  a = floor(seq(min(x, na.rm = TRUE), max(x, na.rm = TRUE), N[1]))
-  b = floor(seq(min(y, na.rm = TRUE), max(y, na.rm = TRUE), N[2]))
-  tab = table(findInterval(x, a), findInterval(y, b))
-  drawHistogramForUniformity(report, label, as.numeric(tab), N)
-  
-  tbl = getUniformityMetricsTable(label, tab, N, nrow(tmp), nrow(res), com, SNR)
-  
-  csvfile = paste("Uniformity_metrics_", label, ".csv", sep = "")
-  
+  counts = as.numeric(tmp$Count)
+  nReads = sum(counts, na.rm = TRUE)
+  tbl = getUniformityMetricsTable(tmp, label, N, nReads, nReads, com, SNR)
+  csvfile = paste("Uniformity_metrics.csv")
   report$write.table(
     csvfile,
     tbl,
@@ -1549,6 +1370,8 @@ addLoadingUniformityPlots = function(report, res, N, label)
     title = paste(label, "Loading_uniformity_metrics", sep = "_"),
     tags = c("table", "uniformity", "loading", "metrics")
   )
+  
+  drawHistogramForUniformity(report, label, counts, N, tbl)
 }
 
 #----------------------------------------------------------------
@@ -1592,14 +1415,6 @@ generateHeatmapsPerCondition = function(report, alnxml, reference, label)
   res = subset(res, SNR_A != -1 &
                  SNR_C != -1 & SNR_G != -1 & SNR_T != -1)
   drawSummarizedHeatmaps(report, res, label, N = c(10, 8))
-  
-  loginfo(paste(
-    "Draw heatmaps corresponding to DME failures for condition:",
-    label
-  ))
-  dme = subset(res, SNR_A == -1 &
-                 SNR_C == -1 & SNR_G == -1 & SNR_T == -1)
-  drawSummarizedHeatmaps(report, dme, paste(label, "DME_Failure", sep = "_"), N = c(10, 8))
   1
 }
 
@@ -1615,7 +1430,6 @@ makeReport = function(report)
   alnxmls = alnxmls[w]
   refs = as.character(conditions$Reference)[w]
   labels = as.character(conditions$Condition)[w]
-  
   res = lapply(1:length(alnxmls), function(k)
     generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k]))
   
