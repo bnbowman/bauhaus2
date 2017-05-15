@@ -709,45 +709,6 @@ applySummarization = function(res)
 #------------------------------------------------------------
 
 
-#' Suppose that the number of pols loading into a ZMWs falls into a discrete Poisson distribution.
-#' Return an estimate of the average number of loaded pols, lambda
-#'
-#' @param x = fraction of ZMWs in a given block that have an alignment:
-#' @return lambda = scalar estimate of loading rate
-#'
-#' @export
-
-estimateLocalLoadingRate = function(x)
-{
-  lambda = -log(1 - x)
-  f = function(lambda, x)
-    lambda * exp(-lambda) - x
-  a = optimize(
-    f = f,
-    interval = c(0, 10),
-    x = x,
-    maximum = TRUE
-  )
-  b = optimize(
-    f = f,
-    interval = c(0, 10),
-    x = x,
-    maximum = FALSE
-  )
-  if (a$obj > 0 & b$obj < 0)
-  {
-    l1 = uniroot(f = f,
-                 interval = c(0, a$max),
-                 x = x)$root
-    l2 = uniroot(f = f,
-                 interval = c(a$max, 10),
-                 x = x)$root
-    lambda = ifelse(x > exp(-1), l2, l1)
-  }
-  lambda
-}
-
-
 #' Take output of \code{\link{applySummarization}} and summarize data into N[1] x N[2] blocks of ZMWs
 #'
 #' @param res data frame output of \code{\link{applySummarization}}
@@ -763,9 +724,9 @@ estimateLocalLoadingRate = function(x)
 
 convenientSummarizer = function(res,
                                 N,
+                                key = 1e3,
                                 x.min = 64,
-                                y.min = 64,
-                                key = 1e3)
+                                y.min = 64)
 {
   if (length(N) == 1) {
     N = c(N, N)
@@ -803,9 +764,11 @@ convenientSummarizer = function(res,
     tmp$Count = z$N[m]
   }
   
-  tmp$HoleNumber = res$HoleNumber[match(key * tmp$X + tmp$Y, key * res$X + res$Y)]
-  yield = as.numeric(tmp$Count) / (N[1] * N[2])
-  tmp$AvgPolsPerZMW = unlist(lapply(yield, estimateLocalLoadingRate))
+  #' Estimate average number of pols per ZMW in each block of ZMWs:
+  nZMWsPerBlk = N[1] * N[2]
+  counts = as.numeric(tmp$Count)
+  counts[counts == nZMWsPerBlk] = nZMWsPerBlk - 1
+  tmp$AvgPolsPerZMW = -log(1 - (counts / nZMWsPerBlk))
   tmp
 }
 
@@ -904,6 +867,8 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL)
     )
   }
   
+  # savePlots(myplot, pngfile)
+  # if ( 0 ) {
   report$ggsave(
     pngfile,
     myplot,
@@ -914,8 +879,16 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL)
     caption = paste(n, "heatmap", label, sep = "_"),
     tags = c("heatmap", "heatmaps", n)
   )
+  # }
 }
 
+savePlots = function(plot, file)
+{
+  file = file.path("./reports/AlignmentBasedHeatmaps/", file)
+  png(file, type = c("cairo"))
+  print(plot)
+  dev.off()
+}
 
 #' Plot heatmap corresponding to the reference names.
 #'
@@ -944,6 +917,8 @@ plotReferenceHeatmap = function(report, res, label)
       theme(aspect.ratio = ASP_RATIO)
   )
   
+  # savePlots( myplot, pngfile )
+  # if ( 0 ) {
   report$ggsave(
     pngfile,
     myplot,
@@ -954,6 +929,7 @@ plotReferenceHeatmap = function(report, res, label)
     caption = paste("Reference_heatmap", label, sep = "_"),
     tags = c("heatmap", "heatmaps", "reference", "ref")
   )
+  # }
 }
 
 
@@ -967,7 +943,7 @@ plotReferenceHeatmap = function(report, res, label)
 #' @examples
 #' drawSummarizedHeatmaps( report, res, "Condition_A", c( 10, 8 ) )
 
-drawSummarizedHeatmaps = function(report, res, label, N)
+drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
 {
   loginfo(paste("First, summarize condition", label, "by ZMW:"))
   res = applySummarization(res)
@@ -978,11 +954,18 @@ drawSummarizedHeatmaps = function(report, res, label, N)
   }
   
   loginfo(paste("Summarize into", N[1], "x", N[2], "blocks for condition:", label))
-  df = convenientSummarizer(res, N)
+  
+  df = convenientSummarizer(res, N, key)
+  
+  # Re-order the rows so that they match the distance matrix
+  tmp = data.frame(X = dist$ID %/% key, Y = dist$ID %% key)
+  df = merge(tmp, df, by = c("X", "Y"), all.x = TRUE)
+  df$Count[is.na(df$Count)] <- 0
+  
   df$AlnReadLenExtRange = df$AlnReadLen
   df$rStartExtRange = df$rStart
   df$MaxSubreadLenExtRange = df$MaxSubreadLen
-  addLoadingUniformityPlots(report, df, N, label)
+  addLoadingUniformityPlots(report, df, N, label, dist)
   
   loginfo(paste("Plot individual heatmaps for condition:", label))
   plotReferenceHeatmap(report, res, label)
@@ -1080,6 +1063,8 @@ drawHistogramForUniformity = function(report, label, counts, N, tbl)
     )))
   
   loginfo(paste("\t Draw loading uniformity histogram for condition:", label))
+  # savePlots( myplot, pngfile )
+  # if ( 0 ) {
   report$ggsave(
     pngfile,
     myplot,
@@ -1090,6 +1075,7 @@ drawHistogramForUniformity = function(report, label, counts, N, tbl)
     caption = paste("Loading Uniformity Histogram:", label),
     tags = c("heatmap", "heatmaps", "uniformity", "loading", label)
   )
+  # }
 }
 
 
@@ -1108,11 +1094,11 @@ getLoadingEfficiency = function(counts, N)
     N = c(N, N)
   }
   pol_pM = counts / (N[1] * N[2])
-  maxConc = floor(3 / min(pol_pM[pol_pM > 0]))
+  maxConc = floor(3 / min(pol_pM[pol_pM > 0], na.rm = TRUE))
   conc = seq(1, maxConc, 1)
   lambda = pol_pM %o% conc
   single = lambda * exp(-lambda)
-  total = colMeans(single)  # assume uniform
+  total = colMeans(single, na.rm = TRUE)  # assume uniform
   100 * max(total, na.rm = TRUE) * exp(1)
 }
 
@@ -1139,35 +1125,23 @@ getLoadingEfficiency = function(counts, N)
 
 ape.moranI = function(x,
                       weight,
+                      S1.S2,
                       scaled = FALSE,
-                      na.rm = FALSE,
                       n = length(x))
 {
-  #' Error handling steps:
-  d = dim(weight)
-  if (d[1] != d[2])
-    stop("weight matrix must be square")
-  if (n != d[1])
-    stop("nrow( weight ) must equal length( x ).")
-  
-  if (na.rm)
-  {
-    nas = is.na(x)
-    x = x[!nas]
-    n = length(x)
-    weight = weight[!nas,!nas]
-  }
-  
-  #' Normalize weight matrix by row sums:
-  r = rowSums(weight)
-  r[r == 0] <- 1
-  weight = weight / r
+  #' ASSUMPTIONS: No NA values in x -- any NAs should be 0 and n == nrow( weight )
+  if (nrow(weight) != n)
+    stop("Number of counts should match size of weight matrix")
+  x[is.na(x)] <- 0
   
   #' Observed value of statistic, obs:
-  y = x - sum(x) / n
+  y = x - sum(x, na.rm = TRUE) / n
   y2 = y * y
-  var = sum(y2)
-  obs = sum(weight * y %o% y) / var
+  var = sum(y2, na.rm = TRUE)
+  
+  #' The next non-commented line is faster than, but equivalent to,
+  #' obs = sum( weight * y %o% y, na.rm = TRUE ) / var
+  obs = sum(y * (weight %*% y), na.rm = TRUE) / var
   
   if (scaled)
   {
@@ -1178,11 +1152,9 @@ ape.moranI = function(x,
   #' Expected value of statistic if there is no spatial autocorrelation:
   expected = -1 / (n - 1)
   
-  #' Calculate standard deviation of Moran's I statistic:
-  tmp = weight + t(weight)
-  S1 = sum(tmp * tmp) / 2
-  tmp = 1 + colSums(weight)
-  S2 = sum(tmp * tmp)
+  #' Standard deviation of Moran's I statistic -- needed for p-value
+  S1 = S1.S2[1]
+  S2 = S1.S2[2]
   S0.2 = n * n
   k = (sum(y2 * y2) / n) / (var * var / S0.2)
   num.1 = n * ((n ^ 2 - 3 * n + 3) * S1 - n * S2 + 3 * S0.2)
@@ -1191,7 +1163,7 @@ ape.moranI = function(x,
   sd = sqrt((num.1 - num.2) / den - expected ^ 2)
   
   #' obs ~ N( expected, sd ):
-  c(obs, pnorm(
+  c(obs, sd, pnorm(
     obs,
     mean = expected,
     sd = sd,
@@ -1200,37 +1172,78 @@ ape.moranI = function(x,
 }
 
 
-#' Calculate Moran's I statistic ( R. Beckman )
+#' Set diagonal elements of weight matrix to 0 and normalize by row sums
 #'
-#' @param D = matrix with two columns, x and y
-#' @param statistic = vector with number of alignments for each corresponding pair x, y in D
+#' @param weight = square weighting matrix defined in \code{\link{getDistMat}}
 #'
-#' @return vector with two values: moran's I score
-#'	using inverse weights and using step function
-#'
-#' @seealso \code{\link{ape.moranI}} where moran's I score is computed
-#' @seealso \code{\link{getUniformityMetricsTable}} which calls this function
+#' @seealso \code{\link{ape.moransI}} which uses this function
 #' @export
 
-getRBeckmanUniformity = function(D, statistic)
+normalizeWeightMatrix = function(weight)
 {
-  m = as.matrix(dist(D))
-  n = m
-  diag(n) <- 1
-  n = 1 / n
-  diag(n) <- 0
+  diag(weight) <- 0
   
-  #' Calculate score using inverse distance weight matrix:
-  s1 = ape.moranI(statistic, n)
-  
-  #' Calculate score using step function weight matrix:
-  m[m < 1.5] <- 1
-  m[m >= 1.5] <- 0
-  diag(m) <- 0
-  s2 = ape.moranI(statistic, m)
-  
-  c(s1, s2)
+  #' Normalize weight matrix by row sums:
+  r = rowSums(weight)
+  r[r == 0] <- 1
+  weight / r
 }
+
+
+#' Needed to calculate standard deviation and p-value for Moran's I statistic:
+#'
+#' @param weight = square weighting matrix defined in \code{\link{getDistMat}}
+#'
+#' @seealso \code{\link{ape.moransI}} which uses this function
+#' @export
+
+getS1andS2forMoransI = function(weight)
+{
+  tmp = weight + t(weight)
+  S1 = sum(tmp * tmp) / 2
+  tmp = 1 + colSums(weight)
+  S2 = sum(tmp * tmp)
+  c(S1, S2)
+}
+
+
+#' Define a basic distance matrix to be used in Moran's I calculation
+#'
+#' @param N = data is summarized into N[1] x N[2] blocks of zmws
+#' @param key = used to create a key to uniquely identify each block
+#'
+#' @return list:
+#'      ID = vector of unique keys,
+#'      MatList = list of weight matrices,
+#'      S1.S2 = needed for std. dev calculation
+#'
+#' @seealso \code{\link{ape.moranI}} which uses the output
+#' @export
+
+getDistMat = function(N, key)
+{
+  # 64 to 1143; 64 to 1023
+  m = 1080 %/% N[1]
+  n = 960 %/% N[2]
+  D = expand.grid(1:m, 1:n)
+  names(D) = c("x", "y")
+  N = as.matrix(dist(D))
+  diag(N) <- 1
+  
+  M = normalizeWeightMatrix(1 / N)
+  N[N < 1.5] <- 1
+  N[N >= 1.5] <- 0
+  N = normalizeWeightMatrix(N)
+  
+  MatList = list(Inv = M, N = N)
+  list(
+    MatList = MatList,
+    S1.S2 = lapply(MatList, getS1andS2forMoransI),
+    ID = key * D$x + D$y,
+    nMatrices = length(MatList)
+  )
+}
+
 
 
 #' (K. Voss) If the entire chip loaded as well as one of the best regions, what would the loading be?
@@ -1267,14 +1280,7 @@ getKVossMetric = function(res, qnt = 0.95, nZMWs = 1032000)
 #'
 #' @export
 
-getUniformityMetricsTable = function(res,
-                                     label,
-                                     N,
-                                     nAlns,
-                                     nSubreads,
-                                     com,
-                                     SNR,
-                                     cutoff = 2)
+getUniformityMetricsTable = function(res, label, N, com, SNR, dist, cutoff = 2)
 {
   loginfo(paste("\t Write uniformity metrics table for condition:", label))
   counts = as.numeric(res$Count)
@@ -1286,40 +1292,45 @@ getUniformityMetricsTable = function(res,
   n.y = length(y)
   lowLoad = 1 - (n.y / n.counts)
   
-  mu = mean(y)
-  vr = var(y)
+  mu = mean(y, na.rm = TRUE)
+  vr = var(y, na.rm = TRUE)
   dispersion = vr / mu - 1
   t1 = dispersion * sqrt(2 / n.y)
   le = getLoadingEfficiency(counts, N)
-  mi = getRBeckmanUniformity(as.matrix(res[, c("X", "Y")]), counts)
   kv = getKVossMetric(res)
   
+  #' Compute Moran's I statistics and corresponding p-values
+  mi = unlist(lapply(1:dist$nMatrices,
+                     function(i)
+                       ape.moranI(counts, dist$MatList[[i]], dist$S1.S2[[i]])))
+  
   data.frame(
-    ID = label,
-    LowLoadFrac = lowLoad,
+    ID =  label,
     Cutoff = cutoff,
+    NumBlks = n.counts,
+    nReads = sum(counts, na.rm = TRUE),
+    LowLoadFrac = lowLoad,
     Mean = mu,
     Var = vr,
-    PoissonDisp = dispersion,
-    nRead = nAlns,
-    nSubreads = nSubreads,
-    NumBlks = n.counts,
-    NumBlksAboveCutoff = n.y,
+    PoissonDispersion = dispersion,
     T1_WangEtAll = t1,
-    NonUniformityPenalty = le,
-    COM.x = com[1],
-    COM.y = com[2],
+    LambdaUniformity = le,
+    CenterOfMass.X = com[1],
+    CenterOfMass.Y = com[2],
+    MoransI.Inv = mi[1],
+    MoransI.Inv.sd = mi[2],
+    MoransI.Inv.p = mi[3],
+    MoransI.N = mi[4],
+    MoransI.N.sd = mi[5],
+    MoransI.N.p = mi[6],
+    ProjectedMaxLoading = kv[1],
+    ObservedLoadingPercentile = kv[2],
     SNR_A = SNR[1],
     SNR_C = SNR[2],
     SNR_G = SNR[3],
-    SNR_T = SNR[4],
-    MoransI.Inv = mi[1],
-    MoransI.Inv.p = mi[2],
-    MoransI.N = mi[3],
-    MoransI.N.p = mi[4],
-    ProjectedMaxLoading = kv[1],
-    ObservedLoadingPercentile = kv[2]
+    SNR_T = SNR[4]
   )
+  
 }
 
 
@@ -1337,11 +1348,8 @@ getUniformityMetricsTable = function(res,
 #' res = convenientSummarizer( res, N )
 #' addLoadingUniformityPlots( report, res, c(10, 8), "Condition_A" )
 
-addLoadingUniformityPlots = function(report, tmp, N, label)
+addLoadingUniformityPlots = function(report, tmp, N, label, dist)
 {
-  loginfo("here:")
-  loginfo(head(tmp))
-  
   if (is.null(N))
     return(0)
   if (length(N) == 1) {
@@ -1359,10 +1367,11 @@ addLoadingUniformityPlots = function(report, tmp, N, label)
   y = as.numeric(tmp$Y)
   com = c(mean(x, na.rm = TRUE), mean(y, na.rm = TRUE)) - c(595 %/% N[1], 544 %/% N[2])
   
-  counts = as.numeric(tmp$Count)
-  nReads = sum(counts, na.rm = TRUE)
-  tbl = getUniformityMetricsTable(tmp, label, N, nReads, nReads, com, SNR)
-  csvfile = paste("Uniformity_metrics.csv")
+  tbl = getUniformityMetricsTable(tmp, label, N, com, SNR, dist)
+  drawHistogramForUniformity(report, label, as.numeric(tmp$Count), N, tbl)
+  csvfile = paste("Uniformity_metrics_",label,".csv", sep = "")
+  # write.csv( tbl, file = file.path( "./reports/AlignmentBasedHeatmaps/", csvfile ), row.names = FALSE )
+  # if ( 0 ) {
   report$write.table(
     csvfile,
     tbl,
@@ -1370,8 +1379,8 @@ addLoadingUniformityPlots = function(report, tmp, N, label)
     title = paste(label, "Loading_uniformity_metrics", sep = "_"),
     tags = c("table", "uniformity", "loading", "metrics")
   )
+  # }
   
-  drawHistogramForUniformity(report, label, counts, N, tbl)
 }
 
 #----------------------------------------------------------------
@@ -1395,7 +1404,13 @@ addLoadingUniformityPlots = function(report, tmp, N, label)
 #' 5. Generate uniformity metrics and histogram
 #'	-- uniformity metrics and plotting functions above
 
-generateHeatmapsPerCondition = function(report, alnxml, reference, label)
+generateHeatmapsPerCondition = function(report,
+                                        alnxml,
+                                        reference,
+                                        label,
+                                        dist,
+                                        N,
+                                        key)
 {
   loginfo(paste("Get data for condition:", label))
   fastaname = getReferencePath(reference)
@@ -1414,7 +1429,7 @@ generateHeatmapsPerCondition = function(report, alnxml, reference, label)
   loginfo(paste("Draw regular heatmaps for condition:", label))
   res = subset(res, SNR_A != -1 &
                  SNR_C != -1 & SNR_G != -1 & SNR_T != -1)
-  drawSummarizedHeatmaps(report, res, label, N = c(10, 8))
+  drawSummarizedHeatmaps(report, res, label, dist, N, key)
   1
 }
 
@@ -1430,8 +1445,12 @@ makeReport = function(report)
   alnxmls = alnxmls[w]
   refs = as.character(conditions$Reference)[w]
   labels = as.character(conditions$Condition)[w]
+  
+  N = c(8, 16)
+  key = 1e3
+  dist = getDistMat(N, key)
   res = lapply(1:length(alnxmls), function(k)
-    generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k]))
+    generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k], dist, N, key))
   
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.RData"))
