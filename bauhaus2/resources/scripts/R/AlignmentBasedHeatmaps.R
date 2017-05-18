@@ -1451,7 +1451,25 @@ makeReport = function(report)
   dist = getDistMat(N, key)
   res = lapply(1:length(alnxmls), function(k)
     generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k], dist, N, key))
-  
+  # Make barplot for Uniformity metrics
+  csvfile = paste(report$outputDir,"/Uniformity_metrics_",labels,".csv", sep = "")
+  # Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.Inv.sd", "MoransI.N", "MoransI.N.sd")]
+  Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N")]
+  UniformityLong = melt(Uniformity, id.vars = "ID")
+  tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) + 
+    geom_bar(stat = "identity", position = "dodge") + 
+    scale_fill_brewer(palette = "Set1") + 
+    labs(x = "Variables", y = "Score", title = "Barchart of Uniformity")
+  report$ggsave(
+    "barchart_of_uniformity.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "barchart_of_uniformity",
+    title = "Barchart of Uniformity",
+    caption = "barchart_of_uniformity",
+    tags = c("bar", "barchart", "uniformity", "Lambda", "MoransI", "Morans")
+  )
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.RData"))
   report$write.report()
