@@ -262,9 +262,11 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- global_localpolrate.png
   |   |   |-- ipddistbybase_boxplot.png
   |   |   |-- localpolrate_boxplot.png
+  |   |   |-- mean_pw_boxplot_by_base.png
   |   |   |-- medianIPD.csv
   |   |   |-- medianPolymerizationRate.csv
   |   |   |-- medianSNR.csv
+  |   |   |-- median_pw_boxplot_by_base.png
   |   |   |-- pkMid_Accu_vs_Inaccu_Dens.png
   |   |   |-- pkMid_Box_accurate\ reference\ reads.png
   |   |   |-- pkMid_Box_all\ reference\ reads.png
@@ -284,7 +286,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- polrate_ref_box.png
   |   |   |-- polrate_template_per_second.png
   |   |   |-- pw_boxplot.png
-  |   |   |-- pw_boxplot_by_base.png
   |   |   |-- pw_by_template.png
   |   |   |-- pw_by_template_cdf.png
   |   |   |-- pw_mean_by_time.png
@@ -338,5 +339,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  26 directories, 295 files
+  26 directories, 296 files
 
