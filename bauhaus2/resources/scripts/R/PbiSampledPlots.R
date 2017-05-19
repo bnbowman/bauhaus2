@@ -637,24 +637,45 @@ makeSamplingPlots <-
     )
     
     tp3 = tp + facet_wrap( ~ ref, nrow = length(levels(cd2[cd2$pw < maxPW,]$ref)))
+    
     b <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
     tp4 <- tp3 +  geom_text(data = b, aes(label = pw), 
                            position = position_dodge(width = 0.9), vjust = -0.8) +
       labs(
         y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
-        title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
+        title = paste("PW Distribution (with Median)\n(From ", sampleSize, "Sampled Alignments)")
       ) +
       plTheme + themeTilt + clFillScale
       
     report$ggsave(
-      "pw_boxplot_by_base.png",
+      "median_pw_boxplot_by_base.png",
       tp4,
       width = plotwidth,
       height = img_height,
-      id = "pw_boxplot_by_base",
-      title = "PW Distribution By Base",
-      caption = "PW Distribution",
-      tags = c("sampled", "pw", "boxplot")
+      id = "median_pw_boxplot_by_base",
+      title = "Median PW Distribution By Base",
+      caption = "Median PW Distribution",
+      tags = c("sampled", "pw", "boxplot", "median")
+    )
+    
+    c <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(mean(i), digits = 4))
+    tp5 <- tp3 +  geom_text(data = c, aes(label = pw), 
+                            position = position_dodge(width = 0.9), vjust = -0.8) +
+      labs(
+        y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
+        title = paste("PW Distribution (with Mean)\n(From ", sampleSize, "Sampled Alignments)")
+      ) +
+      plTheme + themeTilt + clFillScale
+    
+    report$ggsave(
+      "mean_pw_boxplot_by_base.png",
+      tp5,
+      width = plotwidth,
+      height = img_height,
+      id = "mean_pw_boxplot_by_base",
+      title = "Mean PW Distribution By Base",
+      caption = "Mean PW Distribution",
+      tags = c("sampled", "pw", "boxplot", "mean")
     )
     
     # Make a median PW plot
