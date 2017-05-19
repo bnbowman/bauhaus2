@@ -261,7 +261,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     report$ggsave(
       "fishboneplot_deletion.png",
       tp1,
-      width = 1000/dpi, height = 1200/dpi, units = "in",
+      width = 1800/dpi, height = 1200/dpi, units = "in",
       id = "fishboneplot_deletion",
       title = "FishbonePlot - Deletion",
       caption = "FishbonePlot - Deletion",
@@ -271,7 +271,7 @@ makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
     report$ggsave(
       "fishboneplot_deletion_enlarged.png",
       tp2,
-      width = 1000/dpi, height = 1200/dpi, units = "in",
+      width = 1800/dpi, height = 1200/dpi, units = "in",
       id = "fishboneplot_deletion_enlarged",
       title = "FishbonePlot - Deletion (Enlarged)",
       caption = "FishbonePlot - Deletion (Enlarged)",
