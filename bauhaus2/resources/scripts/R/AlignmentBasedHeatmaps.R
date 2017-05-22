@@ -1455,6 +1455,9 @@ makeReport = function(report)
   csvfile = paste(report$outputDir,"/Uniformity_metrics_",labels,".csv", sep = "")
   # Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.Inv.sd", "MoransI.N", "MoransI.N.sd")]
   Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N")]
+  Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
+  Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
+  Uniformity = Uniformity[,c("ID", "LambdaUniformity", "MoransI.Inv_percentage", "MoransI.N_percentage")]
   UniformityLong = melt(Uniformity, id.vars = "ID")
   tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) + 
     geom_bar(stat = "identity", position = "dodge") + 
