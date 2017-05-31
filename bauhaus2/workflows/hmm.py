@@ -17,5 +17,5 @@ class ConstantArrowWorkflow(Workflow):
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",)
 
     def plan(self):
-        return ["constant-arrow.snake"] + \
-            subreadsMappingPlan(self.conditionTable, self.cliArgs)
+        return subreadsMappingPlan(self.conditionTable, self.cliArgs) + \
+            ["constant-arrow.snake"]
