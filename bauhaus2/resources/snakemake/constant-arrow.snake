@@ -34,7 +34,7 @@ rule MakeMappingMetricsCsv:
 rule ConstantArrow:
     input:
         asets = mapped_subreads.values(),
-        fastas = local_fasta_files.values()
+        fastas = expand("conditions/{condition}/reference.fasta", condition=ct.conditions)
     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
