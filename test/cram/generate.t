@@ -84,3 +84,16 @@ of a mapping:
   # When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
   # So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset
   # Later in this workflow, only the alignmentset (remote_alignmentsets[wc.condition][0]) is used
+
+Test bauhaus2 isoseq workflow
+  $ bauhaus2 generate -w IsoSeqRC0 -t ${BH_ROOT}test/data/two-isoseq-jobs.csv -o isoseq_output
+  Validation and input resolution succeeded.
+  Generated runnable workflow to "isoseq_output"
+  $ ls isoseq_output/workflow/Snakefile
+  isoseq_output/workflow/Snakefile
+
+  $ bauhaus2 generate -w IsoSeqRC0 -t ${BH_ROOT}test/data/two-isoseq-paths.csv -o isoseq_output2
+  Validation and input resolution succeeded.
+  Generated runnable workflow to "isoseq_output2"
+  $ ls isoseq_output2/workflow/Snakefile
+  isoseq_output2/workflow/Snakefile
