@@ -143,6 +143,8 @@ makeSamplingPlots <-
                        "pkMid Histogram - inaccurate reference reads",
                        "pkMid Density Plot - Accurate vs Inaccurate bases",
                        "PW Trend by Time",
+                       "PolRate Trend by Time",
+                       "IPD Trend by Time",
                        "Mean Pulse Width by Time",
                        "Mean Pkmid by Time",
                        "Median Pkmid by Time",
@@ -352,6 +354,7 @@ makeSamplingPlots <-
         PW.Mean = mean(pw),
         PKMID.Median = median(pkmid),
         PKMID.Mean = mean(pkmid),
+        IPD.Median = median(ipd),
         PolRate = mean(ipd + pw),
         PKMID.Median.Con = median(PKMID.Median.Con)
       )
@@ -376,6 +379,48 @@ makeSamplingPlots <-
         title = "Mean Pulse Width by Time",
         caption = "Mean Pulse Width by Time",
         tags = c("sampled", "pw", "time")
+      )
+      
+      tp = ggplot(cd2time,
+                  aes(
+                    x = time,
+                    y = IPD.Median,
+                    color = Condition,
+                    group = Condition
+                  )) + geom_point() +
+        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Median IPD",
+                                                            x = "Minute",
+                                                            title = "IPD Trend by Time")
+      report$ggsave(
+        "ipd_median_by_time.png",
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = "ipd_median_by_time",
+        title = "Median IPD by Time",
+        caption = "Median IPD by Time",
+        tags = c("sampled", "ipd", "time")
+      )
+      
+      tp = ggplot(cd2time,
+                  aes(
+                    x = time,
+                    y = PolRate,
+                    color = Condition,
+                    group = Condition
+                  )) + geom_point() +
+        geom_line()  + clScale + plTheme + themeTilt + labs(y = "PolRate",
+                                                            x = "Minute",
+                                                            title = "PolRate Trend by Time")
+      report$ggsave(
+        "PolRate_by_time.png",
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = "PolRate_by_time",
+        title = "PolRate by Time",
+        caption = "PolRate by Time",
+        tags = c("sampled", "polrate", "time")
       )
       
       tp = ggplot(cd2time,

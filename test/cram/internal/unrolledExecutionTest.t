@@ -235,11 +235,13 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tlen_box.png
   |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
+  |   |   |-- PolRate_by_time.png
   |   |   |-- active_zmw_normalized.png
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
   |   |   |-- global_localpolrate.png
+  |   |   |-- ipd_median_by_time.png
   |   |   |-- ipddistbybase_boxplot.png
   |   |   |-- localpolrate_boxplot.png
   |   |   |-- mean_pw_boxplot_by_base.png
@@ -316,5 +318,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  24 directories, 275 files
+  24 directories, 277 files
 
