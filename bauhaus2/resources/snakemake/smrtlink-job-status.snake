@@ -3,32 +3,35 @@ class JobStatus(object):
     FAILED_STATES = ("TERMINATED", "FAILED", "UNKNOWN")
     SUCCESS_STATES = ("SUCCESSFUL",)
 
-def extractJobId(launchLog):
-    import re
-    logContent = open(launchLog).read()
-    ms = list(re.finditer('JOB SUMMARY:$\n^\s+id: (.*)', logContent, re.MULTILINE))
+def extractJobId(launchJson):
+    import json
+    with open(launchJson) as data_file:    
+        data = json.load(data_file)
+    ms = data["id"]
     if ms:
-        return ms[-1].group(1)
+        return ms
     else:
-        raise ValueError("Cannot find job ID in pbservice.log")
+        raise ValueError("Cannot find job ID in pbservice.json")
 
-def extractJobStatus(pollLog):
-    import re
-    logContent = open(pollLog).read()
-    m = re.search('JOB SUMMARY:.*^\s+state: (\w*)', logContent, re.MULTILINE | re.DOTALL)
-    if not m or m.group(1) not in JobStatus.VALID_STATES:
-        raise ValueError("Cannot find valid job status in pbservice.log")
+def extractJobStatus(pollJson):
+    import json
+    with open(pollJson) as data_file:    
+        data = json.load(data_file)
+    m = data["state"]
+    if not m or m not in JobStatus.VALID_STATES:
+        raise ValueError("Cannot find valid job status in poll.json")
     else:
-        return m.group(1)
+        return m
 
-def extractJobPath(pollLog):
-    import re
-    logContent = open(pollLog).read()
-    m = re.search('JOB SUMMARY:.*^\s+path: (\S*)', logContent, re.MULTILINE | re.DOTALL)
+def extractJobPath(launchJson):
+    import json
+    with open(launchJson) as data_file:    
+        data = json.load(data_file)
+    m = data["path"]
     if not m:
-        raise ValueError("Cannot find SMRTLink job path in pbservice.log")
+        raise ValueError("Cannot find SMRTLink job path in pbservice.json")
     else:
-        return m.group(1)
+        return m
 
 def touchFile(fname):
     open(fname, "a").close()
