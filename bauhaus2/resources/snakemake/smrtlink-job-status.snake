@@ -3,32 +3,48 @@ class JobStatus(object):
     FAILED_STATES = ("TERMINATED", "FAILED", "UNKNOWN")
     SUCCESS_STATES = ("SUCCESSFUL",)
 
-def extractJobId(launchLog):
+# There was an design problem in peservice to output json files
+# The log of the job is incorrectly saved in the json output before the "real" json output
+# The progress of correcting the json output in pbservice is at SE-660
+# This function stripOutJunk adds a gross workaround to read the job is and path from the incorrect json output
+
+def stripOutJunk(pbJson):
+    import json
     import re
-    logContent = open(launchLog).read()
-    ms = list(re.finditer('JOB SUMMARY:$\n^\s+id: (.*)', logContent, re.MULTILINE))
+    with open(pbJson, 'r') as data_file:   
+        data_lines = data_file.readlines()
+        while data_lines[0] is not '{':
+            data_lines = ''.join(data_lines[1:])
+        data = json.loads(data_lines)
+        return data
+    
+def extractJobId(launchJson):
+    import json
+    data = stripOutJunk(launchJson)
+    ms = data["id"]
     if ms:
-        return ms[-1].group(1)
+        return ms
     else:
-        raise ValueError("Cannot find job ID in pbservice.log")
+        raise ValueError("Cannot find job ID in pbservice.json")
 
-def extractJobStatus(pollLog):
-    import re
-    logContent = open(pollLog).read()
-    m = re.search('JOB SUMMARY:.*^\s+state: (\w*)', logContent, re.MULTILINE | re.DOTALL)
-    if not m or m.group(1) not in JobStatus.VALID_STATES:
-        raise ValueError("Cannot find valid job status in pbservice.log")
+def extractJobStatus(pollJson):
+    import json
+    with open(pollJson) as data_file:    
+        data = json.load(data_file)
+    m = data["state"]
+    if not m or m not in JobStatus.VALID_STATES:
+        raise ValueError("Cannot find valid job status in poll.json")
     else:
-        return m.group(1)
+        return m
 
-def extractJobPath(pollLog):
-    import re
-    logContent = open(pollLog).read()
-    m = re.search('JOB SUMMARY:.*^\s+path: (\S*)', logContent, re.MULTILINE | re.DOTALL)
+def extractJobPath(launchJson):
+    import json
+    data = stripOutJunk(launchJson)
+    m = data["path"]
     if not m:
-        raise ValueError("Cannot find SMRTLink job path in pbservice.log")
+        raise ValueError("Cannot find SMRTLink job path in pbservice.json")
     else:
-        return m.group(1)
+        return m
 
 def touchFile(fname):
     open(fname, "a").close()
