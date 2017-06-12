@@ -8,7 +8,7 @@ set -euo pipefail
 source /mnt/software/Modules/current/init/bash
 module use /mnt/software/modulefiles
 module purge
-module add smrtanalysis/mainline
+module add smrtlink/siv
 
 # The export line here is a directive to the R module load: don't let
 # user's R environment interfere with our scripts.  Developers may

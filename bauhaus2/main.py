@@ -44,7 +44,7 @@ def parseArgs():
         help="The number of chunks that should be used for scatter-gather compatible workflows (0 means disable chunking)")
     # -- SMRTLink
     parser.add_argument(
-        "--smrtlink-host", default="smrtlink-internal",
+        "--smrtlink-host", default="smrtlink-siv",
         help=("The SMRTLink server we should use for secondary job submission.  "
               "Must be compatible with the REST API used by pbservice in module smrtanalysis/mainline"))
     parser.add_argument(

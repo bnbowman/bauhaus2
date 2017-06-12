@@ -3,10 +3,24 @@ class JobStatus(object):
     FAILED_STATES = ("TERMINATED", "FAILED", "UNKNOWN")
     SUCCESS_STATES = ("SUCCESSFUL",)
 
+# There was an design problem in peservice to output json files
+# The log of the job is incorrectly saved in the json output before the "real" json output
+# The progress of correcting the json output in pbservice is at SE-660
+# This function stripOutJunk adds a gross workaround to read the job is and path from the incorrect json output
+
+def stripOutJunk(pbJson):
+    import json
+    import re
+    with open(pbJson, 'r') as data_file:   
+        data_lines = data_file.readlines()
+        while data_lines[0] is not '{':
+            data_lines = ''.join(data_lines[1:])
+        data = json.loads(data_lines)
+        return data
+    
 def extractJobId(launchJson):
     import json
-    with open(launchJson) as data_file:    
-        data = json.load(data_file)
+    data = stripOutJunk(launchJson)
     ms = data["id"]
     if ms:
         return ms
@@ -25,8 +39,7 @@ def extractJobStatus(pollJson):
 
 def extractJobPath(launchJson):
     import json
-    with open(launchJson) as data_file:    
-        data = json.load(data_file)
+    data = stripOutJunk(launchJson)
     m = data["path"]
     if not m:
         raise ValueError("Cannot find SMRTLink job path in pbservice.json")

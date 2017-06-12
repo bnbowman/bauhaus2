@@ -55,6 +55,10 @@ Now let's use SMRTLink for mapping.  The plan looks different.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
   # map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
+  # There was an design problem in peservice to output json files
+  # The log of the job is incorrectly saved in the json output before the "real" json output
+  # The progress of correcting the json output in pbservice is at SE-660
+  # This function stripOutJunk adds a gross workaround to read the job is and path from the incorrect json output
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
   # collect-subreads.snake: hotlink "remote" subreadsets into the workflow directory
 
