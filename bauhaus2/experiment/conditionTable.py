@@ -5,6 +5,7 @@ __all__ = [ "InputType",
             "ResequencingConditionTable",
             "CoverageTitrationConditionTable",
             "UnrolledMappingConditionTable",
+            "IsoSeqConditionTable",
             "TableValidationError",
             "InputResolutionError" ]
 
@@ -209,7 +210,7 @@ class ConditionTable(object):
 
     def inputs(self, condition):
         return self._inputsByCondition[condition]
-    
+
     def inputsH5(self, condition):
         return self._inputsH5ByCondition[condition]
 
@@ -276,7 +277,7 @@ class CoverageTitrationConditionTable(ResequencingConditionTable):
     def _validateTable(self):
         super(CoverageTitrationConditionTable, self)._validateTable()
         self._validateAtLeastOnePVariable()
-        
+
     def referenceMask(self, condition):
         return self._referenceMaskByCondition[condition]
 
@@ -311,3 +312,21 @@ class UnrolledMappingConditionTable(ResequencingConditionTable):
                 continue
             else:
                 raise TableValidationError("Unrolled mapping requires an unrolled reference")
+
+
+class IsoSeqConditionTable(ConditionTable):
+    """Override validate table for isoseq"""
+    def _validateTable(self): # override, isoseq jobs has no alignments
+        return
+
+    def _resolveInput(self, resolver, rowRecord):
+        """
+        Condition Tables must contain either ('SMRTLinkServer', 'JobId') or ('JobPath').
+        Return [JobPath], path to SMRTLink IsoSeq jobs."""
+        cols = self.tbl.column_names
+        if {"SMRTLinkServer", "JobId"}.issubset(cols):
+            return resolver.resolveJob(rowRecord.SMRTLinkServer, rowRecord.JobId)
+        elif {"JobPath"}.issubset(cols):
+            return rowRecord.JobPath
+        else:
+            raise TableValidationError("IsoSeq ConditionTable shoule either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
