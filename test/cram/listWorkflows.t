@@ -5,6 +5,7 @@
   ConstantArrow
   CoverageTitration
   EvaluateHQRF
+  Heatmaps
   IsoSeqRC0
   MappingReports
   UnrolledNoHQMapping

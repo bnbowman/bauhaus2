@@ -1,0 +1,26 @@
+
+# ---------------------------------------------------------------------------------------------------
+# heatmaps.snake: Generate alignment based heatmaps.
+
+mapped_subreads = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+local_fasta_files = \
+    { c : expand("conditions/{condition}/reference.fasta", condition=c)
+      for c in ct.conditions }
+
+# -- Target rules --
+
+rule heatmap_plots:
+    input:
+        AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json"
+
+rule AlignmentBasedHeatmaps:
+    input: mapped_subreads.values(),
+           local_fasta_files.values()
+    output: "reports/AlignmentBasedHeatmaps/report.json"
+    shell:
+        """
+        Rscript --vanilla scripts/R/AlignmentBasedHeatmaps.R
+        """
