@@ -64,5 +64,5 @@ class MappingReportsWorkflow(Workflow):
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
 
     def plan(self):
-        return ["summarize-mappings.snake", "constant-arrow.snake"] + \
+        return ["summarize-mappings.snake", "constant-arrow.snake", "heatmaps.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)

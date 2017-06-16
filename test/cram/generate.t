@@ -38,6 +38,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # heatmaps.snake: Generate alignment based heatmaps.
   # map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
   # scatter-subreads.snake: split subreadsets into smaller chunks for analysis
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
@@ -54,6 +55,7 @@ Now let's use SMRTLink for mapping.  The plan looks different.
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # heatmaps.snake: Generate alignment based heatmaps.
   # map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
   # There was an design problem in peservice to output json files
   # The log of the job is incorrectly saved in the json output before the "real" json output
@@ -76,6 +78,7 @@ of a mapping:
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # heatmaps.snake: Generate alignment based heatmaps.
   # collect-smrtlink-references.snake: hotlink "remote" smrtlink reference FASTAs into our workflow directory
   # Here the sts.h5 file is fetched at the same time as the reference, just to simplify the process 
   # When more sts or other data files are collected, they should be separated to a new snakemake file

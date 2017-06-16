@@ -67,12 +67,3 @@ rule ZMWstsPlots:
         """
         Rscript --vanilla scripts/R/ZMWstsPlots.R
         """
-        
-rule AlignmentBasedHeatmaps:
-    input: mapped_subreads.values(),
-           local_fasta_files.values()
-    output: "reports/AlignmentBasedHeatmaps/report.json"
-    shell:
-        """
-        Rscript --vanilla scripts/R/AlignmentBasedHeatmaps.R
-        """

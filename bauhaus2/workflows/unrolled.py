@@ -47,5 +47,5 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
 
     def plan(self):
-        return ["summarize-mappings.snake", "constant-arrow.snake"] + \
+        return ["summarize-mappings.snake", "constant-arrow.snake", "heatmaps.snake"] + \
             UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)
