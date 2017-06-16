@@ -100,11 +100,10 @@ class Resolver(object):
         """
         Given the secondary job path (SMRTlink), find the alignment set within
         """
-        candidates = list(set().union(
-            	glob(op.join(jobDir,
-            				 "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml")), 
-          		glob(op.join(jobDir,
-            				 "tasks/pbcoretools.tasks.gather_ccs_alignmentset-1/file.consensusalignmentset.xml"))))
+        candidates = (glob(op.join(jobDir,
+                                   "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml")) + 
+                      glob(op.join(jobDir,
+                                   "tasks/pbcoretools.tasks.gather_ccs_alignmentset-1/file.consensusalignmentset.xml")))
         if len(candidates) < 1:
             raise DataNotFound("AlignmentSet not found in job directory %s " % jobDir)
         elif len(candidates) > 1:
@@ -142,13 +141,19 @@ class Resolver(object):
             raise DataNotFound(referenceName)
 
     def resolveReferenceSet(self, referenceName):
-        referenceSet = op.join(self.REFERENCES_ROOT, referenceName, referenceName + ".referenceset.xml")
-        if op.isfile(referenceSet):
-            return referenceSet
-        elif not op.exists(self.REFERENCES_ROOT):
+        # Here we serch two possible referencesets: referenceset.xml and referenceName.referenceset.xml
+        # These two referencesets may share the same UUID so should exist at the same time
+        candidates = (glob(op.join(self.REFERENCES_ROOT, referenceName, "referenceset.xml")) + 
+                      glob(op.join(self.REFERENCES_ROOT, referenceName, referenceName + ".referenceset.xml")))
+        if not op.exists(self.REFERENCES_ROOT):
             raise ResolverFailure("NFS unavailable?")
         else:
-            raise DataNotFound(referenceSet)
+            if len(candidates) < 1:
+                raise DataNotFound(referenceSet)
+            elif len(candidates) > 1:
+                raise DataNotFound("Multiple ReferenceSets xml files present")
+            else:
+                return candidates[0]
 
     def resolveReferenceMask(self, referenceName):
         maskGff = op.join(self.REFERENCE_MASKS_ROOT, referenceName + "-mask.gff")
