@@ -1455,7 +1455,11 @@ makeReport <- function(report) {
     loginfo(paste("Loading alignment set:", s))
     loadPBI2(s)
   })
-
+  # Filter out empty data sets, throw a warning if any empty ones exist
+  filteredData = filterEmptyDataset(dfs, conditions)
+  dfs  = filteredData[[1]]
+  conditions = filteredData[[2]]
+  
   ## Let's set the graphic defaults
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)

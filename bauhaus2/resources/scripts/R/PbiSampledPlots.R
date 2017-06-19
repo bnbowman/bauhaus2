@@ -1051,6 +1051,11 @@ makeReport <- function(report) {
     loginfo(paste("Loading alignment set:", s))
     loadPBI2(s)
   })
+  # Filter out empty data sets, throw a warning if any empty ones exist
+  filteredData = filterEmptyDataset(dfs, conditions)
+  dfs  = filteredData[[1]]
+  conditions = filteredData[[2]]
+  
   # Now combine into one large data frame
   ##browser()
   cd = combineConditions(dfs, as.character(conditions$Condition))

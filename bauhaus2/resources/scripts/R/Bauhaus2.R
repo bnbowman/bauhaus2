@@ -83,6 +83,21 @@ loadConditionTable <- function(conditionTableCSV,
     ct
 }
 
+##
+## Filter out empty data sets, throw a warning if any empty ones exist
+##
+filterEmptyDataset <- function(dfs, conditions) {
+  filteredData = list()
+  if (any(lapply(dfs,nrow) == 0)) {
+    emptyCond = paste(conditions[lapply(dfs,nrow) == 0,]$Condition, collapse = ', ')
+    warning(paste("Empty data set loaded for condition: ", emptyCond, sep = ""))
+  }
+  dfs = dfs[lapply(dfs,nrow) > 0]
+  conditions = conditions[lapply(dfs,nrow) > 0,]
+  filteredData[[1]] = dfs
+  filteredData[[2]] = conditions
+  filteredData
+}
 
 ##
 ## Generating reports about plots, tables
