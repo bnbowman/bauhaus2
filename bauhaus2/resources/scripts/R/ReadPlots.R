@@ -213,6 +213,7 @@ makeReport <- function(report) {
     loginfo(paste("Loading alignment set:", alnFile))
     pbbamr::getReadReport(datasetname = alnFile, indexedFastaName = fasta )
   })
+  
   loginfo("Finished loading aligned read data.")
   # Now combine into one large data frame
   # TODO: I hate using indexing here, perhaps another solution?
