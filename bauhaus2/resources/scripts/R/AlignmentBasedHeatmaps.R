@@ -1416,23 +1416,27 @@ generateHeatmapsPerCondition = function(report,
   fastaname = getReferencePath(reference)
   res = simpleErrorHandling(alnxml, fastaname)
   
-  if (nrow(res) < 5)
-  {
-    loginfo("[WARNING] - Too few rows in BAM file.")
+  if (is.null(res)) {
+    loginfo("[WARNING] - Empty BAM file.")
     return(0)
+  } else {
+    if (nrow(res) < 5)
+    {
+      loginfo("[WARNING] - Too few rows in BAM file.")
+      return(0)
+    }
+    
+    loginfo(paste("Summarize data for condition:", label))
+    res$SMRTlinkID = label
+    res$X = 1164 - res$X
+    
+    loginfo(paste("Draw regular heatmaps for condition:", label))
+    res = subset(res, SNR_A != -1 &
+                   SNR_C != -1 & SNR_G != -1 & SNR_T != -1)
+    drawSummarizedHeatmaps(report, res, label, dist, N, key)
+    1
   }
-  
-  loginfo(paste("Summarize data for condition:", label))
-  res$SMRTlinkID = label
-  res$X = 1164 - res$X
-  
-  loginfo(paste("Draw regular heatmaps for condition:", label))
-  res = subset(res, SNR_A != -1 &
-                 SNR_C != -1 & SNR_G != -1 & SNR_T != -1)
-  drawSummarizedHeatmaps(report, res, label, dist, N, key)
-  1
 }
-
 
 #' Core function required to add workflow to Zia:
 
@@ -1452,27 +1456,32 @@ makeReport = function(report)
   res = lapply(1:length(alnxmls), function(k)
     generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k], dist, N, key))
   # Make barplot for Uniformity metrics
-  csvfile = paste(report$outputDir,"/Uniformity_metrics_",labels,".csv", sep = "")
+  csvfile = paste(report$outputDir,"/Uniformity_metrics_",labels,".csv", sep = "")[unlist(lapply(res, function(i){!i == 0}))]
+  if (length(csvfile) == 0) {
+    loginfo("[WARNING] - All conditions are empty!")
+    0
+  } else {
+    Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N")]
+    Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
+    Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
+    Uniformity = Uniformity[,c("ID", "LambdaUniformity", "MoransI.Inv_percentage", "MoransI.N_percentage")]
+    UniformityLong = melt(Uniformity, id.vars = "ID")
+    tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) + 
+      geom_bar(stat = "identity", position = "dodge") + 
+      scale_fill_brewer(palette = "Set1") + 
+      labs(x = "Variables", y = "Score", title = "Barchart of Uniformity")
+    report$ggsave(
+      "barchart_of_uniformity.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "barchart_of_uniformity",
+      title = "Barchart of Uniformity",
+      caption = "barchart_of_uniformity",
+      tags = c("bar", "barchart", "uniformity", "Lambda", "MoransI", "Morans")
+    )
+  }
   # Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.Inv.sd", "MoransI.N", "MoransI.N.sd")]
-  Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N")]
-  Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
-  Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
-  Uniformity = Uniformity[,c("ID", "LambdaUniformity", "MoransI.Inv_percentage", "MoransI.N_percentage")]
-  UniformityLong = melt(Uniformity, id.vars = "ID")
-  tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) + 
-    geom_bar(stat = "identity", position = "dodge") + 
-    scale_fill_brewer(palette = "Set1") + 
-    labs(x = "Variables", y = "Score", title = "Barchart of Uniformity")
-  report$ggsave(
-    "barchart_of_uniformity.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "barchart_of_uniformity",
-    title = "Barchart of Uniformity",
-    caption = "barchart_of_uniformity",
-    tags = c("bar", "barchart", "uniformity", "Lambda", "MoransI", "Morans")
-  )
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.RData"))
   report$write.report()
