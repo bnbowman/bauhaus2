@@ -1457,22 +1457,22 @@ makeReport <- function(report) {
   })
   # Filter out empty data sets, throw a warning if any empty ones exist
   filteredData = filterEmptyDataset(dfs, conditions)
-  dfs  = filteredData[[1]]
-  conditions = filteredData[[2]]
-  
-  ## Let's set the graphic defaults
-  n = length(levels(conditions$Condition))
-  clFillScale <<- getPBFillScale(n)
-  clScale <<- getPBColorScale(n)
-  
-  # Now combine into one large data frame
-  cd = combineConditions(dfs, as.character(conditions$Condition))
-  cd$tlen = as.numeric(cd$tend - cd$tstart)
-  cd$alen = as.numeric(cd$aend - cd$astart)
-
-  if (nrow(cd) == 0) {
+  if (length(filteredData) == 0) {
     warning("No ZMW has been loaded from the alignment set!")
   } else {
+    dfs  = filteredData[[1]]
+    conditions = filteredData[[2]]
+    
+    ## Let's set the graphic defaults
+    n = length(levels(conditions$Condition))
+    clFillScale <<- getPBFillScale(n)
+    clScale <<- getPBColorScale(n)
+    
+    # Now combine into one large data frame
+    cd = combineConditions(dfs, as.character(conditions$Condition))
+    cd$tlen = as.numeric(cd$tend - cd$tstart)
+    cd$alen = as.numeric(cd$aend - cd$astart)
+    
     # Make Plots
     makeCDFofaStartPlots(report, cd)
     makeMaxVsUnrolledPlots(report, cd)
