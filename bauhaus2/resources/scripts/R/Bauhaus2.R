@@ -92,11 +92,16 @@ filterEmptyDataset <- function(dfs, conditions) {
     emptyCond = paste(conditions[lapply(dfs,nrow) == 0,]$Condition, collapse = ', ')
     warning(paste("Empty data set loaded for condition: ", emptyCond, sep = ""))
   }
-  dfs = dfs[lapply(dfs,nrow) > 0]
   conditions = conditions[lapply(dfs,nrow) > 0,]
-  filteredData[[1]] = dfs
-  filteredData[[2]] = conditions
-  filteredData
+  dfs = dfs[lapply(dfs,nrow) > 0]
+  if (length(dfs) == 0) {
+    warning("All conditions are empty!")
+    filteredData
+  } else {
+    filteredData[[1]] = dfs
+    filteredData[[2]] = conditions
+    filteredData
+  }
 }
 
 ##

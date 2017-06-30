@@ -77,7 +77,7 @@ makeSamplingPlots <-
     load_alns <- function(tbl) {
       names(tbl)[names(tbl) == "ref"] <- "refName"
       curCondition = tbl$Condition[1]
-      rsfname = as.character(conditions$Reference[conditions$Condition == curCondition][1])
+      rsfname = as.character(conditions$Reference[as.character(conditions$Condition) == as.character(curCondition)][1])
       fasta = pbbamr::getReferencePath(rsfname)
       loginfo(paste("Loading fasta file:", fasta))
       alns = loadAlnsFromIndex(tbl, fasta)
@@ -1053,21 +1053,20 @@ makeReport <- function(report) {
   })
   # Filter out empty data sets, throw a warning if any empty ones exist
   filteredData = filterEmptyDataset(dfs, conditions)
-  dfs  = filteredData[[1]]
-  conditions = filteredData[[2]]
-  
-  # Now combine into one large data frame
-  ##browser()
-  cd = combineConditions(dfs, as.character(conditions$Condition))
-  
-  ## Let's set the graphic defaults
-  n = length(levels(conditions$Condition))
-  clFillScale <<- getPBFillScale(n)
-  clScale <<- getPBColorScale(n)
-  
-  if (nrow(cd) == 0) {
+  if (length(filteredData) == 0) {
     warning("No ZMW has been loaded from the alignment set!")
   } else {
+    dfs  = filteredData[[1]]
+    conditions = filteredData[[2]]
+    
+    # Now combine into one large data frame
+    ##browser()
+    cd = combineConditions(dfs, as.character(conditions$Condition))
+    
+    ## Let's set the graphic defaults
+    n = length(levels(conditions$Condition))
+    clFillScale <<- getPBFillScale(n)
+    clScale <<- getPBColorScale(n)
     # Subsample cd to get a smaller data frame, load SNR values for this dataframe
     cd = loadSNRforSubset(cd)
     cd = as.data.table(cd)
