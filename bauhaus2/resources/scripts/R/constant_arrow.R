@@ -202,13 +202,24 @@ constantArrow <-
                   end_dif = 0.005)
         # Summerize model parameters
         predictions <- list()
-        for (j in 1:8) {
+        for (j in 1:length(fit$models)) {
           predictions[[j]] = predict(fit$models[[j]]$cfit, type = "probs")[1,]
         }
         predictions <- as.data.frame(matrix(unlist(predictions), ncol = 4, byrow = T))
         colnames(predictions) = colnames(fit$pseudoCounts) # copy the outcome names over
+        for (j in 1:length(fit$models)) {
+          predictions$ctx[j] = fit$models[[j]]$ctx
+        }
         CTX <- fit$sPmf$CTX
-        
+        # Check if any context is missing
+        # For all missing contexts implement the prediction rate with `1 0 0 0`, which indicates a perfect match
+        if (length(predictions) < 8) {
+          missingCTX = setdiff(CTX, predictions$ctx)
+          missingPredictions = data.frame(rep(1, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), missingCTX)
+          colnames(missingPredictions) = colnames(predictions)
+          predictions = rbind(predictions, missingPredictions)
+          predictions[match(CTX, predictions$ctx),]
+        }
         # Dark rate
         darkCols <- which(csv_names == "A.Dark.A"):which(csv_names == "T.Dark.T")
         darkRows <- which(CTX == "NA"):which(CTX == "NT")
