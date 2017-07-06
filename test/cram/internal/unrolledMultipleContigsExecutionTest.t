@@ -260,6 +260,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
+  |   |   |-- filtered_ipd_median_by_time.png
+  |   |   |-- filtered_pw_mean_by_time.png
   |   |   |-- global_localpolrate.png
   |   |   |-- ipd_median_by_time.png
   |   |   |-- ipddistbybase_boxplot.png
@@ -341,5 +343,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  26 directories, 298 files
+  26 directories, 300 files
 

@@ -26,14 +26,17 @@ themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
 plotwidth = 7.2
 plotheight = 4.2
 
+# ipd and pw are filtered by maxIPD and maxPW
+maxIPD = 1.25
+maxPW = 0.25
+
 ### Custom sampler function to sample min(data, sample) which can't be done with dplyr
 ### it's a modified copy of sample_n.grouped_df
 sample_nigel <-
   function(tbl,
            size,
            replace = FALSE,
-           weight = NULL,
-           .env = parent.frame())
+           weight = NULL)
   {
     #assert_that(is.numeric(size), length(size) == 1, size >= 0)
     weight <- substitute(weight)
@@ -48,8 +51,7 @@ sample_nigel <-
           tbl = tbl,
           size = sizes[i],
           replace = replace,
-          weight = weight,
-          .env = .env
+          weight = weight
         ))
     idx <- unlist(sampled) + 1
     grouped_df(tbl[idx, , drop = FALSE], vars = groups(tbl))
@@ -360,6 +362,17 @@ makeSamplingPlots <-
       )
       cd2time$time = as.numeric(cd2time$time) * 10
       
+      # Also make filtered data set by maxIPD and maxPW
+      cd2timeFiltered = cd2[cd2$ipd < maxIPD & cd2$pw < maxPW,] %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
+        PW.Mean = mean(pw),
+        PKMID.Median = median(pkmid),
+        PKMID.Mean = mean(pkmid),
+        IPD.Median = median(ipd),
+        PolRate = mean(ipd + pw),
+        PKMID.Median.Con = median(PKMID.Median.Con)
+      )
+      cd2timeFiltered$time = as.numeric(cd2timeFiltered$time) * 10
+      
       tp = ggplot(cd2time,
                   aes(
                     x = time,
@@ -381,6 +394,27 @@ makeSamplingPlots <-
         tags = c("sampled", "pw", "time")
       )
       
+      tp = ggplot(cd2timeFiltered,
+                  aes(
+                    x = time,
+                    y = PW.Mean,
+                    color = Condition,
+                    group = Condition
+                  )) + geom_point() +
+        geom_line()  + clScale + plTheme + themeTilt + labs(y = paste("Mean PW (Truncated < ", maxPW, ")", sep = ""),
+                                                            x = "Minute",
+                                                            title = "Filtered PW Trend by Time")
+      report$ggsave(
+        "filtered_pw_mean_by_time.png",
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = "filtered_pw_mean_by_time",
+        title = "Filtered Mean Pulse Width by Time",
+        caption = "Filtered Mean Pulse Width by Time",
+        tags = c("sampled", "pw", "time", "filtered")
+      )
+      
       tp = ggplot(cd2time,
                   aes(
                     x = time,
@@ -400,6 +434,27 @@ makeSamplingPlots <-
         title = "Median IPD by Time",
         caption = "Median IPD by Time",
         tags = c("sampled", "ipd", "time")
+      )
+      
+      tp = ggplot(cd2timeFiltered,
+                  aes(
+                    x = time,
+                    y = IPD.Median,
+                    color = Condition,
+                    group = Condition
+                  )) + geom_point() +
+        geom_line()  + clScale + plTheme + themeTilt + labs(y = paste("Median IPD (Truncated < ", maxIPD, ")", sep = ""),
+                                                            x = "Minute",
+                                                            title = "Filtered IPD Trend by Time")
+      report$ggsave(
+        "filtered_ipd_median_by_time.png",
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = "filtered_ipd_median_by_time",
+        title = "Filtered Median IPD by Time",
+        caption = "Filtered Median IPD by Time",
+        tags = c("sampled", "ipd", "time", "filtered")
       )
       
       tp = ggplot(cd2time,
@@ -581,7 +636,6 @@ makeSamplingPlots <-
     # }
     
     # IPD Plots
-    maxIPD = 1.25
     # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
     #   labs(
     #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
@@ -635,7 +689,6 @@ makeSamplingPlots <-
     )
     
     # PW Plots
-    maxPW = 0.25
     cd2$Insertion = cd2$ref == "-"
     # tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_violin() +
     #   labs(
