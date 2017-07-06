@@ -88,4 +88,5 @@ rule map_unrolledNoHQ_smrtlink_collect:
     shell:
         """
         dataset create {output} {input.localJobLink}/{params.locationOfAlignmentSet}
+        dataset newuuid --random {output}
         """
