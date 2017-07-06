@@ -23,4 +23,5 @@ rule collect_mappings_one_condition:
     shell:
         """
         dataset create {output} {input.remoteAset}
+        dataset newuuid --random {output}
         """
