@@ -17,14 +17,14 @@ library(nnet)
 library(reshape2)
 library(lazyeval)
 
-## FIXME: make a real package
-myDir = "./scripts/R"
-source(file.path(myDir, "Bauhaus2.R"))
-
 # load sample size for argument, default sample size = 1000
 parser <- ArgumentParser()
 parser$add_argument("--sampleByRef", nargs = 1, default = FALSE, help = "subsample ZMWs for different references or not")
 parser$add_argument("--sampleSize", nargs = 1, default = 1000, help = "number of samples (ZMWs) for each condition")
+parser$add_argument("--noCT", action = "store_true", default = FALSE, help = "skip the condition table input and takes alignment/reference input")
+parser$add_argument("--input_aln", nargs = 1, default = "", help = "input alignment")
+parser$add_argument("--input_ref", nargs = 1, default = "", help = "input reference")
+parser$add_argument("--output_csv", nargs = 1, default = "", help = "input reference")
 try(args <- parser$parse_args())
 set.seed(args$seed)
 
@@ -37,6 +37,17 @@ SAMPLING_SIZE = args$sampleSize
 # the enzymology group may rewrite the condition table, which chunks the data set by reference.
 # To enable running constant arrow model for each reference, loading this option from CLI is allowed.
 SAMPLE_BY_REF = args$sampleByRef
+
+NO_CT = args$noCT
+INPUT_ALN = args$input_aln
+INPUT_REF = args$input_ref
+OUTPUT_CSV = args$output_csv
+
+## FIXME: make a real package
+myDir = "./scripts/R"
+if (!NO_CT) {
+  source(file.path(myDir, "Bauhaus2.R"))
+}
 
 # Define a basic addition to all plots
 plTheme <- theme_bw(base_size = 18)
@@ -285,13 +296,32 @@ makeReport <- function(report) {
   report$write.report()
 }
 
+writeCSV <- function(outputcsv) {
+  report = NULL
+  condition = "Default"
+  errormode = constantArrow(INPUT_ALN, INPUT_REF, condition, report)
+  path = getwd()
+  write.csv(errormode, paste(path, "/", outputcsv, sep = ""), row.names = F)
+}
+
 main <- function()
 {
-  report <- bh2Reporter(
-    "condition-table.csv",
-    "reports/ConstantArrowFishbonePlots/modelReport.json",
-    "Constant Arrow csv file")
-  makeReport(report)
+  # if noCT is set to true, skip the condition table input and load input_aln / input_ref
+  if (NO_CT) {
+    # When noCT is true, make sure input_aln and input_ref both exist
+    if (INPUT_ALN == "" || INPUT_REF == "" || OUTPUT_CSV == "") {
+      warning("Need to provide input alignmentset, reference set and output CSV name!")
+      0
+    } else {
+      writeCSV(OUTPUT_CSV)
+    }
+  } else {
+    report <- bh2Reporter(
+      "condition-table.csv",
+      "reports/ConstantArrowFishbonePlots/modelReport.json",
+      "Constant Arrow csv file")
+    makeReport(report)
+  }
   0
 }
 
