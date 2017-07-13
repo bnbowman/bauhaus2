@@ -28,5 +28,5 @@ rule collect_smrtlink_subreads_one_condition:
     shell:
         """
         dataset create {output} {input.remoteSset}
-        datset newuuid --random {output}
+        dataset newuuid --random {output}
         """
