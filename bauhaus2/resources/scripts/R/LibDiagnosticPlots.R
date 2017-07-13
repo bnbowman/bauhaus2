@@ -207,32 +207,36 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
   
   cd2$SurvObj <- with(cd2, Surv(UnrolledT))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  p1 <-
-    autoplot(cd2.by.con) + labs(x = "Unrolled template Span", title = "Unrolled template Span Survival")
-  p2 <-
-    autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Unrolled template Span", title = "Unrolled template Span Survival (Log-scale)")
-  #tp <- arrangeGrob(p1, p2, nrow = 2)
   
-  report$ggsave(
-    "unrolled_template.png",
-    p1,
-    id = "unrolled_template",
-    width = plotwidth,
-    height = plotheight,
-    title = "Unrolled template Span Survival",
-    caption = "Unrolled template Span Survival",
-    tags = c("libdiagnostic", "library", "diagnostic", "template", "survival", "unrolled")
-  )
-  report$ggsave(
-    "unrolled_template_log.png",
-    p2,
-    id = "unrolled_template_log",
-    width = plotwidth,
-    height = plotheight,
-    title = "Unrolled template Span Survival (Log-scale)",
-    caption = "Unrolled template Span Survival (Log-scale)",
-    tags = c("libdiagnostic", "library", "diagnostic", "template", "survival", "unrolled", "log")
-  )
+  # When cd2.by.con is empty or only has one row, skip the following two plots
+  if (nrow(cd2.by.con) > 1) {
+    p1 <-
+      autoplot(cd2.by.con) + labs(x = "Unrolled template Span", title = "Unrolled template Span Survival")
+    p2 <-
+      autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Unrolled template Span", title = "Unrolled template Span Survival (Log-scale)")
+    #tp <- arrangeGrob(p1, p2, nrow = 2)
+    
+    report$ggsave(
+      "unrolled_template.png",
+      p1,
+      id = "unrolled_template",
+      width = plotwidth,
+      height = plotheight,
+      title = "Unrolled template Span Survival",
+      caption = "Unrolled template Span Survival",
+      tags = c("libdiagnostic", "library", "diagnostic", "template", "survival", "unrolled")
+    )
+    report$ggsave(
+      "unrolled_template_log.png",
+      p2,
+      id = "unrolled_template_log",
+      width = plotwidth,
+      height = plotheight,
+      title = "Unrolled template Span Survival (Log-scale)",
+      caption = "Unrolled template Span Survival (Log-scale)",
+      tags = c("libdiagnostic", "library", "diagnostic", "template", "survival", "unrolled", "log")
+    )
+  }
   
   tp = ggplot(cd2, aes(x = Condition, y = UnrolledT, fill = Condition)) + geom_boxplot() + stat_summary(
     fun.y = median,
@@ -724,7 +728,7 @@ fit_3_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
       simple_lin_reg = simple_lin_reg,
       min_sep = min_sep
     ),
-    silent = FALSE)
+    silent = TRUE)
     
     if (class(res) == "try-error")
     {
@@ -736,7 +740,13 @@ fit_3_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
   #' Identify the best of three solutions:
   opt = L[[which.min(vapply(L, function(x)
     x$value, 0))]]
-  bpt = round(opt$par)
+  
+  if (!is.null(opt$par)) {
+    bpt = round(opt$par)
+  } else {
+    bpt = c(0,0)
+  }
+  
   res = c(res, opt$value)
   
   tau = rbind(

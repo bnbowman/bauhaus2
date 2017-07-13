@@ -36,32 +36,36 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
   
   cd2$SurvObj <- with(cd2, Surv(tlen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  p1 <-
-    autoplot(cd2.by.con) + labs(x = "Template Span", title = "Template Span Survival") + plTheme
-  p2 <-
-    autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Template Span", title = "Template Span Survival (Log-scale)") + plTheme
-  #  tp <- arrangeGrob(p1, p2, nrow = 2)
   
-  report$ggsave(
-    "template_span_survival.png",
-    p1,
-    width = plotwidth,
-    height = plotheight,
-    id = "template_span_survival",
-    title = "Template Span Survival",
-    caption = "Template Span Survival",
-    tags = c("basic", "pbiplots", "survival", "template")
-  )
-  report$ggsave(
-    "template_span_survival (Log-scale).png",
-    p2,
-    width = plotwidth,
-    height = plotheight,
-    id = "template_span_survival(log)",
-    title = "Template Span Survival (Log-scale)",
-    caption = "Template Span Survival (Log-scale)",
-    tags = c("basic", "pbiplots", "survival", "template", "log")
-  )
+  # When cd2.by.con is empty or only has one row, skip the following two plots
+  if (nrow(cd2.by.con) > 1) {
+    p1 <-
+      autoplot(cd2.by.con) + labs(x = "Template Span", title = "Template Span Survival") + plTheme
+    p2 <-
+      autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Template Span", title = "Template Span Survival (Log-scale)") + plTheme
+    #  tp <- arrangeGrob(p1, p2, nrow = 2)
+    
+    report$ggsave(
+      "template_span_survival.png",
+      p1,
+      width = plotwidth,
+      height = plotheight,
+      id = "template_span_survival",
+      title = "Template Span Survival",
+      caption = "Template Span Survival",
+      tags = c("basic", "pbiplots", "survival", "template")
+    )
+    report$ggsave(
+      "template_span_survival (Log-scale).png",
+      p2,
+      width = plotwidth,
+      height = plotheight,
+      id = "template_span_survival(log)",
+      title = "Template Span Survival (Log-scale)",
+      caption = "Template Span Survival (Log-scale)",
+      tags = c("basic", "pbiplots", "survival", "template", "log")
+    )
+  }
   
   loginfo("Making Aligned Read Length Survival Plots")
   
@@ -70,32 +74,35 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
   
   cd2$SurvObj <- with(cd2, Surv(alen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  p1 <-
-    autoplot(cd2.by.con) + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival") + plTheme
-  p2 <-
-    autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival (Log-scale)") + plTheme
-  #  tp <- arrangeGrob(p1, p2, nrow = 2)
   
-  report$ggsave(
-    "aligned_read_length_survival.png",
-    p1,
-    width = plotwidth,
-    height = plotheight,
-    id = "aligned_read_length_survival",
-    title = "Aligned Read Length Survival",
-    caption = "Aligned Read Length Survival",
-    tags = c("basic", "pbiplots", "survival", "read", "aligned")
-  )
-  report$ggsave(
-    "aligned_read_length_survival (Log-scale).png",
-    p2,
-    width = plotwidth,
-    height = plotheight,
-    id = "aligned_read_length_survival(log)",
-    title = "Aligned Read Length Survival (Log-scale)",
-    caption = "Aligned Read Length Survival (Log-scale)",
-    tags = c("basic", "pbiplots", "survival", "read", "log", "aligned")
-  )
+  if (nrow(cd2.by.con) > 1) {
+    p1 <-
+      autoplot(cd2.by.con) + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival") + plTheme
+    p2 <-
+      autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival (Log-scale)") + plTheme
+    #  tp <- arrangeGrob(p1, p2, nrow = 2)
+    
+    report$ggsave(
+      "aligned_read_length_survival.png",
+      p1,
+      width = plotwidth,
+      height = plotheight,
+      id = "aligned_read_length_survival",
+      title = "Aligned Read Length Survival",
+      caption = "Aligned Read Length Survival",
+      tags = c("basic", "pbiplots", "survival", "read", "aligned")
+    )
+    report$ggsave(
+      "aligned_read_length_survival (Log-scale).png",
+      p2,
+      width = plotwidth,
+      height = plotheight,
+      id = "aligned_read_length_survival(log)",
+      title = "Aligned Read Length Survival (Log-scale)",
+      caption = "Aligned Read Length Survival (Log-scale)",
+      tags = c("basic", "pbiplots", "survival", "read", "log", "aligned")
+    )
+  }
 }
 
 makeAccuracyDensityPlots <- function(report, cd) {
