@@ -1,0 +1,25 @@
+
+# ---------------------------------------------------------------------------------------------------
+# locacc.snake: Generate locacc plots (tool from Martin).
+
+mapped_subreads = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+# -- Target rules --
+
+rule locacc_plots:
+    input:
+        LocAccPlots="reports/LocAccPlots/report.json"
+
+rule LocAccPlots:
+    input: alignments = mapped_subreads.values()
+    output: "reports/LocAccPlots/report.json"
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module use /mnt/software/modulefiles
+        module load primary-toolkit
+
+        locacc {input.alignments} --nreads 5000 -o reports/LocAccPlots/LocAcc
+        """
