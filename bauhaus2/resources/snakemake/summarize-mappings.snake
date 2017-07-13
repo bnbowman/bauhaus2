@@ -21,7 +21,8 @@ rule summarize_mappings:
         constantArrowPlots="reports/ConstantArrowFishbonePlots/report.json",
         makeMappingMetricsCsv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv",
         ZMWstsPlots="reports/ZMWstsPlots/report.json",
-        AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json"
+        AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json",
+        LocAccPlots="reports/LocAccPlots/report.json"
 
 rule PbiPlots:
     input: mapped_subreads.values(),

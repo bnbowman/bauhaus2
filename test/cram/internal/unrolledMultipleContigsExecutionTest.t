@@ -234,6 +234,58 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- unrolled_template_densityplot.png
   |   |   |-- unrolled_template_densityplot_summation.png
   |   |   `-- unrolled_template_log.png
+  |   |-- LocAccPlots
+  |   |   |-- LocAcc.accuracy_delta_densities.png
+  |   |   |-- LocAcc.binomlocacc_boxes.png
+  |   |   |-- LocAcc.canonglobacc_boxes.png
+  |   |   |-- LocAcc.filt_glob_acc_densities.png
+  |   |   |-- LocAcc.filtglobacc_boxes.png
+  |   |   |-- LocAcc.filtglobacc_snr_scatter.png
+  |   |   |-- LocAcc.glob_acc_densities.png
+  |   |   |-- LocAcc.globacc_boxes.png
+  |   |   |-- LocAcc.globacc_snr_scatter.png
+  |   |   |-- LocAcc.hqerr_duration_boxplot.png
+  |   |   |-- LocAcc.hqerr_fraction_boxplot.png
+  |   |   |-- LocAcc.hqerr_frequency_boxplot.png
+  |   |   |-- LocAcc.locacc_boxes.png
+  |   |   |-- LocAcc.localacc_densities.png
+  |   |   |-- LocAcc.nDelrate_snr_scatter.png
+  |   |   |-- LocAcc.nInsrate_snr_scatter.png
+  |   |   |-- LocAcc.nMMrate_snr_scatter.png
+  |   |   |-- LocAcc.refloss_bars.png
+  |   |   |-- LocAcc.run0.accuracy_scatter.png
+  |   |   |-- LocAcc.run0.aln_cols.csv
+  |   |   |-- LocAcc.run0.core.csv
+  |   |   |-- LocAcc.run0.delta_confusion.png
+  |   |   |-- LocAcc.run0.error_counts.csv
+  |   |   |-- LocAcc.run0.high_confusion.png
+  |   |   |-- LocAcc.run0.hqerr_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.run0.hqerr_duration_histogram.png
+  |   |   |-- LocAcc.run0.hqerr_reverse_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.run0.hqerrlens.csv
+  |   |   |-- LocAcc.run0.local_accuracies.csv
+  |   |   |-- LocAcc.run0.low_confusion.png
+  |   |   |-- LocAcc.run0.mask.csv
+  |   |   |-- LocAcc.run0.read_bases.csv
+  |   |   |-- LocAcc.run0.template_bases.csv
+  |   |   |-- LocAcc.run1.accuracy_scatter.png
+  |   |   |-- LocAcc.run1.aln_cols.csv
+  |   |   |-- LocAcc.run1.core.csv
+  |   |   |-- LocAcc.run1.delta_confusion.png
+  |   |   |-- LocAcc.run1.error_counts.csv
+  |   |   |-- LocAcc.run1.high_confusion.png
+  |   |   |-- LocAcc.run1.hqerr_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.run1.hqerr_duration_histogram.png
+  |   |   |-- LocAcc.run1.hqerr_reverse_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.run1.hqerrlens.csv
+  |   |   |-- LocAcc.run1.local_accuracies.csv
+  |   |   |-- LocAcc.run1.low_confusion.png
+  |   |   |-- LocAcc.run1.mask.csv
+  |   |   |-- LocAcc.run1.read_bases.csv
+  |   |   |-- LocAcc.run1.template_bases.csv
+  |   |   |-- LocAcc.yield_bars.png
+  |   |   |-- LocAcc.yieldloss_bars.png
+  |   |   `-- report.json
   |   |-- PbiPlots
   |   |   |-- acc_accvrl.png
   |   |   |-- acc_accvtl.png
@@ -343,5 +395,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  26 directories, 300 files
+  27 directories, 351 files
 

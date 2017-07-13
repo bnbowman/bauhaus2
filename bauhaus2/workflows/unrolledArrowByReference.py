@@ -50,5 +50,5 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "Python/ConsolidateArrowConditions.py" )
 
     def plan(self):
-        return ["summarize-mappings.snake", "scatter-constant-arrow-by-reference.snake", "heatmaps.snake"] + \
+        return ["summarize-mappings.snake", "scatter-constant-arrow-by-reference.snake", "heatmaps.snake", "locacc.snake"] + \
             UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)
