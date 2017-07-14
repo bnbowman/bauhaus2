@@ -205,62 +205,68 @@ constantArrow <-
         errormode[i, 1:ncol(errormode)] = NA
       } else {
         # Fit hmm
-        fit = hmm(read ~ 1,
+        fit = try(hmm(read ~ 1,
                   singleZMW,
                   verbose = FALSE,
                   filter = FALSE,
                   use8Contexts = TRUE,
-                  end_dif = 0.005)
-        # Summerize model parameters
-        predictions <- list()
-        for (j in 1:length(fit$models)) {
-          predictions[[j]] = predict(fit$models[[j]]$cfit, type = "probs")[1,]
+                  end_dif = 0.005),
+                  silent = TRUE)
+        if (class(fit) == "try-error")
+        {
+          warning("Only one example row of sequence context present, model.frame will not convert the data correctly.")
+        } else {
+          # Summerize model parameters
+          predictions <- list()
+          for (j in 1:length(fit$models)) {
+            predictions[[j]] = predict(fit$models[[j]]$cfit, type = "probs")[1,]
+          }
+          predictions <- as.data.frame(matrix(unlist(predictions), ncol = 4, byrow = T))
+          colnames(predictions) = colnames(fit$pseudoCounts) # copy the outcome names over
+          for (j in 1:length(fit$models)) {
+            predictions$ctx[j] = fit$models[[j]]$ctx
+          }
+          CTX <- fit$sPmf$CTX
+          # Check if any context is missing
+          # For all missing contexts implement the prediction rate with `1 0 0 0`, which indicates a perfect match
+          if (nrow(predictions) < 8) {
+            missingCTX = setdiff(CTX, predictions$ctx)
+            missingPredictions = data.frame(rep(1, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), missingCTX)
+            colnames(missingPredictions) = colnames(predictions)
+            predictions = rbind(predictions, missingPredictions)
+            predictions[match(CTX, predictions$ctx),]
+          }
+          # Dark rate
+          darkCols <- which(csv_names == "A.Dark.A"):which(csv_names == "T.Dark.T")
+          darkRows <- which(CTX == "NA"):which(CTX == "NT")
+          errormode[i, darkCols] = predictions[darkRows, "Delete"]
+          
+          # Merge rate
+          mergeCols <- which(csv_names == "A.Merge.A"):which(csv_names == "T.Merge.T")
+          mergeRows <- which(CTX == "AA"):which(CTX == "TT")
+          errormode[i, mergeCols] = predictions[mergeRows, "Delete"] - predictions[darkRows, "Delete"]
+          
+          # Match rate
+          matchCols <- which(csv_names == "A.Match.A"):which(csv_names == "T.Match.T")
+          matchVals <- predictions[, "Match"] * fit$mPmf[, bases]
+          matchVals$CTX <- fit$mPmf$CTX
+          errormode[i, matchCols] = as.vector(as.matrix(baseAgg(matchVals)[, bases]))
+          
+          # When insert a different base, use stick
+          stickCols <- which(csv_names == "A.Insert.A"):which(csv_names == "T.Insert.T")  # also includes branch, will replace below
+          stickVals <- predictions[, "Stick"] * fit$sPmf[, bases]
+          stickVals$CTX <- fit$sPmf$CTX
+          errormode[i, stickCols] = as.vector(as.matrix(baseAgg(stickVals)[, bases]))
+          
+          # When insert a same base, use branch
+          branchCols <- which(csv_names %in% paste(bases, ".Insert.", bases, sep=""))
+          branchVals <- predictions[, "Branch"] * fit$bPmf[, bases]
+          branchVals$CTX <- fit$bPmf$CTX
+          errormode[i, branchCols] = diag(as.matrix(baseAgg(branchVals)[, bases]))
+          
+          errormode[i, "Time"] = fit$time_s
+          errormode[i, "Iterations"] = length(fit$likelihoodHistory)
         }
-        predictions <- as.data.frame(matrix(unlist(predictions), ncol = 4, byrow = T))
-        colnames(predictions) = colnames(fit$pseudoCounts) # copy the outcome names over
-        for (j in 1:length(fit$models)) {
-          predictions$ctx[j] = fit$models[[j]]$ctx
-        }
-        CTX <- fit$sPmf$CTX
-        # Check if any context is missing
-        # For all missing contexts implement the prediction rate with `1 0 0 0`, which indicates a perfect match
-        if (length(predictions) < 8) {
-          missingCTX = setdiff(CTX, predictions$ctx)
-          missingPredictions = data.frame(rep(1, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), missingCTX)
-          colnames(missingPredictions) = colnames(predictions)
-          predictions = rbind(predictions, missingPredictions)
-          predictions[match(CTX, predictions$ctx),]
-        }
-        # Dark rate
-        darkCols <- which(csv_names == "A.Dark.A"):which(csv_names == "T.Dark.T")
-        darkRows <- which(CTX == "NA"):which(CTX == "NT")
-        errormode[i, darkCols] = predictions[darkRows, "Delete"]
-        
-        # Merge rate
-        mergeCols <- which(csv_names == "A.Merge.A"):which(csv_names == "T.Merge.T")
-        mergeRows <- which(CTX == "AA"):which(CTX == "TT")
-        errormode[i, mergeCols] = predictions[mergeRows, "Delete"] - predictions[darkRows, "Delete"]
-        
-        # Match rate
-        matchCols <- which(csv_names == "A.Match.A"):which(csv_names == "T.Match.T")
-        matchVals <- predictions[, "Match"] * fit$mPmf[, bases]
-        matchVals$CTX <- fit$mPmf$CTX
-        errormode[i, matchCols] = as.vector(as.matrix(baseAgg(matchVals)[, bases]))
-        
-        # When insert a different base, use stick
-        stickCols <- which(csv_names == "A.Insert.A"):which(csv_names == "T.Insert.T")  # also includes branch, will replace below
-        stickVals <- predictions[, "Stick"] * fit$sPmf[, bases]
-        stickVals$CTX <- fit$sPmf$CTX
-        errormode[i, stickCols] = as.vector(as.matrix(baseAgg(stickVals)[, bases]))
-        
-        # When insert a same base, use branch
-        branchCols <- which(csv_names %in% paste(bases, ".Insert.", bases, sep=""))
-        branchVals <- predictions[, "Branch"] * fit$bPmf[, bases]
-        branchVals$CTX <- fit$bPmf$CTX
-        errormode[i, branchCols] = diag(as.matrix(baseAgg(branchVals)[, bases]))
-        
-        errormode[i, "Time"] = fit$time_s
-        errormode[i, "Iterations"] = length(fit$likelihoodHistory)
       }
     }
     return(errormode)
