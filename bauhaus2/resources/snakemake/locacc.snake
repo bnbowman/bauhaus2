@@ -2,9 +2,11 @@
 # ---------------------------------------------------------------------------------------------------
 # locacc.snake: Generate locacc plots (tool from Martin).
 
-mapped_subreads = \
-    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
-      for c in ct.conditions }
+mapped_subreads = [expand(("conditions/{condition}/mapped/"
+                           "mapped.alignmentset.xml"),
+                          condition=c)
+                   for c in ct.conditions]
+cond_names = ['-n {}'.format(c) for c in ct.conditions]
 
 # -- Target rules --
 
@@ -13,13 +15,15 @@ rule locacc_plots:
         LocAccPlots="reports/LocAccPlots/report.json"
 
 rule LocAccPlots:
-    input: alignments = mapped_subreads.values()
+    input:
+        alignments = mapped_subreads
     output: "reports/LocAccPlots/report.json"
+    params: names = cond_names
     shell:
         """
         module use /pbi/dept/primary/modulefiles
         module use /mnt/software/modulefiles
         module load primary-toolkit
 
-        locacc {input.alignments} --nreads 5000 -o reports/LocAccPlots/LocAcc
+        locacc {input.alignments} {params.names} --nreads 5000 -o reports/LocAccPlots/LocAcc --warnonly
         """
