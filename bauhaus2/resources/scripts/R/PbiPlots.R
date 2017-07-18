@@ -14,10 +14,19 @@ library(dplyr, quietly = TRUE)
 library(tidyr, quietly = TRUE)
 library(survival)
 library(ggfortify)
+library(stringr)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
+
+# Fuction to get p_variable names
+variableNames <- function(ct)
+{
+  nms <- names(ct)
+  matches <- str_detect(nms, "(p_.*)")
+  nms[matches]
+}
 
 #' Define a basic addition to all plots
 plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
@@ -27,6 +36,35 @@ themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
 sampleSize = 5000
 plotwidth = 7.2
 plotheight = 4.2
+
+makepColPlots <- function(report, cd, p_Var, conditions) {
+  loginfo("Making p_ Column based Plots")
+  # When two p_variables show up
+  if (length(p_Var) == 2) {
+    cdp = cd %>% dplyr::group_by(Condition) %>% dplyr::summarise(medianrlength = median(tlen))
+    cdp = merge(cdp, conditions[,c("Condition", p_Var)], by = "Condition")
+    
+    # Generate an example plot of the median RL verses the p variables
+    tp = ggplot(cdp,
+                aes_string(
+                  x = p_Var[2],
+                  y = cdp$medianrlength,
+                  color = p_Var[1],
+                  group = p_Var[1]
+                )) + geom_point() + geom_line() +
+      plTheme + themeTilt + clScale + labs(x = p_Var[2], y = "Median Template Length")
+    report$ggsave(
+      "medianrlbyp.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "medianrlbyp",
+      title = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+      caption = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+      tags = c("sampled", "p_", "titration")
+    )
+  }
+}
 
 makeReadLengthSurvivalPlots <- function(report, cd) {
   loginfo("Making Template Span Survival Plots")
@@ -408,8 +446,9 @@ makeReport <- function(report) {
   #conditions = do.call(rbind, tmp)
   
   conditions = report$condition.table
+  p_Var = variableNames(conditions)
   # Load the pbi index for each data frame
-  dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
+  dfs = lapply(as.character(conditions$MappedSubreads), function(s) {
     loginfo(paste("Loading alignment set:", s))
     loadPBI2(s)
   })
@@ -423,6 +462,11 @@ makeReport <- function(report) {
     
     # Now combine into one large data frame
     cd = combineConditions(dfs, as.character(conditions$Condition))
+    
+    # Add p_ columns if any exists
+    if (length(p_Var) > 0) {
+      cd = merge(cd, conditions[,c("Condition", p_Var)], by = "Condition")
+    }
     
     ## Let's set the graphic defaults
     n = length(levels(conditions$Condition))
@@ -475,6 +519,9 @@ makeReport <- function(report) {
                        title = "Summary Statistics (Median Values)")
     
     # Make Plots
+    if (length(p_Var) > 0) {
+      makepColPlots(report,cd,p_Var, conditions)
+    }
     makeReadLengthSurvivalPlots(report, cd)
     makeAccuracyDensityPlots(report, cd)
     # makeErateViolinPlots(report, cd)
