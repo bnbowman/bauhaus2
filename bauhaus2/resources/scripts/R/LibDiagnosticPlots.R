@@ -1487,13 +1487,13 @@ makeReport <- function(report) {
     makeCDFofaStartPlots(report, cd)
     makeMaxVsUnrolledPlots(report, cd)
     makeCDFofTemplatePlots(report, cd)
-    plotFirstPassTau(report, cd)
-    generateLongLibraryMetricsAndPlots(
+    try(plotFirstPassTau(report, cd), silent = TRUE)
+    try(generateLongLibraryMetricsAndPlots(
       report,
       cd,
       perc = c(0.5, 0.25, 0.1),
       benchmark = c(5e3, 8e3, 1e4, 1.5e4)
-    )
+    ), silent = TRUE)
   }
   
   # Save the report object for later debugging
