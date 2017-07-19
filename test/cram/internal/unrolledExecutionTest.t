@@ -215,6 +215,36 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- unrolled_template_densityplot_summation.png
   |   |   `-- unrolled_template_log.png
   |   |-- LocAccPlots
+  |   |   |-- LocAcc.MovieA.accuracy_scatter.png
+  |   |   |-- LocAcc.MovieA.aln_cols.csv
+  |   |   |-- LocAcc.MovieA.core.csv
+  |   |   |-- LocAcc.MovieA.delta_confusion.png
+  |   |   |-- LocAcc.MovieA.error_counts.csv
+  |   |   |-- LocAcc.MovieA.high_confusion.png
+  |   |   |-- LocAcc.MovieA.hqerr_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieA.hqerr_duration_histogram.png
+  |   |   |-- LocAcc.MovieA.hqerr_reverse_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieA.hqerrlens.csv
+  |   |   |-- LocAcc.MovieA.local_accuracies.csv
+  |   |   |-- LocAcc.MovieA.low_confusion.png
+  |   |   |-- LocAcc.MovieA.mask.csv
+  |   |   |-- LocAcc.MovieA.read_bases.csv
+  |   |   |-- LocAcc.MovieA.template_bases.csv
+  |   |   |-- LocAcc.MovieB.accuracy_scatter.png
+  |   |   |-- LocAcc.MovieB.aln_cols.csv
+  |   |   |-- LocAcc.MovieB.core.csv
+  |   |   |-- LocAcc.MovieB.delta_confusion.png
+  |   |   |-- LocAcc.MovieB.error_counts.csv
+  |   |   |-- LocAcc.MovieB.high_confusion.png
+  |   |   |-- LocAcc.MovieB.hqerr_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieB.hqerr_duration_histogram.png
+  |   |   |-- LocAcc.MovieB.hqerr_reverse_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieB.hqerrlens.csv
+  |   |   |-- LocAcc.MovieB.local_accuracies.csv
+  |   |   |-- LocAcc.MovieB.low_confusion.png
+  |   |   |-- LocAcc.MovieB.mask.csv
+  |   |   |-- LocAcc.MovieB.read_bases.csv
+  |   |   |-- LocAcc.MovieB.template_bases.csv
   |   |   |-- LocAcc.accuracy_delta_densities.png
   |   |   |-- LocAcc.binomlocacc_boxes.png
   |   |   |-- LocAcc.canonglobacc_boxes.png
@@ -233,36 +263,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- LocAcc.nInsrate_snr_scatter.png
   |   |   |-- LocAcc.nMMrate_snr_scatter.png
   |   |   |-- LocAcc.refloss_bars.png
-  |   |   |-- LocAcc.run0.accuracy_scatter.png
-  |   |   |-- LocAcc.run0.aln_cols.csv
-  |   |   |-- LocAcc.run0.core.csv
-  |   |   |-- LocAcc.run0.delta_confusion.png
-  |   |   |-- LocAcc.run0.error_counts.csv
-  |   |   |-- LocAcc.run0.high_confusion.png
-  |   |   |-- LocAcc.run0.hqerr_cumulative_duration_histogram.png
-  |   |   |-- LocAcc.run0.hqerr_duration_histogram.png
-  |   |   |-- LocAcc.run0.hqerr_reverse_cumulative_duration_histogram.png
-  |   |   |-- LocAcc.run0.hqerrlens.csv
-  |   |   |-- LocAcc.run0.local_accuracies.csv
-  |   |   |-- LocAcc.run0.low_confusion.png
-  |   |   |-- LocAcc.run0.mask.csv
-  |   |   |-- LocAcc.run0.read_bases.csv
-  |   |   |-- LocAcc.run0.template_bases.csv
-  |   |   |-- LocAcc.run1.accuracy_scatter.png
-  |   |   |-- LocAcc.run1.aln_cols.csv
-  |   |   |-- LocAcc.run1.core.csv
-  |   |   |-- LocAcc.run1.delta_confusion.png
-  |   |   |-- LocAcc.run1.error_counts.csv
-  |   |   |-- LocAcc.run1.high_confusion.png
-  |   |   |-- LocAcc.run1.hqerr_cumulative_duration_histogram.png
-  |   |   |-- LocAcc.run1.hqerr_duration_histogram.png
-  |   |   |-- LocAcc.run1.hqerr_reverse_cumulative_duration_histogram.png
-  |   |   |-- LocAcc.run1.hqerrlens.csv
-  |   |   |-- LocAcc.run1.local_accuracies.csv
-  |   |   |-- LocAcc.run1.low_confusion.png
-  |   |   |-- LocAcc.run1.mask.csv
-  |   |   |-- LocAcc.run1.read_bases.csv
-  |   |   |-- LocAcc.run1.template_bases.csv
   |   |   |-- LocAcc.yield_bars.png
   |   |   |-- LocAcc.yieldloss_bars.png
   |   |   `-- report.json
