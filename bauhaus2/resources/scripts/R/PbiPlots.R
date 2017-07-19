@@ -381,6 +381,7 @@ makeBasesDistribution <- function(report, cd) {
 makeYieldHistogram <- function(report, cd) {
   loginfo("Making Yield Histogram")
   tp = ggplot(cd, aes(Condition, fill = Condition)) + geom_bar() + 
+    geom_text(stat = 'count',aes(label = ..count..),vjust = -0.5) +
     plTheme + themeTilt  + clFillScale + 
     labs(x = "Condition", y = "nReads", title = "nReads by Condition")
   report$ggsave(
