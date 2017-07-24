@@ -54,6 +54,10 @@ def initializeMappedMetricsDictionary(zmws):
     """
     mapped_metrics = {'ZMW': np.empty((len(zmws), ), dtype=int),
                       'Condition': [],
+                      'mean-pw-A': np.empty((len(zmws), ), dtype='f'),
+                      'mean-pw-C': np.empty((len(zmws), ), dtype='f'),
+                      'mean-pw-G': np.empty((len(zmws), ), dtype='f'),
+                      'mean-pw-T': np.empty((len(zmws), ), dtype='f'),
                       'median-pw-A': np.empty((len(zmws), ), dtype='f'),
                       'median-pw-C': np.empty((len(zmws), ), dtype='f'),
                       'median-pw-G': np.empty((len(zmws), ), dtype='f'),
@@ -157,6 +161,14 @@ def addAlignmentMetrics(mapped_metrics, cnt, alignment,
     """
     mapped_metrics['ZMW'][cnt] = alignment.HoleNumber
     mapped_metrics['Condition'].append(condition)
+    mapped_metrics['mean-pw-A'][cnt] = np.divide(np.mean(pw['A']),
+                                                   framerate)
+    mapped_metrics['mean-pw-C'][cnt] = np.divide(np.mean(pw['C']),
+                                                   framerate)
+    mapped_metrics['mean-pw-G'][cnt] = np.divide(np.mean(pw['G']),
+                                                   framerate)
+    mapped_metrics['mean-pw-T'][cnt] = np.divide(np.mean(pw['T']),
+                                                   framerate)
     mapped_metrics['median-pw-A'][cnt] = np.divide(np.median(pw['A']),
                                                    framerate)
     mapped_metrics['median-pw-C'][cnt] = np.divide(np.median(pw['C']),
@@ -235,7 +247,8 @@ def writeMappedMetricsCsv(mapped_metrics, output):
     write mapped metrics to csv file
     """
     columns = ['ZMW', 'Condition', 'spasmid', 'aStart', 'aEnd',
-               'start-time', 'end-time', 'median-pw-A', 'median-pw-C',
+               'start-time', 'end-time', 'mean-pw-A', 'mean-pw-C',
+               'mean-pw-G', 'mean-pw-T', 'median-pw-A', 'median-pw-C',
                'median-pw-G', 'median-pw-T', 'median-ipd-A', 'median-ipd-C',
                'median-ipd-G', 'median-ipd-T']
 
