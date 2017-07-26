@@ -13,6 +13,7 @@ library(dplyr, quietly = TRUE)
 library(tidyr, quietly = TRUE)
 library(stats)
 library(IRanges)
+library(stringr)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
@@ -29,6 +30,14 @@ plotheight = 4.2
 # ipd and pw are filtered by maxIPD and maxPW
 maxIPD = 1.25
 maxPW = 0.25
+
+# Fuction to get p_variable names
+variableNames <- function(ct)
+{
+  nms <- names(ct)
+  matches <- str_detect(nms, "(p_.*)")
+  nms[matches]
+}
 
 ### Custom sampler function to sample min(data, sample) which can't be done with dplyr
 ### it's a modified copy of sample_n.grouped_df
@@ -67,6 +76,61 @@ loadSNRforSubset <- function(cd, SNRsampleSize = 5000) {
   cd2snr = loadExtras(cd2, loadSNR = TRUE)
   cd2 = cbind(cd2, cd2snr)
   cd2
+}
+
+
+makepColPlots <- function(report, cd, p_Var, conditions) {
+  loginfo("Making p_ Column based Plots")
+  # # when one p_variables show up
+  # if (length(p_Var) == 1) {
+  #   cdp = cd %>% dplyr::group_by(Condition) %>% dplyr::summarise(medianrlength = median(tlen))
+  #   cdp = merge(cdp, conditions[,c("Condition", p_Var)], by = "Condition")
+  #   
+  #   # Generate an example plot of the median RL verses the p variables
+  #   tp = ggplot(cdp,
+  #               aes_string(
+  #                 x = p_Var[2],
+  #                 y = cdp$medianrlength,
+  #                 color = p_Var[1],
+  #                 group = p_Var[1]
+  #               )) + geom_point() + geom_line() +
+  #     plTheme + themeTilt + clScale + labs(x = p_Var[2], y = "Median Template Length")
+  #   report$ggsave(
+  #     "medianrlbyp.png",
+  #     tp,
+  #     width = plotwidth,
+  #     height = plotheight,
+  #     id = "medianrlbyp",
+  #     title = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+  #     caption = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+  #     tags = c("sampled", "p_", "titration")
+  #   )
+  # }
+  # When two p_variables show up
+  if (length(p_Var) == 2) {
+    cdp = cd %>% dplyr::group_by(Condition) %>% dplyr::summarise(medianrlength = median(tlen))
+    cdp = merge(cdp, conditions[,c("Condition", p_Var)], by = "Condition")
+    
+    # Generate an example plot of the median RL verses the p variables
+    tp = ggplot(cdp,
+                aes_string(
+                  x = p_Var[2],
+                  y = cdp$medianrlength,
+                  color = p_Var[1],
+                  group = p_Var[1]
+                )) + geom_point() + geom_line() +
+      plTheme + themeTilt + clScale + labs(x = p_Var[2], y = "Median Template Length")
+    report$ggsave(
+      "medianrlbyp.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "medianrlbyp",
+      title = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+      caption = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+      tags = c("sampled", "p_", "titration")
+    )
+  }
 }
 
 makeSamplingPlots <-
@@ -1099,6 +1163,7 @@ makeReport <- function(report) {
 
   # Let's load all the conditions with SNR data
   conditions = report$condition.table
+  p_Var = variableNames(conditions)
   # Load the pbi index for each data frame
   dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
     loginfo(paste("Loading alignment set:", s))
@@ -1115,6 +1180,19 @@ makeReport <- function(report) {
     # Now combine into one large data frame
     ##browser()
     cd = combineConditions(dfs, as.character(conditions$Condition))
+    
+    # Add p_ columns if any exists
+    if (length(p_Var) > 0) {
+      cd = merge(cd, conditions[,c("Condition", p_Var)], by = "Condition")
+    }
+    cd$tlen = as.numeric(cd$tend - cd$tstart)
+    cd$alen = as.numeric(cd$aend - cd$astart)
+    cd$errors = as.numeric(cd$mismatches + cd$inserts + cd$dels)
+    cd$Accuracy = 1 - cd$errors / cd$tlen
+    cd$mmrate = cd$mismatches / cd$tlen
+    cd$irate  = cd$inserts / cd$tlen
+    cd$drate  = cd$dels / cd$tlen
+    cd$qrlen = as.numeric(cd$qend - cd$qstart)
     
     ## Let's set the graphic defaults
     n = length(levels(conditions$Condition))
@@ -1181,6 +1259,11 @@ makeReport <- function(report) {
     
     snrs = NULL # make available for GC
     tp = NULL
+    
+    # Make p_variavle plots
+    if (length(p_Var) > 0) {
+      makepColPlots(report,cd,p_Var, conditions)
+    }
     
     # Get Errors by SNR plot
     makeErrorsBySNRPlots(report, cd)
