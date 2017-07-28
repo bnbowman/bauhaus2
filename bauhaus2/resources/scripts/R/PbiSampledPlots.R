@@ -9,17 +9,19 @@ library(ggplot2)
 library(pbbamr)
 library(uuid, quietly = TRUE)
 library(gridExtra)
-library(dplyr, quietly = TRUE)
+library(dplyr)
 library(tidyr, quietly = TRUE)
 library(stats)
 library(IRanges)
 library(stringr)
+library(lazyeval)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 
 # Define a basic addition to all plots
+midTitle <- theme(plot.title = element_text(hjust = 0.5))
 plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
 clScale <- scale_colour_brewer(palette = "Set1")
 clFillScale <- scale_fill_brewer(palette = "Set1")
@@ -78,58 +80,84 @@ loadSNRforSubset <- function(cd, SNRsampleSize = 5000) {
   cd2
 }
 
-
 makepColPlots <- function(report, cd, p_Var, conditions) {
   loginfo("Making p_ Column based Plots")
-  # # when one p_variables show up
-  # if (length(p_Var) == 1) {
-  #   cdp = cd %>% dplyr::group_by(Condition) %>% dplyr::summarise(medianrlength = median(tlen))
-  #   cdp = merge(cdp, conditions[,c("Condition", p_Var)], by = "Condition")
-  #   
-  #   # Generate an example plot of the median RL verses the p variables
-  #   tp = ggplot(cdp,
-  #               aes_string(
-  #                 x = p_Var[2],
-  #                 y = cdp$medianrlength,
-  #                 color = p_Var[1],
-  #                 group = p_Var[1]
-  #               )) + geom_point() + geom_line() +
-  #     plTheme + themeTilt + clScale + labs(x = p_Var[2], y = "Median Template Length")
-  #   report$ggsave(
-  #     "medianrlbyp.png",
-  #     tp,
-  #     width = plotwidth,
-  #     height = plotheight,
-  #     id = "medianrlbyp",
-  #     title = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
-  #     caption = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
-  #     tags = c("sampled", "p_", "titration")
-  #   )
-  # }
-  # When two p_variables show up
-  if (length(p_Var) == 2) {
-    cdp = cd %>% dplyr::group_by(Condition) %>% dplyr::summarise(medianrlength = median(tlen))
+  # when one p_variables show up
+  # Make Simple plot with one additional variable, data set merged by p_Var
+  cd = as.data.frame(cd)
+  
+  # Variables that will be plotted against p_variables
+  plotVariables = c("tlen", "alen", "Accuracy", "irate", "drate", "mmrate", "snrC")
+  
+  # Check if any of the plotVariables is empty
+  plotVariables = names(Filter(function(x)!all(is.na(x)), cd[, match(plotVariables, names(cd))]))
+  
+  if (length(p_Var) == 1) {
+    # Plot selected variables verses the p variable, groupd by condition
+    # Note: When p_Var is categorical, the boxplots will overlap, so the plot is set to transparent with colored border
+    for (i in 1:length(plotVariables)) {
+      tp <- ggplot(cd, aes_string(
+        x = p_Var,
+        y = cd[, match(plotVariables[i], names(cd))]
+      )) +
+        geom_boxplot(aes(color = Condition), position = position_dodge(width = 0.9), alpha = 0) + 
+        labs(y = plotVariables[i], title = paste(plotVariables[i], " vs. ", p_Var, sep = "")) + 
+        themeTilt + midTitle
+      report$ggsave(
+        paste(plotVariables[i], "vs", p_Var, sep = ""),
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = paste(plotVariables[i], "vs", p_Var, sep = ""),
+        title = paste(plotVariables[i], " vs. ", p_Var, sep = ""),
+        caption = paste(plotVariables[i], " vs. ", p_Var, sep = ""),
+        tags = c("sampled", "p_", "titration", plotVariables[i], "boxplot")
+      )
+    }
+  } else if (length(p_Var) == 2)  { # When two p_variables show up
+    # First plot both p_variables against plotVariables
+    # When numerical variable appears, set as x-axis
+    # If both p_variables are numerical or categorical, use the first one as x-axis
+    if (!is.numeric(conditions[, match(p_Var[1], names(conditions))]) & is.numeric(conditions[, match(p_Var[2], names(conditions))])) {
+      p_Var = c(p_Var[2], p_Var[1])
+    } else {
+      p_Var = p_Var
+    }
+    
+    # Summerize median for plotVariables
+    cdp = list()
+    for (i in 1:length(plotVariables)) {
+      cdp[[i]] = cd %>% group_by(Condition) %>%
+                     summarize_(.dots = as.formula(paste0("~ median(", plotVariables[i], ")")))
+      colnames(cdp[[i]])[2] = plotVariables[i]
+    }
+    cdp <- Reduce(function(...) merge(..., by="Condition", all=TRUE), cdp)
     cdp = merge(cdp, conditions[,c("Condition", p_Var)], by = "Condition")
     
-    # Generate an example plot of the median RL verses the p variables
-    tp = ggplot(cdp,
-                aes_string(
-                  x = p_Var[2],
-                  y = cdp$medianrlength,
-                  color = p_Var[1],
-                  group = p_Var[1]
-                )) + geom_point() + geom_line() +
-      plTheme + themeTilt + clScale + labs(x = p_Var[2], y = "Median Template Length")
-    report$ggsave(
-      "medianrlbyp.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "medianrlbyp",
-      title = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
-      caption = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
-      tags = c("sampled", "p_", "titration")
-    )
+    # Generate plots of each plotVariables verses the p variables
+    for (i in 1:length(plotVariables)) {
+      tp = ggplot(cdp,
+                  aes_string(
+                    x = p_Var[1],
+                    y = plotVariables[i],
+                    color = p_Var[2],
+                    group = p_Var[2]
+                  )) + geom_point() + geom_line() +
+        plTheme + themeTilt + clScale + labs(x = p_Var[1], y = paste0("Median of ", plotVariables[i]), title = paste("Median of ", plotVariables[i], "vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""))
+      report$ggsave(
+        paste0("median", plotVariables[i], "bypvar"),
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = paste0("median", plotVariables[i], "bypvar"),
+        title = paste("Median of ", plotVariables[i], "vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+        caption = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+        tags = c("sampled", "p_", "titration", "median", plotVariables[i])
+      )
+    }
+  } else {
+    warning("More than two p_variables show up")
+    0
   }
 }
 
@@ -1165,7 +1193,7 @@ makeReport <- function(report) {
   conditions = report$condition.table
   p_Var = variableNames(conditions)
   # Load the pbi index for each data frame
-  dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
+  dfs = lapply(as.character(conditions$MappedSubreads), function(s) {
     loginfo(paste("Loading alignment set:", s))
     loadPBI2(s)
   })
