@@ -1,0 +1,5 @@
+Condition,SubreadSet,Genome,p_Enz,p_LP
+MovieA,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_052519-50zmws.subreads.bam,pBR322_EcoRV,Enz1,150
+MovieB,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_111434-50zmws.subreads.bam,pBR322_EcoRV,Enz2,150
+MovieC,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_052519-50zmws.subreads.bam,pBR322_EcoRV,Enz1,300
+MovieD,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_111434-50zmws.subreads.bam,pBR322_EcoRV,Enz2,300
