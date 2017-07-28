@@ -44,9 +44,10 @@ rule ccs_one_chunk:
     params:
         modelPath=modelPathArg(config),
         modelSpec=modelSpecArg(config)
+    threads: 8
     shell:
         """
-        ccs --force --numThreads=8 \
+        ccs --force --numThreads={threads} \
             --reportFile={output.ccsDiagnosticsReport} {params.modelPath} {params.modelSpec} \
              {input} {output.bam} && \
         dataset create --type ConsensusReadSet {output.dset} {output.bam}
