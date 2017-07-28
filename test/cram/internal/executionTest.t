@@ -7,7 +7,7 @@ until we have a better plan.
 
 Generate mapping reports workflow, starting from subreads.
 
-  $ bauhaus2 --no-smrtlink --noGrid generate -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies.csv -o mapping-reports
+  $ bauhaus2 --no-smrtlink --noGrid generate -w MappingReports -t ${BH_ROOT}test/data/two-tiny-movies-four-conditions-with-p.csv -o mapping-reports
   Validation and input resolution succeeded.
   Generated runnable workflow to "mapping-reports"
 
@@ -68,7 +68,107 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
   |   |       `-- input.subreadset.xml
-  |   `-- MovieB
+  |   |-- MovieB
+  |   |   |-- mapped
+  |   |   |   |-- chunks
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk0.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk1.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk2.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk3.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk4.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk5.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk6.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
+  |   |   |   |   `-- mapped.chunk7.alignmentset.xml
+  |   |   |   `-- mapped.alignmentset.xml
+  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
+  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   `-- subreads
+  |   |       |-- chunks
+  |   |       |   |-- input.chunk0.subreadset.xml
+  |   |       |   |-- input.chunk1.subreadset.xml
+  |   |       |   |-- input.chunk2.subreadset.xml
+  |   |       |   |-- input.chunk3.subreadset.xml
+  |   |       |   |-- input.chunk4.subreadset.xml
+  |   |       |   |-- input.chunk5.subreadset.xml
+  |   |       |   |-- input.chunk6.subreadset.xml
+  |   |       |   `-- input.chunk7.subreadset.xml
+  |   |       `-- input.subreadset.xml
+  |   |-- MovieC
+  |   |   |-- mapped
+  |   |   |   |-- chunks
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk0.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk1.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk2.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk3.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk4.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk5.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk6.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
+  |   |   |   |   `-- mapped.chunk7.alignmentset.xml
+  |   |   |   `-- mapped.alignmentset.xml
+  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
+  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   `-- subreads
+  |   |       |-- chunks
+  |   |       |   |-- input.chunk0.subreadset.xml
+  |   |       |   |-- input.chunk1.subreadset.xml
+  |   |       |   |-- input.chunk2.subreadset.xml
+  |   |       |   |-- input.chunk3.subreadset.xml
+  |   |       |   |-- input.chunk4.subreadset.xml
+  |   |       |   |-- input.chunk5.subreadset.xml
+  |   |       |   |-- input.chunk6.subreadset.xml
+  |   |       |   `-- input.chunk7.subreadset.xml
+  |   |       `-- input.subreadset.xml
+  |   `-- MovieD
   |       |-- mapped
   |       |   |-- chunks
   |       |   |   |-- mapped.chunk0.alignmentset.bam
@@ -125,53 +225,99 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- AlignmentBasedHeatmaps
   |   |   |-- Accuracy_Heatmap_MovieA.png
   |   |   |-- Accuracy_Heatmap_MovieB.png
+  |   |   |-- Accuracy_Heatmap_MovieC.png
+  |   |   |-- Accuracy_Heatmap_MovieD.png
   |   |   |-- AlnReadLenExtRange_Heatmap_MovieA.png
   |   |   |-- AlnReadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieC.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieD.png
   |   |   |-- AlnReadLen_Heatmap_MovieA.png
   |   |   |-- AlnReadLen_Heatmap_MovieB.png
+  |   |   |-- AlnReadLen_Heatmap_MovieC.png
+  |   |   |-- AlnReadLen_Heatmap_MovieD.png
   |   |   |-- AvgPolsPerZMW_Heatmap_MovieA.png
   |   |   |-- AvgPolsPerZMW_Heatmap_MovieB.png
+  |   |   |-- AvgPolsPerZMW_Heatmap_MovieC.png
+  |   |   |-- AvgPolsPerZMW_Heatmap_MovieD.png
   |   |   |-- Count_Heatmap_MovieA.png
   |   |   |-- Count_Heatmap_MovieB.png
+  |   |   |-- Count_Heatmap_MovieC.png
+  |   |   |-- Count_Heatmap_MovieD.png
   |   |   |-- DeletionRate_Heatmap_MovieA.png
   |   |   |-- DeletionRate_Heatmap_MovieB.png
+  |   |   |-- DeletionRate_Heatmap_MovieC.png
+  |   |   |-- DeletionRate_Heatmap_MovieD.png
   |   |   |-- InsertionRate_Heatmap_MovieA.png
   |   |   |-- InsertionRate_Heatmap_MovieB.png
+  |   |   |-- InsertionRate_Heatmap_MovieC.png
+  |   |   |-- InsertionRate_Heatmap_MovieD.png
   |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieA.png
   |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieC.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieD.png
   |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieA.png
   |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieC.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieD.png
   |   |   |-- MaxSubreadLen_Heatmap_MovieA.png
   |   |   |-- MaxSubreadLen_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieC.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieD.png
   |   |   |-- MismatchRate_Heatmap_MovieA.png
   |   |   |-- MismatchRate_Heatmap_MovieB.png
+  |   |   |-- MismatchRate_Heatmap_MovieC.png
+  |   |   |-- MismatchRate_Heatmap_MovieD.png
   |   |   |-- Reference_Heatmap_MovieA.png
   |   |   |-- Reference_Heatmap_MovieB.png
+  |   |   |-- Reference_Heatmap_MovieC.png
+  |   |   |-- Reference_Heatmap_MovieD.png
   |   |   |-- SNR_A_Heatmap_MovieA.png
   |   |   |-- SNR_A_Heatmap_MovieB.png
+  |   |   |-- SNR_A_Heatmap_MovieC.png
+  |   |   |-- SNR_A_Heatmap_MovieD.png
   |   |   |-- SNR_C_Heatmap_MovieA.png
   |   |   |-- SNR_C_Heatmap_MovieB.png
+  |   |   |-- SNR_C_Heatmap_MovieC.png
+  |   |   |-- SNR_C_Heatmap_MovieD.png
   |   |   |-- SNR_G_Heatmap_MovieA.png
   |   |   |-- SNR_G_Heatmap_MovieB.png
+  |   |   |-- SNR_G_Heatmap_MovieC.png
+  |   |   |-- SNR_G_Heatmap_MovieD.png
   |   |   |-- SNR_T_Heatmap_MovieA.png
   |   |   |-- SNR_T_Heatmap_MovieB.png
+  |   |   |-- SNR_T_Heatmap_MovieC.png
+  |   |   |-- SNR_T_Heatmap_MovieD.png
   |   |   |-- Uniformity_histogram_MovieA.png
   |   |   |-- Uniformity_histogram_MovieB.png
+  |   |   |-- Uniformity_histogram_MovieC.png
+  |   |   |-- Uniformity_histogram_MovieD.png
   |   |   |-- Uniformity_metrics_MovieA.csv
   |   |   |-- Uniformity_metrics_MovieB.csv
+  |   |   |-- Uniformity_metrics_MovieC.csv
+  |   |   |-- Uniformity_metrics_MovieD.csv
   |   |   |-- barchart_of_uniformity.png
   |   |   |-- rEnd_Heatmap_MovieA.png
   |   |   |-- rEnd_Heatmap_MovieB.png
+  |   |   |-- rEnd_Heatmap_MovieC.png
+  |   |   |-- rEnd_Heatmap_MovieD.png
   |   |   |-- rStartExtRange_Heatmap_MovieA.png
   |   |   |-- rStartExtRange_Heatmap_MovieB.png
+  |   |   |-- rStartExtRange_Heatmap_MovieC.png
+  |   |   |-- rStartExtRange_Heatmap_MovieD.png
   |   |   |-- rStart_Heatmap_MovieA.png
   |   |   |-- rStart_Heatmap_MovieB.png
+  |   |   |-- rStart_Heatmap_MovieC.png
+  |   |   |-- rStart_Heatmap_MovieD.png
   |   |   |-- report.RData
   |   |   |-- report.json
   |   |   |-- tEnd_Heatmap_MovieA.png
   |   |   |-- tEnd_Heatmap_MovieB.png
+  |   |   |-- tEnd_Heatmap_MovieC.png
+  |   |   |-- tEnd_Heatmap_MovieD.png
   |   |   |-- tStart_Heatmap_MovieA.png
-  |   |   `-- tStart_Heatmap_MovieB.png
+  |   |   |-- tStart_Heatmap_MovieB.png
+  |   |   |-- tStart_Heatmap_MovieC.png
+  |   |   `-- tStart_Heatmap_MovieD.png
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
@@ -190,6 +336,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- LibDiagnosticPlots
   |   |   |-- MovieA_Tau_Estimates.csv
   |   |   |-- MovieB_Tau_Estimates.csv
+  |   |   |-- MovieC_Tau_Estimates.csv
+  |   |   |-- MovieD_Tau_Estimates.csv
   |   |   |-- cdf_astart.png
   |   |   |-- cdf_astart_log.png
   |   |   |-- cdf_hqlenmax.png
@@ -253,6 +401,36 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- LocAcc.MovieB.mask.csv
   |   |   |-- LocAcc.MovieB.read_bases.csv
   |   |   |-- LocAcc.MovieB.template_bases.csv
+  |   |   |-- LocAcc.MovieC.accuracy_scatter.png
+  |   |   |-- LocAcc.MovieC.aln_cols.csv
+  |   |   |-- LocAcc.MovieC.core.csv
+  |   |   |-- LocAcc.MovieC.delta_confusion.png
+  |   |   |-- LocAcc.MovieC.error_counts.csv
+  |   |   |-- LocAcc.MovieC.high_confusion.png
+  |   |   |-- LocAcc.MovieC.hqerr_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieC.hqerr_duration_histogram.png
+  |   |   |-- LocAcc.MovieC.hqerr_reverse_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieC.hqerrlens.csv
+  |   |   |-- LocAcc.MovieC.local_accuracies.csv
+  |   |   |-- LocAcc.MovieC.low_confusion.png
+  |   |   |-- LocAcc.MovieC.mask.csv
+  |   |   |-- LocAcc.MovieC.read_bases.csv
+  |   |   |-- LocAcc.MovieC.template_bases.csv
+  |   |   |-- LocAcc.MovieD.accuracy_scatter.png
+  |   |   |-- LocAcc.MovieD.aln_cols.csv
+  |   |   |-- LocAcc.MovieD.core.csv
+  |   |   |-- LocAcc.MovieD.delta_confusion.png
+  |   |   |-- LocAcc.MovieD.error_counts.csv
+  |   |   |-- LocAcc.MovieD.high_confusion.png
+  |   |   |-- LocAcc.MovieD.hqerr_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieD.hqerr_duration_histogram.png
+  |   |   |-- LocAcc.MovieD.hqerr_reverse_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.MovieD.hqerrlens.csv
+  |   |   |-- LocAcc.MovieD.local_accuracies.csv
+  |   |   |-- LocAcc.MovieD.low_confusion.png
+  |   |   |-- LocAcc.MovieD.mask.csv
+  |   |   |-- LocAcc.MovieD.read_bases.csv
+  |   |   |-- LocAcc.MovieD.template_bases.csv
   |   |   |-- LocAcc.accuracy_delta_densities.png
   |   |   |-- LocAcc.binomlocacc_boxes.png
   |   |   |-- LocAcc.canonglobacc_boxes.png
@@ -302,10 +480,17 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- ipddistbybase_boxplot.png
   |   |   |-- localpolrate_boxplot.png
   |   |   |-- mean_pw_boxplot_by_base.png
+  |   |   |-- medianAccuracybypvar.png
   |   |   |-- medianIPD.csv
   |   |   |-- medianPolymerizationRate.csv
   |   |   |-- medianSNR.csv
   |   |   |-- median_pw_boxplot_by_base.png
+  |   |   |-- medianalenbypvar.png
+  |   |   |-- mediandratebypvar.png
+  |   |   |-- medianiratebypvar.png
+  |   |   |-- medianmmratebypvar.png
+  |   |   |-- mediansnrCbypvar.png
+  |   |   |-- mediantlenbypvar.png
   |   |   |-- noninternalBAM.csv
   |   |   |-- polrate_ref_box.png
   |   |   |-- polrate_template_per_second.png
@@ -359,7 +544,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  25 directories, 317 files
+  35 directories, 492 files
 
 
 
@@ -382,6 +567,55 @@ Generate mapping reports workflow, starting from subreads.
         "title": "SNR Box Plot",
         "caption": "Distribution of SNR in Aligned Files (Boxplot)",
         "tags": ["sampled", "snr", "boxplot"]
+      },
+      {
+        "id": "mediantlenbypvar",
+        "image": "mediantlenbypvar.png",
+        "title": "Median of tlenvs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "tlen"]
+      },
+      {
+        "id": "medianalenbypvar",
+        "image": "medianalenbypvar.png",
+        "title": "Median of alenvs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "alen"]
+      },
+      {
+        "id": "medianAccuracybypvar",
+        "image": "medianAccuracybypvar.png",
+        "title": "Median of Accuracyvs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "Accuracy"]
+      },
+      {
+        "id": "medianiratebypvar",
+        "image": "medianiratebypvar.png",
+        "title": "Median of iratevs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "irate"]
+      },
+      {
+        "id": "mediandratebypvar",
+        "image": "mediandratebypvar.png",
+        "title": "Median of dratevs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "drate"]
+      },
+      {
+        "id": "medianmmratebypvar",
+        "image": "medianmmratebypvar.png",
+        "title": "Median of mmratevs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "mmrate"]
+      },
+      {
+        "id": "mediansnrCbypvar",
+        "image": "mediansnrCbypvar.png",
+        "title": "Median of snrCvs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "snrC"]
       },
       {
         "id": "snr_vs_acc",
