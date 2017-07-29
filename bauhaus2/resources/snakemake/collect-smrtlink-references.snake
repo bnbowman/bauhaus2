@@ -9,6 +9,10 @@ local_fasta_files = \
 remote_sts_h5 = \
     { c : ct.inputsH5(c)
       for c in ct.conditions }
+      
+remote_sts_xml = \
+    { c : ct.inputsXML(c)
+      for c in ct.conditions }
 
 rule collect_smrtlink_references:
     input: local_fasta_files.values()
@@ -18,11 +22,13 @@ rule collect_smrtlink_references:
 rule collect_smrtlink_reference_one_condition:
     input:
         alignment=lambda wc: local_alignmentset[wc.condition],
-        sts=lambda wc: remote_sts_h5[wc.condition]
+        sts=lambda wc: remote_sts_h5[wc.condition],
+        stsxml=lambda wc: remote_sts_xml[wc.condition]
     output:
         fasta="conditions/{condition}/reference.fasta",
         fai="conditions/{condition}/reference.fasta.fai",
-        sts="conditions/{condition}/sts.h5"
+        sts="conditions/{condition}/sts.h5",
+        stsxml="conditions/{condition}/sts.xml"
     shell:
         """
         module load xpath
@@ -32,4 +38,5 @@ rule collect_smrtlink_reference_one_condition:
         ref+=".fai"
         ln -s $ref {output.fai}
         ln -s {input.sts} {output.sts}
+        ln -s {input.stsxml} {output.stsxml}
         """

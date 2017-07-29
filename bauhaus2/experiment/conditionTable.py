@@ -138,6 +138,7 @@ class ConditionTable(object):
     def _resolveInputs(self, resolver):
         self._inputsByCondition = {}
         self._inputsH5ByCondition = {}
+        self._inputsXMLByCondition = {}
         for condition in self.conditions:
             subDf = self.condition(condition)
             inputs = []
@@ -150,12 +151,17 @@ class ConditionTable(object):
             try:
                 if any("subreads.bam" in s for s in inputs):
                     self._inputsH5ByCondition[condition] = [name.replace("subreads.bam", "sts.h5") for name in inputs]
+                    self._inputsXMLByCondition[condition] = [name.replace("subreads.bam", "sts.xml") for name in inputs]
                 elif any("subreadset.xml" in s for s in inputs):
                     self._inputsH5ByCondition[condition] = [name.replace("subreadset.xml", "sts.h5") for name in inputs]
+                    self._inputsXMLByCondition[condition] = [name.replace("subreadset.xml", "sts.xml") for name in inputs]
                 if all([op.isfile(f) for f in self._inputsH5ByCondition[condition]]) is False:
                     self._inputsH5ByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.h5')
+                if all([op.isfile(f) for f in self._inputsXMLByCondition[condition]]) is False:
+                    self._inputsXMLByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.xml')
             except:
                 self._inputsH5ByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.h5')
+                self._inputsXMLByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.xml')
 
     @property
     def conditions(self):
@@ -213,6 +219,9 @@ class ConditionTable(object):
 
     def inputsH5(self, condition):
         return self._inputsH5ByCondition[condition]
+        
+    def inputsXML(self, condition):
+        return self._inputsXMLByCondition[condition]
 
 
 class ResequencingConditionTable(ConditionTable):
