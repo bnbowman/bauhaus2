@@ -66,6 +66,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -125,6 +126,7 @@ Generate mapping reports workflow, starting from subreads.
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -367,12 +369,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   `-- report.json
   |   `-- ZMWstsPlots
   |       |-- accuracy_by_readtype_boxplot.png
+  |       |-- adapter_dimer_fraction.png
   |       |-- nzmws_productivity_hist_percentage.png
   |       |-- nzmws_readtype_hist_percentage.png
   |       |-- readTypeAgg.1.png
   |       |-- readTypeAgg.2.png
   |       |-- report.Rd
   |       |-- report.json
+  |       |-- short_insert_fraction.png
   |       `-- unrolled_template_length_by_readtype_boxplot.png
   |-- run.sh
   |-- scripts
@@ -395,5 +399,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  27 directories, 351 files
+  27 directories, 355 files
 

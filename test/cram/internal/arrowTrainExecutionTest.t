@@ -57,6 +57,7 @@ Generate Arrow training workflow, starting from subreads.
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta.fai
   |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -107,6 +108,7 @@ Generate Arrow training workflow, starting from subreads.
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872/sequence/R_palustris_CGA009_pBR322_plasmidbell_4361bp_circular_6x_l52872.fasta.fai
   |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -162,4 +164,4 @@ Generate Arrow training workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  18 directories, 127 files
+  18 directories, 129 files

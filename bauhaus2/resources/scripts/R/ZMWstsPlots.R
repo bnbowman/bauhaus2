@@ -17,6 +17,7 @@ library(survival)
 library(ggfortify)
 library(rhdf5)
 library(grid)
+library(xml2)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
@@ -38,6 +39,25 @@ loadstsH5 <- function(stsH5file) {
     productivity = h5read(stsH5file, "/ZMWMetrics/Productivity")
   )
   stsH5
+}
+
+loadstsXML <- function(stsXMLfile) {
+  x = read_xml(stsXMLfile)
+  ADF = NA
+  SIF = NA
+  for (i in 1:length(xml_children(x))) {
+    if (xml_name(xml_children(x)[i]) == "AdapterDimerFraction") {
+      ADF = xml_double(xml_children(x)[i])
+    }
+    if (xml_name(xml_children(x)[i]) == "ShortInsertFraction") {
+      SIF = xml_double(xml_children(x)[i])
+    }
+  }
+  stsXML = data.frame(
+    AdapterDimerFraction = ADF,
+    ShortInsertFraction = SIF
+  )
+  stsXML
 }
 
 poissonPlot <- function(d, title) {
@@ -256,6 +276,58 @@ makeYieldPlots <- function(report, cdH5) {
   )
 }
 
+makestsXMLPlots <- function(report, cdXML) {
+  loginfo("Making sts.xml Plots")
+  
+  # Adapter Dimer Fraction by Condition
+  
+  tp = ggplot(cdXML, aes(x = Condition, y = AdapterDimerFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
+    plTheme + themeTilt  + clFillScale +
+    labs(x = "Condition", y = "Adapter Dimer Fraction", title = "Adapter Dimer Fraction by Condition")
+  
+  report$ggsave(
+    "adapter_dimer_fraction.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "adapter_dimer_fraction",
+    title = "Adapter Dimer Fraction by Condition",
+    caption = "Adapter Dimer Fraction by Condition",
+    tags = c(
+      "sts",
+      "xml",
+      "histogram",
+      "adapter",
+      "zmws",
+      "fraction"
+    )
+  )
+  
+  # Short Insert Fraction by Condition
+  
+  tp = ggplot(cdXML, aes(x = Condition, y = ShortInsertFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
+    plTheme + themeTilt  + clFillScale +
+    labs(x = "Condition", y = "Short Insert Fraction", title = "Short Insert Fraction by Condition")
+  
+  report$ggsave(
+    "short_insert_fraction.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "short_insert_fraction",
+    title = "Short Insert Fraction by Condition",
+    caption = "Short Insert Fraction by Condition",
+    tags = c(
+      "sts",
+      "xml",
+      "histogram",
+      "shortinsert",
+      "zmws",
+      "fraction"
+    )
+  )
+}
+
 makeEmptyPlots <- function(report) {
   df <- data.frame()
   tp = ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 10) + plTheme +
@@ -384,9 +456,68 @@ makeEmptyPlots <- function(report) {
   )
 }
 
+makeEmptyXMLPlots <- function(report) {
+  df <- data.frame()
+  tp = ggplot(df) + geom_point() + xlim(0, 10) + ylim(0, 10) + plTheme +
+    annotate(
+      geom = "text",
+      x = 5,
+      y = 5,
+      label = 'Missing sts.xml',
+      color = 'red',
+      angle = 45,
+      fontface = 'bold',
+      size = 14,
+      alpha = 0.5,
+      family = 'Arial'
+    )
+  
+  report$ggsave(
+    "adapter_dimer_fraction.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "adapter_dimer_fraction",
+    title = "Adapter Dimer Fraction by Condition",
+    caption = "Adapter Dimer Fraction by Condition",
+    tags = c(
+      "sts",
+      "xml",
+      "histogram",
+      "adapter",
+      "zmws",
+      "fraction",
+      "missing"
+    )
+  )
+  
+  report$ggsave(
+    "short_insert_fraction.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "short_insert_fraction",
+    title = "Short Insert Fraction by Condition",
+    caption = "Short Insert Fraction by Condition",
+    tags = c(
+      "sts",
+      "xml",
+      "histogram",
+      "shortinsert",
+      "zmws",
+      "fraction",
+      "missing"
+    )
+  )
+}
+
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
   conditions = report$condition.table
+  ## Let's set the graphic defaults
+  n = length(levels(conditions$Condition))
+  clFillScale <<- getPBFillScale(n)
+  clScale <<- getPBColorScale(n)
   
   # Check if sts.h5 file exist
   conditions$STS = paste("./conditions/", conditions$Condition, "/sts.h5", sep = "")
@@ -397,11 +528,16 @@ makeReport <- function(report) {
     }
   }
   
+  # Check if sts.xml file exist
+  conditions$STSXML = paste("./conditions/", conditions$Condition, "/sts.xml", sep = "")
+  stsXMLExist = TRUE
+  for (i in 1:length(conditions$STSXML)) {
+    if (file.info(conditions$STSXML[i])$size == 0) {
+      stsXMLExist = FALSE
+    }
+  }
+  
   if (stsExist) {
-    ## Let's set the graphic defaults
-    n = length(levels(conditions$Condition))
-    clFillScale <<- getPBFillScale(n)
-    clScale <<- getPBColorScale(n)
     
     # Load the sts.h5 file for each data frame
     dfsH5 = lapply(as.character(unique(conditions$STS)), function(s) {
@@ -441,6 +577,18 @@ makeReport <- function(report) {
     makeEmptyPlots(report)
   }
   
+  if (stsXMLExist) {
+    # Load the sts.xml file for each data frame
+    dfsXML = lapply(as.character(conditions$STSXML), function(s) {
+      loginfo(paste("Loading sts.h5 file:", s))
+      loadstsXML(s)
+    })
+    cdXML = combineConditions(dfsXML, as.character(conditions$Condition))
+    makestsXMLPlots(report, cdXML)
+  } else {
+    warning("sts.xml file does not exsit for at least one condition!")
+    makeEmptyXMLPlots(report)
+  }
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
   # At the end of this function we need to call this last, it outputs the report

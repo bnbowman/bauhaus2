@@ -57,6 +57,7 @@ Generate heatmaps workflow, starting from subreads.
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
   |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -107,6 +108,7 @@ Generate heatmaps workflow, starting from subreads.
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
   |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -181,4 +183,4 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  17 directories, 147 files
+  17 directories, 149 files
