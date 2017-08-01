@@ -185,848 +185,853 @@ makeSamplingPlots <-
       grouped_df(alnsTotal, vars = groups(tbl))
     }
     cd2 = cd %>% group_by(Condition, framePerSecond) %>% sample_nigel(size = sampleSize) %>% do(load_alns(.)) %>% ungroup()
-    cd2$ipd = cd2$ipd / cd2$framePerSecond
-    cd2$pw = cd2$pw / cd2$framePerSecond
-    cd2$AccuBases <- "Inaccurate"
-    cd2$AccuBases[cd2$read == cd2$ref] = "Accurate"
-    cd2$DC <- cd2$ipd + cd2$pw
-    
-    # Set a boolean variable to see if all the conditions are internal mode
-    # Only when all the conditions are internal mode, the variable is set to TRUE
-    internalBAM = TRUE
-    if (!("sf" %in% colnames(cd2))) {
-      internalBAM = FALSE
-    } else {
-      cd2internal = cd2 %>% group_by(Condition) %>% summarise(sf = all(unique(sf) %in% NA))
-      if (any(cd2internal$sf) == TRUE) {
+    if ((("ipd" %in% colnames(cd2)) & ("pw" %in% colnames(cd2)))) {
+      cd2$ipd = cd2$ipd / cd2$framePerSecond
+      cd2$pw = cd2$pw / cd2$framePerSecond
+      cd2$AccuBases <- "Inaccurate"
+      cd2$AccuBases[cd2$read == cd2$ref] = "Accurate"
+      cd2$DC <- cd2$ipd + cd2$pw
+      
+      # Set a boolean variable to see if all the conditions are internal mode
+      # Only when all the conditions are internal mode, the variable is set to TRUE
+      internalBAM = TRUE
+      if (!("sf" %in% colnames(cd2))) {
         internalBAM = FALSE
+      } else {
+        cd2internal = cd2 %>% group_by(Condition) %>% summarise(sf = all(unique(sf) %in% NA))
+        if (any(cd2internal$sf) == TRUE) {
+          internalBAM = FALSE
+        }
       }
-    }
-    
-    # For internal mode and non-internal mode produce different dataframes
-    # For internal mode, the dataframs contain time information
-    if (internalBAM) {
-      cd2 = cd2 %>% group_by(Condition, framePerSecond) %>% mutate(
-        snrCfac = cut(snrC, breaks = c(0, seq(3, 20), 50)),
-        time = cut(sf / framePerSecond, breaks = c(seq(
-          0, ceiling(max(cd2$sf) / min(framePerSecond) / 600)
-        ) * 600))
-      ) %>% ungroup()
-      cd3 = cd2[!cd2$read == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
-        medianpw = median(pw),
-        medianipd = median(ipd),
-        PolRate = mean(ipd + pw),
-        startTime = min(sf) / unique(framePerSecond),
-        # Here we group by condition, frame rate and hole, so there should be only one unique frame rate
-        endTime = max(sf) / unique(framePerSecond)
-      )
-    } else {
-      # Write a tabel for the missing plots due to non-internal BAM files
-      missingPlots = c("Active ZMW - Normalized",
-                       "pkMid Box Plot - all reference reads",
-                       "pkMid Box Plot - accurate reference reads",
-                       "pkMid Box Plot - inaccurate reference reads",
-                       "pkMid Density Plot - all reference reads",
-                       "pkMid Density Plot - accurate reference reads",
-                       "pkMid Density Plot - inaccurate reference reads",
-                       "pkMid CDF - all reference reads",
-                       "pkMid CDF - accurate reference reads",
-                       "pkMid CDF - inaccurate reference reads",
-                       "pkMid Histogram - all reference reads",
-                       "pkMid Histogram - accurate reference reads",
-                       "pkMid Histogram - inaccurate reference reads",
-                       "pkMid Density Plot - Accurate vs Inaccurate bases",
-                       "PW Trend by Time",
-                       "PolRate Trend by Time",
-                       "IPD Trend by Time",
-                       "Mean Pulse Width by Time",
-                       "Mean Pkmid by Time",
-                       "Median Pkmid by Time",
-                       "Median Pkmid by Time (Normalized)")
-      noninternalBAM = as.data.frame(missingPlots)
-      report$write.table("noninternalBAM.csv",
-                         noninternalBAM,
-                         id = "noninternalBAM",
-                         title = "Missing plots that require internal BAM files")
-      cd2 = cd2 %>% group_by(Condition, framePerSecond) %>% mutate(snrCfac = cut(snrC, breaks = c(0, seq(3, 20), 50))) %>% ungroup()
-      cd3 = cd2[!cd2$read == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
-        medianpw = median(pw),
-        medianipd = median(ipd),
-        PolRate = mean(ipd + pw)
-      )
-    }
-    
-    cd3$DC <- cd3$medianipd + cd3$medianpw
-    cd3$DutyCycle  = cd3$medianpw / (cd3$medianpw + cd3$medianipd)
-    
-    # cd4 is used to generate the plot of template span ove time
-    cd4 = cd2 %>% group_by(Condition, framePerSecond, hole) %>% summarise(
-      sumpw = sum(pw),
-      sumipd = sum(ipd),
-      templateSpan = length(ref[!ref == "-"])
-    )
-    
-    # Plots based on startFrame (Only produced when "sf" is loaded)
-    if (internalBAM) {
-      # ActiveZMWs
-      activeZMW <- function(rngs) {
-        dta <- as.data.frame(rngs)
-        dta$time <- 1:dim(dta)[1]
-        dtm <-
-          melt(as.data.frame(dta),
-               id.vars = "time",
-               variable.name = "condition")
-        dtm
+      
+      # For internal mode and non-internal mode produce different dataframes
+      # For internal mode, the dataframs contain time information
+      if (internalBAM) {
+        cd2 = cd2 %>% group_by(Condition, framePerSecond) %>% mutate(
+          snrCfac = cut(snrC, breaks = c(0, seq(3, 20), 50)),
+          time = cut(sf / framePerSecond, breaks = c(seq(
+            0, ceiling(max(cd2$sf) / min(framePerSecond) / 600)
+          ) * 600))
+        ) %>% ungroup()
+        cd3 = cd2[!cd2$read == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
+          medianpw = median(pw),
+          medianipd = median(ipd),
+          PolRate = mean(ipd + pw),
+          startTime = min(sf) / unique(framePerSecond),
+          # Here we group by condition, frame rate and hole, so there should be only one unique frame rate
+          endTime = max(sf) / unique(framePerSecond)
+        )
+      } else {
+        # Write a tabel for the missing plots due to non-internal BAM files
+        missingPlots = c("Active ZMW - Normalized",
+                         "pkMid Box Plot - all reference reads",
+                         "pkMid Box Plot - accurate reference reads",
+                         "pkMid Box Plot - inaccurate reference reads",
+                         "pkMid Density Plot - all reference reads",
+                         "pkMid Density Plot - accurate reference reads",
+                         "pkMid Density Plot - inaccurate reference reads",
+                         "pkMid CDF - all reference reads",
+                         "pkMid CDF - accurate reference reads",
+                         "pkMid CDF - inaccurate reference reads",
+                         "pkMid Histogram - all reference reads",
+                         "pkMid Histogram - accurate reference reads",
+                         "pkMid Histogram - inaccurate reference reads",
+                         "pkMid Density Plot - Accurate vs Inaccurate bases",
+                         "PW Trend by Time",
+                         "PolRate Trend by Time",
+                         "IPD Trend by Time",
+                         "Mean Pulse Width by Time",
+                         "Mean Pkmid by Time",
+                         "Median Pkmid by Time",
+                         "Median Pkmid by Time (Normalized)")
+        noninternalBAM = as.data.frame(missingPlots)
+        report$write.table("noninternalBAM.csv",
+                           noninternalBAM,
+                           id = "noninternalBAM",
+                           title = "Missing plots that require internal BAM files")
+        cd2 = cd2 %>% group_by(Condition, framePerSecond) %>% mutate(snrCfac = cut(snrC, breaks = c(0, seq(3, 20), 50))) %>% ungroup()
+        cd3 = cd2[!cd2$read == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
+          medianpw = median(pw),
+          medianipd = median(ipd),
+          PolRate = mean(ipd + pw)
+        )
       }
-      m <- ceiling(max(cd3$endTime))
-      # rngs_unnorm <-
-      #   do.call(cbind, tapply(seq.int(1, nrow(cd3)), factor(cd3$Condition), function(idxs) {
-      #     x <-
-      #       as(coverage(IRanges(cd3$startTime[idxs], cd3$endTime[idxs]), width = m), "vector")
-      #   }))
-      rngs_norm <-
-        do.call(cbind, tapply(seq.int(1, nrow(cd3)), factor(cd3$Condition), function(idxs) {
-          x <-
-            as(coverage(IRanges(cd3$startTime[idxs], cd3$endTime[idxs]), width = m), "vector")
-          x / length(idxs)
-        }))
-      #    dtm_unnorm = activeZMW(rngs_unnorm)
-      dtm_norm = activeZMW(rngs_norm)
       
-      # tp = ggplot(dtm_unnorm, aes(x=time,y=value,color=condition,group=condition)) +
-      #   geom_line(lty=1,lwd=1) + xlab("Seconds") + ylab("Percentage of Alignments") +
-      #   labs(title = "Alignment Percentage by Time: Unnormalized")
-      # report$ggsave("active_zmw_unnormalized.png", tp, id = "active_zmw_unnormalized.png", title = "Active ZMW - Unnormalized", caption = "Active ZMW - Unnormalized")
+      cd3$DC <- cd3$medianipd + cd3$medianpw
+      cd3$DutyCycle  = cd3$medianpw / (cd3$medianpw + cd3$medianipd)
       
-      tp = ggplot(dtm_norm,
-                  aes(
-                    x = time,
-                    y = value,
-                    color = condition,
-                    group = condition
-                  )) +
-        geom_line(lty = 1, lwd = 1) + xlab("Seconds") + ylab("Percentage of Alignments") +
-        labs(title = "Alignment Percentage by Time: Normalized") + plTheme
+      # cd4 is used to generate the plot of template span ove time
+      cd4 = cd2 %>% group_by(Condition, framePerSecond, hole) %>% summarise(
+        sumpw = sum(pw),
+        sumipd = sum(ipd),
+        templateSpan = length(ref[!ref == "-"])
+      )
+      
+      # Plots based on startFrame (Only produced when "sf" is loaded)
+      if (internalBAM) {
+        # ActiveZMWs
+        activeZMW <- function(rngs) {
+          dta <- as.data.frame(rngs)
+          dta$time <- 1:dim(dta)[1]
+          dtm <-
+            melt(as.data.frame(dta),
+                 id.vars = "time",
+                 variable.name = "condition")
+          dtm
+        }
+        m <- ceiling(max(cd3$endTime))
+        # rngs_unnorm <-
+        #   do.call(cbind, tapply(seq.int(1, nrow(cd3)), factor(cd3$Condition), function(idxs) {
+        #     x <-
+        #       as(coverage(IRanges(cd3$startTime[idxs], cd3$endTime[idxs]), width = m), "vector")
+        #   }))
+        rngs_norm <-
+          do.call(cbind, tapply(seq.int(1, nrow(cd3)), factor(cd3$Condition), function(idxs) {
+            x <-
+              as(coverage(IRanges(cd3$startTime[idxs], cd3$endTime[idxs]), width = m), "vector")
+            x / length(idxs)
+          }))
+        #    dtm_unnorm = activeZMW(rngs_unnorm)
+        dtm_norm = activeZMW(rngs_norm)
+        
+        # tp = ggplot(dtm_unnorm, aes(x=time,y=value,color=condition,group=condition)) +
+        #   geom_line(lty=1,lwd=1) + xlab("Seconds") + ylab("Percentage of Alignments") +
+        #   labs(title = "Alignment Percentage by Time: Unnormalized")
+        # report$ggsave("active_zmw_unnormalized.png", tp, id = "active_zmw_unnormalized.png", title = "Active ZMW - Unnormalized", caption = "Active ZMW - Unnormalized")
+        
+        tp = ggplot(dtm_norm,
+                    aes(
+                      x = time,
+                      y = value,
+                      color = condition,
+                      group = condition
+                    )) +
+          geom_line(lty = 1, lwd = 1) + xlab("Seconds") + ylab("Percentage of Alignments") +
+          labs(title = "Alignment Percentage by Time: Normalized") + plTheme
+        report$ggsave(
+          "active_zmw_normalized.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "active_zmw_normalized.png",
+          title = "Active ZMW - Normalized",
+          caption = "Active ZMW - Normalized",
+          tags = c("sampled", "active ZMW", "time")
+        )
+        
+        # pkMid for complete data set, accurate bases, and inaccurate bases
+        
+        cd2.1 <- cd2[cd2$AccuBases == "Accurate", ]
+        cd2.2 <- cd2[cd2$AccuBases == "Inaccurate", ]
+        reads <- list(cd2, cd2.1, cd2.2)
+        variableTitle <-
+          c("all reference reads",
+            "accurate reference reads",
+            "inaccurate reference reads")
+        
+        for (i in 1:3) {
+          img_height = min(49.5, 3 * length(levels(reads[[i]]$ref)))
+          
+          tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) +
+            geom_boxplot() + stat_summary(
+              fun.y = median,
+              colour = "black",
+              geom = "text",
+              show.legend = FALSE,
+              vjust = -0.8,
+              aes(label = round(..y.., digits = 3))
+            ) + plTheme + themeTilt  + clFillScale +
+            facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref)))
+          report$ggsave(
+            paste("pkMid_Box_", variableTitle[i], ".png", sep = ""),
+            tp,
+            width = plotwidth,
+            height = img_height,
+            id = paste("pkMid_boxplot_", variableTitle[i], sep = ""),
+            title = paste("pkMid Box Plot - ", variableTitle[i], sep = ""),
+            caption = paste(
+              "Distribution of pkMid for ",
+              variableTitle[i],
+              " (Boxplot)",
+              sep = ""
+            ),
+            tags = c("sampled", "pkmid", "boxplot", variableTitle[i])
+          )
+          
+          # tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) + geom_violin() +
+          #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
+          #   facet_wrap( ~ ref)
+          # report$ggsave(
+          #   paste("pkMid_Violin_", variableTitle[i], ".png", sep = ""),
+          #   tp,
+          #   id = paste("pkMid_violinplot_", variableTitle[i], sep = ""),
+          #   title = paste("pkMid Violin Plot - ", variableTitle[i], sep = ""),
+          #   caption = paste(
+          #     "Distribution of pkMid for ",
+          #     variableTitle[i],
+          #     " (Violin plot)",
+          #     sep = ""
+          #   ),
+          #   tags = c("sampled", "pkmid", "violin", variableTitle[i])
+          # )
+          
+          tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + geom_density(alpha = .5) +
+            plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
+            labs(x = "pkMid (after normalization)", title = "pkMid by Condition")
+          report$ggsave(
+            paste("pkMid_Dens_", variableTitle[i], ".png", sep = ""),
+            tp,
+            width = plotwidth,
+            height = img_height,
+            id = paste("pkMid_densityplot_", variableTitle[i], sep = ""),
+            title = paste("pkMid Density Plot - ", variableTitle[i], sep = ""),
+            caption = paste(
+              "Distribution of pkMid for ",
+              variableTitle[i],
+              " (Density plot)",
+              sep = ""
+            ),
+            tags = c("sampled", "pkmid", "density", variableTitle[i])
+          )
+          
+          tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + stat_ecdf() +
+            plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
+            labs(x = "pkMid", y = "CDF", title = "pkMid by Condition (CDF)")
+          report$ggsave(
+            paste("pkMid_CDF_", variableTitle[i], ".png", sep = ""),
+            tp,
+            width = plotwidth,
+            height = img_height,
+            id = paste("pkMid_cdf_", variableTitle[i], sep = ""),
+            title = paste("pkMid CDF - ", variableTitle[i], sep = ""),
+            caption = paste("Distribution of pkMid for ", variableTitle[i],  " (CDF)", sep = ""),
+            tags = c("sampled", "pkmid", "cdf", variableTitle[i])
+          )
+          
+          tp = ggplot(reads[[i]], aes(x = pkmid, fill = Condition)) + geom_histogram() +
+            plTheme + themeTilt  + clFillScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
+            labs(x = "pkMid", title = "pkMid by Condition")
+          report$ggsave(
+            paste("pkMid_Hist_", variableTitle[i], ".png", sep = ""),
+            tp,
+            width = plotwidth,
+            height = img_height,
+            id = paste("pkMid_histogram_", variableTitle[i], sep = ""),
+            title = paste("pkMid Histogram - ", variableTitle[i], sep = ""),
+            caption = paste(
+              "Distribution of pkMid for ",
+              variableTitle[i],
+              " (Histogram)",
+              sep = ""
+            ),
+            tags = c("sampled", "pkmid", "histogram", variableTitle[i])
+          )
+        }
+        
+        # Density plots to compare pkMid for accurate bases and inaccurate bases
+        
+        tp = ggplot(cd2, aes(x = pkmid, colour = AccuBases)) + geom_density(alpha = .5) +
+          plTheme + themeTilt  + clScale + facet_wrap( ~ Condition + ref, ncol = 5) +
+          labs(x = "pkMid", title = "pkMid for accurate bases and inaccurate bases")
+        report$ggsave(
+          "pkMid_Accu_vs_Inaccu_Dens.png",
+          tp,
+          width = plotwidth * 5,
+          height = img_height,
+          id = "pkMid_Accu_Inaccu_densityplot",
+          title = "pkMid Density Plot - Accurate vs Inaccurate bases",
+          caption = "Distribution of pkMid for Accurate vs inaccurate bases (Density plot)",
+          tags = c("sampled", "pkmid", "density")
+        )
+        
+        # Make Pkmid / PW / PolRate by time plot
+        cd2time = cd2 %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
+          PW.Mean = mean(pw),
+          PKMID.Median = median(pkmid),
+          PKMID.Mean = mean(pkmid),
+          IPD.Median = median(ipd),
+          PolRate = mean(ipd + pw),
+          PKMID.Median.Con = median(PKMID.Median.Con)
+        )
+        cd2time$time = as.numeric(cd2time$time) * 10
+        
+        # Also make filtered data set by maxIPD and maxPW
+        cd2timeFiltered = cd2[cd2$ipd < maxIPD & cd2$pw < maxPW,] %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
+          PW.Mean = mean(pw),
+          PKMID.Median = median(pkmid),
+          PKMID.Mean = mean(pkmid),
+          IPD.Median = median(ipd),
+          PolRate = mean(ipd + pw),
+          PKMID.Median.Con = median(PKMID.Median.Con)
+        )
+        cd2timeFiltered$time = as.numeric(cd2timeFiltered$time) * 10
+        
+        tp = ggplot(cd2time,
+                    aes(
+                      x = time,
+                      y = PW.Mean,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mean Pulse Width",
+                                                              x = "Minute",
+                                                              title = "PW Trend by Time")
+        report$ggsave(
+          "pw_mean_by_time.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "pw_mean_by_time",
+          title = "Mean Pulse Width by Time",
+          caption = "Mean Pulse Width by Time",
+          tags = c("sampled", "pw", "time")
+        )
+        
+        tp = ggplot(cd2timeFiltered,
+                    aes(
+                      x = time,
+                      y = PW.Mean,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = paste("Mean PW (Truncated < ", maxPW, ")", sep = ""),
+                                                              x = "Minute",
+                                                              title = "Filtered PW Trend by Time")
+        report$ggsave(
+          "filtered_pw_mean_by_time.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "filtered_pw_mean_by_time",
+          title = "Filtered Mean Pulse Width by Time",
+          caption = "Filtered Mean Pulse Width by Time",
+          tags = c("sampled", "pw", "time", "filtered")
+        )
+        
+        tp = ggplot(cd2time,
+                    aes(
+                      x = time,
+                      y = IPD.Median,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = "Median IPD",
+                                                              x = "Minute",
+                                                              title = "IPD Trend by Time")
+        report$ggsave(
+          "ipd_median_by_time.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "ipd_median_by_time",
+          title = "Median IPD by Time",
+          caption = "Median IPD by Time",
+          tags = c("sampled", "ipd", "time")
+        )
+        
+        tp = ggplot(cd2timeFiltered,
+                    aes(
+                      x = time,
+                      y = IPD.Median,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = paste("Median IPD (Truncated < ", maxIPD, ")", sep = ""),
+                                                              x = "Minute",
+                                                              title = "Filtered IPD Trend by Time")
+        report$ggsave(
+          "filtered_ipd_median_by_time.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "filtered_ipd_median_by_time",
+          title = "Filtered Median IPD by Time",
+          caption = "Filtered Median IPD by Time",
+          tags = c("sampled", "ipd", "time", "filtered")
+        )
+        
+        tp = ggplot(cd2time,
+                    aes(
+                      x = time,
+                      y = PolRate,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = "PolRate",
+                                                              x = "Minute",
+                                                              title = "PolRate Trend by Time")
+        report$ggsave(
+          "PolRate_by_time.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "PolRate_by_time",
+          title = "PolRate by Time",
+          caption = "PolRate by Time",
+          tags = c("sampled", "polrate", "time")
+        )
+        
+        tp = ggplot(cd2time,
+                    aes(
+                      x = time,
+                      y = PKMID.Mean,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mean Pkmid",
+                                                              x = "Minute",
+                                                              title = "Pkmid Trend by Time")
+        report$ggsave(
+          "pkmid_mean_by_time.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "pkmid_mean_by_time",
+          title = "Mean Pkmid by Time",
+          caption = "Mean Pkmid by Time",
+          tags = c("sampled", "pkmid", "time")
+        )
+        
+        tp = ggplot(cd2time,
+                    aes(
+                      x = time,
+                      y = PKMID.Median,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = "Median Pkmid",
+                                                              x = "Minute",
+                                                              title = "Pkmid Trend by Time")
+        report$ggsave(
+          "pkmid_median_by_time.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "pkmid_median_by_time",
+          title = "Median Pkmid by Time",
+          caption = "Median Pkmid by Time",
+          tags = c("sampled", "pkmid", "time")
+        )
+        
+        tp = ggplot(cd2time,
+                    aes(
+                      x = time,
+                      y = PKMID.Median / PKMID.Median.Con,
+                      color = Condition,
+                      group = Condition
+                    )) + geom_point() +
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = "Median Pkmid (Normalized)",
+                                                              x = "Minute",
+                                                              title = "Pkmid Trend by Time (Normalized)")
+        report$ggsave(
+          "pkmid_median_by_time_normalized.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "pkmid_median_by_time_normalized",
+          title = "Median Pkmid by Time (Normalized)",
+          caption = "Median Pkmid by Time (Normalized)",
+          tags = c("sampled", "pkmid", "time")
+        )
+      }
+      
+      # Polymerization Rate measured by template bases per second
+      tp = ggplot(cd4, aes(x = Condition, y = templateSpan / (sumpw + sumipd), fill = Condition)) + geom_boxplot(position = "dodge") + stat_summary(
+        fun.y = median,
+        colour = "black",
+        geom = "text",
+        show.legend = FALSE,
+        vjust = -0.8,
+        aes(label = round(..y.., digits = 4))
+      ) + 
+        plTheme + themeTilt  + clFillScale + 
+        labs(x = "Condition", y = "Polymerization Rate (template bases per second)", title = "Polymerization Rate (template bases per second)")
+      
       report$ggsave(
-        "active_zmw_normalized.png",
+        "polrate_template_per_second.png",
         tp,
         width = plotwidth,
         height = plotheight,
-        id = "active_zmw_normalized.png",
-        title = "Active ZMW - Normalized",
-        caption = "Active ZMW - Normalized",
-        tags = c("sampled", "active ZMW", "time")
+        id = "polrate_template_per_second",
+        title = "Polymerization Rate (template bases per second)",
+        caption = "Polymerization Rate (template bases per second)",
+        tags = c("sampled", "boxplot", "polrate", "template", "time")
       )
       
-      # pkMid for complete data set, accurate bases, and inaccurate bases
+      # Polymerization Rate by Reference
+      tp <- ggplot(data = cd3, aes(x = refName, y = PolRate, fill = Condition)) +
+        geom_boxplot(position = position_dodge(width = 0.9)) 
+      a <- aggregate(PolRate ~ refName + Condition , cd3, function(i) round(median(i), digits = 4))
+      tp <- tp +  geom_text(data = a, aes(label = PolRate), 
+                            position = position_dodge(width = 0.9), vjust = -0.8) + 
+        plTheme + themeTilt  + clFillScale + 
+        labs(x = "Reference", y = "Polymerization Rate", title = "Polymerization Rate by Reference")
       
-      cd2.1 <- cd2[cd2$AccuBases == "Accurate", ]
-      cd2.2 <- cd2[cd2$AccuBases == "Inaccurate", ]
-      reads <- list(cd2, cd2.1, cd2.2)
-      variableTitle <-
-        c("all reference reads",
-          "accurate reference reads",
-          "inaccurate reference reads")
-      
-      for (i in 1:3) {
-        img_height = min(49.5, 3 * length(levels(reads[[i]]$ref)))
-        
-        tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) +
-          geom_boxplot() + stat_summary(
-            fun.y = median,
-            colour = "black",
-            geom = "text",
-            show.legend = FALSE,
-            vjust = -0.8,
-            aes(label = round(..y.., digits = 3))
-          ) + plTheme + themeTilt  + clFillScale +
-          facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref)))
-        report$ggsave(
-          paste("pkMid_Box_", variableTitle[i], ".png", sep = ""),
-          tp,
-          width = plotwidth,
-          height = img_height,
-          id = paste("pkMid_boxplot_", variableTitle[i], sep = ""),
-          title = paste("pkMid Box Plot - ", variableTitle[i], sep = ""),
-          caption = paste(
-            "Distribution of pkMid for ",
-            variableTitle[i],
-            " (Boxplot)",
-            sep = ""
-          ),
-          tags = c("sampled", "pkmid", "boxplot", variableTitle[i])
-        )
-        
-        # tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) + geom_violin() +
-        #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
-        #   facet_wrap( ~ ref)
-        # report$ggsave(
-        #   paste("pkMid_Violin_", variableTitle[i], ".png", sep = ""),
-        #   tp,
-        #   id = paste("pkMid_violinplot_", variableTitle[i], sep = ""),
-        #   title = paste("pkMid Violin Plot - ", variableTitle[i], sep = ""),
-        #   caption = paste(
-        #     "Distribution of pkMid for ",
-        #     variableTitle[i],
-        #     " (Violin plot)",
-        #     sep = ""
-        #   ),
-        #   tags = c("sampled", "pkmid", "violin", variableTitle[i])
-        # )
-        
-        tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + geom_density(alpha = .5) +
-          plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
-          labs(x = "pkMid (after normalization)", title = "pkMid by Condition")
-        report$ggsave(
-          paste("pkMid_Dens_", variableTitle[i], ".png", sep = ""),
-          tp,
-          width = plotwidth,
-          height = img_height,
-          id = paste("pkMid_densityplot_", variableTitle[i], sep = ""),
-          title = paste("pkMid Density Plot - ", variableTitle[i], sep = ""),
-          caption = paste(
-            "Distribution of pkMid for ",
-            variableTitle[i],
-            " (Density plot)",
-            sep = ""
-          ),
-          tags = c("sampled", "pkmid", "density", variableTitle[i])
-        )
-        
-        tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + stat_ecdf() +
-          plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
-          labs(x = "pkMid", y = "CDF", title = "pkMid by Condition (CDF)")
-        report$ggsave(
-          paste("pkMid_CDF_", variableTitle[i], ".png", sep = ""),
-          tp,
-          width = plotwidth,
-          height = img_height,
-          id = paste("pkMid_cdf_", variableTitle[i], sep = ""),
-          title = paste("pkMid CDF - ", variableTitle[i], sep = ""),
-          caption = paste("Distribution of pkMid for ", variableTitle[i],  " (CDF)", sep = ""),
-          tags = c("sampled", "pkmid", "cdf", variableTitle[i])
-        )
-        
-        tp = ggplot(reads[[i]], aes(x = pkmid, fill = Condition)) + geom_histogram() +
-          plTheme + themeTilt  + clFillScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
-          labs(x = "pkMid", title = "pkMid by Condition")
-        report$ggsave(
-          paste("pkMid_Hist_", variableTitle[i], ".png", sep = ""),
-          tp,
-          width = plotwidth,
-          height = img_height,
-          id = paste("pkMid_histogram_", variableTitle[i], sep = ""),
-          title = paste("pkMid Histogram - ", variableTitle[i], sep = ""),
-          caption = paste(
-            "Distribution of pkMid for ",
-            variableTitle[i],
-            " (Histogram)",
-            sep = ""
-          ),
-          tags = c("sampled", "pkmid", "histogram", variableTitle[i])
-        )
-      }
-      
-      # Density plots to compare pkMid for accurate bases and inaccurate bases
-      
-      tp = ggplot(cd2, aes(x = pkmid, colour = AccuBases)) + geom_density(alpha = .5) +
-        plTheme + themeTilt  + clScale + facet_wrap( ~ Condition + ref, ncol = 5) +
-        labs(x = "pkMid", title = "pkMid for accurate bases and inaccurate bases")
       report$ggsave(
-        "pkMid_Accu_vs_Inaccu_Dens.png",
+        "polrate_ref_box.png",
         tp,
-        width = plotwidth * 5,
+        width = plotwidth,
+        height = plotheight,
+        id = "polrate_ref_box",
+        title = "Polymerization Rate by Reference",
+        caption = "Polymerization Rate by Reference",
+        tags = c("sampled", "boxplot", "polrate", "reference")
+      )
+      
+      img_height = min(49.5, 3 * length(levels(cd2$ref)))
+      
+      # PW by Template Base
+      tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) +
+        labs(
+          y = "frequency",
+          x = "seconds",
+          title = paste("Pulse Width\n(From ", sampleSize, "Sampled Alignments)")
+        ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
+      report$ggsave(
+        "pw_by_template.png",
+        tp,
+        width = plotwidth,
         height = img_height,
-        id = "pkMid_Accu_Inaccu_densityplot",
-        title = "pkMid Density Plot - Accurate vs Inaccurate bases",
-        caption = "Distribution of pkMid for Accurate vs inaccurate bases (Density plot)",
-        tags = c("sampled", "pkmid", "density")
+        id = "pw_by_template.png",
+        title = "Pulse Width by Template Base",
+        caption = "Pulse Width by Template Base",
+        tags = c("sampled", "density", "pw")
       )
       
-      # Make Pkmid / PW / PolRate by time plot
-      cd2time = cd2 %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
-        PW.Mean = mean(pw),
-        PKMID.Median = median(pkmid),
-        PKMID.Mean = mean(pkmid),
-        IPD.Median = median(ipd),
-        PolRate = mean(ipd + pw),
-        PKMID.Median.Con = median(PKMID.Median.Con)
-      )
-      cd2time$time = as.numeric(cd2time$time) * 10
-      
-      # Also make filtered data set by maxIPD and maxPW
-      cd2timeFiltered = cd2[cd2$ipd < maxIPD & cd2$pw < maxPW,] %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
-        PW.Mean = mean(pw),
-        PKMID.Median = median(pkmid),
-        PKMID.Mean = mean(pkmid),
-        IPD.Median = median(ipd),
-        PolRate = mean(ipd + pw),
-        PKMID.Median.Con = median(PKMID.Median.Con)
-      )
-      cd2timeFiltered$time = as.numeric(cd2timeFiltered$time) * 10
-      
-      tp = ggplot(cd2time,
-                  aes(
-                    x = time,
-                    y = PW.Mean,
-                    color = Condition,
-                    group = Condition
-                  )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mean Pulse Width",
-                                                            x = "Minute",
-                                                            title = "PW Trend by Time")
+      tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() +
+        labs(
+          y = "CDF",
+          x = "seconds",
+          title = paste("Pulse Width_CDF\n(From ", sampleSize, "Sampled Alignments)")
+        ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
       report$ggsave(
-        "pw_mean_by_time.png",
+        "pw_by_template_cdf.png",
+        tp,
+        width = plotwidth,
+        height = img_height,
+        id = "pw_by_template_cdf.png",
+        title = "Pulse Width by Template Base (CDF)",
+        caption = "Pulse Width by Template Base (CDF)",
+        tags = c("sampled", "pw", "cdf")
+      )
+      
+      # # Local Polymerization Rate
+      # # Note that thsi plot only works for the unrolled data set (one read per ZMW)
+      # if (length(cd$hole) = length(unique(cd$hole))) {
+      #   cd2Unrolled = cd2 %>% group_by(hole, Condition) %>% mutate(UnrolledTemplateLocation = seq_len(n())) %>% ungroup() %>% mutate(UnrolledTemplateGroup = cut(UnrolledTemplateLocation, breaks = c((seq(0, 1000) * 50), max(UnrolledTemplateLocation)))) %>% group_by(UnrolledTemplateGroup, Condition) %>% summarise(mdPolRate = median(1/(ipd + pw)))
+      #   pd <- position_dodge(0.2) # move them .05 to the left and right
+      #   tp = ggplot(cd2Unrolled, aes(x = UnrolledTemplateGroup, y = mdPolRate, color = Condition, group = Condition)) + geom_point() + geom_line() +
+      #     # geom_errorbar(aes(ymin = mdPolRate - madPolRate, ymax = mdPolRate + madPolRate), width = .1, position = pd) +
+      #     plTheme + themeTilt + clScale + labs(x = "Position Bin of Unrolled Template Span", y = "Median Polymerization Rate (50bp bins)")
+      #   report$ggsave("localpolrate.png", tp,
+      #                 id = "local_polrate",
+      #                 title = "Local Polymerization Rate", caption = "Local Polymerization Rate")
+      # }
+      
+      # IPD Plots
+      # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
+      #   labs(
+      #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
+      #     title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
+      #   ) +
+      #   plTheme + themeTilt + clFillScale
+      # report$ggsave("ipddist.png",
+      #               tp,
+      #               id = "ipd_violin",
+      #               title = "IPD Distribution - Violin Plot",
+      #               caption = "IPD Distribution - Violin Plot",
+      #               tags = c("sampled", "violin", "ipd"))
+      
+      # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
+      #   labs(
+      #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
+      #     title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
+      #   ) +
+      #   plTheme + themeTilt + clFillScale + facet_wrap( ~ ref)
+      # report$ggsave(
+      #   "ipddistbybase_violin.png",
+      #   tp,
+      #   id = "ipd_violin_by_base",
+      #   title = "IPD Distribution by Ref Base - Violin Plot",
+      #   caption = "IPD Distribution by Ref Base - Violin Plot",
+      #   tags = c("sampled", "violin", "ipd")
+      # )
+      
+      tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() + stat_summary(
+        fun.y = median,
+        colour = "black",
+        geom = "text",
+        show.legend = FALSE,
+        vjust = -0.8,
+        aes(label = round(..y.., digits = 4))
+      ) +
+        labs(
+          y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
+          title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
+        ) +
+        plTheme + themeTilt + clFillScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
+      report$ggsave(
+        "ipddistbybase_boxplot.png",
+        tp,
+        width = plotwidth,
+        height = img_height,
+        id = "ipd_boxplot_by_base",
+        title = "IPD Distribution by Ref Base - Boxplot",
+        caption = "IPD Distribution by Ref Base - Boxplot",
+        tags = c("sampled", "boxplot", "ipd")
+      )
+      
+      # PW Plots
+      cd2$Insertion = cd2$ref == "-"
+      # tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_violin() +
+      #   labs(
+      #     y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
+      #     title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
+      #   ) +
+      #   stat_summary(
+      #     fun.y = median,
+      #     colour = "black",
+      #     geom = "text",
+      #     show.legend = FALSE,
+      #     vjust = -0.8,
+      #     aes(label = round(..y.., digits = 3))
+      #   ) +
+      #   plTheme + themeTilt + clFillScale
+      # report$ggsave(
+      #   "pw_violin.png",
+      #   tp,
+      #   id = "pw_violin",
+      #   title = "PW Distribution - Violin Plot",
+      #   caption = "PW Distribution - Violin Plot",
+      #   tags = c("sampled", "violin", "pw")
+      # )
+      
+      tp <- ggplot(data = cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) +
+        geom_boxplot(position = position_dodge(width = 0.9)) 
+      a <- aggregate(pw ~ Condition + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
+      tp2 <- tp +  geom_text(data = a, aes(label = pw), 
+                             position = position_dodge(width = 0.9), vjust = -0.8) +
+        labs(
+          y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
+          title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
+        ) +
+        plTheme + themeTilt + clFillScale
+      report$ggsave(
+        "pw_boxplot.png",
+        tp2,
+        width = plotwidth,
+        height = plotheight,
+        id = "pw_boxplot",
+        title = "PW Distribution - Boxplot",
+        caption = "PW Distribution - Boxplot",
+        tags = c("sampled", "boxplot", "pw")
+      )
+      
+      tp3 = tp + facet_wrap( ~ ref, nrow = length(levels(cd2[cd2$pw < maxPW,]$ref)))
+      
+      b <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
+      tp4 <- tp3 +  geom_text(data = b, aes(label = pw), 
+                              position = position_dodge(width = 0.9), vjust = -0.8) +
+        labs(
+          y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
+          title = paste("PW Distribution (with Median)\n(From ", sampleSize, "Sampled Alignments)")
+        ) +
+        plTheme + themeTilt + clFillScale
+      
+      report$ggsave(
+        "median_pw_boxplot_by_base.png",
+        tp4,
+        width = plotwidth,
+        height = img_height,
+        id = "median_pw_boxplot_by_base",
+        title = "Median PW Distribution By Base",
+        caption = "Median PW Distribution",
+        tags = c("sampled", "pw", "boxplot", "median")
+      )
+      
+      c <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(mean(i), digits = 4))
+      tp5 <- tp3 +  geom_text(data = c, aes(label = pw), 
+                              position = position_dodge(width = 0.9), vjust = -0.8) +
+        labs(
+          y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
+          title = paste("PW Distribution (with Mean)\n(From ", sampleSize, "Sampled Alignments)")
+        ) +
+        plTheme + themeTilt + clFillScale
+      
+      report$ggsave(
+        "mean_pw_boxplot_by_base.png",
+        tp5,
+        width = plotwidth,
+        height = img_height,
+        id = "mean_pw_boxplot_by_base",
+        title = "Mean PW Distribution By Base",
+        caption = "Mean PW Distribution",
+        tags = c("sampled", "pw", "boxplot", "mean")
+      )
+      
+      # Make a median PW plot
+      summaries = cd2[cd2$ipd < maxIPD,] %>% group_by(Condition, ref) %>% summarise(PW.Median = median(pw), IPD.Median = median(ipd)) %>% ungroup()
+      
+      report$write.table("medianIPD.csv",
+                         data.frame(summaries),
+                         id = "medianIPD",
+                         title = "Median IPD/PW Values by Reference")
+      
+      # Duty Cycle plot
+      tp = ggplot(cd3, aes(x = Condition, y = DutyCycle, fill = Condition)) + geom_boxplot() + stat_summary(
+        fun.y = median,
+        colour = "black",
+        geom = "text",
+        show.legend = FALSE,
+        vjust = -0.8,
+        aes(label = round(..y.., digits = 4))
+      ) +
+        labs(
+          y = "median(PW)/(median(PW) + median(IPD))",
+          title = paste("Duty Cycle\n(From ", sampleSize, "Sampled Alignments)")
+        ) + plTheme + themeTilt + clFillScale
+      report$ggsave(
+        "dutycycle_boxplot.png",
         tp,
         width = plotwidth,
         height = plotheight,
-        id = "pw_mean_by_time",
-        title = "Mean Pulse Width by Time",
-        caption = "Mean Pulse Width by Time",
-        tags = c("sampled", "pw", "time")
+        id = "dutycycle_boxplot",
+        title = "Duty Cycle - Boxplot",
+        caption = "Duty Cycle - Boxplot",
+        tags = c("sampled", "boxplot", "duty cycle")
       )
       
-      tp = ggplot(cd2timeFiltered,
-                  aes(
-                    x = time,
-                    y = PW.Mean,
-                    color = Condition,
-                    group = Condition
-                  )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = paste("Mean PW (Truncated < ", maxPW, ")", sep = ""),
-                                                            x = "Minute",
-                                                            title = "Filtered PW Trend by Time")
+      # Local PolRate plot
+      tp = ggplot(cd3, aes(x = Condition, y = 1 / DC, fill = Condition)) + geom_boxplot() + stat_summary(
+        fun.y = median,
+        colour = "black",
+        geom = "text",
+        show.legend = FALSE,
+        vjust = -0.8,
+        aes(label = round(..y.., digits = 4))
+      ) +
+        labs(
+          y = "1/(median(PW) + median(IPD))",
+          title = paste(
+            "Local Ploymerization Rate\n(From ",
+            sampleSize,
+            "Sampled Alignments)"
+          )
+        ) + plTheme + themeTilt + clFillScale
       report$ggsave(
-        "filtered_pw_mean_by_time.png",
+        "localpolrate_boxplot.png",
         tp,
         width = plotwidth,
         height = plotheight,
-        id = "filtered_pw_mean_by_time",
-        title = "Filtered Mean Pulse Width by Time",
-        caption = "Filtered Mean Pulse Width by Time",
-        tags = c("sampled", "pw", "time", "filtered")
+        id = "localpolrate_boxplot",
+        title = "Local PolRate - Boxplot",
+        caption = "Local PolRate - Boxplot",
+        tags = c("sampled", "boxplot", "polrate")
       )
       
-      tp = ggplot(cd2time,
-                  aes(
-                    x = time,
-                    y = IPD.Median,
-                    color = Condition,
-                    group = Condition
-                  )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Median IPD",
-                                                            x = "Minute",
-                                                            title = "IPD Trend by Time")
+      # Global/Local PolRate plot
+      tp = ggplot(cd3, aes(
+        x = PolRate * (medianpw + medianipd) / log(2),
+        colour = Condition
+      )) + geom_density(alpha = .5) + xlim(0, 2) +
+        labs(
+          y = "density",
+          x = "PolRate*(median(PW) + median(IPD))/ln(2)",
+          title = paste(
+            "John Eid's Global/Local Ploymerization Rate\n(From ",
+            sampleSize,
+            "Sampled Alignments)"
+          )
+        ) + plTheme + themeTilt + clScale
       report$ggsave(
-        "ipd_median_by_time.png",
+        "global_localpolrate.png",
         tp,
         width = plotwidth,
         height = plotheight,
-        id = "ipd_median_by_time",
-        title = "Median IPD by Time",
-        caption = "Median IPD by Time",
-        tags = c("sampled", "ipd", "time")
+        id = "global_localpolrate",
+        title = "Global/Local PolRate",
+        caption = "Global/Local PolRate",
+        tags = c("sampled", "polrate", "john eid")
       )
       
-      tp = ggplot(cd2timeFiltered,
+      # Now mismatch insertions
+      errorRates = cd2[cd2$read != "-",] %>%
+        group_by(Condition, snrCfac, read) %>%
+        summarise(correct = sum(read == ref),
+                  incorrect = sum(read != ref)) %>%
+        mutate(erate = incorrect / (correct + incorrect)) %>%
+        ungroup()
+      
+      img_height = min(49.5, 3 * length(levels(errorRates$read)))
+      
+      tp = ggplot(errorRates,
                   aes(
-                    x = time,
-                    y = IPD.Median,
+                    x = snrCfac,
+                    y = erate,
                     color = Condition,
                     group = Condition
                   )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = paste("Median IPD (Truncated < ", maxIPD, ")", sep = ""),
-                                                            x = "Minute",
-                                                            title = "Filtered IPD Trend by Time")
+        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Error Rate (per called BP)\nFrom Sampled Alignments",
+                                                            x = "SNR C Bin",
+                                                            title = "Error Rates By Called Base") + facet_wrap(~read, nrow = length(levels(errorRates$read)))
       report$ggsave(
-        "filtered_ipd_median_by_time.png",
+        "bperr_rate_by_snr.png",
         tp,
         width = plotwidth,
-        height = plotheight,
-        id = "filtered_ipd_median_by_time",
-        title = "Filtered Median IPD by Time",
-        caption = "Filtered Median IPD by Time",
-        tags = c("sampled", "ipd", "time", "filtered")
+        height = img_height,
+        id = "bp_err_rate_by_snr",
+        title = "BP Error Rates by SNR",
+        caption = "BP Error Rates by SNR",
+        tags = c("sampled", "error rate", "base")
       )
       
-      tp = ggplot(cd2time,
+      # Now for mismatch rates
+      mmRates = cd2[cd2$read != "-" & cd2$ref != "-",] %>%
+        group_by(Condition, snrCfac, ref) %>%
+        summarise(correct = sum(read == ref),
+                  incorrect = sum(read != ref)) %>%
+        mutate(erate = incorrect / (correct + incorrect)) %>%
+        ungroup()
+      
+      img_height = min(49.5, 3 * length(levels(mmRates$ref)))
+      
+      tp = ggplot(mmRates,
                   aes(
-                    x = time,
-                    y = PolRate,
+                    x = snrCfac,
+                    y = erate,
                     color = Condition,
                     group = Condition
                   )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = "PolRate",
-                                                            x = "Minute",
-                                                            title = "PolRate Trend by Time")
+        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mismatch Rate (per ref BP)\nFrom Sampled Alignments",
+                                                            x = "SNR C Bin",
+                                                            title = "Mismatch Rates By Template Base") + facet_wrap(~ ref, nrow = length(levels(mmRates$ref)))
       report$ggsave(
-        "PolRate_by_time.png",
+        "bpmm_rate_by_snr.png",
         tp,
         width = plotwidth,
-        height = plotheight,
-        id = "PolRate_by_time",
-        title = "PolRate by Time",
-        caption = "PolRate by Time",
-        tags = c("sampled", "polrate", "time")
+        height = img_height,
+        id = "bp_mm_err_rate_by_snr",
+        title = "Mismatch Rates by SNR",
+        caption = "Mismatch Rates by SNR",
+        tags = c("sampled", "mismatch", "error rate")
       )
       
-      tp = ggplot(cd2time,
-                  aes(
-                    x = time,
-                    y = PKMID.Mean,
-                    color = Condition,
-                    group = Condition
-                  )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mean Pkmid",
-                                                            x = "Minute",
-                                                            title = "Pkmid Trend by Time")
-      report$ggsave(
-        "pkmid_mean_by_time.png",
-        tp,
-        width = plotwidth,
-        height = plotheight,
-        id = "pkmid_mean_by_time",
-        title = "Mean Pkmid by Time",
-        caption = "Mean Pkmid by Time",
-        tags = c("sampled", "pkmid", "time")
-      )
+      # Table of the polymerization rate
       
-      tp = ggplot(cd2time,
-                  aes(
-                    x = time,
-                    y = PKMID.Median,
-                    color = Condition,
-                    group = Condition
-                  )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Median Pkmid",
-                                                            x = "Minute",
-                                                            title = "Pkmid Trend by Time")
-      report$ggsave(
-        "pkmid_median_by_time.png",
-        tp,
-        width = plotwidth,
-        height = plotheight,
-        id = "pkmid_median_by_time",
-        title = "Median Pkmid by Time",
-        caption = "Median Pkmid by Time",
-        tags = c("sampled", "pkmid", "time")
-      )
-      
-      tp = ggplot(cd2time,
-                  aes(
-                    x = time,
-                    y = PKMID.Median / PKMID.Median.Con,
-                    color = Condition,
-                    group = Condition
-                  )) + geom_point() +
-        geom_line()  + clScale + plTheme + themeTilt + labs(y = "Median Pkmid (Normalized)",
-                                                            x = "Minute",
-                                                            title = "Pkmid Trend by Time (Normalized)")
-      report$ggsave(
-        "pkmid_median_by_time_normalized.png",
-        tp,
-        width = plotwidth,
-        height = plotheight,
-        id = "pkmid_median_by_time_normalized",
-        title = "Median Pkmid by Time (Normalized)",
-        caption = "Median Pkmid by Time (Normalized)",
-        tags = c("sampled", "pkmid", "time")
-      )
+      pr <- aggregate(DC ~ ref + Condition, cd2, median)
+      pr.rs <-
+        reshape(pr,
+                idvar = 'Condition',
+                timevar = 'ref',
+                direction = 'wide')
+      report$write.table("medianPolymerizationRate.csv",
+                         pr.rs,
+                         id = "medianPolymerizationRate",
+                         title = "Median Polymerization Rate")
+    } else {
+     warning("ipd or pw information not available!") 
+     0
     }
-    
-    # Polymerization Rate measured by template bases per second
-    tp = ggplot(cd4, aes(x = Condition, y = templateSpan / (sumpw + sumipd), fill = Condition)) + geom_boxplot(position = "dodge") + stat_summary(
-      fun.y = median,
-      colour = "black",
-      geom = "text",
-      show.legend = FALSE,
-      vjust = -0.8,
-      aes(label = round(..y.., digits = 4))
-    ) + 
-      plTheme + themeTilt  + clFillScale + 
-      labs(x = "Condition", y = "Polymerization Rate (template bases per second)", title = "Polymerization Rate (template bases per second)")
-    
-    report$ggsave(
-      "polrate_template_per_second.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "polrate_template_per_second",
-      title = "Polymerization Rate (template bases per second)",
-      caption = "Polymerization Rate (template bases per second)",
-      tags = c("sampled", "boxplot", "polrate", "template", "time")
-    )
-    
-    # Polymerization Rate by Reference
-    tp <- ggplot(data = cd3, aes(x = refName, y = PolRate, fill = Condition)) +
-      geom_boxplot(position = position_dodge(width = 0.9)) 
-    a <- aggregate(PolRate ~ refName + Condition , cd3, function(i) round(median(i), digits = 4))
-    tp <- tp +  geom_text(data = a, aes(label = PolRate), 
-                          position = position_dodge(width = 0.9), vjust = -0.8) + 
-      plTheme + themeTilt  + clFillScale + 
-      labs(x = "Reference", y = "Polymerization Rate", title = "Polymerization Rate by Reference")
-    
-    report$ggsave(
-      "polrate_ref_box.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "polrate_ref_box",
-      title = "Polymerization Rate by Reference",
-      caption = "Polymerization Rate by Reference",
-      tags = c("sampled", "boxplot", "polrate", "reference")
-    )
-    
-    img_height = min(49.5, 3 * length(levels(cd2$ref)))
-    
-    # PW by Template Base
-    tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) +
-      labs(
-        y = "frequency",
-        x = "seconds",
-        title = paste("Pulse Width\n(From ", sampleSize, "Sampled Alignments)")
-      ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
-    report$ggsave(
-      "pw_by_template.png",
-      tp,
-      width = plotwidth,
-      height = img_height,
-      id = "pw_by_template.png",
-      title = "Pulse Width by Template Base",
-      caption = "Pulse Width by Template Base",
-      tags = c("sampled", "density", "pw")
-    )
-    
-    tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() +
-      labs(
-        y = "CDF",
-        x = "seconds",
-        title = paste("Pulse Width_CDF\n(From ", sampleSize, "Sampled Alignments)")
-      ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
-    report$ggsave(
-      "pw_by_template_cdf.png",
-      tp,
-      width = plotwidth,
-      height = img_height,
-      id = "pw_by_template_cdf.png",
-      title = "Pulse Width by Template Base (CDF)",
-      caption = "Pulse Width by Template Base (CDF)",
-      tags = c("sampled", "pw", "cdf")
-    )
-    
-    # # Local Polymerization Rate
-    # # Note that thsi plot only works for the unrolled data set (one read per ZMW)
-    # if (length(cd$hole) = length(unique(cd$hole))) {
-    #   cd2Unrolled = cd2 %>% group_by(hole, Condition) %>% mutate(UnrolledTemplateLocation = seq_len(n())) %>% ungroup() %>% mutate(UnrolledTemplateGroup = cut(UnrolledTemplateLocation, breaks = c((seq(0, 1000) * 50), max(UnrolledTemplateLocation)))) %>% group_by(UnrolledTemplateGroup, Condition) %>% summarise(mdPolRate = median(1/(ipd + pw)))
-    #   pd <- position_dodge(0.2) # move them .05 to the left and right
-    #   tp = ggplot(cd2Unrolled, aes(x = UnrolledTemplateGroup, y = mdPolRate, color = Condition, group = Condition)) + geom_point() + geom_line() +
-    #     # geom_errorbar(aes(ymin = mdPolRate - madPolRate, ymax = mdPolRate + madPolRate), width = .1, position = pd) +
-    #     plTheme + themeTilt + clScale + labs(x = "Position Bin of Unrolled Template Span", y = "Median Polymerization Rate (50bp bins)")
-    #   report$ggsave("localpolrate.png", tp,
-    #                 id = "local_polrate",
-    #                 title = "Local Polymerization Rate", caption = "Local Polymerization Rate")
-    # }
-    
-    # IPD Plots
-    # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
-    #   labs(
-    #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
-    #     title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
-    #   ) +
-    #   plTheme + themeTilt + clFillScale
-    # report$ggsave("ipddist.png",
-    #               tp,
-    #               id = "ipd_violin",
-    #               title = "IPD Distribution - Violin Plot",
-    #               caption = "IPD Distribution - Violin Plot",
-    #               tags = c("sampled", "violin", "ipd"))
-    
-    # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
-    #   labs(
-    #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
-    #     title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
-    #   ) +
-    #   plTheme + themeTilt + clFillScale + facet_wrap( ~ ref)
-    # report$ggsave(
-    #   "ipddistbybase_violin.png",
-    #   tp,
-    #   id = "ipd_violin_by_base",
-    #   title = "IPD Distribution by Ref Base - Violin Plot",
-    #   caption = "IPD Distribution by Ref Base - Violin Plot",
-    #   tags = c("sampled", "violin", "ipd")
-    # )
-    
-    tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() + stat_summary(
-      fun.y = median,
-      colour = "black",
-      geom = "text",
-      show.legend = FALSE,
-      vjust = -0.8,
-      aes(label = round(..y.., digits = 4))
-    ) +
-      labs(
-        y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
-        title = paste("IPD Distribution\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      plTheme + themeTilt + clFillScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
-    report$ggsave(
-      "ipddistbybase_boxplot.png",
-      tp,
-      width = plotwidth,
-      height = img_height,
-      id = "ipd_boxplot_by_base",
-      title = "IPD Distribution by Ref Base - Boxplot",
-      caption = "IPD Distribution by Ref Base - Boxplot",
-      tags = c("sampled", "boxplot", "ipd")
-    )
-    
-    # PW Plots
-    cd2$Insertion = cd2$ref == "-"
-    # tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_violin() +
-    #   labs(
-    #     y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
-    #     title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
-    #   ) +
-    #   stat_summary(
-    #     fun.y = median,
-    #     colour = "black",
-    #     geom = "text",
-    #     show.legend = FALSE,
-    #     vjust = -0.8,
-    #     aes(label = round(..y.., digits = 3))
-    #   ) +
-    #   plTheme + themeTilt + clFillScale
-    # report$ggsave(
-    #   "pw_violin.png",
-    #   tp,
-    #   id = "pw_violin",
-    #   title = "PW Distribution - Violin Plot",
-    #   caption = "PW Distribution - Violin Plot",
-    #   tags = c("sampled", "violin", "pw")
-    # )
-    
-    tp <- ggplot(data = cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) +
-      geom_boxplot(position = position_dodge(width = 0.9)) 
-    a <- aggregate(pw ~ Condition + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
-    tp2 <- tp +  geom_text(data = a, aes(label = pw), 
-                          position = position_dodge(width = 0.9), vjust = -0.8) +
-      labs(
-        y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
-        title = paste("PW Distribution\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      plTheme + themeTilt + clFillScale
-    report$ggsave(
-      "pw_boxplot.png",
-      tp2,
-      width = plotwidth,
-      height = plotheight,
-      id = "pw_boxplot",
-      title = "PW Distribution - Boxplot",
-      caption = "PW Distribution - Boxplot",
-      tags = c("sampled", "boxplot", "pw")
-    )
-    
-    tp3 = tp + facet_wrap( ~ ref, nrow = length(levels(cd2[cd2$pw < maxPW,]$ref)))
-    
-    b <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(median(i), digits = 4))
-    tp4 <- tp3 +  geom_text(data = b, aes(label = pw), 
-                           position = position_dodge(width = 0.9), vjust = -0.8) +
-      labs(
-        y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
-        title = paste("PW Distribution (with Median)\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      plTheme + themeTilt + clFillScale
-      
-    report$ggsave(
-      "median_pw_boxplot_by_base.png",
-      tp4,
-      width = plotwidth,
-      height = img_height,
-      id = "median_pw_boxplot_by_base",
-      title = "Median PW Distribution By Base",
-      caption = "Median PW Distribution",
-      tags = c("sampled", "pw", "boxplot", "median")
-    )
-    
-    c <- aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i) round(mean(i), digits = 4))
-    tp5 <- tp3 +  geom_text(data = c, aes(label = pw), 
-                            position = position_dodge(width = 0.9), vjust = -0.8) +
-      labs(
-        y = paste("PW (Truncated < ", maxPW, ")", sep = ""),
-        title = paste("PW Distribution (with Mean)\n(From ", sampleSize, "Sampled Alignments)")
-      ) +
-      plTheme + themeTilt + clFillScale
-    
-    report$ggsave(
-      "mean_pw_boxplot_by_base.png",
-      tp5,
-      width = plotwidth,
-      height = img_height,
-      id = "mean_pw_boxplot_by_base",
-      title = "Mean PW Distribution By Base",
-      caption = "Mean PW Distribution",
-      tags = c("sampled", "pw", "boxplot", "mean")
-    )
-    
-    # Make a median PW plot
-    summaries = cd2[cd2$ipd < maxIPD,] %>% group_by(Condition, ref) %>% summarise(PW.Median = median(pw), IPD.Median = median(ipd)) %>% ungroup()
-    
-    report$write.table("medianIPD.csv",
-                       data.frame(summaries),
-                       id = "medianIPD",
-                       title = "Median IPD/PW Values by Reference")
-    
-    # Duty Cycle plot
-    tp = ggplot(cd3, aes(x = Condition, y = DutyCycle, fill = Condition)) + geom_boxplot() + stat_summary(
-      fun.y = median,
-      colour = "black",
-      geom = "text",
-      show.legend = FALSE,
-      vjust = -0.8,
-      aes(label = round(..y.., digits = 4))
-    ) +
-      labs(
-        y = "median(PW)/(median(PW) + median(IPD))",
-        title = paste("Duty Cycle\n(From ", sampleSize, "Sampled Alignments)")
-      ) + plTheme + themeTilt + clFillScale
-    report$ggsave(
-      "dutycycle_boxplot.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "dutycycle_boxplot",
-      title = "Duty Cycle - Boxplot",
-      caption = "Duty Cycle - Boxplot",
-      tags = c("sampled", "boxplot", "duty cycle")
-    )
-    
-    # Local PolRate plot
-    tp = ggplot(cd3, aes(x = Condition, y = 1 / DC, fill = Condition)) + geom_boxplot() + stat_summary(
-      fun.y = median,
-      colour = "black",
-      geom = "text",
-      show.legend = FALSE,
-      vjust = -0.8,
-      aes(label = round(..y.., digits = 4))
-    ) +
-      labs(
-        y = "1/(median(PW) + median(IPD))",
-        title = paste(
-          "Local Ploymerization Rate\n(From ",
-          sampleSize,
-          "Sampled Alignments)"
-        )
-      ) + plTheme + themeTilt + clFillScale
-    report$ggsave(
-      "localpolrate_boxplot.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "localpolrate_boxplot",
-      title = "Local PolRate - Boxplot",
-      caption = "Local PolRate - Boxplot",
-      tags = c("sampled", "boxplot", "polrate")
-    )
-    
-    # Global/Local PolRate plot
-    tp = ggplot(cd3, aes(
-      x = PolRate * (medianpw + medianipd) / log(2),
-      colour = Condition
-    )) + geom_density(alpha = .5) + xlim(0, 2) +
-      labs(
-        y = "density",
-        x = "PolRate*(median(PW) + median(IPD))/ln(2)",
-        title = paste(
-          "John Eid's Global/Local Ploymerization Rate\n(From ",
-          sampleSize,
-          "Sampled Alignments)"
-        )
-      ) + plTheme + themeTilt + clScale
-    report$ggsave(
-      "global_localpolrate.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "global_localpolrate",
-      title = "Global/Local PolRate",
-      caption = "Global/Local PolRate",
-      tags = c("sampled", "polrate", "john eid")
-    )
-    
-    # Now mismatch insertions
-    errorRates = cd2[cd2$read != "-",] %>%
-      group_by(Condition, snrCfac, read) %>%
-      summarise(correct = sum(read == ref),
-                incorrect = sum(read != ref)) %>%
-      mutate(erate = incorrect / (correct + incorrect)) %>%
-      ungroup()
-    
-    img_height = min(49.5, 3 * length(levels(errorRates$read)))
-    
-    tp = ggplot(errorRates,
-                aes(
-                  x = snrCfac,
-                  y = erate,
-                  color = Condition,
-                  group = Condition
-                )) + geom_point() +
-      geom_line()  + clScale + plTheme + themeTilt + labs(y = "Error Rate (per called BP)\nFrom Sampled Alignments",
-                                                          x = "SNR C Bin",
-                                                          title = "Error Rates By Called Base") + facet_wrap(~read, nrow = length(levels(errorRates$read)))
-    report$ggsave(
-      "bperr_rate_by_snr.png",
-      tp,
-      width = plotwidth,
-      height = img_height,
-      id = "bp_err_rate_by_snr",
-      title = "BP Error Rates by SNR",
-      caption = "BP Error Rates by SNR",
-      tags = c("sampled", "error rate", "base")
-    )
-    
-    # Now for mismatch rates
-    mmRates = cd2[cd2$read != "-" & cd2$ref != "-",] %>%
-      group_by(Condition, snrCfac, ref) %>%
-      summarise(correct = sum(read == ref),
-                incorrect = sum(read != ref)) %>%
-      mutate(erate = incorrect / (correct + incorrect)) %>%
-      ungroup()
-    
-    img_height = min(49.5, 3 * length(levels(mmRates$ref)))
-    
-    tp = ggplot(mmRates,
-                aes(
-                  x = snrCfac,
-                  y = erate,
-                  color = Condition,
-                  group = Condition
-                )) + geom_point() +
-      geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mismatch Rate (per ref BP)\nFrom Sampled Alignments",
-                                                          x = "SNR C Bin",
-                                                          title = "Mismatch Rates By Template Base") + facet_wrap(~ ref, nrow = length(levels(mmRates$ref)))
-    report$ggsave(
-      "bpmm_rate_by_snr.png",
-      tp,
-      width = plotwidth,
-      height = img_height,
-      id = "bp_mm_err_rate_by_snr",
-      title = "Mismatch Rates by SNR",
-      caption = "Mismatch Rates by SNR",
-      tags = c("sampled", "mismatch", "error rate")
-    )
-    
-    # Table of the polymerization rate
-    
-    pr <- aggregate(DC ~ ref + Condition, cd2, median)
-    pr.rs <-
-      reshape(pr,
-              idvar = 'Condition',
-              timevar = 'ref',
-              direction = 'wide')
-    report$write.table("medianPolymerizationRate.csv",
-                       pr.rs,
-                       id = "medianPolymerizationRate",
-                       title = "Median Polymerization Rate")
   }
 
 
