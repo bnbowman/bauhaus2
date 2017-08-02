@@ -143,14 +143,14 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
                     color = p_Var[2],
                     group = p_Var[2]
                   )) + geom_point() + geom_line() +
-        plTheme + themeTilt + clScale + labs(x = p_Var[1], y = paste0("Median of ", plotVariables[i]), title = paste("Median of ", plotVariables[i], "vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""))
+        plTheme + themeTilt + clScale + labs(x = p_Var[1], y = paste0("Median of ", plotVariables[i]), title = paste("Median of ", plotVariables[i], " vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""))
       report$ggsave(
-        paste0("median", plotVariables[i], "bypvar"),
+        paste0("median", plotVariables[i], "vs", p_Var[2], "by", p_Var[1]),
         tp,
         width = plotwidth,
         height = plotheight,
-        id = paste0("median", plotVariables[i], "bypvar"),
-        title = paste("Median of ", plotVariables[i], "vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
+        id = paste0("median", plotVariables[i], "vs", p_Var[2], "by", p_Var[1]),
+        title = paste("Median of ", plotVariables[i], " vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
         caption = paste("Median Template Length vs ", p_Var[2], " grouped by ", p_Var[1], sep = ""),
         tags = c("sampled", "p_", "titration", "median", plotVariables[i])
       )
@@ -1296,6 +1296,15 @@ makeReport <- function(report) {
     # Make p_variavle plots
     if (length(p_Var) > 0) {
       makepColPlots(report,cd,p_Var, conditions)
+      
+      # When there are two p_columns and both of them are numerical or categorical
+      # Switch the p_columns and generate the p_ variables plots again
+      if (length(p_Var) == 2) {
+        if (is.numeric(conditions[, match(p_Var[1], names(conditions))]) == is.numeric(conditions[, match(p_Var[2], names(conditions))])) {
+          p_Var = c(p_Var[2], p_Var[1])
+          makepColPlots(report,cd,p_Var, conditions)
+        }
+      }
     }
     
     # Get Errors by SNR plot
