@@ -484,17 +484,17 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- ipddistbybase_boxplot.png
   |   |   |-- localpolrate_boxplot.png
   |   |   |-- mean_pw_boxplot_by_base.png
-  |   |   |-- medianAccuracybypvar.png
+  |   |   |-- medianAccuracyvsp_Enzbyp_LP.png
   |   |   |-- medianIPD.csv
   |   |   |-- medianPolymerizationRate.csv
   |   |   |-- medianSNR.csv
   |   |   |-- median_pw_boxplot_by_base.png
-  |   |   |-- medianalenbypvar.png
-  |   |   |-- mediandratebypvar.png
-  |   |   |-- medianiratebypvar.png
-  |   |   |-- medianmmratebypvar.png
-  |   |   |-- mediansnrCbypvar.png
-  |   |   |-- mediantlenbypvar.png
+  |   |   |-- medianalenvsp_Enzbyp_LP.png
+  |   |   |-- mediandratevsp_Enzbyp_LP.png
+  |   |   |-- medianiratevsp_Enzbyp_LP.png
+  |   |   |-- medianmmratevsp_Enzbyp_LP.png
+  |   |   |-- mediansnrCvsp_Enzbyp_LP.png
+  |   |   |-- mediantlenvsp_Enzbyp_LP.png
   |   |   |-- noninternalBAM.csv
   |   |   |-- polrate_ref_box.png
   |   |   |-- polrate_template_per_second.png
@@ -575,51 +575,51 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "snr", "boxplot"]
       },
       {
-        "id": "mediantlenbypvar",
-        "image": "mediantlenbypvar.png",
-        "title": "Median of tlenvs p_Enz grouped by p_LP",
+        "id": "mediantlenvsp_Enzbyp_LP",
+        "image": "mediantlenvsp_Enzbyp_LP.png",
+        "title": "Median of tlen vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "tlen"]
       },
       {
-        "id": "medianalenbypvar",
-        "image": "medianalenbypvar.png",
-        "title": "Median of alenvs p_Enz grouped by p_LP",
+        "id": "medianalenvsp_Enzbyp_LP",
+        "image": "medianalenvsp_Enzbyp_LP.png",
+        "title": "Median of alen vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "alen"]
       },
       {
-        "id": "medianAccuracybypvar",
-        "image": "medianAccuracybypvar.png",
-        "title": "Median of Accuracyvs p_Enz grouped by p_LP",
+        "id": "medianAccuracyvsp_Enzbyp_LP",
+        "image": "medianAccuracyvsp_Enzbyp_LP.png",
+        "title": "Median of Accuracy vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "Accuracy"]
       },
       {
-        "id": "medianiratebypvar",
-        "image": "medianiratebypvar.png",
-        "title": "Median of iratevs p_Enz grouped by p_LP",
+        "id": "medianiratevsp_Enzbyp_LP",
+        "image": "medianiratevsp_Enzbyp_LP.png",
+        "title": "Median of irate vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "irate"]
       },
       {
-        "id": "mediandratebypvar",
-        "image": "mediandratebypvar.png",
-        "title": "Median of dratevs p_Enz grouped by p_LP",
+        "id": "mediandratevsp_Enzbyp_LP",
+        "image": "mediandratevsp_Enzbyp_LP.png",
+        "title": "Median of drate vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "drate"]
       },
       {
-        "id": "medianmmratebypvar",
-        "image": "medianmmratebypvar.png",
-        "title": "Median of mmratevs p_Enz grouped by p_LP",
+        "id": "medianmmratevsp_Enzbyp_LP",
+        "image": "medianmmratevsp_Enzbyp_LP.png",
+        "title": "Median of mmrate vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "mmrate"]
       },
       {
-        "id": "mediansnrCbypvar",
-        "image": "mediansnrCbypvar.png",
-        "title": "Median of snrCvs p_Enz grouped by p_LP",
+        "id": "mediansnrCvsp_Enzbyp_LP",
+        "image": "mediansnrCvsp_Enzbyp_LP.png",
+        "title": "Median of snrC vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "snrC"]
       },
