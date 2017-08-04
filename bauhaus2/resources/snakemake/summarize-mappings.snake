@@ -59,12 +59,3 @@ rule ReadPlots:
         """
         Rscript --vanilla scripts/R/ReadPlots.R
         """
-
-rule ZMWstsPlots:
-    input: mapped_subreads.values(),
-           local_fasta_files.values()
-    output: "reports/ZMWstsPlots/report.json"
-    shell:
-        """
-        Rscript --vanilla scripts/R/ZMWstsPlots.R
-        """

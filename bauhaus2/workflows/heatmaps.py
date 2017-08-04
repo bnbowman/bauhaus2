@@ -11,6 +11,7 @@ class HeatmapsWorkflow(Workflow):
     CONDITION_TABLE_TYPE = ResequencingConditionTable
     SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
     R_SCRIPTS            = ( "R/AlignmentBasedHeatmaps.R",
+                             "R/ZMWstsPlots.R",
                              "R/Bauhaus2.R" )
 
     def plan(self):

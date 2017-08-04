@@ -18,6 +18,7 @@ library(ggfortify)
 library(rhdf5)
 library(grid)
 library(xml2)
+library(h5r)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
@@ -31,6 +32,369 @@ clFillScale <- NULL# scale_fill_brewer(palette = "Set1")
 themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
 plotwidth = 7.2
 plotheight = 4.2
+ASP_RATIO = 0.5
+
+generateStsH5Heatmaps = function(report, file, label, N, dist = NULL )
+{
+  S = getStsH5Data( file, labelReadTypes = FALSE )
+  
+  # Plots for P0 reads
+  dna = c("A", "C", "G", "T" )
+  channel = c("Green", "Red")
+  nonalnedZMWMetrics = c(
+    "Loading",
+    "NumBases",
+    "NumPulses",
+    "PulseRate",
+    "PulseWidth",
+    "ReadLength",
+    "ReadType",
+    "ReadScore",
+    paste( "HQRegionSnrMean", dna, sep = "_" ),
+    paste( "HQPkmid", dna, sep = "_" ),
+    paste( "BaselineLevel", channel, sep = "_" ),
+    paste( "BaselineStd", channel, sep = "_" ),
+    paste( "HQBaselineLevel", channel, sep = "_" ),
+    paste( "HQBaselineStd", channel, sep = "_" ),
+    paste( "SnrMean", dna, sep = "_" ) )
+  
+  P0 = subset( S, Productivity == 0 )
+  P0 = P0[,c( nonalnedZMWMetrics, "HoleNumber", "X", "Y" )]
+  plotProductivityCategories(report, P0, "P0", label, N, dist )
+  
+  # Plots for P1 reads
+  P1 = subset( S, Productivity == 1 )
+  plotProductivityCategories(report, P1, "P1", label, N, dist )
+  
+  # Plots for P2 reads
+  P2 = subset( S, Productivity == 2 )
+  P2 = P2[,c( nonalnedZMWMetrics, "HoleNumber", "X", "Y" )]
+  plotProductivityCategories(report, P2, "P2", label, N, dist )
+  
+  # Write table of productivity values vs. failure modes
+  r = data.frame( rbind(
+    countFailuresPerMode( P0 ),
+    countFailuresPerMode( P1 ),
+    countFailuresPerMode( P2 ) ) )
+  names( r ) = c("DMEF.all", "DMEF.hqr", "No.hqr", "low.SNR", "OK.SNR")
+  row.names( r ) = c("P0", "P1", "P2")
+  cat( "Writing csv file.")
+  write.csv( r, file = file.path(report$outputDir, paste( label, "csv", sep = "." ) ), row.names = TRUE )
+  r
+}
+
+plotProductivityCategories = function(report, res, x, label, N, dist = NULL )
+{
+  dna = c("A", "C", "G", "T" )
+  hq.snr = paste( "HQRegionSnrMean", dna, sep = "_" )
+  snr = paste( "SnrMean", dna, sep = "_" )
+  
+  try( plotAllFields(report, getDMEF.all( res, hq.snr, snr ), N, paste( label, x, "DMEF.all", sep = "_" ), FALSE, dist ), silent = FALSE )
+  try( plotAllFields(report, getDMEF.hqr( res, hq.snr, snr ), N, paste( label, x, "DMEF.hqr", sep = "_" ), FALSE, dist ), silent = FALSE )
+  try( plotAllFields(report, getNoHQR( res, hq.snr, snr ), N, paste( label, x, "No_HQR", sep = "_" ), FALSE, dist ), silent = FALSE )
+  try( plotAllFields(report, getLowSNR( res, hq.snr, snr ), N, paste( label, x, "Low_SNR", sep = "_" ), FALSE, dist ), silent = FALSE )
+  try( plotAllFields(report, getOKsnr( res, hq.snr, snr ), N, paste( label, x, "OK_SNR", sep = "_" ), FALSE, dist ), silent = FALSE )
+  1
+}
+
+plotAllFields = function(report, res, N, label, addUnif, dist = NULL, pois.frac = NA )
+{
+  if ( is.null( res ) ) { return( 0 ) }
+  if ( nrow( res ) < 5 ) 
+  {
+    cat( "[WARNING]: Too few elements.\n" )
+    return( 0 )
+  }
+  
+  exclude = identifyEmptyOrSingleValuedColumns( res, c( "HoleNumber", "X", "Y" ) )
+  colNames = setdiff( names( res ), exclude )
+  loadingUnif = NULL
+  res = convenientSummarizer( res, N = N )
+  
+  #' if ( addUnif )
+  #' {
+  #'   #' Add loading uniformity plots and metrics:
+  #'   res$AvgPolsPerZMW = estimateAvgPolsPerZMW( res, N )
+  #'   loadingUnif = try( addLoadingUniformityPlots( res, N, writedir, label, dist, pois.frac ), silent = FALSE )
+  #'   if ( class( res ) == "try-error" ) { loadingUnif = NULL  }
+  #' }
+  
+  lapply( c("Count", colNames), function( n ) {
+    try( plotSingleSummarizedHeatmap(report, res, n, label = label, N = N ), silent = FALSE ) } )
+  
+  countUniqueZMWs( res )
+}
+
+plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL )
+{
+  if ( length( N ) == 1 ) { N = c( N, N ) }
+  title = paste( n, " (summarized into ", N[1], " x ", N[2], " blocks) : ", label, sep = "" )
+  
+  if ( is.null( limits ) )
+  {
+    tmp = removeOutliers( res, n )
+    myplot = ( qplot( data = tmp, Y, X, size = I(0.75), color = tmp[,n] ) +
+                 scale_colour_gradientn( colours = rainbow( 10 ) ) +
+                 labs( title = title ) +
+                 theme( aspect.ratio = ASP_RATIO ) )
+    
+  }
+  else
+  {
+    # Above range gray ( na.value ), below range black
+    low = subset( res, res[,n] < limits[1] )
+    tmp = subset( res, res[,n] >= limits[1] )
+    myplot = ( qplot( data = tmp, Y, X, size = I(0.75), color = tmp[,n] ) +
+                 scale_colour_gradientn( colours = rainbow(10), limits = limits ) +
+                 geom_point( data = low, aes( Y, X ), size = I(0.75), alpha = I(0.05), colour = "black") +
+                 labs( title = title ) +
+                 theme( aspect.ratio = ASP_RATIO )  )
+  }
+  
+  report$ggsave(
+    paste(n, "_", label, ".png", sep = ""),
+    myplot,
+    width = 7.2,
+    height = 4.2,
+    type = c("cairo"),
+    id = paste(n, "STSheatmap", label, sep = "_"),
+    title = paste(n, "STSHeatmap:", label),
+    caption = paste(n, "STSheatmap", label, sep = "_"),
+    tags = c("heatmap", "heatmaps", n, "sts", "h5", label)
+  )
+}
+
+countUniqueZMWs = function( res ) length( unique( res$HoleNumber ) )
+
+convenientSummarizer = function( res, N, key = 1e3, x.min = 64, y.min = 64 )
+{
+  if ( length( N ) == 1 ) { N = c( N, N ) }
+  x = as.numeric( res$X ) - x.min + 1
+  y = as.numeric( res$Y ) - y.min + 1
+  X = ( x %/% N[1] ) + ( x %% N[1] > 0 )
+  Y = ( y %/% N[2] ) + ( y %% N[2] > 0 )
+  z = data.frame( data.table( X, Y )[, .N, by = .(X, Y)] )
+  # z$N contains the number of alignments per N[1] x N[2] block
+  
+  if ( "SNR_A" %in% names( res ) )
+  {
+    res$SNR_A[ res$SNR_A == -1 ] <- NA
+    res$SNR_C[ res$SNR_C == -1 ] <- NA
+    res$SNR_G[ res$SNR_G == -1 ] <- NA
+    res$SNR_T[ res$SNR_T == -1 ] <- NA
+  }
+  
+  excl = c( "Matches", "Mismatches", "Inserts", "Dels", "HoleNumber", "Reference", "SMRTlinkID" )
+  u = data.table( res[ , -which( names( res ) %in% excl ) ] )
+  u$X = X; u$Y = Y
+  FUN = function( x, na.rm = TRUE ) as.double( median( x, na.rm ) )
+  cols = setdiff( names( u ), c( "X", "Y" ) )
+  tmp = data.frame( u[, lapply( .SD, FUN ), by = .(X, Y), .SDcols = cols ] )
+  m = match( key * tmp$X + tmp$Y, key * z$X + z$Y )
+  tmp$Count = z$N[ m ]
+  tmp
+}
+
+identifyEmptyOrSingleValuedColumns = function( res, exclude )
+{
+  nms = setdiff( names( res ), exclude )
+  v = vapply( nms, function( n ) length( unique( res[,n] ) ), 0 )
+  c( exclude, nms[ which( v < 1 ) ] )
+}
+
+getDMEF.all = function( x, hq.snr, snr )
+{
+  s = subset( x, is.na( x$HQRegionSnrMean_A ) & is.na( x$SnrMean_A ) )
+  s[, which( names(s) %in% setdiff( names( x ), c( hq.snr, snr ) ) ) ]
+}
+
+getDMEF.hqr = function( x, hq.snr, snr )
+{
+  s = subset( x, ( x$HQRegionSnrMean_A == -1 ) & !is.na( x$SnrMean_A ) )
+  s[, which( names(s) %in% setdiff( names( x ), hq.snr ) ) ]
+}
+
+getNoHQR = function( x, hq.snr, snr )
+{
+  s = subset( x, is.na( x$HQRegionSnrMean_A ) & !is.na( x$SnrMean_A ) )
+  s[, which( names(s) %in% setdiff( names( x ), hq.snr ) ) ]
+}
+
+toFindLowVsOKsnr = function( x, hq.snr, snr )
+{
+  apply( as.matrix( x[, hq.snr ] ), 1, min )
+}
+
+getLowSNR = function( x, hq.snr, snr, minSNR = 4.0 )
+{
+  subset( x, !is.na( x$HQRegionSnrMean_A ) & ( x$HQRegionSnrMean_A != -1 ) &
+            !is.na( x$SnrMean_A ) & ( x$SnrMean_A != -1 ) &
+            toFindLowVsOKsnr( x, hq.snr, snr ) < minSNR )
+}
+
+getOKsnr = function( x, hq.snr, snr, minSNR = 4.0 )
+{
+  subset( x, !is.na( x$HQRegionSnrMean_A ) & ( x$HQRegionSnrMean_A != -1 ) &
+            !is.na( x$SnrMean_A ) & ( x$SnrMean_A != -1 ) &
+            toFindLowVsOKsnr( x, hq.snr, snr ) >= minSNR )
+}
+
+getStsH5Data = function( file, labelReadTypes = TRUE )
+{
+  #' Open h5 file:
+  h5 = new( "H5File", fileName = file, mode = "r" )
+  ZMWMetrics = getH5Group( h5, "ZMWMetrics" )
+  ZMW = getH5Group( h5, "ZMW" )
+  
+  S = lapply( datasetsZMWMetrics(), function( name ) opDS( ZMWMetrics, name ) )
+  S = do.call( cbind, S )
+  
+  K = lapply( c("HoleNumber", "UnitFeature"), function( name ) opDS( ZMW, name ) )
+  K = as.matrix( do.call( cbind, K ) )
+  
+  S$HoleNumber = K[,1]
+  S$X = S$HoleNumber %/% MAXINT
+  S$Y = S$HoleNumber %% MAXINT
+  
+  if ( labelReadTypes )
+  {
+    S$ReadType = 
+      c("Empty", "FullHq0", "FullHq1", "PartialHq0", "PartialHq1", 
+        "PartialHq2", "Indeterminate" )[ S$ReadType + 1 ]
+  }
+  
+  #' Return non-fiducial ZMWs only:
+  S[ K[,2] == 0, ]
+}
+
+removeOutliers = function( m, name )
+{
+  m = subset( m, !is.na( m[,name] ) )
+  values = m[,name]
+  m[,name] = ifelse( values <= boxplot(  m[,name], plot = FALSE )$stat[5], values, NA )
+  m
+}
+
+countFailuresPerMode = function( P, minSNR = 4.0 )
+{
+  dna = c("A", "C", "G", "T" )
+  hq.snr = paste( "HQRegionSnrMean", dna, sep = "_" )
+  snr = paste( "SnrMean", dna, sep = "_" )
+  
+  # DME fails across entire trace:
+  r1 = nrow( getDMEF.all( P, hq.snr, snr ) )
+  
+  # DME fails inside HQ region:
+  r2 = nrow( getDMEF.hqr( P, hq.snr, snr ) )
+  
+  # HQ region not defined
+  r3 = nrow( getNoHQR( P, hq.snr, snr ) )
+  
+  # low SNR
+  r4 = nrow( getLowSNR( P, hq.snr, snr ) )
+  
+  # OK SNR
+  r5 = nrow( getOKsnr( P, hq.snr, snr ) )
+  
+  c( r1, r2, r3, r4, r5 )
+}
+
+opDS = function( group, name, na.value = 2147483647 )
+{
+  if ( !h5DatasetExists( group, name ) )
+  {
+    return( NULL )
+  }
+  dset = getH5Dataset( group, name )[] 
+  dset[ dset == na.value ] <- NA
+  dset = data.frame( dset )
+  rm( group )
+  gc()
+  n = ncol( dset )
+  if ( n == 2 ) { name = paste( name, c("Green", "Red"), sep = "_" ) }
+  if ( n == 4 ) { name = paste( name, c("A", "C", "G", "T"), sep = "_" ) } 
+  names( dset ) = name
+  dset
+}
+
+datasetsZMWMetrics = function()
+{
+  c(
+    "BaseIpd",
+    "BaseRate",
+    "BaseWidth",
+    "HQRegionEnd",
+    "HQRegionEndTime",
+    "HQRegionStart",
+    "HQRegionStartTime",
+    "InsertReadLength",
+    "Loading",
+    "LocalBaseRate",
+    "MedianInsertLength",
+    "NumBases",
+    "NumPulses",
+    "Pausiness",
+    "Productivity",
+    "PulseRate",
+    "PulseWidth",
+    "ReadLength",
+    "ReadScore",
+    "ReadType",
+    "BaseFraction",
+    "HQRegionSnrMean",
+    "SnrMean",
+    "DyeAngle",
+    "HQPkmid",
+    "BaselineLevel",
+    "BaselineStd",
+    "HQBaselineLevel",
+    "HQBaselineStd"
+  )
+}
+
+normalizeWeightMatrix = function( weight )
+{
+  diag( weight ) <- 0
+  
+  #' Normalize weight matrix by row sums:
+  r = rowSums( weight )
+  r[ r == 0 ] <- 1
+  weight / r
+}
+
+getS1andS2forMoransI = function( weight )
+{
+  # Already guaranteed to be symmetric
+  # tmp = weight + t( weight )
+  # tmp = 2 * weight
+  # S1 = sum( tmp * tmp ) / 2
+  S1 = 2 * sum( weight * weight )
+  tmp = 1 + colSums( weight )
+  S2 = sum( tmp * tmp )
+  c( S1, S2 )
+}
+
+getDistMat = function( N, key )
+{
+  # 64 to 1143; 64 to 1023
+  m = 1080 %/% N[1]
+  n = 960 %/% N[2]
+  D = expand.grid( 1:m, 1:n )
+  names( D ) = c("x", "y" )
+  N = as.matrix( dist( D ) )
+  diag( N ) <- 1
+  
+  M = normalizeWeightMatrix( 1 / N )
+  N[ N < 1.5 ] <- 1
+  N[ N >= 1.5 ] <- 0
+  N = normalizeWeightMatrix( N )
+  
+  MatList = list( Inv = M, N = N )
+  list( MatList = MatList,
+        S1.S2 = lapply( MatList, getS1andS2forMoransI ),
+        ID = key * D$x + D$y,
+        nMatrices = length( MatList ) )
+}
 
 loadstsH5 <- function(stsH5file) {
   stsH5 = data.frame(
@@ -511,6 +875,15 @@ makeEmptyXMLPlots <- function(report) {
   )
 }
 
+makeSTSH5Heatmaps <- function(report, conditions) {
+  MAXINT <<- 2^16
+  N = c( 8, 8 ) 
+  dist = getDistMat( c( 16, 8 ), key = 1e3 )
+  
+  try(lapply(1:nrow(conditions), function(k)
+    generateStsH5Heatmaps(report, conditions$sts_h5[k], conditions$Condition[k], N, dist)), silent = FALSE)
+}
+
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
   conditions = report$condition.table
@@ -571,6 +944,9 @@ makeReport <- function(report) {
     # Make Plots
     makeReadTypePlots(report, cd2)
     makeYieldPlots(report, cdH5)
+    
+    # Make sts.h5 heatmaps
+    makeSTSH5Heatmaps(report, conditions)
     
   } else {
     warning("sts.h5 file does not exsit for at least one condition!")
