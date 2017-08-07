@@ -681,7 +681,7 @@ makeSamplingPlots <-
       img_height = min(49.5, 3 * length(levels(cd2$ref)))
       
       # PW by Template Base
-      tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) +
+      tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) + xlim(0, 2) + 
         labs(
           y = "frequency",
           x = "seconds",
@@ -698,7 +698,7 @@ makeSamplingPlots <-
         tags = c("sampled", "density", "pw")
       )
       
-      tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() +
+      tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() + xlim(0, 2) +
         labs(
           y = "CDF",
           x = "seconds",
