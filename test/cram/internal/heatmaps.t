@@ -124,63 +124,75 @@ Generate heatmaps workflow, starting from subreads.
   |-- log
   |-- prefix.sh
   |-- reports
-  |   `-- AlignmentBasedHeatmaps
-  |       |-- Accuracy_Heatmap_MovieA.png
-  |       |-- Accuracy_Heatmap_MovieB.png
-  |       |-- AlnReadLenExtRange_Heatmap_MovieA.png
-  |       |-- AlnReadLenExtRange_Heatmap_MovieB.png
-  |       |-- AlnReadLen_Heatmap_MovieA.png
-  |       |-- AlnReadLen_Heatmap_MovieB.png
-  |       |-- AvgPolsPerZMW_Heatmap_MovieA.png
-  |       |-- AvgPolsPerZMW_Heatmap_MovieB.png
-  |       |-- Count_Heatmap_MovieA.png
-  |       |-- Count_Heatmap_MovieB.png
-  |       |-- DeletionRate_Heatmap_MovieA.png
-  |       |-- DeletionRate_Heatmap_MovieB.png
-  |       |-- InsertionRate_Heatmap_MovieA.png
-  |       |-- InsertionRate_Heatmap_MovieB.png
-  |       |-- MaxSubreadLenExtRange_Heatmap_MovieA.png
-  |       |-- MaxSubreadLenExtRange_Heatmap_MovieB.png
-  |       |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieA.png
-  |       |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieB.png
-  |       |-- MaxSubreadLen_Heatmap_MovieA.png
-  |       |-- MaxSubreadLen_Heatmap_MovieB.png
-  |       |-- MismatchRate_Heatmap_MovieA.png
-  |       |-- MismatchRate_Heatmap_MovieB.png
-  |       |-- Reference_Heatmap_MovieA.png
-  |       |-- Reference_Heatmap_MovieB.png
-  |       |-- SNR_A_Heatmap_MovieA.png
-  |       |-- SNR_A_Heatmap_MovieB.png
-  |       |-- SNR_C_Heatmap_MovieA.png
-  |       |-- SNR_C_Heatmap_MovieB.png
-  |       |-- SNR_G_Heatmap_MovieA.png
-  |       |-- SNR_G_Heatmap_MovieB.png
-  |       |-- SNR_T_Heatmap_MovieA.png
-  |       |-- SNR_T_Heatmap_MovieB.png
-  |       |-- Uniformity_histogram_MovieA.png
-  |       |-- Uniformity_histogram_MovieB.png
-  |       |-- Uniformity_metrics_MovieA.csv
-  |       |-- Uniformity_metrics_MovieB.csv
-  |       |-- barchart_of_uniformity.png
-  |       |-- rEnd_Heatmap_MovieA.png
-  |       |-- rEnd_Heatmap_MovieB.png
-  |       |-- rStartExtRange_Heatmap_MovieA.png
-  |       |-- rStartExtRange_Heatmap_MovieB.png
-  |       |-- rStart_Heatmap_MovieA.png
-  |       |-- rStart_Heatmap_MovieB.png
-  |       |-- report.RData
+  |   |-- AlignmentBasedHeatmaps
+  |   |   |-- Accuracy_Heatmap_MovieA.png
+  |   |   |-- Accuracy_Heatmap_MovieB.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieA.png
+  |   |   |-- AlnReadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- AlnReadLen_Heatmap_MovieA.png
+  |   |   |-- AlnReadLen_Heatmap_MovieB.png
+  |   |   |-- AvgPolsPerZMW_Heatmap_MovieA.png
+  |   |   |-- AvgPolsPerZMW_Heatmap_MovieB.png
+  |   |   |-- Count_Heatmap_MovieA.png
+  |   |   |-- Count_Heatmap_MovieB.png
+  |   |   |-- DeletionRate_Heatmap_MovieA.png
+  |   |   |-- DeletionRate_Heatmap_MovieB.png
+  |   |   |-- InsertionRate_Heatmap_MovieA.png
+  |   |   |-- InsertionRate_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieB.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieA.png
+  |   |   |-- MaxSubreadLen_Heatmap_MovieB.png
+  |   |   |-- MismatchRate_Heatmap_MovieA.png
+  |   |   |-- MismatchRate_Heatmap_MovieB.png
+  |   |   |-- Reference_Heatmap_MovieA.png
+  |   |   |-- Reference_Heatmap_MovieB.png
+  |   |   |-- SNR_A_Heatmap_MovieA.png
+  |   |   |-- SNR_A_Heatmap_MovieB.png
+  |   |   |-- SNR_C_Heatmap_MovieA.png
+  |   |   |-- SNR_C_Heatmap_MovieB.png
+  |   |   |-- SNR_G_Heatmap_MovieA.png
+  |   |   |-- SNR_G_Heatmap_MovieB.png
+  |   |   |-- SNR_T_Heatmap_MovieA.png
+  |   |   |-- SNR_T_Heatmap_MovieB.png
+  |   |   |-- Uniformity_histogram_MovieA.png
+  |   |   |-- Uniformity_histogram_MovieB.png
+  |   |   |-- Uniformity_metrics_MovieA.csv
+  |   |   |-- Uniformity_metrics_MovieB.csv
+  |   |   |-- barchart_of_uniformity.png
+  |   |   |-- rEnd_Heatmap_MovieA.png
+  |   |   |-- rEnd_Heatmap_MovieB.png
+  |   |   |-- rStartExtRange_Heatmap_MovieA.png
+  |   |   |-- rStartExtRange_Heatmap_MovieB.png
+  |   |   |-- rStart_Heatmap_MovieA.png
+  |   |   |-- rStart_Heatmap_MovieB.png
+  |   |   |-- report.RData
+  |   |   |-- report.json
+  |   |   |-- tEnd_Heatmap_MovieA.png
+  |   |   |-- tEnd_Heatmap_MovieB.png
+  |   |   |-- tStart_Heatmap_MovieA.png
+  |   |   `-- tStart_Heatmap_MovieB.png
+  |   `-- ZMWstsPlots
+  |       |-- accuracy_by_readtype_boxplot.png
+  |       |-- adapter_dimer_fraction.png
+  |       |-- nzmws_productivity_hist_percentage.png
+  |       |-- nzmws_readtype_hist_percentage.png
+  |       |-- readTypeAgg.1.png
+  |       |-- readTypeAgg.2.png
+  |       |-- report.Rd
   |       |-- report.json
-  |       |-- tEnd_Heatmap_MovieA.png
-  |       |-- tEnd_Heatmap_MovieB.png
-  |       |-- tStart_Heatmap_MovieA.png
-  |       `-- tStart_Heatmap_MovieB.png
+  |       |-- short_insert_fraction.png
+  |       `-- unrolled_template_length_by_readtype_boxplot.png
   |-- run.sh
   |-- scripts
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
-  |       `-- Bauhaus2.R
+  |       |-- Bauhaus2.R
+  |       `-- ZMWstsPlots.R
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
   
-  17 directories, 149 files
+  18 directories, 160 files
