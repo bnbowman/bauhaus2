@@ -1,0 +1,296 @@
+"""
+It would be lovely to have the refarming happen in analsys/refarm, however
+there are issues: naming runs unambiguously is impossible. Basecaller, PPA,
+builds, arguments, all can change relatively silently. Human naming also tends
+to be ambiguous. Instead, we allow an optional column, BasecallerName, which
+allows users to specify a canonical name for canonical runs. The results will
+be copied there. Doing the refarm in the refarm directory also would have
+drastically reduced computational complexity, as other zia jobs could pick up
+on the output of an earlier zia job. This would also be a mess, as one could
+be running when another is started. This is fine for now.
+
+If you want to start from a canonical run that someone else produced by
+providing a BasecallerName, have your job start from that subreadset.
+
+You could also just put a valid subreadset in analysis/refarm, instead of
+copying the bam files
+"""
+# TODO: make sure logging goes to the right place
+
+import subprocess
+
+local_subreadset = {
+    c: expand("conditions/{condition}/subreads/input.subreadset.xml",
+              condition=c)
+    for c in ct.conditions}
+
+remote_trcs = {c: ct.inputs(c)[0] for c in ct.conditions}
+
+def trc2meta(wildcards, input):
+    path, name = os.path.split(input[0])
+    context = name[:-1 * len('.trc.h5')]
+    return os.path.join(path, '.{}.metadata.xml'.format(context))
+
+def trc2adapters(wildcards, input):
+    return input[0][:-1 * len('trc.h5')] + 'adapters.fasta'
+
+def trc2mov(trc):
+    return os.path.basename(trc)[:-1 * len('.trc.h5')]
+
+
+# -- Target --
+
+rule all:
+    input:
+        subreads=local_subreadset.values(),
+
+# -- Worker --
+#
+def deduplicate(paths):
+    seen = set([])
+    tbr = dict()
+    for k, v in paths.items():
+        if not v in seen:
+            seen.add(v)
+            tbr[k] = v
+        else:
+            tbr[k] = ''
+    return tbr
+
+def trc2refarm(ct):
+    tbr = {}
+    for c in ct.conditions:
+        trc = ct.inputs(c)[0]
+        if trc.startswith('/pbi/collections/') and ct.BasecallerName(c):
+            ctbr = trc.replace('collections', 'analysis/refarm')
+            ctbr = os.path.join(os.path.dirname(ctbr),
+                                ct.condition(c).BasecallerName[0])
+            tbr[c] = ctbr
+        else:
+            tbr[c] = ''
+    return tbr
+
+# we may use the same data and basecaller for multiple conditions. copying to
+# the same place would be problematic.
+refarm_paths = deduplicate(trc2refarm(ct))
+
+rule collect_primary_inputs:
+    input:
+        remote_trcs.values()
+
+rule collect_one_trc:
+    input:
+        lambda wc: remote_trcs[wc.condition]
+    output:
+        trc="conditions/{condition}/trcs/input.trc.h5",
+        meta="conditions/{condition}/trcs/input.metadata.xml",
+        adapters="conditions/{condition}/trcs/input.adapters.fasta"
+    params:
+        inmeta=trc2meta,
+        inadapters=trc2adapters
+    shell:
+        """
+        ln -s {input} {output.trc}
+        ln -s {params.inmeta} {output.meta}
+        ln -s {params.inadapters} {output.adapters}
+        """
+
+rule run_basecaller_console_app:
+    input:
+        "conditions/{condition}/trcs/input.trc.h5"
+    output:
+        "conditions/{condition}/baz/input.baz"
+    params:
+        module=lambda wc: ct.basecallerModule(wc.condition),
+        exe=lambda wc: ct.basecallerExe(wc.condition)
+    threads: 16
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} --inputfile {input} --numthreads {threads} \
+        --outputbazfile {output} --internal
+        """
+
+# TODO: Support controls and barcoding
+rule run_baz2bam:
+    input:
+        baz="conditions/{condition}/baz/input.baz",
+        meta="conditions/{condition}/trcs/input.metadata.xml",
+        adapters="conditions/{condition}/trcs/input.adapters.fasta"
+    output:
+        sset="conditions/{condition}/subreads/input.subreadset.xml",
+        adapters="conditions/{condition}/subreads/input.adapters.fasta"
+    params:
+        module=lambda wc: ct.ppaModule(wc.condition),
+        exe=lambda wc: ct.ppaExe(wc.condition),
+        prefix="conditions/{condition}/subreads/input",
+        toCopy=lambda wc: refarm_paths[wc.condition],
+        mov=lambda wc: trc2mov(remote_trcs[wc.condition]),
+        cond=lambda wc: wc.condition
+    threads: 8
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} -o {params.prefix} -m {input.meta} \
+        -j {threads} -b {threads} --adapters={input.adapters} \
+        {input.baz}
+        cp --preserve=links {input.adapters} {output.adapters}
+        module load smrtlink/siv
+        if [ {params.toCopy} ] ;
+        then mkdir -p {params.toCopy} ;
+        dataset copyto {output.sset} \
+        {params.toCopy}/{params.mov}.subreadset.xml ;
+        cp {input.baz} {params.toCopy}/{params.mov}.baz ;
+        pwd > {params.toCopy}/{params.mov}.Bauhaus2analysis.txt ;
+        echo "Condition: {params.cond}" >> \
+        {params.toCopy}/{params.mov}.bauhaus2analysis.txt ;
+        fi
+        """
+
+
+# OLD:
+
+'''
+def ct2refarm(ct):
+    tbr = {}
+    for c in ct.conditions:
+        trc = ct.inputs(c)[0]
+        if trc.startswith('/pbi/collections/') and ct.BasecallerName(c):
+            ctbr = trc.replace('collections', 'analysis/refarm')
+            ctbr = os.path.join(os.path.dirname(ctbr),
+                                ct.condition(c).BasecallerName[0])
+            tbr[c] = ctbr
+        else:
+            tbr[c] = 'conditions/{condition}/subreads'
+    return tbr
+
+refarm_dirs = ct2refarm(ct)
+
+refarm_prefixes = {c: os.path.join(refarm_dirs[c],
+                                   trc2mov(ct.inputs(c)[0]))
+                   for c in ct.conditions}
+
+rule run_basecaller_console_app:
+    input:
+        trc=lambda wc: remote_trcs[wc.condition]
+    output:
+        baz=lambda wc: refarm_prefixes[wc.condition] + '.baz'
+    params:
+        module=lambda wc: ct.basecallerModule(wc.condition),
+        exe=lambda wc: ct.basecallerExe(wc.condition)
+    threads: 16
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} --inputfile {input} --numthreads {threads} \
+        --outputbazfile {output} --internal
+        """
+
+# TODO: Support controls and barcoding
+rule run_baz2bam:
+    input:
+        baz=lambda wc: refarm_prefixes[wc.condition] + '.baz',
+        meta=lambda wc: trc2meta(remote_trcs[wc.condition]),
+        adapters=lambda wc: trc2adapters(remote_trcs[wc.condition])
+    output:
+        refarmsset=lambda wc: refarm_prefixes[wc.condition] + '.subreadset.xml',
+        refarmadapters=lambda wc: refarm_prefixes[wc.condition] + '.adapters.fasta',
+    params:
+        module=lambda wc: ct.ppaModule(wc.condition),
+        exe=lambda wc: ct.ppaExe(wc.condition),
+        prefix=lambda wc: refarm_prefixes[wc.conditions],
+    threads: 8
+    shell:
+        """
+        module load {params.module}
+        echo "{params.exe} -o {params.prefix} -m {input.meta} \
+        -j {threads} -b {threads} --adapters={input.adapters} \
+        {input.baz}"
+        cp --preserve=links {input.adapters} {output.adapters}
+        """
+
+rule collect_subreads:
+    input:
+        refarmsset=lambda wc: refarm_prefixes[wc.condition] + '.subreadset.xml',
+        refarmadapters=lambda wc: refarm_prefixes[wc.condition] + '.adapters.fasta'
+    output:
+        sset="conditions/{condition}/subreads/input.subreadset.xml",
+        adapters="conditions/{condition}/subreads/input.adapters.fasta"
+    shell:
+        """
+        cp --preserve=links {input.adapters} {output.refarmadapters}
+        module load smrtlink/siv
+        dataset copyto {output.refarmsset} {output.sset}
+        """
+'''
+
+'''
+def trc2refarm(trc, bname):
+    if not trc.startswith('/pbi/collections/'):
+        # TODO: finish
+        return 'conditions/refarm'
+    tbr = trc.replace('collections', 'analysis/refarm')
+    tbr = os.path.join(os.path.dirname(tbr), bname)
+    return tbr
+
+def bname(basecallermod, basecallerexe, ppamod, ppaexe):
+    versin = subprocess.check_output(
+        'module load {}; {} --version'.format(mod, exe)).strip()
+    if exe
+
+refarm_prefixes = {c: (trc2refarm(ct.inputs(c)[0],
+                                 bname(ct.basecallerModule,
+                                       ct.basecallerExe))
+                       + trc2mov(ct.inputs(c)[0]))
+                   for c in ct.conditions}
+
+rule run_basecaller_console_app:
+    input:
+        trc=lambda wc: remote_trcs[wc.condition]
+    output:
+        baz=lambda wc: refarm_prefixes[wc.condition] + '.baz'
+    params:
+        module=lambda wc: ct.basecallerModule(wc.condition),
+        exe=lambda wc: ct.basecallerExe(wc.condition)
+    threads: 16
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} --inputfile {input} --numthreads {threads} \
+        --outputbazfile {output} --internal
+        """
+
+# TODO: Support controls and barcoding
+rule run_baz2bam:
+    input:
+        baz=lambda wc: refarm_prefixes[wc.condition] + '.baz',
+        meta=lambda wc: trc2meta(remote_trcs[wc.condition]),
+        adapters=lambda wc: trc2adapters(remote_trcs[wc.condition])
+    output:
+        refarmsset=lambda wc: refarm_prefixes[wc.condition] + '.subreadset.xml',
+        refarmadapters=lambda wc: refarm_prefixes[wc.condition] + '.adapters.fasta',
+        sset="conditions/{condition}/subreads/input.subreadset.xml",
+        adapters="conditions/{condition}/subreads/input.adapters.fasta"
+    params:
+        module=lambda wc: ct.ppaModule(wc.condition),
+        exe=lambda wc: ct.ppaExe(wc.condition),
+        prefix=lambda wc: refarm_prefixes[wc.conditions],
+    threads: 8
+    shell:
+        """
+        module load {params.module}
+        echo "{params.exe} -o {params.prefix} -m {input.meta} \
+        -j {threads} -b {threads} --adapters={input.adapters} \
+        {input.baz}"
+        cp --preserve=links {input.adapters} {output.adapters}
+        cp --preserve=links {input.adapters} {output.refarmadapters}
+        module load smrtlink/siv
+        dataset copyto {output.refarmsset} {output.sset}
+        """
+'''
+
+# TODO: support baz2hdf?

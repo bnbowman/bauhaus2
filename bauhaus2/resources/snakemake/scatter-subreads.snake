@@ -1,4 +1,4 @@
-# ---------------------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 # scatter-subreads.snake: split subreadsets into smaller chunks for analysis
 
 chunked_subreads = \
@@ -14,7 +14,7 @@ rule chunk_subreads:
 # -- Worker rules --
 
 rule chunk_subreads_one_condition:
-    input: lambda wc: local_subreadset[wc.condition]
+    input: lookupInput
     output:
         expand("conditions/{{condition}}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml",
                chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))

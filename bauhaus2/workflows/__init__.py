@@ -7,6 +7,7 @@ from .subreads  import *
 from .unrolled  import *
 from .unrolledArrowByReference import *
 from .hqrf      import *
+from .primary      import *
 from .isoseq_rc0      import *
 from .heatmaps       import *
 

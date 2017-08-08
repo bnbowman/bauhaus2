@@ -3,6 +3,7 @@ from builtins import object
 __all__ = [ "InputType",
             "ConditionTable",
             "ResequencingConditionTable",
+            "PrimaryResequencingConditionTable",
             "CoverageTitrationConditionTable",
             "UnrolledMappingConditionTable",
             "IsoSeqConditionTable",
@@ -15,6 +16,7 @@ import io,codecs
 
 from bauhaus2.pbls2 import DataNotFound, InvalidDataset
 from pkg_resources import Requirement, resource_filename
+from bauhaus2.pbls2 import parse_exe_or_module, str2bool
 
 # TODO: we are using the non-public method ._get_columns on
 # eztable.Table objects.  That method should really be public--maybe
@@ -219,7 +221,7 @@ class ConditionTable(object):
 
     def inputsH5(self, condition):
         return self._inputsH5ByCondition[condition]
-        
+
     def inputsXML(self, condition):
         return self._inputsXMLByCondition[condition]
 
@@ -274,6 +276,77 @@ class ResequencingConditionTable(ConditionTable):
 
     def referenceSet(self, condition):
         return self._referenceSetByCondition[condition]
+
+
+class PrimaryResequencingConditionTable(ResequencingConditionTable):
+
+    def _validateBasecaller(self):
+        required = ['TraceH5File', 'Basecaller', 'PPA', 'HQRF', 'Library']
+        # If you want the basecaller output to be copied to analysis/refarm,
+        # provide the following column:
+        optional = ['BasecallerName']
+        for rq in required:
+            if rq not in self.tbl.column_names:
+                raise TableValidationError(
+                    "'{}' column must be present".format(rq))
+
+    def _parsePPAString(self, condition):
+        ppa = self.condition(condition).PPA
+        exe, mod = parse_exe_or_module(ppa[0], 'baz2bam', ('ppa', 'basecaller'))
+        return mod, exe
+
+    def _parseBCString(self, condition):
+        bc = self.condition(condition).Basecaller
+        exe, mod = parse_exe_or_module(bc[0], 'basecaller-console-app',
+                                       'basecaller')
+        return mod, exe
+
+    def _parseBasecaller(self):
+        self._basecallerModuleByCondition = {}
+        self._basecallerExeByCondition = {}
+        self._ppaModuleByCondition = {}
+        self._ppaExeByCondition = {}
+        for condition in self.conditions:
+            try:
+                mod, exe = self._parseBCString(condition)
+                self._basecallerModuleByCondition[condition] = mod
+                self._basecallerExeByCondition[condition] = exe
+                mod, exe = self._parsePPAString(condition)
+                self._ppaModuleByCondition[condition] = mod
+                self._ppaExeByCondition[condition] = exe
+            except DataNotFound as e:
+                raise InputResolutionError(str(e))
+
+    def _resolveInputs(self, resolver):
+        super(PrimaryResequencingConditionTable, self)._resolveInputs(resolver)
+        self._parseBasecaller()
+
+    def _validateTable(self):
+        super(PrimaryResequencingConditionTable, self)._validateTable()
+        self._validateBasecaller()
+
+    def basecallerModule(self, condition):
+        return self._basecallerModuleByCondition[condition]
+
+    def basecallerExe(self, condition):
+        return self._basecallerExeByCondition[condition]
+
+    def ppaModule(self, condition):
+        return self._ppaModuleByCondition[condition]
+
+    def ppaExe(self, condition):
+        return self._ppaExeByCondition[condition]
+
+    def HQRF(self, condition):
+        return str2bool(self.condition(condition).HQRF[0])
+
+    def BasecallerName(self, condition):
+        if 'BasecallerName' in self.tbl.column_names:
+            return self.condition(condition).BasecallerName[0]
+        return ''
+
+    def callAdapters(self, condition):
+        return str2bool(self.condition(condition).Library[0])
 
 
 class CoverageTitrationConditionTable(ResequencingConditionTable):
