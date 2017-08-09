@@ -227,70 +227,70 @@ Generate mapping reports workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
-  |   |   |-- Accuracy_Heatmap_MovieA.png
-  |   |   |-- Accuracy_Heatmap_MovieB.png
-  |   |   |-- Accuracy_Heatmap_MovieC.png
-  |   |   |-- Accuracy_Heatmap_MovieD.png
-  |   |   |-- AlnReadLenExtRange_Heatmap_MovieA.png
-  |   |   |-- AlnReadLenExtRange_Heatmap_MovieB.png
-  |   |   |-- AlnReadLenExtRange_Heatmap_MovieC.png
-  |   |   |-- AlnReadLenExtRange_Heatmap_MovieD.png
-  |   |   |-- AlnReadLen_Heatmap_MovieA.png
-  |   |   |-- AlnReadLen_Heatmap_MovieB.png
-  |   |   |-- AlnReadLen_Heatmap_MovieC.png
-  |   |   |-- AlnReadLen_Heatmap_MovieD.png
-  |   |   |-- AvgPolsPerZMW_Heatmap_MovieA.png
-  |   |   |-- AvgPolsPerZMW_Heatmap_MovieB.png
-  |   |   |-- AvgPolsPerZMW_Heatmap_MovieC.png
-  |   |   |-- AvgPolsPerZMW_Heatmap_MovieD.png
-  |   |   |-- Count_Heatmap_MovieA.png
-  |   |   |-- Count_Heatmap_MovieB.png
-  |   |   |-- Count_Heatmap_MovieC.png
-  |   |   |-- Count_Heatmap_MovieD.png
-  |   |   |-- DeletionRate_Heatmap_MovieA.png
-  |   |   |-- DeletionRate_Heatmap_MovieB.png
-  |   |   |-- DeletionRate_Heatmap_MovieC.png
-  |   |   |-- DeletionRate_Heatmap_MovieD.png
-  |   |   |-- InsertionRate_Heatmap_MovieA.png
-  |   |   |-- InsertionRate_Heatmap_MovieB.png
-  |   |   |-- InsertionRate_Heatmap_MovieC.png
-  |   |   |-- InsertionRate_Heatmap_MovieD.png
-  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieA.png
-  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieB.png
-  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieC.png
-  |   |   |-- MaxSubreadLenExtRange_Heatmap_MovieD.png
-  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieA.png
-  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieB.png
-  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieC.png
-  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_MovieD.png
-  |   |   |-- MaxSubreadLen_Heatmap_MovieA.png
-  |   |   |-- MaxSubreadLen_Heatmap_MovieB.png
-  |   |   |-- MaxSubreadLen_Heatmap_MovieC.png
-  |   |   |-- MaxSubreadLen_Heatmap_MovieD.png
-  |   |   |-- MismatchRate_Heatmap_MovieA.png
-  |   |   |-- MismatchRate_Heatmap_MovieB.png
-  |   |   |-- MismatchRate_Heatmap_MovieC.png
-  |   |   |-- MismatchRate_Heatmap_MovieD.png
+  |   |   |-- Accuracy_MovieA.png
+  |   |   |-- Accuracy_MovieB.png
+  |   |   |-- Accuracy_MovieC.png
+  |   |   |-- Accuracy_MovieD.png
+  |   |   |-- AlnReadLenExtRange_MovieA.png
+  |   |   |-- AlnReadLenExtRange_MovieB.png
+  |   |   |-- AlnReadLenExtRange_MovieC.png
+  |   |   |-- AlnReadLenExtRange_MovieD.png
+  |   |   |-- AlnReadLen_MovieA.png
+  |   |   |-- AlnReadLen_MovieB.png
+  |   |   |-- AlnReadLen_MovieC.png
+  |   |   |-- AlnReadLen_MovieD.png
+  |   |   |-- AvgPolsPerZMW_MovieA.png
+  |   |   |-- AvgPolsPerZMW_MovieB.png
+  |   |   |-- AvgPolsPerZMW_MovieC.png
+  |   |   |-- AvgPolsPerZMW_MovieD.png
+  |   |   |-- Count_MovieA.png
+  |   |   |-- Count_MovieB.png
+  |   |   |-- Count_MovieC.png
+  |   |   |-- Count_MovieD.png
+  |   |   |-- DeletionRate_MovieA.png
+  |   |   |-- DeletionRate_MovieB.png
+  |   |   |-- DeletionRate_MovieC.png
+  |   |   |-- DeletionRate_MovieD.png
+  |   |   |-- InsertionRate_MovieA.png
+  |   |   |-- InsertionRate_MovieB.png
+  |   |   |-- InsertionRate_MovieC.png
+  |   |   |-- InsertionRate_MovieD.png
+  |   |   |-- MaxSubreadLenExtRange_MovieA.png
+  |   |   |-- MaxSubreadLenExtRange_MovieB.png
+  |   |   |-- MaxSubreadLenExtRange_MovieC.png
+  |   |   |-- MaxSubreadLenExtRange_MovieD.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_MovieA.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_MovieB.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_MovieC.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_MovieD.png
+  |   |   |-- MaxSubreadLen_MovieA.png
+  |   |   |-- MaxSubreadLen_MovieB.png
+  |   |   |-- MaxSubreadLen_MovieC.png
+  |   |   |-- MaxSubreadLen_MovieD.png
+  |   |   |-- MismatchRate_MovieA.png
+  |   |   |-- MismatchRate_MovieB.png
+  |   |   |-- MismatchRate_MovieC.png
+  |   |   |-- MismatchRate_MovieD.png
   |   |   |-- Reference_Heatmap_MovieA.png
   |   |   |-- Reference_Heatmap_MovieB.png
   |   |   |-- Reference_Heatmap_MovieC.png
   |   |   |-- Reference_Heatmap_MovieD.png
-  |   |   |-- SNR_A_Heatmap_MovieA.png
-  |   |   |-- SNR_A_Heatmap_MovieB.png
-  |   |   |-- SNR_A_Heatmap_MovieC.png
-  |   |   |-- SNR_A_Heatmap_MovieD.png
-  |   |   |-- SNR_C_Heatmap_MovieA.png
-  |   |   |-- SNR_C_Heatmap_MovieB.png
-  |   |   |-- SNR_C_Heatmap_MovieC.png
-  |   |   |-- SNR_C_Heatmap_MovieD.png
-  |   |   |-- SNR_G_Heatmap_MovieA.png
-  |   |   |-- SNR_G_Heatmap_MovieB.png
-  |   |   |-- SNR_G_Heatmap_MovieC.png
-  |   |   |-- SNR_G_Heatmap_MovieD.png
-  |   |   |-- SNR_T_Heatmap_MovieA.png
-  |   |   |-- SNR_T_Heatmap_MovieB.png
-  |   |   |-- SNR_T_Heatmap_MovieC.png
-  |   |   |-- SNR_T_Heatmap_MovieD.png
+  |   |   |-- SNR_A_MovieA.png
+  |   |   |-- SNR_A_MovieB.png
+  |   |   |-- SNR_A_MovieC.png
+  |   |   |-- SNR_A_MovieD.png
+  |   |   |-- SNR_C_MovieA.png
+  |   |   |-- SNR_C_MovieB.png
+  |   |   |-- SNR_C_MovieC.png
+  |   |   |-- SNR_C_MovieD.png
+  |   |   |-- SNR_G_MovieA.png
+  |   |   |-- SNR_G_MovieB.png
+  |   |   |-- SNR_G_MovieC.png
+  |   |   |-- SNR_G_MovieD.png
+  |   |   |-- SNR_T_MovieA.png
+  |   |   |-- SNR_T_MovieB.png
+  |   |   |-- SNR_T_MovieC.png
+  |   |   |-- SNR_T_MovieD.png
   |   |   |-- Uniformity_histogram_MovieA.png
   |   |   |-- Uniformity_histogram_MovieB.png
   |   |   |-- Uniformity_histogram_MovieC.png
@@ -300,28 +300,28 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Uniformity_metrics_MovieC.csv
   |   |   |-- Uniformity_metrics_MovieD.csv
   |   |   |-- barchart_of_uniformity.png
-  |   |   |-- rEnd_Heatmap_MovieA.png
-  |   |   |-- rEnd_Heatmap_MovieB.png
-  |   |   |-- rEnd_Heatmap_MovieC.png
-  |   |   |-- rEnd_Heatmap_MovieD.png
-  |   |   |-- rStartExtRange_Heatmap_MovieA.png
-  |   |   |-- rStartExtRange_Heatmap_MovieB.png
-  |   |   |-- rStartExtRange_Heatmap_MovieC.png
-  |   |   |-- rStartExtRange_Heatmap_MovieD.png
-  |   |   |-- rStart_Heatmap_MovieA.png
-  |   |   |-- rStart_Heatmap_MovieB.png
-  |   |   |-- rStart_Heatmap_MovieC.png
-  |   |   |-- rStart_Heatmap_MovieD.png
+  |   |   |-- rEnd_MovieA.png
+  |   |   |-- rEnd_MovieB.png
+  |   |   |-- rEnd_MovieC.png
+  |   |   |-- rEnd_MovieD.png
+  |   |   |-- rStartExtRange_MovieA.png
+  |   |   |-- rStartExtRange_MovieB.png
+  |   |   |-- rStartExtRange_MovieC.png
+  |   |   |-- rStartExtRange_MovieD.png
+  |   |   |-- rStart_MovieA.png
+  |   |   |-- rStart_MovieB.png
+  |   |   |-- rStart_MovieC.png
+  |   |   |-- rStart_MovieD.png
   |   |   |-- report.RData
   |   |   |-- report.json
-  |   |   |-- tEnd_Heatmap_MovieA.png
-  |   |   |-- tEnd_Heatmap_MovieB.png
-  |   |   |-- tEnd_Heatmap_MovieC.png
-  |   |   |-- tEnd_Heatmap_MovieD.png
-  |   |   |-- tStart_Heatmap_MovieA.png
-  |   |   |-- tStart_Heatmap_MovieB.png
-  |   |   |-- tStart_Heatmap_MovieC.png
-  |   |   `-- tStart_Heatmap_MovieD.png
+  |   |   |-- tEnd_MovieA.png
+  |   |   |-- tEnd_MovieB.png
+  |   |   |-- tEnd_MovieC.png
+  |   |   |-- tEnd_MovieD.png
+  |   |   |-- tStart_MovieA.png
+  |   |   |-- tStart_MovieB.png
+  |   |   |-- tStart_MovieC.png
+  |   |   `-- tStart_MovieD.png
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv

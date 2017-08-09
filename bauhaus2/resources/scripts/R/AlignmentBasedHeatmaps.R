@@ -16,11 +16,9 @@ ASP_RATIO = 0.5
 plotwidth = 7.2
 plotheight = 4.2
 
-
 #----------------------------------------------------------------
 # Convenience functions for extracting specific metrics from bam file using pbbamr
 #----------------------------------------------------------------
-
 
 #' Return the number of frames per second from PacBio bam index
 #'
@@ -81,8 +79,6 @@ getHoleX = function(bam, idx = NULL)
 
 getHoleY = function(bam, idx = NULL)
   (getHoleNumber(bam, idx) %% 65536)
-
-
 
 #' Return data frame with columns X and Y ( for Hole X and Hole Y ) from PacBio bam index
 #'
@@ -145,8 +141,6 @@ getTemplateEnd = function(bam, idx = NULL)
 getTemplateStart = function(bam, idx = NULL)
   .getBAMData(bam$tstart, idx)
 
-
-
 #' Return a vector of factors with reference names from bam index
 #'
 #' @param bam data frame returned by pbbamr::loadPBI
@@ -158,7 +152,6 @@ getTemplateStart = function(bam, idx = NULL)
 
 getReferenceName = function(bam, idx = NULL)
   .getBAMData(bam$ref, idx)
-
 
 #' Return a vector containing qend from PacBio bam index
 #'
@@ -172,7 +165,6 @@ getReferenceName = function(bam, idx = NULL)
 getQueryEnd = function(bam, idx = NULL)
   .getBAMData(bam$qend, idx)
 
-
 #' Return a vector containing qstart from PacBio bam index
 #'
 #' @param bam data frame returned by pbbamr::loadPBI
@@ -184,8 +176,6 @@ getQueryEnd = function(bam, idx = NULL)
 
 getQueryStart = function(bam, idx = NULL)
   .getBAMData(bam$qstart, idx)
-
-
 
 #' Return a vector containing astart from PacBio bam index
 #'
@@ -199,8 +189,6 @@ getQueryStart = function(bam, idx = NULL)
 getReadStart = function(bam, idx = NULL)
   .getBAMData(bam$astart, idx)
 
-
-
 #' Return a vector containing aend from PacBio bam index
 #'
 #' @param bam data frame returned by pbbamr::loadPBI
@@ -212,7 +200,6 @@ getReadStart = function(bam, idx = NULL)
 
 getReadEnd = function(bam, idx = NULL)
   .getBAMData(bam$aend, idx)
-
 
 #' Return a vector containing the number of matches from each row of PacBio bam index
 #'
@@ -226,8 +213,6 @@ getReadEnd = function(bam, idx = NULL)
 getMatches = function(bam, idx = NULL)
   .getBAMData(bam$matches, idx)
 
-
-
 #' Return a vector containing the number of mismatches from each row of PacBio bam index
 #'
 #' @param bam data frame returned by pbbamr::loadPBI
@@ -239,8 +224,6 @@ getMatches = function(bam, idx = NULL)
 
 getMismatches = function(bam, idx = NULL)
   .getBAMData(bam$mismatches, idx)
-
-
 
 #' Return a vector containing the number of insertions from each row of PacBio bam index
 #'
@@ -254,8 +237,6 @@ getMismatches = function(bam, idx = NULL)
 getInsertions = function(bam, idx = NULL)
   .getBAMData(bam$inserts, idx)
 
-
-
 #' Return a vector containing the number of deletions from each row of PacBio bam index
 #'
 #' @param bam data frame returned by pbbamr::loadPBI
@@ -267,8 +248,6 @@ getInsertions = function(bam, idx = NULL)
 
 getDeletions = function(bam, idx = NULL)
   .getBAMData(bam$dels, idx)
-
-
 
 #' Return a vector containing the SNR_A values from each row of PacBio bam index
 #'
@@ -282,8 +261,6 @@ getDeletions = function(bam, idx = NULL)
 getSNR_A = function(bam, idx = NULL)
   .getBAMData(bam$snrA, idx)
 
-
-
 #' Return a vector containing the SNR_C values from each row of PacBio bam index
 #'
 #' @param bam data frame returned by pbbamr::loadPBI
@@ -295,7 +272,6 @@ getSNR_A = function(bam, idx = NULL)
 
 getSNR_C = function(bam, idx = NULL)
   .getBAMData(bam$snrC, idx)
-
 
 #' Return a vector containing the SNR_G values from each row of PacBio bam index
 #'
@@ -309,7 +285,6 @@ getSNR_C = function(bam, idx = NULL)
 getSNR_G = function(bam, idx = NULL)
   .getBAMData(bam$snrG, idx)
 
-
 #' Return a vector containing the SNR_T values from each row of PacBio bam index
 #'
 #' @param bam data frame returned by pbbamr::loadPBI
@@ -321,8 +296,6 @@ getSNR_G = function(bam, idx = NULL)
 
 getSNR_T = function(bam, idx = NULL)
   .getBAMData(bam$snrT, idx)
-
-
 
 #' Return a data frame containing SNR_A, SNR_C, SNR_G, and SNR_T from PacBio bam file.
 #'
@@ -341,8 +314,6 @@ getSNR = function(bam, idx = NULL)
     SNR_T = getSNR_T(bam, idx)
   )
 
-
-
 #' Return a list containing vectors of IPDs, measured in frames, corresponding to rows of PacBio bam file
 #'
 #' @param tmp output of pbbamr::loadAlnsFromIndex - list as long as the number of specified rows.
@@ -357,8 +328,6 @@ getIPD = function(tmp, idx = NULL)
   lapply(tmp, function(x)
     x$ipd)
 
-
-
 #' Return a list of vectors of factors containing read bases from PacBio bam file.
 #'
 #' @param tmp output of pbbamr::loadAlnsFromIndex - list as long as the number of specified rows.
@@ -372,8 +341,6 @@ getIPD = function(tmp, idx = NULL)
 getBasecalls = function(tmp)
   lapply(tmp, function(x)
     x$read)
-
-
 
 #' Return a list containing vectors of pulse widths, measured in frames, corresponding to rows of PacBio bam file
 #' Returns vectors of 0s if pulse widths are not available.
@@ -397,8 +364,6 @@ getPulseWidth = function(tmp)
     rep(0, length(x)))
 }
 
-
-
 #' Return a list containing vectors of pkmid values corresponding to rows of PacBio bam file
 #' Returns vectors of 0s if pulse widths are not available.
 #'
@@ -421,7 +386,6 @@ getPkmid = function(tmp)
     rep(0, length(x)))
 }
 
-
 #' Return a list containing vectors of start frames corresponding to rows of PacBio bam file
 #' Returns vectors of 0s if start frames are not available.
 #'
@@ -443,8 +407,6 @@ getStartFrames = function(tmp)
   lapply(getIPD(tmp), function(x)
     rep(0, length(x)))
 }
-
-
 
 #' Return a list containing vectors of cumulative advance times corresponding to rows of PacBio bam file.
 #'
@@ -473,7 +435,6 @@ getCumulativeAdvanceTime = function(ipds, pws)
   )
 }
 
-
 #' Return a list containing total length in frames of corresponding rows in PacBio bam file.
 #'
 #' @param ipds list output of getIPD above
@@ -491,12 +452,6 @@ getTotalTime = function(ipds, pws)
   sapply(getCumulativeAdvanceTime(ipds, pws), function(a)
     a[length(a)] - a[1])
 }
-
-
-#----------------------------------------------------------------
-
-
-
 
 #----------------------------------------------------------------
 # Call pbbamr::loadPBI and pbbamr::loadAlnsFromIndex to generate a single data frame with summary statistics
@@ -531,7 +486,6 @@ getBasicInformation = function(bam)
   cbind(res, getSNR(bam))
 }
 
-
 #' Return data frame containing hole number, accuracy, pulse widths by base, and all other statistics from PacBio bam file
 #'
 #' @param bamFile PacBio bam file path
@@ -556,7 +510,6 @@ writeSummaryTable = function(bamFile, fastaname, blockSize = 5e3)
   getBasicInformation(bam)
 }
 
-
 #' Simple error handling for \code{\link{writeSummaryTable}}
 #'
 #' @param bamFile PacBio bam file path
@@ -580,14 +533,9 @@ simpleErrorHandling = function(bamFile, fastaname, blockSize = 5e3)
   res
 }
 
-#----------------------------------------------------------------
-
-
-
 #------------------------------------------------------------
 # Summarize by ZMW
 #------------------------------------------------------------
-
 
 #' Summarize the data frame contained in x by HoleNumber
 #'
@@ -624,7 +572,6 @@ sumUpByMolecule = function(res, colList)
   data.frame(merge(m, w, by = "HoleNumber"))
 }
 
-
 #' To obtain lists of columns for summarization for \code{\link{sumUpByBase}}
 #'
 #' @param names.res string containing names of res, input to \code{\link{sumUpByBase}}
@@ -651,7 +598,6 @@ getColumnsForSummarization = function(names.res, dna)
   )
 }
 
-
 #' Takes output of \code{\link{sumUpByMolecule}} and appends some extra columns, such as Accuracy
 #'
 #' @param res data frame, output of \code{\link{SumUpByMolecule}}
@@ -677,7 +623,6 @@ postSummation = function(res, refTable)
   res
 }
 
-
 #' Summarize output of \code{\link{writeSummaryTable}} by hole number
 #'
 #' @param res data frame, output of \code{\link{writeSummaryTable}}
@@ -701,14 +646,6 @@ applySummarization = function(res)
   postSummation(res, refTable)
 }
 
-#----------------------------------------------------------------
-
-
-#------------------------------------------------------------
-# Summarize chips into N[1] x N[2] blocks of ZMWs
-#------------------------------------------------------------
-
-
 #' Take output of \code{\link{applySummarization}} and summarize data into N[1] x N[2] blocks of ZMWs
 #'
 #' @param res data frame output of \code{\link{applySummarization}}
@@ -722,11 +659,11 @@ applySummarization = function(res)
 #'
 #' @export
 
-convenientSummarizer = function(res,
-                                N,
-                                key = 1e3,
-                                x.min = 64,
-                                y.min = 64)
+convenientSummarizerbam = function(res,
+                                   N,
+                                   key = 1e3,
+                                   x.min = 64,
+                                   y.min = 64)
 {
   if (length(N) == 1) {
     N = c(N, N)
@@ -753,7 +690,7 @@ convenientSummarizer = function(res,
       "Reference",
       "SMRTlinkID"
     )
-    u = data.table(res[,-which(names(res) %in% excl)])
+    u = data.table(res[, -which(names(res) %in% excl)])
     u$X = X
     u$Y = Y
     FUN = function(x, na.rm = TRUE)
@@ -772,115 +709,9 @@ convenientSummarizer = function(res,
   tmp
 }
 
-
-#----------------------------------------------------------------
-
-
-
-
-
 #----------------------------------------------------------------
 # Plotting heatmaps
 #----------------------------------------------------------------
-
-
-#' Replace boxplot outliers in a column of a data frame with NA values
-#'
-#' @param m data frame
-#' @param name string name of one of the columns in m
-#' @seealso \code{\link{plotSingleSummarizedHeatmap}} which calls this function
-#' @export
-#' @examples
-#' removeOutliers( res, "AlnReadLen" )
-
-removeOutliers = function(m, name)
-{
-  m = subset(m,!is.na(m[, name]))
-  values = m[, name]
-  m[, name] = ifelse(values <= boxplot(m[, name], plot = FALSE)$stat[5], values, NA)
-  m
-}
-
-
-#' Generate a single heatmap corresponding to one column of a data frame.
-#'
-#' @param res output of \code{\link{convenientSummarizer}} - bam data summarized into N[1] x N[2] blocks of ZMWs
-#' @param n string name of column of res to be plotted.
-#' @param label string label for plot
-#' @param N vector of length two giving dimensions of blocks of ZMWs
-#' @param limits (optional) vector of length two describing upper and lower bounds in heatmap range - in order to compare across heatmaps
-#' @seealso \code{\link{drawSummarizedHeatmaps}} which calls this function
-#' @export
-
-plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL)
-{
-  if (length(N) == 1) {
-    N = c(N, N)
-  }
-  
-  plotID =  paste(n, "_Heatmap_", label, sep = "")
-  pngfile = paste(plotID, "png", sep = ".")
-  title = paste(n, " (median per ", N[1], " x ", N[2], " block) : ", label, sep = "")
-  
-  loginfo(paste("\t Draw", n, "heatmap for condition:", label))
-  
-  if (is.null(limits))
-  {
-    tmp = removeOutliers(res, n)
-    myplot = (
-      qplot(
-        data = tmp,
-        Y,
-        X,
-        size = I(0.75),
-        color = tmp[, n]
-      ) +
-        scale_colour_gradientn(colours = rainbow(10)) +
-        labs(title = title) +
-        theme(aspect.ratio = ASP_RATIO)
-    )
-    
-  }
-  else
-  {
-    # Above range gray ( na.value ), below range black
-    low = subset(res, res[, n] < limits[1])
-    tmp = subset(res, res[, n] >= limits[1])
-    myplot = (
-      qplot(
-        data = tmp,
-        Y,
-        X,
-        size = I(0.75),
-        color = tmp[, n]
-      ) +
-        scale_colour_gradientn(colours = rainbow(10), limits = limits) +
-        geom_point(
-          data = low,
-          aes(Y, X),
-          size = I(0.75),
-          alpha = I(0.05),
-          colour = "black"
-        ) +
-        labs(title = title) +
-        theme(aspect.ratio = ASP_RATIO)
-    )
-  }
-  
-  # savePlots(myplot, pngfile)
-  # if ( 0 ) {
-  report$ggsave(
-    pngfile,
-    myplot,
-    width = plotwidth,
-    height = plotheight,
-    id = paste(n, "heatmap", label, sep = "_"),
-    title = paste(n, "Heatmap:", label),
-    caption = paste(n, "heatmap", label, sep = "_"),
-    tags = c("heatmap", "heatmaps", n)
-  )
-  # }
-}
 
 savePlots = function(plot, file)
 {
@@ -917,8 +748,6 @@ plotReferenceHeatmap = function(report, res, label)
       theme(aspect.ratio = ASP_RATIO)
   )
   
-  # savePlots( myplot, pngfile )
-  # if ( 0 ) {
   report$ggsave(
     pngfile,
     myplot,
@@ -929,9 +758,7 @@ plotReferenceHeatmap = function(report, res, label)
     caption = paste("Reference_heatmap", label, sep = "_"),
     tags = c("heatmap", "heatmaps", "reference", "ref")
   )
-  # }
 }
-
 
 #' Generate all standard heatmaps and uniformity metrics for aligned PacBio bam data
 #'
@@ -955,7 +782,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   
   loginfo(paste("Summarize into", N[1], "x", N[2], "blocks for condition:", label))
   
-  df = convenientSummarizer(res, N, key)
+  df = convenientSummarizerbam(res, N, key)
   
   # Re-order the rows so that they match the distance matrix
   tmp = data.frame(X = dist$ID %/% key, Y = dist$ID %% key)
@@ -1024,15 +851,8 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
 }
 
 #----------------------------------------------------------------
-
-
-
-
-
-#----------------------------------------------------------------
 # Loading uniformity histogram and metrics
 #----------------------------------------------------------------
-
 
 #' Plot histogram showing number of ZMWs that produced an alignment in each block of N[1] x N[2].
 #'
@@ -1075,9 +895,7 @@ drawHistogramForUniformity = function(report, label, counts, N, tbl)
     caption = paste("Loading Uniformity Histogram:", label),
     tags = c("heatmap", "heatmaps", "uniformity", "loading", label)
   )
-  # }
 }
-
 
 #' Calculate R. Grothe's loading efficiency metric for a given set of counts of # of alignments per block of ZMWs.
 #'
@@ -1101,8 +919,6 @@ getLoadingEfficiency = function(counts, N)
   total = colMeans(single, na.rm = TRUE)  # assume uniform
   100 * max(total, na.rm = TRUE) * exp(1)
 }
-
-
 
 #' Return 100 * p-value for Moran's I statistic
 #'
@@ -1171,81 +987,6 @@ ape.moranI = function(x,
   ))
 }
 
-
-#' Set diagonal elements of weight matrix to 0 and normalize by row sums
-#'
-#' @param weight = square weighting matrix defined in \code{\link{getDistMat}}
-#'
-#' @seealso \code{\link{ape.moransI}} which uses this function
-#' @export
-
-normalizeWeightMatrix = function(weight)
-{
-  diag(weight) <- 0
-  
-  #' Normalize weight matrix by row sums:
-  r = rowSums(weight)
-  r[r == 0] <- 1
-  weight / r
-}
-
-
-#' Needed to calculate standard deviation and p-value for Moran's I statistic:
-#'
-#' @param weight = square weighting matrix defined in \code{\link{getDistMat}}
-#'
-#' @seealso \code{\link{ape.moransI}} which uses this function
-#' @export
-
-getS1andS2forMoransI = function(weight)
-{
-  tmp = weight + t(weight)
-  S1 = sum(tmp * tmp) / 2
-  tmp = 1 + colSums(weight)
-  S2 = sum(tmp * tmp)
-  c(S1, S2)
-}
-
-
-#' Define a basic distance matrix to be used in Moran's I calculation
-#'
-#' @param N = data is summarized into N[1] x N[2] blocks of zmws
-#' @param key = used to create a key to uniquely identify each block
-#'
-#' @return list:
-#'      ID = vector of unique keys,
-#'      MatList = list of weight matrices,
-#'      S1.S2 = needed for std. dev calculation
-#'
-#' @seealso \code{\link{ape.moranI}} which uses the output
-#' @export
-
-getDistMat = function(N, key)
-{
-  # 64 to 1143; 64 to 1023
-  m = 1080 %/% N[1]
-  n = 960 %/% N[2]
-  D = expand.grid(1:m, 1:n)
-  names(D) = c("x", "y")
-  N = as.matrix(dist(D))
-  diag(N) <- 1
-  
-  M = normalizeWeightMatrix(1 / N)
-  N[N < 1.5] <- 1
-  N[N >= 1.5] <- 0
-  N = normalizeWeightMatrix(N)
-  
-  MatList = list(Inv = M, N = N)
-  list(
-    MatList = MatList,
-    S1.S2 = lapply(MatList, getS1andS2forMoransI),
-    ID = key * D$x + D$y,
-    nMatrices = length(MatList)
-  )
-}
-
-
-
 #' (K. Voss) If the entire chip loaded as well as one of the best regions, what would the loading be?
 #'
 #' @param res = data frame, summarized into blocks of ZMWs
@@ -1262,7 +1003,6 @@ getKVossMetric = function(res, qnt = 0.95, nZMWs = 1032000)
   r = sum(as.numeric(res$Count), na.rm = TRUE)
   c(quantile(n, qnt, na.rm = TRUE), round(100 * sum(r >= n, na.rm = TRUE) / nrow(res)))
 }
-
 
 #' Return a data frame containing uniformity metrics for tracking uniformity across chips, including overdispersion.
 #'
@@ -1330,9 +1070,7 @@ getUniformityMetricsTable = function(res, label, N, com, SNR, dist, cutoff = 2)
     SNR_G = SNR[3],
     SNR_T = SNR[4]
   )
-  
 }
-
 
 #' The length of a string (in characters).
 #'
@@ -1369,9 +1107,7 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
   
   tbl = getUniformityMetricsTable(tmp, label, N, com, SNR, dist)
   drawHistogramForUniformity(report, label, as.numeric(tmp$Count), N, tbl)
-  csvfile = paste("Uniformity_metrics_",label,".csv", sep = "")
-  # write.csv( tbl, file = file.path( "./reports/AlignmentBasedHeatmaps/", csvfile ), row.names = FALSE )
-  # if ( 0 ) {
+  csvfile = paste("Uniformity_metrics_", label, ".csv", sep = "")
   report$write.table(
     csvfile,
     tbl,
@@ -1379,13 +1115,7 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
     title = paste(label, "Loading_uniformity_metrics", sep = "_"),
     tags = c("table", "uniformity", "loading", "metrics")
   )
-  # }
-  
 }
-
-#----------------------------------------------------------------
-
-
 
 #' Main function called by makeReport
 #'
@@ -1456,19 +1186,30 @@ makeReport = function(report)
   res = lapply(1:length(alnxmls), function(k)
     generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k], dist, N, key))
   # Make barplot for Uniformity metrics
-  csvfile = paste(report$outputDir,"/Uniformity_metrics_",labels,".csv", sep = "")[unlist(lapply(res, function(i){!i == 0}))]
+  csvfile = paste(report$outputDir,
+                  "/Uniformity_metrics_",
+                  labels,
+                  ".csv",
+                  sep = "")[unlist(lapply(res, function(i) {
+                    !i == 0
+                  }))]
   if (length(csvfile) == 0) {
     loginfo("[WARNING] - All conditions are empty!")
     0
   } else {
-    Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N")]
+    Uniformity = rbindlist(lapply(csvfile, function(i) {
+      read.csv(i)
+    }))[, c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N")]
     Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
     Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
-    Uniformity = Uniformity[,c("ID", "LambdaUniformity", "MoransI.Inv_percentage", "MoransI.N_percentage")]
+    Uniformity = Uniformity[, c("ID",
+                                "LambdaUniformity",
+                                "MoransI.Inv_percentage",
+                                "MoransI.N_percentage")]
     UniformityLong = melt(Uniformity, id.vars = "ID")
-    tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) + 
-      geom_bar(stat = "identity", position = "dodge") + 
-      scale_fill_brewer(palette = "Set1") + 
+    tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_fill_brewer(palette = "Set1") +
       labs(x = "Variables", y = "Score", title = "Barchart of Uniformity")
     report$ggsave(
       "barchart_of_uniformity.png",
@@ -1478,7 +1219,14 @@ makeReport = function(report)
       id = "barchart_of_uniformity",
       title = "Barchart of Uniformity",
       caption = "barchart_of_uniformity",
-      tags = c("bar", "barchart", "uniformity", "Lambda", "MoransI", "Morans")
+      tags = c(
+        "bar",
+        "barchart",
+        "uniformity",
+        "Lambda",
+        "MoransI",
+        "Morans"
+      )
     )
   }
   # Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.Inv.sd", "MoransI.N", "MoransI.N.sd")]
@@ -1487,10 +1235,6 @@ makeReport = function(report)
   report$write.report()
   1
 }
-
-#----------------------------------------------------------------
-
-
 
 main = function()
 {

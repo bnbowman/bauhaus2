@@ -34,12 +34,12 @@ plotwidth = 7.2
 plotheight = 4.2
 ASP_RATIO = 0.5
 
-generateStsH5Heatmaps = function(report, file, label, N, dist = NULL )
+generateStsH5Heatmaps = function(report, file, label, N, dist = NULL)
 {
-  S = getStsH5Data( file, labelReadTypes = FALSE )
+  S = getStsH5Data(file, labelReadTypes = FALSE)
   
   # Plots for P0 reads
-  dna = c("A", "C", "G", "T" )
+  dna = c("A", "C", "G", "T")
   channel = c("Green", "Red")
   nonalnedZMWMetrics = c(
     "Loading",
@@ -50,270 +50,305 @@ generateStsH5Heatmaps = function(report, file, label, N, dist = NULL )
     "ReadLength",
     "ReadType",
     "ReadScore",
-    paste( "HQRegionSnrMean", dna, sep = "_" ),
-    paste( "HQPkmid", dna, sep = "_" ),
-    paste( "BaselineLevel", channel, sep = "_" ),
-    paste( "BaselineStd", channel, sep = "_" ),
-    paste( "HQBaselineLevel", channel, sep = "_" ),
-    paste( "HQBaselineStd", channel, sep = "_" ),
-    paste( "SnrMean", dna, sep = "_" ) )
+    paste("HQRegionSnrMean", dna, sep = "_"),
+    paste("HQPkmid", dna, sep = "_"),
+    paste("BaselineLevel", channel, sep = "_"),
+    paste("BaselineStd", channel, sep = "_"),
+    paste("HQBaselineLevel", channel, sep = "_"),
+    paste("HQBaselineStd", channel, sep = "_"),
+    paste("SnrMean", dna, sep = "_")
+  )
   
-  P0 = subset( S, Productivity == 0 )
-  P0 = P0[,c( nonalnedZMWMetrics, "HoleNumber", "X", "Y" )]
-  plotProductivityCategories(report, P0, "P0", label, N, dist )
+  P0 = subset(S, Productivity == 0)
+  P0 = P0[, c(nonalnedZMWMetrics, "HoleNumber", "X", "Y")]
+  plotProductivityCategories(report, P0, "P0", label, N, dist)
   
   # Plots for P1 reads
-  P1 = subset( S, Productivity == 1 )
-  plotProductivityCategories(report, P1, "P1", label, N, dist )
+  P1 = subset(S, Productivity == 1)
+  plotProductivityCategories(report, P1, "P1", label, N, dist)
   
   # Plots for P2 reads
-  P2 = subset( S, Productivity == 2 )
-  P2 = P2[,c( nonalnedZMWMetrics, "HoleNumber", "X", "Y" )]
-  plotProductivityCategories(report, P2, "P2", label, N, dist )
+  P2 = subset(S, Productivity == 2)
+  P2 = P2[, c(nonalnedZMWMetrics, "HoleNumber", "X", "Y")]
+  plotProductivityCategories(report, P2, "P2", label, N, dist)
   
   # Write table of productivity values vs. failure modes
-  r = data.frame( rbind(
-    countFailuresPerMode( P0 ),
-    countFailuresPerMode( P1 ),
-    countFailuresPerMode( P2 ) ) )
-  names( r ) = c("DMEF.all", "DMEF.hqr", "No.hqr", "low.SNR", "OK.SNR")
-  row.names( r ) = c("P0", "P1", "P2")
-  cat( "Writing csv file.")
-  write.csv( r, file = file.path(report$outputDir, paste( label, "csv", sep = "." ) ), row.names = TRUE )
+  r = data.frame(rbind(
+    countFailuresPerMode(P0),
+    countFailuresPerMode(P1),
+    countFailuresPerMode(P2)
+  ))
+  names(r) = c("DMEF.all", "DMEF.hqr", "No.hqr", "low.SNR", "OK.SNR")
+  row.names(r) = c("P0", "P1", "P2")
+  cat("Writing csv file.")
+  write.csv(r,
+            file = file.path(report$outputDir, paste(label, "csv", sep = ".")),
+            row.names = TRUE)
   r
 }
 
-plotProductivityCategories = function(report, res, x, label, N, dist = NULL )
+plotProductivityCategories = function(report, res, x, label, N, dist = NULL)
 {
-  dna = c("A", "C", "G", "T" )
-  hq.snr = paste( "HQRegionSnrMean", dna, sep = "_" )
-  snr = paste( "SnrMean", dna, sep = "_" )
+  dna = c("A", "C", "G", "T")
+  hq.snr = paste("HQRegionSnrMean", dna, sep = "_")
+  snr = paste("SnrMean", dna, sep = "_")
   
-  try( plotAllFields(report, getDMEF.all( res, hq.snr, snr ), N, paste( label, x, "DMEF.all", sep = "_" ), FALSE, dist ), silent = FALSE )
-  try( plotAllFields(report, getDMEF.hqr( res, hq.snr, snr ), N, paste( label, x, "DMEF.hqr", sep = "_" ), FALSE, dist ), silent = FALSE )
-  try( plotAllFields(report, getNoHQR( res, hq.snr, snr ), N, paste( label, x, "No_HQR", sep = "_" ), FALSE, dist ), silent = FALSE )
-  try( plotAllFields(report, getLowSNR( res, hq.snr, snr ), N, paste( label, x, "Low_SNR", sep = "_" ), FALSE, dist ), silent = FALSE )
-  try( plotAllFields(report, getOKsnr( res, hq.snr, snr ), N, paste( label, x, "OK_SNR", sep = "_" ), FALSE, dist ), silent = FALSE )
+  try(plotAllFields(
+    report,
+    getDMEF.all(res, hq.snr, snr),
+    N,
+    paste(label, x, "DMEF.all", sep = "_"),
+    FALSE,
+    dist
+  ),
+  silent = FALSE)
+  try(plotAllFields(
+    report,
+    getDMEF.hqr(res, hq.snr, snr),
+    N,
+    paste(label, x, "DMEF.hqr", sep = "_"),
+    FALSE,
+    dist
+  ),
+  silent = FALSE)
+  try(plotAllFields(report,
+                    getNoHQR(res, hq.snr, snr),
+                    N,
+                    paste(label, x, "No_HQR", sep = "_"),
+                    FALSE,
+                    dist),
+      silent = FALSE)
+  try(plotAllFields(
+    report,
+    getLowSNR(res, hq.snr, snr),
+    N,
+    paste(label, x, "Low_SNR", sep = "_"),
+    FALSE,
+    dist
+  ),
+  silent = FALSE)
+  try(plotAllFields(report,
+                    getOKsnr(res, hq.snr, snr),
+                    N,
+                    paste(label, x, "OK_SNR", sep = "_"),
+                    FALSE,
+                    dist),
+      silent = FALSE)
   1
 }
 
-plotAllFields = function(report, res, N, label, addUnif, dist = NULL, pois.frac = NA )
+plotAllFields = function(report,
+                         res,
+                         N,
+                         label,
+                         addUnif,
+                         dist = NULL,
+                         pois.frac = NA)
 {
-  if ( is.null( res ) ) { return( 0 ) }
-  if ( nrow( res ) < 5 ) 
+  if (is.null(res)) {
+    return(0)
+  }
+  if (nrow(res) < 5)
   {
-    cat( "[WARNING]: Too few elements.\n" )
-    return( 0 )
+    cat("[WARNING]: Too few elements.\n")
+    return(0)
   }
   
-  exclude = identifyEmptyOrSingleValuedColumns( res, c( "HoleNumber", "X", "Y" ) )
-  colNames = setdiff( names( res ), exclude )
+  exclude = identifyEmptyOrSingleValuedColumns(res, c("HoleNumber", "X", "Y"))
+  colNames = setdiff(names(res), exclude)
   loadingUnif = NULL
-  res = convenientSummarizer( res, N = N )
+  res = convenientSummarizersts(res, N = N)
   
-  #' if ( addUnif )
-  #' {
-  #'   #' Add loading uniformity plots and metrics:
-  #'   res$AvgPolsPerZMW = estimateAvgPolsPerZMW( res, N )
-  #'   loadingUnif = try( addLoadingUniformityPlots( res, N, writedir, label, dist, pois.frac ), silent = FALSE )
-  #'   if ( class( res ) == "try-error" ) { loadingUnif = NULL  }
-  #' }
+  lapply(c("Count", colNames), function(n) {
+    try(plotSingleSummarizedHeatmap(report,
+                                    res,
+                                    n,
+                                    label = label,
+                                    N = N,
+                                    sts = TRUE),
+        silent = FALSE)
+  })
   
-  lapply( c("Count", colNames), function( n ) {
-    try( plotSingleSummarizedHeatmap(report, res, n, label = label, N = N ), silent = FALSE ) } )
-  
-  countUniqueZMWs( res )
+  countUniqueZMWs(res)
 }
 
-plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL )
+convenientSummarizersts = function(res,
+                                   N,
+                                   key = 1e3,
+                                   x.min = 64,
+                                   y.min = 64)
 {
-  if ( length( N ) == 1 ) { N = c( N, N ) }
-  title = paste( n, " (summarized into ", N[1], " x ", N[2], " blocks) : ", label, sep = "" )
-  
-  if ( is.null( limits ) )
-  {
-    tmp = removeOutliers( res, n )
-    myplot = ( qplot( data = tmp, Y, X, size = I(0.75), color = tmp[,n] ) +
-                 scale_colour_gradientn( colours = rainbow( 10 ) ) +
-                 labs( title = title ) +
-                 theme( aspect.ratio = ASP_RATIO ) )
-    
+  if (length(N) == 1) {
+    N = c(N, N)
   }
-  else
-  {
-    # Above range gray ( na.value ), below range black
-    low = subset( res, res[,n] < limits[1] )
-    tmp = subset( res, res[,n] >= limits[1] )
-    myplot = ( qplot( data = tmp, Y, X, size = I(0.75), color = tmp[,n] ) +
-                 scale_colour_gradientn( colours = rainbow(10), limits = limits ) +
-                 geom_point( data = low, aes( Y, X ), size = I(0.75), alpha = I(0.05), colour = "black") +
-                 labs( title = title ) +
-                 theme( aspect.ratio = ASP_RATIO )  )
-  }
-  
-  report$ggsave(
-    paste(n, "_", label, ".png", sep = ""),
-    myplot,
-    width = 7.2,
-    height = 4.2,
-    type = c("cairo"),
-    id = paste(n, "STSheatmap", label, sep = "_"),
-    title = paste(n, "STSHeatmap:", label),
-    caption = paste(n, "STSheatmap", label, sep = "_"),
-    tags = c("heatmap", "heatmaps", n, "sts", "h5", label)
-  )
-}
-
-countUniqueZMWs = function( res ) length( unique( res$HoleNumber ) )
-
-convenientSummarizer = function( res, N, key = 1e3, x.min = 64, y.min = 64 )
-{
-  if ( length( N ) == 1 ) { N = c( N, N ) }
-  x = as.numeric( res$X ) - x.min + 1
-  y = as.numeric( res$Y ) - y.min + 1
-  X = ( x %/% N[1] ) + ( x %% N[1] > 0 )
-  Y = ( y %/% N[2] ) + ( y %% N[2] > 0 )
-  z = data.frame( data.table( X, Y )[, .N, by = .(X, Y)] )
+  x = as.numeric(res$X) - x.min + 1
+  y = as.numeric(res$Y) - y.min + 1
+  X = (x %/% N[1]) + (x %% N[1] > 0)
+  Y = (y %/% N[2]) + (y %% N[2] > 0)
+  z = data.frame(data.table(X, Y)[, .N, by = .(X, Y)])
   # z$N contains the number of alignments per N[1] x N[2] block
   
-  if ( "SNR_A" %in% names( res ) )
+  if ("SNR_A" %in% names(res))
   {
-    res$SNR_A[ res$SNR_A == -1 ] <- NA
-    res$SNR_C[ res$SNR_C == -1 ] <- NA
-    res$SNR_G[ res$SNR_G == -1 ] <- NA
-    res$SNR_T[ res$SNR_T == -1 ] <- NA
+    res$SNR_A[res$SNR_A == -1] <- NA
+    res$SNR_C[res$SNR_C == -1] <- NA
+    res$SNR_G[res$SNR_G == -1] <- NA
+    res$SNR_T[res$SNR_T == -1] <- NA
   }
   
-  excl = c( "Matches", "Mismatches", "Inserts", "Dels", "HoleNumber", "Reference", "SMRTlinkID" )
-  u = data.table( res[ , -which( names( res ) %in% excl ) ] )
-  u$X = X; u$Y = Y
-  FUN = function( x, na.rm = TRUE ) as.double( median( x, na.rm ) )
-  cols = setdiff( names( u ), c( "X", "Y" ) )
-  tmp = data.frame( u[, lapply( .SD, FUN ), by = .(X, Y), .SDcols = cols ] )
-  m = match( key * tmp$X + tmp$Y, key * z$X + z$Y )
-  tmp$Count = z$N[ m ]
+  excl = c(
+    "Matches",
+    "Mismatches",
+    "Inserts",
+    "Dels",
+    "HoleNumber",
+    "Reference",
+    "SMRTlinkID"
+  )
+  u = data.table(res[,-which(names(res) %in% excl)])
+  u$X = X
+  u$Y = Y
+  FUN = function(x, na.rm = TRUE)
+    as.double(median(x, na.rm))
+  cols = setdiff(names(u), c("X", "Y"))
+  tmp = data.frame(u[, lapply(.SD, FUN), by = .(X, Y), .SDcols = cols])
+  m = match(key * tmp$X + tmp$Y, key * z$X + z$Y)
+  tmp$Count = z$N[m]
   tmp
 }
 
-identifyEmptyOrSingleValuedColumns = function( res, exclude )
+countUniqueZMWs = function(res)
+  length(unique(res$HoleNumber))
+
+identifyEmptyOrSingleValuedColumns = function(res, exclude)
 {
-  nms = setdiff( names( res ), exclude )
-  v = vapply( nms, function( n ) length( unique( res[,n] ) ), 0 )
-  c( exclude, nms[ which( v < 1 ) ] )
+  nms = setdiff(names(res), exclude)
+  v = vapply(nms, function(n)
+    length(unique(res[, n])), 0)
+  c(exclude, nms[which(v < 1)])
 }
 
-getDMEF.all = function( x, hq.snr, snr )
+getDMEF.all = function(x, hq.snr, snr)
 {
-  s = subset( x, is.na( x$HQRegionSnrMean_A ) & is.na( x$SnrMean_A ) )
-  s[, which( names(s) %in% setdiff( names( x ), c( hq.snr, snr ) ) ) ]
+  s = subset(x, is.na(x$HQRegionSnrMean_A) & is.na(x$SnrMean_A))
+  s[, which(names(s) %in% setdiff(names(x), c(hq.snr, snr)))]
 }
 
-getDMEF.hqr = function( x, hq.snr, snr )
+getDMEF.hqr = function(x, hq.snr, snr)
 {
-  s = subset( x, ( x$HQRegionSnrMean_A == -1 ) & !is.na( x$SnrMean_A ) )
-  s[, which( names(s) %in% setdiff( names( x ), hq.snr ) ) ]
+  s = subset(x, (x$HQRegionSnrMean_A == -1) & !is.na(x$SnrMean_A))
+  s[, which(names(s) %in% setdiff(names(x), hq.snr))]
 }
 
-getNoHQR = function( x, hq.snr, snr )
+getNoHQR = function(x, hq.snr, snr)
 {
-  s = subset( x, is.na( x$HQRegionSnrMean_A ) & !is.na( x$SnrMean_A ) )
-  s[, which( names(s) %in% setdiff( names( x ), hq.snr ) ) ]
+  s = subset(x, is.na(x$HQRegionSnrMean_A) & !is.na(x$SnrMean_A))
+  s[, which(names(s) %in% setdiff(names(x), hq.snr))]
 }
 
-toFindLowVsOKsnr = function( x, hq.snr, snr )
+toFindLowVsOKsnr = function(x, hq.snr, snr)
 {
-  apply( as.matrix( x[, hq.snr ] ), 1, min )
+  apply(as.matrix(x[, hq.snr]), 1, min)
 }
 
-getLowSNR = function( x, hq.snr, snr, minSNR = 4.0 )
+getLowSNR = function(x, hq.snr, snr, minSNR = 4.0)
 {
-  subset( x, !is.na( x$HQRegionSnrMean_A ) & ( x$HQRegionSnrMean_A != -1 ) &
-            !is.na( x$SnrMean_A ) & ( x$SnrMean_A != -1 ) &
-            toFindLowVsOKsnr( x, hq.snr, snr ) < minSNR )
+  subset(
+    x,!is.na(x$HQRegionSnrMean_A) & (x$HQRegionSnrMean_A != -1) &
+      !is.na(x$SnrMean_A) & (x$SnrMean_A != -1) &
+      toFindLowVsOKsnr(x, hq.snr, snr) < minSNR
+  )
 }
 
-getOKsnr = function( x, hq.snr, snr, minSNR = 4.0 )
+getOKsnr = function(x, hq.snr, snr, minSNR = 4.0)
 {
-  subset( x, !is.na( x$HQRegionSnrMean_A ) & ( x$HQRegionSnrMean_A != -1 ) &
-            !is.na( x$SnrMean_A ) & ( x$SnrMean_A != -1 ) &
-            toFindLowVsOKsnr( x, hq.snr, snr ) >= minSNR )
+  subset(
+    x,!is.na(x$HQRegionSnrMean_A) & (x$HQRegionSnrMean_A != -1) &
+      !is.na(x$SnrMean_A) & (x$SnrMean_A != -1) &
+      toFindLowVsOKsnr(x, hq.snr, snr) >= minSNR
+  )
 }
 
-getStsH5Data = function( file, labelReadTypes = TRUE )
+getStsH5Data = function(file, labelReadTypes = TRUE)
 {
   #' Open h5 file:
-  h5 = new( "H5File", fileName = file, mode = "r" )
-  ZMWMetrics = getH5Group( h5, "ZMWMetrics" )
-  ZMW = getH5Group( h5, "ZMW" )
+  h5 = new("H5File", fileName = file, mode = "r")
+  ZMWMetrics = getH5Group(h5, "ZMWMetrics")
+  ZMW = getH5Group(h5, "ZMW")
   
-  S = lapply( datasetsZMWMetrics(), function( name ) opDS( ZMWMetrics, name ) )
-  S = do.call( cbind, S )
+  S = lapply(datasetsZMWMetrics(), function(name)
+    opDS(ZMWMetrics, name))
+  S = do.call(cbind, S)
   
-  K = lapply( c("HoleNumber", "UnitFeature"), function( name ) opDS( ZMW, name ) )
-  K = as.matrix( do.call( cbind, K ) )
+  K = lapply(c("HoleNumber", "UnitFeature"), function(name)
+    opDS(ZMW, name))
+  K = as.matrix(do.call(cbind, K))
   
-  S$HoleNumber = K[,1]
+  S$HoleNumber = K[, 1]
   S$X = S$HoleNumber %/% MAXINT
   S$Y = S$HoleNumber %% MAXINT
   
-  if ( labelReadTypes )
+  if (labelReadTypes)
   {
-    S$ReadType = 
-      c("Empty", "FullHq0", "FullHq1", "PartialHq0", "PartialHq1", 
-        "PartialHq2", "Indeterminate" )[ S$ReadType + 1 ]
+    S$ReadType =
+      c(
+        "Empty",
+        "FullHq0",
+        "FullHq1",
+        "PartialHq0",
+        "PartialHq1",
+        "PartialHq2",
+        "Indeterminate"
+      )[S$ReadType + 1]
   }
   
   #' Return non-fiducial ZMWs only:
-  S[ K[,2] == 0, ]
+  S[K[, 2] == 0, ]
 }
 
-removeOutliers = function( m, name )
+countFailuresPerMode = function(P, minSNR = 4.0)
 {
-  m = subset( m, !is.na( m[,name] ) )
-  values = m[,name]
-  m[,name] = ifelse( values <= boxplot(  m[,name], plot = FALSE )$stat[5], values, NA )
-  m
-}
-
-countFailuresPerMode = function( P, minSNR = 4.0 )
-{
-  dna = c("A", "C", "G", "T" )
-  hq.snr = paste( "HQRegionSnrMean", dna, sep = "_" )
-  snr = paste( "SnrMean", dna, sep = "_" )
+  dna = c("A", "C", "G", "T")
+  hq.snr = paste("HQRegionSnrMean", dna, sep = "_")
+  snr = paste("SnrMean", dna, sep = "_")
   
   # DME fails across entire trace:
-  r1 = nrow( getDMEF.all( P, hq.snr, snr ) )
+  r1 = nrow(getDMEF.all(P, hq.snr, snr))
   
   # DME fails inside HQ region:
-  r2 = nrow( getDMEF.hqr( P, hq.snr, snr ) )
+  r2 = nrow(getDMEF.hqr(P, hq.snr, snr))
   
   # HQ region not defined
-  r3 = nrow( getNoHQR( P, hq.snr, snr ) )
+  r3 = nrow(getNoHQR(P, hq.snr, snr))
   
   # low SNR
-  r4 = nrow( getLowSNR( P, hq.snr, snr ) )
+  r4 = nrow(getLowSNR(P, hq.snr, snr))
   
   # OK SNR
-  r5 = nrow( getOKsnr( P, hq.snr, snr ) )
+  r5 = nrow(getOKsnr(P, hq.snr, snr))
   
-  c( r1, r2, r3, r4, r5 )
+  c(r1, r2, r3, r4, r5)
 }
 
-opDS = function( group, name, na.value = 2147483647 )
+opDS = function(group, name, na.value = 2147483647)
 {
-  if ( !h5DatasetExists( group, name ) )
+  if (!h5DatasetExists(group, name))
   {
-    return( NULL )
+    return(NULL)
   }
-  dset = getH5Dataset( group, name )[] 
-  dset[ dset == na.value ] <- NA
-  dset = data.frame( dset )
-  rm( group )
+  dset = getH5Dataset(group, name)[]
+  dset[dset == na.value] <- NA
+  dset = data.frame(dset)
+  rm(group)
   gc()
-  n = ncol( dset )
-  if ( n == 2 ) { name = paste( name, c("Green", "Red"), sep = "_" ) }
-  if ( n == 4 ) { name = paste( name, c("A", "C", "G", "T"), sep = "_" ) } 
-  names( dset ) = name
+  n = ncol(dset)
+  if (n == 2) {
+    name = paste(name, c("Green", "Red"), sep = "_")
+  }
+  if (n == 4) {
+    name = paste(name, c("A", "C", "G", "T"), sep = "_")
+  }
+  names(dset) = name
   dset
 }
 
@@ -352,50 +387,6 @@ datasetsZMWMetrics = function()
   )
 }
 
-normalizeWeightMatrix = function( weight )
-{
-  diag( weight ) <- 0
-  
-  #' Normalize weight matrix by row sums:
-  r = rowSums( weight )
-  r[ r == 0 ] <- 1
-  weight / r
-}
-
-getS1andS2forMoransI = function( weight )
-{
-  # Already guaranteed to be symmetric
-  # tmp = weight + t( weight )
-  # tmp = 2 * weight
-  # S1 = sum( tmp * tmp ) / 2
-  S1 = 2 * sum( weight * weight )
-  tmp = 1 + colSums( weight )
-  S2 = sum( tmp * tmp )
-  c( S1, S2 )
-}
-
-getDistMat = function( N, key )
-{
-  # 64 to 1143; 64 to 1023
-  m = 1080 %/% N[1]
-  n = 960 %/% N[2]
-  D = expand.grid( 1:m, 1:n )
-  names( D ) = c("x", "y" )
-  N = as.matrix( dist( D ) )
-  diag( N ) <- 1
-  
-  M = normalizeWeightMatrix( 1 / N )
-  N[ N < 1.5 ] <- 1
-  N[ N >= 1.5 ] <- 0
-  N = normalizeWeightMatrix( N )
-  
-  MatList = list( Inv = M, N = N )
-  list( MatList = MatList,
-        S1.S2 = lapply( MatList, getS1andS2forMoransI ),
-        ID = key * D$x + D$y,
-        nMatrices = length( MatList ) )
-}
-
 loadstsH5 <- function(stsH5file) {
   stsH5 = data.frame(
     hole = h5read(stsH5file, "/ZMW/HoleNumber"),
@@ -417,21 +408,28 @@ loadstsXML <- function(stsXMLfile) {
       SIF = xml_double(xml_children(x)[i])
     }
   }
-  stsXML = data.frame(
-    AdapterDimerFraction = ADF,
-    ShortInsertFraction = SIF
-  )
+  stsXML = data.frame(AdapterDimerFraction = ADF,
+                      ShortInsertFraction = SIF)
   stsXML
 }
 
 poissonPlot <- function(d, title) {
   lambdas <- seq(0, 4, length = 100)
-  poissonCurve <- data.frame(x = 1 - dpois(0, lambdas), y = dpois(1, lambdas))
-  p <- ggplot(poissonCurve, aes(x = x, y = y)) + geom_line() + ggtitle(title) +
+  poissonCurve <-
+    data.frame(x = 1 - dpois(0, lambdas), y = dpois(1, lambdas))
+  p <-
+    ggplot(poissonCurve, aes(x = x, y = y)) + geom_line() + ggtitle(title) +
     scale_x_continuous('Not Empty') + scale_y_continuous('Single Loads', limits = c(0, .80)) +
-    geom_vline(xintercept = 1 - dpois(0,1)) + geom_hline(yintercept = dpois(1,1)) + 
-    geom_point(data = data.frame(empty = 1 - d[,'empty'], single = d[,'single'], 
-                                 Condition = d$Condition), aes(empty, single, col = Condition), size = 8) + 
+    geom_vline(xintercept = 1 - dpois(0, 1)) + geom_hline(yintercept = dpois(1, 1)) +
+    geom_point(
+      data = data.frame(
+        empty = 1 - d[, 'empty'],
+        single = d[, 'single'],
+        Condition = d$Condition
+      ),
+      aes(empty, single, col = Condition),
+      size = 8
+    ) +
     plTheme + themeTilt  + clFillScale
   return(p)
 }
@@ -439,14 +437,13 @@ poissonPlot <- function(d, title) {
 makeReadTypePlots <- function(report, cd2) {
   loginfo("Making Read Type Plots")
   
-  cdunrolled = cd2 %>% group_by(Condition, hole, readType, productivity) %>% summarise(unrolledT = sum(tlen), accuracy = 1 - (sum(mismatches) + sum(dels) + sum(inserts)) / sum(tlen))
+  cdunrolled = cd2 %>% group_by(Condition, hole, readType, productivity) %>% summarise(unrolledT = sum(tlen),
+                                                                                       accuracy = 1 - (sum(mismatches) + sum(dels) + sum(inserts)) / sum(tlen))
   
   tp <-
-    ggplot(data = cdunrolled, aes(
-      x = readType,
-      y = unrolledT,
-      fill = Condition
-    )) +
+    ggplot(data = cdunrolled, aes(x = readType,
+                                  y = unrolledT,
+                                  fill = Condition)) +
     geom_boxplot(position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Read Type", y = "Unrolled Alignments Length (Summation)", title = "Unrolled Alignments Length (Summation) by Read Type")
@@ -468,22 +465,18 @@ makeReadTypePlots <- function(report, cd2) {
     id = "unrolled_template_length_by_readtype_boxplot",
     title = "Unrolled Alignments Length (Summation) by Read Type",
     caption = "Unrolled Alignments Length (Summation) by Read Type",
-    tags = c(
-      "sts",
-      "h5",
-      "boxplot",
-      "unrolled",
-      "template",
-      "readtype"
-    )
+    tags = c("sts",
+             "h5",
+             "boxplot",
+             "unrolled",
+             "template",
+             "readtype")
   )
   
   tp <-
-    ggplot(data = cdunrolled, aes(
-      x = readType,
-      y = accuracy,
-      fill = Condition
-    )) +
+    ggplot(data = cdunrolled, aes(x = readType,
+                                  y = accuracy,
+                                  fill = Condition)) +
     geom_boxplot(position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Read Type", y = "Accuracy (per ZMW)", title = "Accuracy (per ZMW) by Read Type")
@@ -496,13 +489,11 @@ makeReadTypePlots <- function(report, cd2) {
     id = "accuracy_by_readtype_boxplot",
     title = "Accuracy (per ZMW) by Read Type",
     caption = "Accuracy (per ZMW) by Read Type",
-    tags = c(
-      "sts",
-      "h5",
-      "boxplot",
-      "accuracy",
-      "readtype"
-    )
+    tags = c("sts",
+             "h5",
+             "boxplot",
+             "accuracy",
+             "readtype")
   )
   
   # Primary readType metric and agg plots
@@ -541,10 +532,14 @@ makeReadTypePlots <- function(report, cd2) {
     
     emptyVals = "Empty"
     singleVals = "Single"
-    d1 = cd2 %>% group_by(Condition) %>% summarise(empty  = mean(readTypeAgg.1 %in% emptyVals),
-                                                  single = mean(readTypeAgg.1 %in% singleVals))
-    d2 = cd2 %>% group_by(Condition) %>% summarise(empty  = mean(readTypeAgg.2 %in% emptyVals),
-                                                   single = mean(readTypeAgg.2 %in% singleVals))
+    d1 = cd2 %>% group_by(Condition) %>% summarise(
+      empty  = mean(readTypeAgg.1 %in% emptyVals),
+      single = mean(readTypeAgg.1 %in% singleVals)
+    )
+    d2 = cd2 %>% group_by(Condition) %>% summarise(
+      empty  = mean(readTypeAgg.2 %in% emptyVals),
+      single = mean(readTypeAgg.2 %in% singleVals)
+    )
     
     tp1 <- poissonPlot(d1, "readTypeAgg.1")
     report$ggsave(
@@ -555,13 +550,11 @@ makeReadTypePlots <- function(report, cd2) {
       id = "readTypeAgg.1",
       title = "readTypeAgg.1",
       caption = "readTypeAgg.1",
-      tags = c(
-        "sts",
-        "h5",
-        "agg",
-        "readTypeAgg.1",
-        "readtype"
-      )
+      tags = c("sts",
+               "h5",
+               "agg",
+               "readTypeAgg.1",
+               "readtype")
     )
     
     tp2 <- poissonPlot(d2, "readTypeAgg.2")
@@ -573,13 +566,11 @@ makeReadTypePlots <- function(report, cd2) {
       id = "readTypeAgg.2",
       title = "readTypeAgg.2",
       caption = "readTypeAgg.2",
-      tags = c(
-        "sts",
-        "h5",
-        "agg",
-        "readTypeAgg.2",
-        "readtype"
-      )
+      tags = c("sts",
+               "h5",
+               "agg",
+               "readTypeAgg.2",
+               "readtype")
     )
   }
 }
@@ -603,14 +594,12 @@ makeYieldPlots <- function(report, cdH5) {
     id = "nzmws_readtype_hist_percentage",
     title = "Yield (ZMWs) Percentage by Read Type",
     caption = "Yield (ZMWs) Percentage by Read Type",
-    tags = c(
-      "sts",
-      "h5",
-      "histogram",
-      "readtype",
-      "zmws",
-      "percentage"
-    )
+    tags = c("sts",
+             "h5",
+             "histogram",
+             "readtype",
+             "zmws",
+             "percentage")
   )
   
   # Yield (ZMWs) Percentage by Productivity
@@ -645,7 +634,8 @@ makestsXMLPlots <- function(report, cdXML) {
   
   # Adapter Dimer Fraction by Condition
   
-  tp = ggplot(cdXML, aes(x = Condition, y = AdapterDimerFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
+  tp = ggplot(cdXML,
+              aes(x = Condition, y = AdapterDimerFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Adapter Dimer Fraction", title = "Adapter Dimer Fraction by Condition")
   
@@ -657,19 +647,18 @@ makestsXMLPlots <- function(report, cdXML) {
     id = "adapter_dimer_fraction",
     title = "Adapter Dimer Fraction by Condition",
     caption = "Adapter Dimer Fraction by Condition",
-    tags = c(
-      "sts",
-      "xml",
-      "histogram",
-      "adapter",
-      "zmws",
-      "fraction"
-    )
+    tags = c("sts",
+             "xml",
+             "histogram",
+             "adapter",
+             "zmws",
+             "fraction")
   )
   
   # Short Insert Fraction by Condition
   
-  tp = ggplot(cdXML, aes(x = Condition, y = ShortInsertFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
+  tp = ggplot(cdXML,
+              aes(x = Condition, y = ShortInsertFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Short Insert Fraction", title = "Short Insert Fraction by Condition")
   
@@ -681,14 +670,12 @@ makestsXMLPlots <- function(report, cdXML) {
     id = "short_insert_fraction",
     title = "Short Insert Fraction by Condition",
     caption = "Short Insert Fraction by Condition",
-    tags = c(
-      "sts",
-      "xml",
-      "histogram",
-      "shortinsert",
-      "zmws",
-      "fraction"
-    )
+    tags = c("sts",
+             "xml",
+             "histogram",
+             "shortinsert",
+             "zmws",
+             "fraction")
   )
 }
 
@@ -735,14 +722,12 @@ makeEmptyPlots <- function(report) {
     id = "accuracy_by_readtype_boxplot",
     title = "Accuracy (per ZMW) by Read Type",
     caption = "Accuracy (per ZMW) by Read Type",
-    tags = c(
-      "sts",
-      "h5",
-      "boxplot",
-      "accuracy",
-      "readtype",
-      "missing"
-    )
+    tags = c("sts",
+             "h5",
+             "boxplot",
+             "accuracy",
+             "readtype",
+             "missing")
   )
   
   report$ggsave(
@@ -791,14 +776,12 @@ makeEmptyPlots <- function(report) {
     id = "readTypeAgg.1",
     title = "readTypeAgg.1",
     caption = "readTypeAgg.1",
-    tags = c(
-      "sts",
-      "h5",
-      "agg",
-      "readTypeAgg.1",
-      "readtype",
-      "missing"
-    )
+    tags = c("sts",
+             "h5",
+             "agg",
+             "readTypeAgg.1",
+             "readtype",
+             "missing")
   )
   
   report$ggsave(
@@ -809,14 +792,12 @@ makeEmptyPlots <- function(report) {
     id = "readTypeAgg.2",
     title = "readTypeAgg.2",
     caption = "readTypeAgg.2",
-    tags = c(
-      "sts",
-      "h5",
-      "agg",
-      "readTypeAgg.2",
-      "readtype",
-      "missing"
-    )
+    tags = c("sts",
+             "h5",
+             "agg",
+             "readTypeAgg.2",
+             "readtype",
+             "missing")
   )
 }
 
@@ -876,9 +857,9 @@ makeEmptyXMLPlots <- function(report) {
 }
 
 makeSTSH5Heatmaps <- function(report, conditions) {
-  MAXINT <<- 2^16
-  N = c( 8, 8 ) 
-  dist = getDistMat( c( 16, 8 ), key = 1e3 )
+  MAXINT <<- 2 ^ 16
+  N = c(8, 8)
+  dist = getDistMat(c(16, 8), key = 1e3)
   
   try(lapply(1:nrow(conditions), function(k)
     generateStsH5Heatmaps(report, conditions$sts_h5[k], conditions$Condition[k], N, dist)), silent = FALSE)
@@ -911,7 +892,6 @@ makeReport <- function(report) {
   }
   
   if (stsExist) {
-    
     # Load the sts.h5 file for each data frame
     dfsH5 = lapply(as.character(unique(conditions$STS)), function(s) {
       loginfo(paste("Loading sts.h5 file:", s))
@@ -921,9 +901,24 @@ makeReport <- function(report) {
     
     # Make Read Type and Productivity as factor
     cdH5$readType = as.factor(cdH5$readType)
-    levels(cdH5$readType) <- list("Empty" = "0", "FullHqRead0" = "1", "FullHqRead1" = "2", "PartialHqRead0" = "3", "PartialHqRead1" = "4", "PartialHqRead2" = "5", "Multiload" = "6", "Indeterminate" = "7")
+    levels(cdH5$readType) <-
+      list(
+        "Empty" = "0",
+        "FullHqRead0" = "1",
+        "FullHqRead1" = "2",
+        "PartialHqRead0" = "3",
+        "PartialHqRead1" = "4",
+        "PartialHqRead2" = "5",
+        "Multiload" = "6",
+        "Indeterminate" = "7"
+      )
     cdH5$productivity = as.factor(cdH5$productivity)
-    levels(cdH5$productivity) <- list("Empty" = "0", "Productive_HQ_Region" = "1", "Other" = "2")
+    levels(cdH5$productivity) <-
+      list(
+        "Empty" = "0",
+        "Productive_HQ_Region" = "1",
+        "Other" = "2"
+      )
     
     # Load the pbi index for each data frame
     dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
@@ -973,11 +968,9 @@ makeReport <- function(report) {
 
 main <- function()
 {
-  report <- bh2Reporter(
-    "condition-table.csv",
-    "reports/ZMWstsPlots/report.json",
-    "ZMW STS Plots"
-  )
+  report <- bh2Reporter("condition-table.csv",
+                        "reports/ZMWstsPlots/report.json",
+                        "ZMW STS Plots")
   makeReport(report)
   0
 }
