@@ -20,19 +20,16 @@ def subreadsMappingPlan(ct, args):
     if not args.no_smrtlink:
         # Use SMRTLink for mapping
         return ["map-subreads-smrtlink.snake",
-                'bam2bam.snake',
                 "smrtlink-job-status.snake",
                 "collect-references.snake"]
     elif args.chunks > 0:
         # Do our own mapping using scatter/gather
         return ["map-subreads.snake",
-                'bam2bam.snake',
                 "scatter-subreads.snake",
                 "collect-references.snake"]
     else:
         # Do our own mapping, naively
         return ["map-subreads.snake",
-                'bam2bam.snake',
                 "collect-references.snake"]
 
 
@@ -43,7 +40,9 @@ class PrimaryRefarmWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "PrimaryRefarm"
     CONDITION_TABLE_TYPE = PrimaryResequencingConditionTable
-    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
+    SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",
+                            "extras/pbsmrtpipe-unrolled-mappings-preset.xml",
+                            "extras/pbsmrtpipe-unrolled-nohq-mappings-preset.xml")
     R_SCRIPTS            = ( "R/PbiSampledPlots.R",
                              "R/PbiPlots.R",
                              "R/LibDiagnosticPlots.R",

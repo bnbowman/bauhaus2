@@ -12,9 +12,10 @@ gathered_mapped_chunks = \
       for c in ct.conditions }
 
 def getOpts(wc):
+    if not hasattr(ct, 'callAdapters') or not hasattr(ct, 'HQRF'):
+        return ''
     library = ct.callAdapters(wc.condition)
     hqrf = ct.HQRF(wc.condition)
-    #TODO: make these files
     if hqrf and library:
         # the default:
         return ''
