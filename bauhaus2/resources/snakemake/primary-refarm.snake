@@ -1,0 +1,191 @@
+# -----------------------------------------------------------------------------
+# primary-refarm.snake: run PA and PPA
+"""
+It would be lovely to have the refarming happen in analsys/refarm, however
+there are issues: naming runs unambiguously is impossible. Basecaller, PPA,
+builds, arguments, all can change relatively silently. Human naming also tends
+to be ambiguous. Instead, we allow an optional column, BasecallerName, which
+allows users to specify a canonical name for canonical runs. The results will
+be copied there. Doing the refarm in the refarm directory also would have
+drastically reduced computational complexity, as other zia jobs could pick up
+on the output of an earlier zia job. This would also be a mess, as one could
+be running when another is started. This is fine for now.
+
+If you want to start from a canonical run that someone else produced by
+providing a BasecallerName, have your job start from that subreadset.
+
+You could also just put a valid subreadset in analysis/refarm, instead of
+copying the bam files
+
+baz2hdf support should be added to support certain tools, like HQRF
+"""
+# TODO: Support controls and barcoding? Not a core function?
+
+import subprocess
+
+local_subreadset = {
+    c: expand("conditions/{condition}/subreads/input.subreadset.xml",
+              condition=c)
+    for c in ct.conditions}
+
+remote_trcs = {c: ct.inputs(c)[0] for c in ct.conditions}
+
+def trc2meta(wildcards, input):
+    path, name = os.path.split(input[0])
+    context = name[:-1 * len('.trc.h5')]
+    return os.path.join(path, '.{}.metadata.xml'.format(context))
+
+def trc2adapters(wildcards, input):
+    return input[0][:-1 * len('trc.h5')] + 'adapters.fasta'
+
+def trc2mov(trc):
+    return os.path.basename(trc)[:-1 * len('.trc.h5')]
+
+
+# -- Target --
+
+rule all:
+    input:
+        subreads=local_subreadset.values(),
+
+# -- Worker --
+
+def deduplicate(paths):
+    seen = set([])
+    tbr = dict()
+    for k, v in paths.items():
+        if not v in seen:
+            seen.add(v)
+            tbr[k] = v
+        else:
+            tbr[k] = ''
+    return tbr
+
+def trc2refarm(ct):
+    tbr = {}
+    for c in ct.conditions:
+        trc = ct.inputs(c)[0]
+        if trc.startswith('/pbi/collections/') and ct.BasecallerName(c):
+            ctbr = trc.replace('collections', 'analysis/refarm')
+            ctbr = os.path.join(os.path.dirname(ctbr),
+                                ct.condition(c).BasecallerName[0])
+            tbr[c] = ctbr
+        else:
+            tbr[c] = ''
+    return tbr
+
+# we may use the same data and basecaller for multiple conditions. copying to
+# the same place would be problematic.
+refarm_paths = deduplicate(trc2refarm(ct))
+
+rule collect_primary_inputs:
+    input:
+        remote_trcs.values()
+
+rule collect_one_trc:
+    input:
+        lambda wc: remote_trcs[wc.condition]
+    output:
+        trc="conditions/{condition}/primary/input.trc.h5",
+        meta="conditions/{condition}/primary/input.metadata.xml",
+        adapters="conditions/{condition}/primary/input.adapters.fasta"
+    params:
+        inmeta=trc2meta,
+        inadapters=trc2adapters
+    shell:
+        """
+        ln -s {input} {output.trc}
+        ln -s {params.inmeta} {output.meta}
+        ln -s {params.inadapters} {output.adapters}
+        """
+
+rule run_basecaller_console_app:
+    input:
+        "conditions/{condition}/primary/input.trc.h5"
+    output:
+        "conditions/{condition}/primary/input.baz"
+    params:
+        module=lambda wc: ct.basecallerModule(wc.condition),
+        exe=lambda wc: ct.basecallerExe(wc.condition)
+    threads: 16
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} --inputfile {input} --numthreads {threads} \
+        --outputbazfile {output} --internal
+        """
+
+rule run_baz2bam:
+    input:
+        baz="conditions/{condition}/primary/input.baz",
+        meta="conditions/{condition}/primary/input.metadata.xml",
+        adapters="conditions/{condition}/primary/input.adapters.fasta"
+    output:
+        sset="conditions/{condition}/primary/input.subreadset.xml",
+    params:
+        module=lambda wc: ct.ppaModule(wc.condition),
+        exe=lambda wc: ct.ppaExe(wc.condition),
+        prefix="conditions/{condition}/primary/input",
+        toCopy=lambda wc: refarm_paths[wc.condition],
+        mov=lambda wc: trc2mov(remote_trcs[wc.condition]),
+        cond=lambda wc: wc.condition
+    threads: 8
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} -o {params.prefix} -m {input.meta} \
+        -j {threads} -b {threads} --adapters={input.adapters} \
+        {input.baz}
+        module load smrtlink/siv
+        if [ {params.toCopy} ] ;
+        then mkdir -p {params.toCopy} ;
+        dataset copyto {output.sset} \
+        {params.toCopy}/{params.mov}.subreadset.xml ;
+        cp {input.baz} {params.toCopy}/{params.mov}.baz ;
+        pwd > {params.toCopy}/{params.mov}.Bauhaus2analysis.txt ;
+        echo "Condition: {params.cond}" >> \
+        {params.toCopy}/{params.mov}.bauhaus2analysis.txt ;
+        fi
+        """
+
+def lookupInput(wc):
+    # XXX nohq library mappings aren't possible with blasr >:[
+    if (hasattr(ct, 'callAdapters') and hasattr(ct, 'HQRF')
+            and ct.callAdapters(wc.condition) and not ct.HQRF(wc.condition)):
+        tbr = 'conditions/{condition}/nohq/input.subreadset.xml'
+    else:
+        tbr = 'conditions/{condition}/primary/input.subreadset.xml'
+    return tbr.format(condition=wc.condition)
+
+rule noop:
+    input: lookupInput
+    output:
+        sset='conditions/{condition}/subreads/input.subreadset.xml',
+        adapters='conditions/{condition}/subreads/input.adapters.fasta'
+    params:
+        adapters=lambda wc, input: (input[0][:-1 * len('subreadset.xml')]
+                                    + 'adapters.fasta')
+    shell:
+        """
+        module load smrtlink/siv
+        dataset copyto {input} {output.sset}
+        cp --preserve=links {params.adapters} {output.adapters}
+        dataset newuuid --random {output.sset}
+        """
+
+rule nohq:
+    input: 'conditions/{condition}/primary/input.subreadset.xml'
+    output: 'conditions/{condition}/nohq/input.subreadset.xml'
+    params:
+        module=lambda wc: ct.ppaModule(wc.condition),
+        prefix="conditions/{condition}/nohq/input",
+        subreads='conditions/{condition}/primary/input.subreads.bam',
+        scraps='conditions/{condition}/primary/input.scraps.bam'
+    shell:
+        """
+        module purge
+        module load {params.module}
+        bam2bam -o {params.prefix} --fullHQ {params.subreads} {params.scraps}
+        """

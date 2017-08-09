@@ -1,9 +1,9 @@
-
-# ---------------------------------------------------------------------------------------------------
+# -------------------------------------------------------------------------------------
 # map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
 
 local_alignmentsets = \
-    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml",
+                 condition=c)
       for c in ct.conditions }
 
 # -- Target rules --
@@ -22,17 +22,28 @@ sl_port=config["bh2.smrtlink.services_port"]
 # -- on the head node (making this a localrule), and then we use a
 # -- semaphore to serialize executions of `pbservice run-pipeline`
 
+def getPreset(wc):
+    library = ct.callAdapters(wc.condition)
+    hqrf = ct.HQRF(wc.condition)
+    # XXX nohq library mappings aren't possible with blasr >:[
+    if library:
+        return "extras/pbsmrtpipe-mappings-preset.xml"
+    elif hqrf:
+        return "extras/pbsmrtpipe-unrolled-mappings-preset.xml"
+    elif not hqrf:
+        return "extras/pbsmrtpipe-unrolled-nohq-mappings-preset.xml"
+
 localrules: map_subreads_smrtlink_launch
 
 rule map_subreads_smrtlink_launch:
     input:
-        subreadSet="conditions/{condition}/subreads/input.subreadset.xml",
+        subreadSet=lambda wc: local_subreadset[wc.condition],
         referenceSet=lambda wc: ct.referenceSet(wc.condition)
     output:
         pbserviceInfo="conditions/{condition}/mapped/pbservice.json"
     params:
-        presetXmlFile="extras/pbsmrtpipe-mappings-preset.xml",
-        jobid = "Bauhaus2_Job_{condition}"
+        presetXmlFile=getPreset,
+        jobid="Bauhaus2_Job_{condition}"
     shell:
         """
         module add parallel

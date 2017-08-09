@@ -34,7 +34,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "UnrolledNoHQMapping"
     CONDITION_TABLE_TYPE = UnrolledMappingConditionTable
-    SMRTPIPE_PRESETS     = ( "extras/pbsmrtpipe-unrolled-mappings-preset.xml", )
+    SMRTPIPE_PRESETS     = ( "extras/pbsmrtpipe-unrolled-nohq-mappings-preset.xml", )
     R_SCRIPTS            = ( "R/PbiSampledPlots.R",
                              "R/PbiPlots.R",
                              "R/LibDiagnosticPlots.R",

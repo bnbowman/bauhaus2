@@ -8,5 +8,6 @@
   Heatmaps
   IsoSeqRC0
   MappingReports
+  PrimaryRefarm
   UnrolledNoHQMapping
   UnrolledNoHQMappingArrowByReference

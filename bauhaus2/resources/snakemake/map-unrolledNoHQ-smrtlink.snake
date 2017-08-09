@@ -31,7 +31,7 @@ rule map_unrolledNoHQ_smrtlink_launch:
     output:
         pbserviceInfo="conditions/{condition}/mapped/pbservice.json"
     params:
-        presetXmlFile="extras/pbsmrtpipe-unrolled-mappings-preset.xml",
+        presetXmlFile="extras/pbsmrtpipe-unrolled-nohq-mappings-preset.xml",
         jobid = "Bauhaus2_Job_{condition}"
     shell:
         """
