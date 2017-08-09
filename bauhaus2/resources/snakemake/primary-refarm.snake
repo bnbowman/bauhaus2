@@ -24,7 +24,7 @@ baz2hdf support should be added to support certain tools, like HQRF
 import subprocess
 
 local_subreadset = {
-    c: expand("conditions/{condition}/primary/input.subreadset.xml",
+    c: expand("conditions/{condition}/subreads/input.subreadset.xml",
               condition=c)
     for c in ct.conditions}
 
@@ -162,16 +162,17 @@ def lookupInput(wc):
 rule noop:
     input: lookupInput
     output:
-        'conditions/{condition}/subreads/input.subreadset.xml',
-        'conditions/{condition}/subreads/input.adapters.fasta'
+        sset='conditions/{condition}/subreads/input.subreadset.xml',
+        adapters='conditions/{condition}/subreads/input.adapters.fasta'
     params:
-        adapters=lambda wc, input: (input[:-1 * len('subreadset.xml')]
+        adapters=lambda wc, input: (input[0][:-1 * len('subreadset.xml')]
                                     + 'adapters.fasta')
     shell:
         """
         module load smrtlink/siv
-        dataset copyto {input} {output}
+        dataset copyto {input} {output.sset}
         cp --preserve=links {params.adapters} {output.adapters}
+        dataset newuuid --random {output.sset}
         """
 
 rule nohq:

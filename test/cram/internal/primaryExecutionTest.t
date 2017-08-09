@@ -72,15 +72,22 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
   |   |   |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
   |   |   `-- subreads
-  |   |       `-- chunks
-  |   |           |-- input.chunk0.subreadset.xml
-  |   |           |-- input.chunk1.subreadset.xml
-  |   |           |-- input.chunk2.subreadset.xml
-  |   |           |-- input.chunk3.subreadset.xml
-  |   |           |-- input.chunk4.subreadset.xml
-  |   |           |-- input.chunk5.subreadset.xml
-  |   |           |-- input.chunk6.subreadset.xml
-  |   |           `-- input.chunk7.subreadset.xml
+  |   |       |-- chunks
+  |   |       |   |-- input.chunk0.subreadset.xml
+  |   |       |   |-- input.chunk1.subreadset.xml
+  |   |       |   |-- input.chunk2.subreadset.xml
+  |   |       |   |-- input.chunk3.subreadset.xml
+  |   |       |   |-- input.chunk4.subreadset.xml
+  |   |       |   |-- input.chunk5.subreadset.xml
+  |   |       |   |-- input.chunk6.subreadset.xml
+  |   |       |   `-- input.chunk7.subreadset.xml
+  |   |       |-- input.adapters.fasta
+  |   |       |-- input.scraps.bam
+  |   |       |-- input.scraps.bam.pbi
+  |   |       |-- input.sts.xml
+  |   |       |-- input.subreads.bam
+  |   |       |-- input.subreads.bam.pbi
+  |   |       `-- input.subreadset.xml
   |   |-- HQunrolled
   |   |   |-- mapped
   |   |   |   |-- chunks
@@ -135,15 +142,22 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
   |   |   |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
   |   |   `-- subreads
-  |   |       `-- chunks
-  |   |           |-- input.chunk0.subreadset.xml
-  |   |           |-- input.chunk1.subreadset.xml
-  |   |           |-- input.chunk2.subreadset.xml
-  |   |           |-- input.chunk3.subreadset.xml
-  |   |           |-- input.chunk4.subreadset.xml
-  |   |           |-- input.chunk5.subreadset.xml
-  |   |           |-- input.chunk6.subreadset.xml
-  |   |           `-- input.chunk7.subreadset.xml
+  |   |       |-- chunks
+  |   |       |   |-- input.chunk0.subreadset.xml
+  |   |       |   |-- input.chunk1.subreadset.xml
+  |   |       |   |-- input.chunk2.subreadset.xml
+  |   |       |   |-- input.chunk3.subreadset.xml
+  |   |       |   |-- input.chunk4.subreadset.xml
+  |   |       |   |-- input.chunk5.subreadset.xml
+  |   |       |   |-- input.chunk6.subreadset.xml
+  |   |       |   `-- input.chunk7.subreadset.xml
+  |   |       |-- input.adapters.fasta
+  |   |       |-- input.scraps.bam
+  |   |       |-- input.scraps.bam.pbi
+  |   |       |-- input.sts.xml
+  |   |       |-- input.subreads.bam
+  |   |       |-- input.subreads.bam.pbi
+  |   |       `-- input.subreadset.xml
   |   `-- noHQunrolled
   |       |-- mapped
   |       |   |-- chunks
@@ -198,15 +212,22 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |       |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
   |       |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
   |       `-- subreads
-  |           `-- chunks
-  |               |-- input.chunk0.subreadset.xml
-  |               |-- input.chunk1.subreadset.xml
-  |               |-- input.chunk2.subreadset.xml
-  |               |-- input.chunk3.subreadset.xml
-  |               |-- input.chunk4.subreadset.xml
-  |               |-- input.chunk5.subreadset.xml
-  |               |-- input.chunk6.subreadset.xml
-  |               `-- input.chunk7.subreadset.xml
+  |           |-- chunks
+  |           |   |-- input.chunk0.subreadset.xml
+  |           |   |-- input.chunk1.subreadset.xml
+  |           |   |-- input.chunk2.subreadset.xml
+  |           |   |-- input.chunk3.subreadset.xml
+  |           |   |-- input.chunk4.subreadset.xml
+  |           |   |-- input.chunk5.subreadset.xml
+  |           |   |-- input.chunk6.subreadset.xml
+  |           |   `-- input.chunk7.subreadset.xml
+  |           |-- input.adapters.fasta
+  |           |-- input.scraps.bam
+  |           |-- input.scraps.bam.pbi
+  |           |-- input.sts.xml
+  |           |-- input.subreads.bam
+  |           |-- input.subreads.bam.pbi
+  |           `-- input.subreadset.xml
   |-- config.json
   |-- log
   |-- prefix.sh
@@ -510,5 +531,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  33 directories, 460 files
+  33 directories, 481 files
 
