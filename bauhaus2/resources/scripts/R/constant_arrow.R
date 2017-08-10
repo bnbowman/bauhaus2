@@ -25,6 +25,7 @@ parser$add_argument("--noCT", action = "store_true", default = FALSE, help = "sk
 parser$add_argument("--input_aln", nargs = 1, default = "", help = "input alignment")
 parser$add_argument("--input_ref", nargs = 1, default = "", help = "input reference")
 parser$add_argument("--output_csv", nargs = 1, default = "", help = "input reference")
+parser$add_argument("--seed", nargs = 1, type = "integer", default = 42, help = "seed value for setSeed")
 try(args <- parser$parse_args())
 set.seed(args$seed)
 
