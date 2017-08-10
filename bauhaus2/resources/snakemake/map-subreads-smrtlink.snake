@@ -23,6 +23,8 @@ sl_port=config["bh2.smrtlink.services_port"]
 # -- semaphore to serialize executions of `pbservice run-pipeline`
 
 def getPreset(wc):
+    if not hasattr(ct, 'callAdapters') or not hasattr(ct, 'HQRF'):
+        return "extras/pbsmrtpipe-mappings-preset.xml"
     library = ct.callAdapters(wc.condition)
     hqrf = ct.HQRF(wc.condition)
     # XXX nohq library mappings aren't possible with blasr >:[
