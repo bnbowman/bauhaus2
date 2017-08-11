@@ -69,8 +69,8 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |   `-- input.trc.h5 -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta.fai
-  |   |   |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -139,8 +139,8 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |   `-- input.trc.h5 -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta.fai
-  |   |   |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -209,8 +209,8 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |       |   `-- input.trc.h5 -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta.fai
-  |       |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |       |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
