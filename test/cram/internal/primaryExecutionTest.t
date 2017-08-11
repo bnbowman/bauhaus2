@@ -233,54 +233,54 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
-  |   |   |-- Accuracy_Heatmap_HQLib.png
-  |   |   |-- Accuracy_Heatmap_HQunrolled.png
-  |   |   |-- Accuracy_Heatmap_noHQunrolled.png
-  |   |   |-- AlnReadLenExtRange_Heatmap_HQLib.png
-  |   |   |-- AlnReadLenExtRange_Heatmap_HQunrolled.png
-  |   |   |-- AlnReadLenExtRange_Heatmap_noHQunrolled.png
-  |   |   |-- AlnReadLen_Heatmap_HQLib.png
-  |   |   |-- AlnReadLen_Heatmap_HQunrolled.png
-  |   |   |-- AlnReadLen_Heatmap_noHQunrolled.png
-  |   |   |-- AvgPolsPerZMW_Heatmap_HQLib.png
-  |   |   |-- AvgPolsPerZMW_Heatmap_HQunrolled.png
-  |   |   |-- AvgPolsPerZMW_Heatmap_noHQunrolled.png
-  |   |   |-- Count_Heatmap_HQLib.png
-  |   |   |-- Count_Heatmap_HQunrolled.png
-  |   |   |-- Count_Heatmap_noHQunrolled.png
-  |   |   |-- DeletionRate_Heatmap_HQLib.png
-  |   |   |-- DeletionRate_Heatmap_HQunrolled.png
-  |   |   |-- DeletionRate_Heatmap_noHQunrolled.png
-  |   |   |-- InsertionRate_Heatmap_HQLib.png
-  |   |   |-- InsertionRate_Heatmap_HQunrolled.png
-  |   |   |-- InsertionRate_Heatmap_noHQunrolled.png
-  |   |   |-- MaxSubreadLenExtRange_Heatmap_HQLib.png
-  |   |   |-- MaxSubreadLenExtRange_Heatmap_HQunrolled.png
-  |   |   |-- MaxSubreadLenExtRange_Heatmap_noHQunrolled.png
-  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_HQLib.png
-  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_HQunrolled.png
-  |   |   |-- MaxSubreadLenToAlnReadLenRatio_Heatmap_noHQunrolled.png
-  |   |   |-- MaxSubreadLen_Heatmap_HQLib.png
-  |   |   |-- MaxSubreadLen_Heatmap_HQunrolled.png
-  |   |   |-- MaxSubreadLen_Heatmap_noHQunrolled.png
-  |   |   |-- MismatchRate_Heatmap_HQLib.png
-  |   |   |-- MismatchRate_Heatmap_HQunrolled.png
-  |   |   |-- MismatchRate_Heatmap_noHQunrolled.png
+  |   |   |-- Accuracy_HQLib.png
+  |   |   |-- Accuracy_HQunrolled.png
+  |   |   |-- Accuracy_noHQunrolled.png
+  |   |   |-- AlnReadLenExtRange_HQLib.png
+  |   |   |-- AlnReadLenExtRange_HQunrolled.png
+  |   |   |-- AlnReadLenExtRange_noHQunrolled.png
+  |   |   |-- AlnReadLen_HQLib.png
+  |   |   |-- AlnReadLen_HQunrolled.png
+  |   |   |-- AlnReadLen_noHQunrolled.png
+  |   |   |-- AvgPolsPerZMW_HQLib.png
+  |   |   |-- AvgPolsPerZMW_HQunrolled.png
+  |   |   |-- AvgPolsPerZMW_noHQunrolled.png
+  |   |   |-- Count_HQLib.png
+  |   |   |-- Count_HQunrolled.png
+  |   |   |-- Count_noHQunrolled.png
+  |   |   |-- DeletionRate_HQLib.png
+  |   |   |-- DeletionRate_HQunrolled.png
+  |   |   |-- DeletionRate_noHQunrolled.png
+  |   |   |-- InsertionRate_HQLib.png
+  |   |   |-- InsertionRate_HQunrolled.png
+  |   |   |-- InsertionRate_noHQunrolled.png
+  |   |   |-- MaxSubreadLenExtRange_HQLib.png
+  |   |   |-- MaxSubreadLenExtRange_HQunrolled.png
+  |   |   |-- MaxSubreadLenExtRange_noHQunrolled.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_HQLib.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_HQunrolled.png
+  |   |   |-- MaxSubreadLenToAlnReadLenRatio_noHQunrolled.png
+  |   |   |-- MaxSubreadLen_HQLib.png
+  |   |   |-- MaxSubreadLen_HQunrolled.png
+  |   |   |-- MaxSubreadLen_noHQunrolled.png
+  |   |   |-- MismatchRate_HQLib.png
+  |   |   |-- MismatchRate_HQunrolled.png
+  |   |   |-- MismatchRate_noHQunrolled.png
   |   |   |-- Reference_Heatmap_HQLib.png
   |   |   |-- Reference_Heatmap_HQunrolled.png
   |   |   |-- Reference_Heatmap_noHQunrolled.png
-  |   |   |-- SNR_A_Heatmap_HQLib.png
-  |   |   |-- SNR_A_Heatmap_HQunrolled.png
-  |   |   |-- SNR_A_Heatmap_noHQunrolled.png
-  |   |   |-- SNR_C_Heatmap_HQLib.png
-  |   |   |-- SNR_C_Heatmap_HQunrolled.png
-  |   |   |-- SNR_C_Heatmap_noHQunrolled.png
-  |   |   |-- SNR_G_Heatmap_HQLib.png
-  |   |   |-- SNR_G_Heatmap_HQunrolled.png
-  |   |   |-- SNR_G_Heatmap_noHQunrolled.png
-  |   |   |-- SNR_T_Heatmap_HQLib.png
-  |   |   |-- SNR_T_Heatmap_HQunrolled.png
-  |   |   |-- SNR_T_Heatmap_noHQunrolled.png
+  |   |   |-- SNR_A_HQLib.png
+  |   |   |-- SNR_A_HQunrolled.png
+  |   |   |-- SNR_A_noHQunrolled.png
+  |   |   |-- SNR_C_HQLib.png
+  |   |   |-- SNR_C_HQunrolled.png
+  |   |   |-- SNR_C_noHQunrolled.png
+  |   |   |-- SNR_G_HQLib.png
+  |   |   |-- SNR_G_HQunrolled.png
+  |   |   |-- SNR_G_noHQunrolled.png
+  |   |   |-- SNR_T_HQLib.png
+  |   |   |-- SNR_T_HQunrolled.png
+  |   |   |-- SNR_T_noHQunrolled.png
   |   |   |-- Uniformity_histogram_HQLib.png
   |   |   |-- Uniformity_histogram_HQunrolled.png
   |   |   |-- Uniformity_histogram_noHQunrolled.png
@@ -288,23 +288,23 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- Uniformity_metrics_HQunrolled.csv
   |   |   |-- Uniformity_metrics_noHQunrolled.csv
   |   |   |-- barchart_of_uniformity.png
-  |   |   |-- rEnd_Heatmap_HQLib.png
-  |   |   |-- rEnd_Heatmap_HQunrolled.png
-  |   |   |-- rEnd_Heatmap_noHQunrolled.png
-  |   |   |-- rStartExtRange_Heatmap_HQLib.png
-  |   |   |-- rStartExtRange_Heatmap_HQunrolled.png
-  |   |   |-- rStartExtRange_Heatmap_noHQunrolled.png
-  |   |   |-- rStart_Heatmap_HQLib.png
-  |   |   |-- rStart_Heatmap_HQunrolled.png
-  |   |   |-- rStart_Heatmap_noHQunrolled.png
+  |   |   |-- rEnd_HQLib.png
+  |   |   |-- rEnd_HQunrolled.png
+  |   |   |-- rEnd_noHQunrolled.png
+  |   |   |-- rStartExtRange_HQLib.png
+  |   |   |-- rStartExtRange_HQunrolled.png
+  |   |   |-- rStartExtRange_noHQunrolled.png
+  |   |   |-- rStart_HQLib.png
+  |   |   |-- rStart_HQunrolled.png
+  |   |   |-- rStart_noHQunrolled.png
   |   |   |-- report.RData
   |   |   |-- report.json
-  |   |   |-- tEnd_Heatmap_HQLib.png
-  |   |   |-- tEnd_Heatmap_HQunrolled.png
-  |   |   |-- tEnd_Heatmap_noHQunrolled.png
-  |   |   |-- tStart_Heatmap_HQLib.png
-  |   |   |-- tStart_Heatmap_HQunrolled.png
-  |   |   `-- tStart_Heatmap_noHQunrolled.png
+  |   |   |-- tEnd_HQLib.png
+  |   |   |-- tEnd_HQunrolled.png
+  |   |   |-- tEnd_noHQunrolled.png
+  |   |   |-- tStart_HQLib.png
+  |   |   |-- tStart_HQunrolled.png
+  |   |   `-- tStart_noHQunrolled.png
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
