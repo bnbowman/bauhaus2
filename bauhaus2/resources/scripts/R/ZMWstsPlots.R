@@ -391,7 +391,9 @@ loadstsH5 <- function(stsH5file) {
   stsH5 = data.frame(
     hole = h5read(stsH5file, "/ZMW/HoleNumber"),
     readType = h5read(stsH5file, "/ZMWMetrics/ReadType"),
-    productivity = h5read(stsH5file, "/ZMWMetrics/Productivity")
+    productivity = h5read(stsH5file, "/ZMWMetrics/Productivity"),
+    BaselineLevel_Green = h5read(stsH5file, "/ZMWMetrics/BaselineLevel")[1,],
+    BaselineLevel_Red = h5read(stsH5file, "/ZMWMetrics/BaselineLevel")[2,]
   )
   stsH5
 }
@@ -898,6 +900,74 @@ makeReport <- function(report) {
       loadstsH5(s)
     })
     cdH5 = combineConditions(dfsH5, as.character(conditions$Condition))
+    
+    # Make BaselineLevel plots
+    BaselineLevel = cdH5[, .(Condition, hole, BaselineLevel_Green, BaselineLevel_Red)]
+    colnames(BaselineLevel) = sub("BaselineLevel_", "", colnames(BaselineLevel))
+    BaselineLevel = BaselineLevel %>% gather(channel, BaselineLevel, Green, Red) 
+    
+    tp = ggplot(BaselineLevel, aes(x = Condition, y = BaselineLevel, fill = Condition)) +
+      geom_boxplot() + stat_summary(
+        fun.y = median,
+        colour = "black",
+        geom = "text",
+        show.legend = FALSE,
+        vjust = -0.8,
+        aes(label = round(..y.., digits = 4))
+      ) + plTheme + themeTilt  + clFillScale +
+      facet_wrap( ~ channel, nrow = length(levels(as.factor(BaselineLevel$channel))))
+    report$ggsave(
+      "BaselineLevelBoxNoViolin.png",
+      tp,
+      width = plotwidth,
+      height = img_height,
+      id = "baselinelevel_boxplot",
+      title = "BaselineLevel Box Plot",
+      caption = "Distribution of BaselineLevel(Boxplot)",
+      tags = c("sampled", "baselinelevel", "boxplot")
+    )
+    
+    tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + geom_density(alpha = .5) +
+      plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
+      labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (Density plot)")
+    report$ggsave(
+      "BaselineLevelDensity.png",
+      tp,
+      width = plotwidth,
+      height = img_height,
+      id = "baselinelevel_density",
+      title = "BaselineLevel Density Plot",
+      caption = "Distribution of BaselineLevel (Density plot)",
+      tags = c("sampled", "baselinelevel", "density")
+    )
+    
+    tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf() +
+      plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
+      labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (CDF)")
+    report$ggsave(
+      "BaselineLevelCDF.png",
+      tp,
+      width = plotwidth,
+      height = img_height,
+      id = "baselinelevel_CDF",
+      title = "BaselineLevel CDF Plot",
+      caption = "Distribution of BaselineLevel (CDF)",
+      tags = c("sampled", "baselinelevel", "cdf")
+    )
+    
+    tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf(aes(colour = Condition)) + scale_x_log10() +
+      plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
+      labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (Log-scale CDF)")
+    report$ggsave(
+      "BaselineLevelCDFlog.png",
+      tp,
+      width = plotwidth,
+      height = img_height,
+      id = "baselinelevel_CDFlog",
+      title = "BaselineLevel CDF Plot (Log-scale)",
+      caption = "Distribution of BaselineLevel (Log-scale CDF)",
+      tags = c("sampled", "baselinelevel", "cdf", "log")
+    )
     
     # Make Read Type and Productivity as factor
     cdH5$readType = as.factor(cdH5$readType)
