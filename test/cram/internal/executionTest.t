@@ -480,7 +480,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
-  |   |   |-- global_localpolrate.png
   |   |   |-- ipddistbybase_boxplot.png
   |   |   |-- localpolrate_boxplot.png
   |   |   |-- mean_pw_boxplot_by_base.png
@@ -550,7 +549,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 498 files
+  35 directories, 497 files
 
 
 
@@ -727,13 +726,6 @@ Generate mapping reports workflow, starting from subreads.
         "title": "Local PolRate - Boxplot",
         "caption": "Local PolRate - Boxplot",
         "tags": ["sampled", "boxplot", "polrate"]
-      },
-      {
-        "id": "global_localpolrate",
-        "image": "global_localpolrate.png",
-        "title": "Global/Local PolRate",
-        "caption": "Global/Local PolRate",
-        "tags": ["sampled", "polrate", "john eid"]
       },
       {
         "id": "bp_err_rate_by_snr",

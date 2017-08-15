@@ -221,6 +221,11 @@ makeSamplingPlots <-
           # Here we group by condition, frame rate and hole, so there should be only one unique frame rate
           endTime = max(sf) / unique(framePerSecond)
         )
+        cd3temp = cd2[!cd2$ref == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
+          tlen = n()
+        )
+        cd3 <- merge(cd3, cd3temp, by = c("Condition", "framePerSecond", "hole", "refName"))
+        cd3$basepersecond = cd3$tlen / (cd3$endTime - cd3$startTime)
       } else {
         # Write a tabel for the missing plots due to non-internal BAM files
         missingPlots = c("Active ZMW - Normalized",
@@ -243,7 +248,8 @@ makeSamplingPlots <-
                          "Mean Pulse Width by Time",
                          "Mean Pkmid by Time",
                          "Median Pkmid by Time",
-                         "Median Pkmid by Time (Normalized)")
+                         "Median Pkmid by Time (Normalized)",
+                         "John Eid's Global/Local Ploymerization Rate")
         noninternalBAM = as.data.frame(missingPlots)
         report$write.table("noninternalBAM.csv",
                            noninternalBAM,
@@ -269,6 +275,31 @@ makeSamplingPlots <-
       
       # Plots based on startFrame (Only produced when "sf" is loaded)
       if (internalBAM) {
+        # Global/Local PolRate plot
+        tp = ggplot(cd3, aes(
+          x = basepersecond * (medianpw + medianipd) / log(2),
+          colour = Condition
+        )) + geom_density(alpha = .5) + xlim(0, 2) +
+          labs(
+            y = "density",
+            x = "PolRate*(median(PW) + median(IPD))/ln(2)",
+            title = paste(
+              "John Eid's Global/Local Ploymerization Rate\n(From ",
+              sampleSize,
+              "Sampled Alignments)"
+            )
+          ) + plTheme + themeTilt + clScale
+        report$ggsave(
+          "global_localpolrate.png",
+          tp,
+          width = plotwidth,
+          height = plotheight,
+          id = "global_localpolrate",
+          title = "Global/Local PolRate",
+          caption = "Global/Local PolRate",
+          tags = c("sampled", "polrate", "john eid")
+        )
+        
         # ActiveZMWs
         activeZMW <- function(rngs) {
           dta <- as.data.frame(rngs)
@@ -927,31 +958,6 @@ makeSamplingPlots <-
         title = "Local PolRate - Boxplot",
         caption = "Local PolRate - Boxplot",
         tags = c("sampled", "boxplot", "polrate")
-      )
-      
-      # Global/Local PolRate plot
-      tp = ggplot(cd3, aes(
-        x = PolRate * (medianpw + medianipd) / log(2),
-        colour = Condition
-      )) + geom_density(alpha = .5) + xlim(0, 2) +
-        labs(
-          y = "density",
-          x = "PolRate*(median(PW) + median(IPD))/ln(2)",
-          title = paste(
-            "John Eid's Global/Local Ploymerization Rate\n(From ",
-            sampleSize,
-            "Sampled Alignments)"
-          )
-        ) + plTheme + themeTilt + clScale
-      report$ggsave(
-        "global_localpolrate.png",
-        tp,
-        width = plotwidth,
-        height = plotheight,
-        id = "global_localpolrate",
-        title = "Global/Local PolRate",
-        caption = "Global/Local PolRate",
-        tags = c("sampled", "polrate", "john eid")
       )
       
       # Now mismatch insertions
