@@ -279,7 +279,7 @@ makeSamplingPlots <-
         tp = ggplot(cd3, aes(
           x = basepersecond * (medianpw + medianipd) / log(2),
           colour = Condition
-        )) + geom_density(alpha = .5) + xlim(0, 2) +
+        )) + geom_density(alpha = .5) + xlim(0, 1) +
           labs(
             y = "density",
             x = "PolRate*(median(PW) + median(IPD))/ln(2)",
