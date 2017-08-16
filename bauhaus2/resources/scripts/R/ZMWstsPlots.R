@@ -906,7 +906,8 @@ makeReport <- function(report) {
     colnames(BaselineLevel) = sub("BaselineLevel_", "", colnames(BaselineLevel))
     BaselineLevel = BaselineLevel %>% gather(channel, BaselineLevel, Green, Red) 
     
-    tp = ggplot(BaselineLevel, aes(x = Condition, y = BaselineLevel, fill = Condition)) +
+    tp = ggplot(BaselineLevel, aes(x = Condition, y = BaselineLevel, fill = Condition)) + 
+      ylim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) + 
       geom_boxplot() + stat_summary(
         fun.y = median,
         colour = "black",
@@ -928,6 +929,7 @@ makeReport <- function(report) {
     )
     
     tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + geom_density(alpha = .5) +
+      xlim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) + 
       plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
       labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (Density plot)")
     report$ggsave(
@@ -942,6 +944,7 @@ makeReport <- function(report) {
     )
     
     tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf() +
+      xlim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) + 
       plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
       labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (CDF)")
     report$ggsave(
@@ -955,7 +958,8 @@ makeReport <- function(report) {
       tags = c("sampled", "baselinelevel", "cdf")
     )
     
-    tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf(aes(colour = Condition)) + scale_x_log10() +
+    tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf(aes(colour = Condition)) + 
+      scale_x_log10(limits = c(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T))) +
       plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
       labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (Log-scale CDF)")
     report$ggsave(
