@@ -1484,9 +1484,9 @@ makeReport <- function(report) {
     cd$alen = as.numeric(cd$aend - cd$astart)
     
     # Make Plots
-    makeCDFofaStartPlots(report, cd)
-    makeMaxVsUnrolledPlots(report, cd)
-    makeCDFofTemplatePlots(report, cd)
+    try(makeCDFofaStartPlots(report, cd), silent = TRUE)
+    try(makeMaxVsUnrolledPlots(report, cd), silent = TRUE)
+    try(makeCDFofTemplatePlots(report, cd), silent = TRUE)
     try(plotFirstPassTau(report, cd), silent = TRUE)
     try(generateLongLibraryMetricsAndPlots(
       report,
