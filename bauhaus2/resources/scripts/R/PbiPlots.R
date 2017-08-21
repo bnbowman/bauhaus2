@@ -475,12 +475,12 @@ makeReport <- function(report) {
                        title = "Summary Statistics (Median Values)")
     
     # Make Plots
-    makeReadLengthSurvivalPlots(report, cd)
-    makeAccuracyDensityPlots(report, cd)
+    try(makeReadLengthSurvivalPlots(report, cd), silent = TRUE)
+    try(makeAccuracyDensityPlots(report, cd), silent = TRUE)
     # makeErateViolinPlots(report, cd)
-    makeErateBoxPlots(report, cd)
-    makeBasesDistribution(report, cd)
-    makeYieldHistogram(report, cd)
+    try(makeErateBoxPlots(report, cd), silent = TRUE)
+    try(makeBasesDistribution(report, cd), silent = TRUE)
+    try(makeYieldHistogram(report, cd), silent = TRUE)
   }
 
   # Save the report object for later debugging

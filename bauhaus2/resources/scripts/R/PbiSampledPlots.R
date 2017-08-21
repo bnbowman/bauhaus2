@@ -1314,10 +1314,10 @@ makeReport <- function(report) {
     }
     
     # Get Errors by SNR plot
-    makeErrorsBySNRPlots(report, cd)
+    try(makeErrorsBySNRPlots(report, cd), silent = TRUE)
     
     # Now plots from sampling alignments
-    makeSamplingPlots(report, cd, conditions, sampleSize = 1000)
+    try(makeSamplingPlots(report, cd, conditions, sampleSize = 1000), silent = TRUE)
     
     # Make a median SNR table
     summaries = cd[, .(
