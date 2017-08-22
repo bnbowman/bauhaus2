@@ -36,32 +36,36 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
   
   cd2$SurvObj <- with(cd2, Surv(tlen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  p1 <-
-    autoplot(cd2.by.con) + labs(x = "Template Span", title = "Template Span Survival") + plTheme
-  p2 <-
-    autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Template Span", title = "Template Span Survival (Log-scale)") + plTheme
-  #  tp <- arrangeGrob(p1, p2, nrow = 2)
   
-  report$ggsave(
-    "template_span_survival.png",
-    p1,
-    width = plotwidth,
-    height = plotheight,
-    id = "template_span_survival",
-    title = "Template Span Survival",
-    caption = "Template Span Survival",
-    tags = c("basic", "pbiplots", "survival", "template")
-  )
-  report$ggsave(
-    "template_span_survival (Log-scale).png",
-    p2,
-    width = plotwidth,
-    height = plotheight,
-    id = "template_span_survival(log)",
-    title = "Template Span Survival (Log-scale)",
-    caption = "Template Span Survival (Log-scale)",
-    tags = c("basic", "pbiplots", "survival", "template", "log")
-  )
+  # When cd2.by.con is empty or only has one row, skip the following two plots
+  if (nrow(cd2.by.con) > 1) {
+    p1 <-
+      autoplot(cd2.by.con) + labs(x = "Template Span", title = "Template Span Survival") + plTheme
+    p2 <-
+      autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Template Span", title = "Template Span Survival (Log-scale)") + plTheme
+    #  tp <- arrangeGrob(p1, p2, nrow = 2)
+    
+    report$ggsave(
+      "template_span_survival.png",
+      p1,
+      width = plotwidth,
+      height = plotheight,
+      id = "template_span_survival",
+      title = "Template Span Survival",
+      caption = "Template Span Survival",
+      tags = c("basic", "pbiplots", "survival", "template")
+    )
+    report$ggsave(
+      "template_span_survival (Log-scale).png",
+      p2,
+      width = plotwidth,
+      height = plotheight,
+      id = "template_span_survival(log)",
+      title = "Template Span Survival (Log-scale)",
+      caption = "Template Span Survival (Log-scale)",
+      tags = c("basic", "pbiplots", "survival", "template", "log")
+    )
+  }
   
   loginfo("Making Aligned Read Length Survival Plots")
   
@@ -70,32 +74,35 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
   
   cd2$SurvObj <- with(cd2, Surv(alen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  p1 <-
-    autoplot(cd2.by.con) + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival") + plTheme
-  p2 <-
-    autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival (Log-scale)") + plTheme
-  #  tp <- arrangeGrob(p1, p2, nrow = 2)
   
-  report$ggsave(
-    "aligned_read_length_survival.png",
-    p1,
-    width = plotwidth,
-    height = plotheight,
-    id = "aligned_read_length_survival",
-    title = "Aligned Read Length Survival",
-    caption = "Aligned Read Length Survival",
-    tags = c("basic", "pbiplots", "survival", "read", "aligned")
-  )
-  report$ggsave(
-    "aligned_read_length_survival (Log-scale).png",
-    p2,
-    width = plotwidth,
-    height = plotheight,
-    id = "aligned_read_length_survival(log)",
-    title = "Aligned Read Length Survival (Log-scale)",
-    caption = "Aligned Read Length Survival (Log-scale)",
-    tags = c("basic", "pbiplots", "survival", "read", "log", "aligned")
-  )
+  if (nrow(cd2.by.con) > 1) {
+    p1 <-
+      autoplot(cd2.by.con) + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival") + plTheme
+    p2 <-
+      autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival (Log-scale)") + plTheme
+    #  tp <- arrangeGrob(p1, p2, nrow = 2)
+    
+    report$ggsave(
+      "aligned_read_length_survival.png",
+      p1,
+      width = plotwidth,
+      height = plotheight,
+      id = "aligned_read_length_survival",
+      title = "Aligned Read Length Survival",
+      caption = "Aligned Read Length Survival",
+      tags = c("basic", "pbiplots", "survival", "read", "aligned")
+    )
+    report$ggsave(
+      "aligned_read_length_survival (Log-scale).png",
+      p2,
+      width = plotwidth,
+      height = plotheight,
+      id = "aligned_read_length_survival(log)",
+      title = "Aligned Read Length Survival (Log-scale)",
+      caption = "Aligned Read Length Survival (Log-scale)",
+      tags = c("basic", "pbiplots", "survival", "read", "log", "aligned")
+    )
+  }
 }
 
 makeAccuracyDensityPlots <- function(report, cd) {
@@ -374,6 +381,7 @@ makeBasesDistribution <- function(report, cd) {
 makeYieldHistogram <- function(report, cd) {
   loginfo("Making Yield Histogram")
   tp = ggplot(cd, aes(Condition, fill = Condition)) + geom_bar() + 
+    geom_text(stat = 'count',aes(label = ..count..),vjust = -0.5) +
     plTheme + themeTilt  + clFillScale + 
     labs(x = "Condition", y = "nReads", title = "nReads by Condition")
   report$ggsave(
@@ -401,21 +409,26 @@ makeReport <- function(report) {
   
   conditions = report$condition.table
   # Load the pbi index for each data frame
-  dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
+  dfs = lapply(as.character(conditions$MappedSubreads), function(s) {
     loginfo(paste("Loading alignment set:", s))
     loadPBI2(s)
   })
-  # Now combine into one large data frame
-  cd = combineConditions(dfs, as.character(conditions$Condition))
-  
-  ## Let's set the graphic defaults
-  n = length(levels(conditions$Condition))
-  clFillScale <<- getPBFillScale(n)
-  clScale <<- getPBColorScale(n)
-  
-  if (nrow(cd) == 0) {
+  # Filter out empty data sets, throw a warning if any empty ones exist
+  filteredData = filterEmptyDataset(dfs, conditions)
+  if (length(filteredData) == 0) {
     warning("No ZMW has been loaded from the alignment set!")
   } else {
+    dfs  = filteredData[[1]]
+    conditions = filteredData[[2]]
+    
+    # Now combine into one large data frame
+    cd = combineConditions(dfs, as.character(conditions$Condition))
+    
+    ## Let's set the graphic defaults
+    n = length(levels(conditions$Condition))
+    clFillScale <<- getPBFillScale(n)
+    clScale <<- getPBColorScale(n)
+    
     cd$tlen = as.numeric(cd$tend - cd$tstart)
     cd$alen = as.numeric(cd$aend - cd$astart)
     cd$errors = as.numeric(cd$mismatches + cd$inserts + cd$dels)
@@ -462,12 +475,12 @@ makeReport <- function(report) {
                        title = "Summary Statistics (Median Values)")
     
     # Make Plots
-    makeReadLengthSurvivalPlots(report, cd)
-    makeAccuracyDensityPlots(report, cd)
+    try(makeReadLengthSurvivalPlots(report, cd), silent = TRUE)
+    try(makeAccuracyDensityPlots(report, cd), silent = TRUE)
     # makeErateViolinPlots(report, cd)
-    makeErateBoxPlots(report, cd)
-    makeBasesDistribution(report, cd)
-    makeYieldHistogram(report, cd)
+    try(makeErateBoxPlots(report, cd), silent = TRUE)
+    try(makeBasesDistribution(report, cd), silent = TRUE)
+    try(makeYieldHistogram(report, cd), silent = TRUE)
   }
 
   # Save the report object for later debugging

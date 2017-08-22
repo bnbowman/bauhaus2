@@ -6,18 +6,32 @@ local_fasta_files = \
     { c : expand("conditions/{condition}/reference.fasta", condition=c)
       for c in ct.conditions }
 
+remote_sts_h5 = \
+    { c : ct.inputsH5(c)
+      for c in ct.conditions }
+      
+remote_sts_xml = \
+    { c : ct.inputsXML(c)
+      for c in ct.conditions }
+
 rule collect_references:
     input: local_fasta_files.values()
 
 rule collect_reference_one_condition:
     input:
         fasta=lambda wc: ct.reference(wc.condition),
-        fai=lambda wc: ct.reference(wc.condition)+".fai"
+        fai=lambda wc: ct.reference(wc.condition)+".fai",
+        sts=lambda wc: remote_sts_h5[wc.condition],
+        stsxml=lambda wc: remote_sts_xml[wc.condition]
     output:
         fasta="conditions/{condition}/reference.fasta",
-        fai="conditions/{condition}/reference.fasta.fai"
+        fai="conditions/{condition}/reference.fasta.fai",
+        sts="conditions/{condition}/sts.h5",
+        stsxml="conditions/{condition}/sts.xml"
     shell:
         """
         ln -s {input.fasta} {output.fasta}
         ln -s {input.fai} {output.fai}
+        ln -s {input.sts} {output.sts}
+        ln -s {input.stsxml} {output.stsxml}
         """

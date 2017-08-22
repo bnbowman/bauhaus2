@@ -11,6 +11,28 @@ gathered_mapped_chunks = \
     { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
       for c in ct.conditions }
 
+def getOpts(wc):
+    if not hasattr(ct, 'callAdapters') or not hasattr(ct, 'HQRF'):
+        return ''
+    library = ct.callAdapters(wc.condition)
+    hqrf = ct.HQRF(wc.condition)
+    if hqrf and library:
+        # the default:
+        return ''
+    elif hqrf and not library:
+        return ("--noSplitSubreads --hitPolicy leftmost "
+                "--algorithmOptions='--polymerase --bestn 1 --forwardOnly "
+                "--fastMaxInterval --maxAnchorsPerPosition 30000 "
+                "--minPctIdentity 60' ")
+    elif not hqrf and not library:
+        return ("--noSplitSubreads --hitPolicy leftmost "
+                "--algorithmOptions='--bestn 1 --forwardOnly "
+                "--fastMaxInterval --maxAnchorsPerPosition 30000 "
+                "--minPctIdentity 60' ")
+    elif not hqrf and library:
+        # we have to use bam2bam to support this, everything else is default:
+        return ""
+
 # -- Target rules --
 
 rule map_subreads:
@@ -27,9 +49,10 @@ rule map_chunked_subreads_one_chunk:
         reference="conditions/{condition}/reference.fasta"
     output: "conditions/{condition}/mapped/chunks/mapped.chunk{chunkNo}.alignmentset.xml"
     threads: 8
+    params: opts=getOpts
     shell:
         """
-        pbalign --tmpDir=/scratch --nproc {threads} {input.subreads} {input.reference} {output}
+        pbalign --tmpDir=/scratch {params.opts} --nproc {threads} {input.subreads} {input.reference} {output}
         """
 
 rule map_chunked_subreads_and_gather_one_condition:

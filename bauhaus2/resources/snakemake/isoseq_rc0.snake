@@ -1,0 +1,44 @@
+from bauhaus2.runtime import ct
+
+sl_job_dirs = {c : ct.inputs(c)[0] for c in ct.conditions}
+validation_dones = {c: expand("conditions/{condition}/validate_smrtlink_isoseq_rc0.done", condition=c) for c in ct.conditions}
+eval_dirs = {c: expand("/home/UNIXHOME/yli/tmp/{condition}/eval", condition=c) for c in ct.conditions}
+
+rule summarize_isoseq:
+    input:
+        print_env_done="log/print_env.done",
+        call_done=validation_dones.values(),
+        isoseq_rc0_plots_done="reports/IsoSeqRC0Plots/report.json"
+
+rule print_env: # check environment variables
+    output: 
+        done="log/print_env.done"
+    shell: 
+        """
+        source /mnt/software/Modules/current/init/bash && module load pbtranscript-internal-validation/1.0.0
+        env > {output.done}
+        echo 'which validate_smrtlink_isoseq_rc0.py' >> {output.done}
+        which validate_smrtlink_isoseq_rc0.py >> {output.done}
+        which Rscript >> {output.done}
+        """
+
+rule isoseq_rc0_plot:
+    input: validation_dones.values()
+    output:
+        report_json="reports/IsoSeqRC0Plots/report.json"
+    shell:
+        """
+        Rscript --vanilla scripts/R/IsoSeqRC0Plots.R .
+        """
+ 
+rule call:
+    input: lambda wc: sl_job_dirs[wc.condition]
+    output: 
+        dir="conditions/{condition}/eval/",
+        done="conditions/{condition}/validate_smrtlink_isoseq_rc0.done"
+    shell:
+        """
+        source /mnt/software/Modules/current/init/bash && module load pbtranscript-internal-validation/1.0.0
+        validate_smrtlink_isoseq_rc0.py {input} {output.dir} --make_readlength --reseq_to_human 2>&1 | tee {output.dir}/log
+        touch {output.done}
+        """

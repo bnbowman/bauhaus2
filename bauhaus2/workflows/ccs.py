@@ -3,6 +3,20 @@ from bauhaus2 import Workflow
 
 from .subreads import subreadsPlan
 
+def CCSMappingReportsPlan(ct, args):
+    if ct.inputsAreMapped:
+        # Mapping already happened, link it.
+        return [ "collect-smrtlink-references.snake",
+                 "ccs-alignmentset.snake",
+                 "collect-ccs-mappings.snake" ]
+    else:
+        # Do our own ccs mapping
+        return [ "map-ccs.snake",
+                "ccs-subreads.snake",
+                "collect-references.snake",
+                "scatter-subreads.snake" ] + \
+                subreadsPlan(ct, args)
+
 class CCSMappingReportsWorkflow(Workflow):
     """
     Map CCS reads to the reference and generate comprehensive analysis
@@ -14,8 +28,5 @@ class CCSMappingReportsWorkflow(Workflow):
     R_SCRIPTS = ("R/ccsMappingPlots.R", "R/Bauhaus2.R")
 
     def plan(self):
-        return [ "map-ccs.snake",
-                 "ccs-subreads.snake",
-                 "collect-references.snake",
-                 "scatter-subreads.snake" ] + \
-                 subreadsPlan(self.conditionTable, self.cliArgs)
+        return ["summarize-ccs.snake"] + \
+            CCSMappingReportsPlan(self.conditionTable, self.cliArgs)

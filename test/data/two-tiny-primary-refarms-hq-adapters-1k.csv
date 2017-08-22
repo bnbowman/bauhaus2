@@ -1,0 +1,5 @@
+Condition,TraceH5File,Basecaller,PPA,HQRF,Library,Genome
+HQLib,/pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5,basecaller/5.0.0,basecaller/5.0.0,True,True,11k_pbell_H1_6_ScaI
+noHQLib,/pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5,basecaller/5.0.0,basecaller/5.0.0,False,True,11k_pbell_H1_6_ScaI
+noHQunrolled,/pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5,basecaller/5.0.0,basecaller/5.0.0,False,False,11k_pbell_H1_6_ScaI
+HQunrolled,/pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5,basecaller/5.0.0,basecaller/5.0.0,True,False,11k_pbell_H1_6_ScaI

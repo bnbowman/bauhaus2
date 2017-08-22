@@ -17,13 +17,15 @@ library(nnet)
 library(reshape2)
 library(lazyeval)
 
-## FIXME: make a real package
-myDir = "./scripts/R"
-source(file.path(myDir, "Bauhaus2.R"))
-
-# load sample size for argument, default sample size = 500
+# load sample size for argument, default sample size = 1000
 parser <- ArgumentParser()
-parser$add_argument("--sampleSize", nargs = 1, default = 500, help = "number of samples (ZMWs) for each condition")
+parser$add_argument("--sampleByRef", nargs = 1, default = FALSE, help = "subsample ZMWs for different references or not")
+parser$add_argument("--sampleSize", nargs = 1, default = 1000, help = "number of samples (ZMWs) for each condition")
+parser$add_argument("--noCT", action = "store_true", default = FALSE, help = "skip the condition table input and takes alignment/reference input")
+parser$add_argument("--input_aln", nargs = 1, default = "", help = "input alignment")
+parser$add_argument("--input_ref", nargs = 1, default = "", help = "input reference")
+parser$add_argument("--output_csv", nargs = 1, default = "", help = "input reference")
+parser$add_argument("--seed", nargs = 1, type = "integer", default = 42, help = "seed value for setSeed")
 try(args <- parser$parse_args())
 set.seed(args$seed)
 
@@ -32,6 +34,21 @@ set.seed(args$seed)
 MIN_ALN_LENGTH = 1000 # Should be larger, but test data was ~930 bp in size and wanted to keep that working.
 # Set up sample size of the sampled ZMW for each condition:
 SAMPLING_SIZE = args$sampleSize
+# Check whether the arrow model samples from each condition or from each condition and reference
+# the enzymology group may rewrite the condition table, which chunks the data set by reference.
+# To enable running constant arrow model for each reference, loading this option from CLI is allowed.
+SAMPLE_BY_REF = args$sampleByRef
+
+NO_CT = args$noCT
+INPUT_ALN = args$input_aln
+INPUT_REF = args$input_ref
+OUTPUT_CSV = args$output_csv
+
+## FIXME: make a real package
+myDir = "./scripts/R"
+if (!NO_CT) {
+  source(file.path(myDir, "Bauhaus2.R"))
+}
 
 # Define a basic addition to all plots
 plTheme <- theme_bw(base_size = 18)
@@ -164,6 +181,7 @@ constantArrow <-
     errormode$ZMW = sampled_ZMW
     errormode$Condition = Condition
     errormode$Reference = indFilter$ref
+    errormode$AlnTLength = indFilter$tend - indFilter$tstart
     
     # Aggregate the pmf matrix
     baseAgg <- function(pmf) {
@@ -179,6 +197,7 @@ constantArrow <-
       }
       singleZMW = loadSingleZmwHMMfromBAM(indFilter$offset[i], as.character(indFilter$file[i]), input_ref)
       errormode[i, paste("SNR.", bases, sep = "")] = as.numeric(attributes(singleZMW)[[1]])
+      
       ## Filter out really discordant alignments, they create numeric issues
       singleZMW <- filterData(singleZMW)
       # Handle case where all data is filtered
@@ -187,62 +206,80 @@ constantArrow <-
         errormode[i, 1:ncol(errormode)] = NA
       } else {
         # Fit hmm
-        fit = hmm(read ~ 1,
+        fit = try(hmm(read ~ 1,
                   singleZMW,
                   verbose = FALSE,
                   filter = FALSE,
                   use8Contexts = TRUE,
-                  end_dif = 0.005)
-        # Summerize model parameters
-        predictions <- list()
-        for (j in 1:8) {
-          predictions[[j]] = predict(fit$models[[j]]$cfit, type = "probs")[1,]
+                  end_dif = 0.005),
+                  silent = TRUE)
+        if (class(fit) == "try-error")
+        {
+          warning("Only one example row of sequence context present, model.frame will not convert the data correctly.")
+        } else {
+          # Summerize model parameters
+          predictions <- list()
+          for (j in 1:length(fit$models)) {
+            predictions[[j]] = predict(fit$models[[j]]$cfit, type = "probs")[1,]
+          }
+          predictions <- as.data.frame(matrix(unlist(predictions), ncol = 4, byrow = T))
+          colnames(predictions) = colnames(fit$pseudoCounts) # copy the outcome names over
+          for (j in 1:length(fit$models)) {
+            predictions$ctx[j] = fit$models[[j]]$ctx
+          }
+          CTX <- fit$sPmf$CTX
+          # Check if any context is missing
+          # For all missing contexts implement the prediction rate with `1 0 0 0`, which indicates a perfect match
+          if (nrow(predictions) < 8) {
+            missingCTX = setdiff(CTX, predictions$ctx)
+            missingPredictions = data.frame(rep(1, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), rep(0, length(missingCTX)), missingCTX)
+            colnames(missingPredictions) = colnames(predictions)
+            predictions = rbind(predictions, missingPredictions)
+            predictions[match(CTX, predictions$ctx),]
+          }
+          # Dark rate
+          darkCols <- which(csv_names == "A.Dark.A"):which(csv_names == "T.Dark.T")
+          darkRows <- which(CTX == "NA"):which(CTX == "NT")
+          errormode[i, darkCols] = predictions[darkRows, "Delete"]
+          
+          # Merge rate
+          mergeCols <- which(csv_names == "A.Merge.A"):which(csv_names == "T.Merge.T")
+          mergeRows <- which(CTX == "AA"):which(CTX == "TT")
+          errormode[i, mergeCols] = predictions[mergeRows, "Delete"] - predictions[darkRows, "Delete"]
+          
+          # Match rate
+          matchCols <- which(csv_names == "A.Match.A"):which(csv_names == "T.Match.T")
+          matchVals <- predictions[, "Match"] * fit$mPmf[, bases]
+          matchVals$CTX <- fit$mPmf$CTX
+          errormode[i, matchCols] = as.vector(as.matrix(baseAgg(matchVals)[, bases]))
+          
+          # When insert a different base, use stick
+          stickCols <- which(csv_names == "A.Insert.A"):which(csv_names == "T.Insert.T")  # also includes branch, will replace below
+          stickVals <- predictions[, "Stick"] * fit$sPmf[, bases]
+          stickVals$CTX <- fit$sPmf$CTX
+          errormode[i, stickCols] = as.vector(as.matrix(baseAgg(stickVals)[, bases]))
+          
+          # When insert a same base, use branch
+          branchCols <- which(csv_names %in% paste(bases, ".Insert.", bases, sep=""))
+          branchVals <- predictions[, "Branch"] * fit$bPmf[, bases]
+          branchVals$CTX <- fit$bPmf$CTX
+          errormode[i, branchCols] = diag(as.matrix(baseAgg(branchVals)[, bases]))
+          
+          errormode[i, "Time"] = fit$time_s
+          errormode[i, "Iterations"] = length(fit$likelihoodHistory)
         }
-        predictions <- as.data.frame(matrix(unlist(predictions), ncol = 4, byrow = T))
-        colnames(predictions) = colnames(fit$pseudoCounts) # copy the outcome names over
-        CTX <- fit$sPmf$CTX
-        
-        # Dark rate
-        darkCols <- which(csv_names == "A.Dark.A"):which(csv_names == "T.Dark.T")
-        darkRows <- which(CTX == "NA"):which(CTX == "NT")
-        errormode[i, darkCols] = predictions[darkRows, "Delete"]
-        
-        # Merge rate
-        mergeCols <- which(csv_names == "A.Merge.A"):which(csv_names == "T.Merge.T")
-        mergeRows <- which(CTX == "AA"):which(CTX == "TT")
-        errormode[i, mergeCols] = predictions[mergeRows, "Delete"] - predictions[darkRows, "Delete"]
-        
-        # Match rate
-        matchCols <- which(csv_names == "A.Match.A"):which(csv_names == "T.Match.T")
-        matchVals <- predictions[, "Match"] * fit$mPmf[, bases]
-        matchVals$CTX <- fit$mPmf$CTX
-        errormode[i, matchCols] = as.vector(as.matrix(baseAgg(matchVals)[, bases]))
-        
-        # When insert a different base, use stick
-        stickCols <- which(csv_names == "A.Insert.A"):which(csv_names == "T.Insert.T")  # also includes branch, will replace below
-        stickVals <- predictions[, "Stick"] * fit$sPmf[, bases]
-        stickVals$CTX <- fit$sPmf$CTX
-        errormode[i, stickCols] = as.vector(as.matrix(baseAgg(stickVals)[, bases]))
-        
-        # When insert a same base, use branch
-        branchCols <- which(csv_names %in% paste(bases, ".Insert.", bases, sep=""))
-        branchVals <- predictions[, "Branch"] * fit$bPmf[, bases]
-        branchVals$CTX <- fit$bPmf$CTX
-        errormode[i, branchCols] = diag(as.matrix(baseAgg(branchVals)[, bases]))
-        
-        
-        # Get the alignment length, accounting for any filtered bases
-        errormode[i, "AlnTLength"] = sum(sapply(singleZMW, function(x) sum(x$ref != "-")))
-        errormode[i, "Time"] = fit$time_s
-        errormode[i, "Iterations"] = length(fit$likelihoodHistory)
       }
     }
     return(errormode)
   }
 
 makeReport <- function(report) {
-  
-  conditions = report$condition.table
+  # Load the revised condition table if the sample needs to be subsampled by references
+  if (SAMPLE_BY_REF) {
+    conditions = read.csv("contig-chunked-condition-table.csv")
+  } else {
+    conditions = report$condition.table
+  }
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
@@ -266,13 +303,32 @@ makeReport <- function(report) {
   report$write.report()
 }
 
+writeCSV <- function(outputcsv) {
+  report = NULL
+  condition = "Default"
+  errormode = constantArrow(INPUT_ALN, INPUT_REF, condition, report)
+  path = getwd()
+  write.csv(errormode, paste(path, "/", outputcsv, sep = ""), row.names = F)
+}
+
 main <- function()
 {
-  report <- bh2Reporter(
-    "condition-table.csv",
-    "reports/ConstantArrowFishbonePlots/modelReport.json",
-    "Constant Arrow csv file")
-  makeReport(report)
+  # if noCT is set to true, skip the condition table input and load input_aln / input_ref
+  if (NO_CT) {
+    # When noCT is true, make sure input_aln and input_ref both exist
+    if (INPUT_ALN == "" || INPUT_REF == "" || OUTPUT_CSV == "") {
+      warning("Need to provide input alignmentset, reference set and output CSV name!")
+      0
+    } else {
+      writeCSV(OUTPUT_CSV)
+    }
+  } else {
+    report <- bh2Reporter(
+      "condition-table.csv",
+      "reports/ConstantArrowFishbonePlots/modelReport.json",
+      "Constant Arrow csv file")
+    makeReport(report)
+  }
   0
 }
 

@@ -24,4 +24,5 @@ rule collect_subreads_one_condition:
     shell:
         """
         dataset create {output} {input}
+        dataset newuuid --random {output}
         """

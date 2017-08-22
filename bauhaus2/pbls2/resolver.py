@@ -42,8 +42,11 @@ class Resolver(object):
     REFERENCES_ROOT = "/pbi/dept/secondary/siv/references"              # This is a central location for SA3+ references
 
     SMRTLINK_SERVER_TO_JOBS_ROOT = \
-        { serverName : ("/pbi/dept/secondary/siv/smrtlink/smrtlink-" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
-          for (serverName, smrtLinkId) in [ ("smrtlink-beta", "beta"), ("smrtlink-alpha", "alpha") ] }
+        { serverName : ("/pbi/" + smrtLinkJobPath + "/smrtlink/" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
+          for (serverName, smrtLinkJobPath, smrtLinkId) in [ ("smrtlink-beta", "dept/secondary/siv", "smrtlink-beta"), 
+                                                             ("smrtlink-alpha", "dept/secondary/siv", "smrtlink-alpha"), 
+                                                             ("smrtlink-siv", "dept/secondary/siv", "smrtlink-siv"), 
+                                                             ("smrtlink-release", "analysis", "release") ] }
 
     def __init__(self):
         self._selfCheck()
@@ -97,13 +100,28 @@ class Resolver(object):
         """
         Given the secondary job path (SMRTlink), find the alignment set within
         """
-        candidates = glob(op.join(jobDir, "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml"))
+        candidates = (glob(op.join(jobDir,
+                                   "tasks/pbcoretools.tasks.gather_alignmentset-1/file.alignmentset.xml")) + 
+                      glob(op.join(jobDir,
+                                   "tasks/pbcoretools.tasks.gather_ccs_alignmentset-1/file.consensusalignmentset.xml")))
         if len(candidates) < 1:
             raise DataNotFound("AlignmentSet not found in job directory %s " % jobDir)
         elif len(candidates) > 1:
             raise DataNotFound("Multiple AlignmentSets present in job directory %s" % jobDir)
         else:
             return candidates[0]
+            
+    def findSmrtlinkSubreadSet(self, jobDir):
+        """
+        Given the secondary job path (SMRTlink), find the subread set within
+        """
+        with open(op.join(jobDir,"pbscala-job.sh")) as f:
+            for line in f:
+                if "eid_subread" in line:
+                    list_of_words = line.split()
+                    for string in list_of_words:
+                        if ('eid_subread' in string):
+                            return string.rsplit(':')[1].rsplit('xml')[0]+'xml'
 
     def resolveSubreadSet(self, runCode, reportsFolder=""):
         reportsPath = self.resolvePrimaryPath(runCode, reportsFolder)
@@ -123,13 +141,19 @@ class Resolver(object):
             raise DataNotFound(referenceName)
 
     def resolveReferenceSet(self, referenceName):
-        referenceSet = op.join(self.REFERENCES_ROOT, referenceName, referenceName + ".referenceset.xml")
-        if op.isfile(referenceSet):
-            return referenceSet
-        elif not op.exists(self.REFERENCES_ROOT):
+        # Here we serch two possible referencesets: referenceset.xml and referenceName.referenceset.xml
+        # These two referencesets may share the same UUID so should exist at the same time
+        candidates = (glob(op.join(self.REFERENCES_ROOT, referenceName, "referenceset.xml")) + 
+                      glob(op.join(self.REFERENCES_ROOT, referenceName, referenceName + ".referenceset.xml")))
+        if not op.exists(self.REFERENCES_ROOT):
             raise ResolverFailure("NFS unavailable?")
         else:
-            raise DataNotFound(referenceSet)
+            if len(candidates) < 1:
+                raise DataNotFound(referenceSet)
+            elif len(candidates) > 1:
+                raise DataNotFound("Multiple ReferenceSets xml files present")
+            else:
+                return candidates[0]
 
     def resolveReferenceMask(self, referenceName):
         maskGff = op.join(self.REFERENCE_MASKS_ROOT, referenceName + "-mask.gff")
@@ -159,6 +183,10 @@ class Resolver(object):
     def resolveAlignmentSet(self, smrtLinkServer, jobId):
         jobDir = self.resolveJob(smrtLinkServer, jobId)
         return self.findAlignmentSet(jobDir)
+    
+    def resolveSmrtlinkSubreadSet(self, smrtLinkServer, jobId):
+        jobDir = self.resolveJob(smrtLinkServer, jobId)
+        return self.findSmrtlinkSubreadSet(jobDir)
 
     def ensureSubreadSet(self, subreadSet):
         if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".subreads.bam")):
@@ -169,7 +197,8 @@ class Resolver(object):
             return subreadSet
 
     def ensureAlignmentSet(self, alignmentSet):
-        if not (alignmentSet.endswith(".alignmentset.xml") or alignmentSet.endswith(".aligned_subreads.bam")):
+        if not (alignmentSet.endswith(".alignmentset.xml") or alignmentSet.endswith(".aligned_subreads.bam") 
+                or alignmentSet.endswith(".consensusalignmentset.xml")):
             raise InvalidDataset("%s not an alignmentset" % alignmentSet)
         elif not op.isfile(alignmentSet):
             raise DataNotFound("AlignmentSet %s not found" % alignmentSet)

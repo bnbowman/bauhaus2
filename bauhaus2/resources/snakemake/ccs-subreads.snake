@@ -21,6 +21,20 @@ rule ccs_chunks:
 
 # -- Worker rules --
 
+def modelPathArg(config):
+    if ("bh2.ccs.model_path" not in config or
+        not config["bh2.ccs.model_path"]):
+        return ""
+    else:
+        return "--modelPath %s" % config["bh2.ccs.model_path"]
+
+def modelSpecArg(config):
+    if ("bh2.ccs.model_spec" not in config or
+        not config["bh2.ccs.model_spec"]):
+        return ""
+    else:
+        return "--modelSpec %s" % config["bh2.ccs.model_spec"]
+
 rule ccs_one_chunk:
     input:  "conditions/{condition}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml"
     output:
@@ -28,11 +42,12 @@ rule ccs_one_chunk:
         bam= "conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.ccs.bam",
         ccsDiagnosticsReport="conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.report.txt"
     params:
-        modelPath="",
-        modelSpec="",
+        modelPath=modelPathArg(config),
+        modelSpec=modelSpecArg(config)
+    threads: 8
     shell:
         """
-        ccs --force --numThreads=8 \
+        ccs --force --numThreads={threads} \
             --reportFile={output.ccsDiagnosticsReport} {params.modelPath} {params.modelSpec} \
              {input} {output.bam} && \
         dataset create --type ConsensusReadSet {output.dset} {output.bam}

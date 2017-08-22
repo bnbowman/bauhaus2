@@ -26,6 +26,7 @@ source(file.path(myDir, "Bauhaus2.R"))
 # load sample size for argument, default sample size = 500
 parser <- ArgumentParser()
 parser$add_argument("--sampleSize", nargs = 1, default = 500, help = "number of samples (ZMWs) for each condition")
+parser$add_argument("--seed", nargs = 1, type = "integer", default = 42, help = "seed value for setSeed")
 try(args <- parser$parse_args())
 set.seed(args$seed)
 

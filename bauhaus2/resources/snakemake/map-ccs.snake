@@ -16,14 +16,6 @@ gathered_mapped_ccs_chunks = \
 
 # -- Target rules --
 
-rule map_ccs_and_report:
-    output: "reports/CCSMappingReports/report.json"
-    input: gathered_mapped_ccs_chunks.values()
-    shell:
-        """
-        Rscript --vanilla scripts/R/ccsMappingPlots.R
-        """
-
 rule map_ccs:
     input: gathered_mapped_ccs_chunks.values()
 

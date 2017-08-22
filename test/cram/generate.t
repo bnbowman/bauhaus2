@@ -14,18 +14,22 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   |-- prefix.sh
   |-- run.sh
   |-- scripts
+  |   |-- Python
+  |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
+  |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
   |       |-- PbiSampledPlots.R
   |       |-- ReadPlots.R
+  |       |-- ZMWstsPlots.R
   |       `-- constant_arrow.R
   `-- workflow
       `-- Snakefile
   
-  3 directories, 12 files
+  4 directories, 15 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
@@ -34,6 +38,8 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # heatmaps.snake: Generate alignment based heatmaps.
+  # locacc.snake: Generate locacc plots (tool from Martin).
   # map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
   # scatter-subreads.snake: split subreadsets into smaller chunks for analysis
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
@@ -50,7 +56,13 @@ Now let's use SMRTLink for mapping.  The plan looks different.
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # heatmaps.snake: Generate alignment based heatmaps.
+  # locacc.snake: Generate locacc plots (tool from Martin).
   # map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
+  # There was an design problem in peservice to output json files
+  # The log of the job is incorrectly saved in the json output before the "real" json output
+  # The progress of correcting the json output in pbservice is at SE-660
+  # This function stripOutJunk adds a gross workaround to read the job is and path from the incorrect json output
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
   # collect-subreads.snake: hotlink "remote" subreadsets into the workflow directory
 
@@ -68,5 +80,26 @@ of a mapping:
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # heatmaps.snake: Generate alignment based heatmaps.
+  # locacc.snake: Generate locacc plots (tool from Martin).
+  # collect-smrtlink-references.snake: hotlink "remote" smrtlink reference FASTAs into our workflow directory
+  # Here the sts.h5 file is fetched at the same time as the reference, just to simplify the process 
+  # When more sts or other data files are collected, they should be separated to a new snakemake file
+  # Define local mapping alignemntset
   # collect-mappings.snake: hotlink pre-existing mappings into our workflow directory
-  # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
+  # When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
+  # So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset
+  # Later in this workflow, only the alignmentset (remote_alignmentsets[wc.condition][0]) is used
+
+Test bauhaus2 isoseq workflow
+  $ bauhaus2 generate -w IsoSeqRC0 -t ${BH_ROOT}test/data/two-isoseq-jobs.csv -o isoseq_output
+  Validation and input resolution succeeded.
+  Generated runnable workflow to "isoseq_output"
+  $ ls isoseq_output/workflow/Snakefile
+  isoseq_output/workflow/Snakefile
+
+  $ bauhaus2 generate -w IsoSeqRC0 -t ${BH_ROOT}test/data/two-isoseq-paths.csv -o isoseq_output2
+  Validation and input resolution succeeded.
+  Generated runnable workflow to "isoseq_output2"
+  $ ls isoseq_output2/workflow/Snakefile
+  isoseq_output2/workflow/Snakefile

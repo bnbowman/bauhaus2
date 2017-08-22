@@ -3,8 +3,10 @@ from builtins import object
 __all__ = [ "InputType",
             "ConditionTable",
             "ResequencingConditionTable",
+            "PrimaryResequencingConditionTable",
             "CoverageTitrationConditionTable",
             "UnrolledMappingConditionTable",
+            "IsoSeqConditionTable",
             "TableValidationError",
             "InputResolutionError" ]
 
@@ -13,6 +15,8 @@ import eztable
 import io,codecs
 
 from bauhaus2.pbls2 import DataNotFound, InvalidDataset
+from pkg_resources import Requirement, resource_filename
+from bauhaus2.pbls2 import parse_exe_or_module, str2bool
 
 # TODO: we are using the non-public method ._get_columns on
 # eztable.Table objects.  That method should really be public--maybe
@@ -121,7 +125,8 @@ class ConditionTable(object):
         elif {"RunCode", "ReportsFolder"}.issubset(cols):
             return resolver.resolveSubreadSet(rowRecord.RunCode, rowRecord.ReportsFolder)
         elif {"SMRTLinkServer", "JobId"}.issubset(cols):
-            return resolver.resolveAlignmentSet(rowRecord.SMRTLinkServer, rowRecord.JobId)
+            return [resolver.resolveAlignmentSet(rowRecord.SMRTLinkServer, rowRecord.JobId),
+                   resolver.resolveSmrtlinkSubreadSet(rowRecord.SMRTLinkServer, rowRecord.JobId)]
         elif {"JobPath"}.issubset(cols):
             return resolver.findAlignmentSet(rowRecord.JobPath)
         elif {"SubreadSet"}.issubset(cols):
@@ -134,6 +139,8 @@ class ConditionTable(object):
 
     def _resolveInputs(self, resolver):
         self._inputsByCondition = {}
+        self._inputsH5ByCondition = {}
+        self._inputsXMLByCondition = {}
         for condition in self.conditions:
             subDf = self.condition(condition)
             inputs = []
@@ -143,6 +150,20 @@ class ConditionTable(object):
                 except DataNotFound as e:
                     raise InputResolutionError(str(e))
             self._inputsByCondition[condition] = inputs
+            try:
+                if any("subreads.bam" in s for s in inputs):
+                    self._inputsH5ByCondition[condition] = [name.replace("subreads.bam", "sts.h5") for name in inputs]
+                    self._inputsXMLByCondition[condition] = [name.replace("subreads.bam", "sts.xml") for name in inputs]
+                elif any("subreadset.xml" in s for s in inputs):
+                    self._inputsH5ByCondition[condition] = [name.replace("subreadset.xml", "sts.h5") for name in inputs]
+                    self._inputsXMLByCondition[condition] = [name.replace("subreadset.xml", "sts.xml") for name in inputs]
+                if all([op.isfile(f) for f in self._inputsH5ByCondition[condition]]) is False:
+                    self._inputsH5ByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.h5')
+                if all([op.isfile(f) for f in self._inputsXMLByCondition[condition]]) is False:
+                    self._inputsXMLByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.xml')
+            except:
+                self._inputsH5ByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.h5')
+                self._inputsXMLByCondition[condition] = resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_sts.xml')
 
     @property
     def conditions(self):
@@ -198,6 +219,12 @@ class ConditionTable(object):
     def inputs(self, condition):
         return self._inputsByCondition[condition]
 
+    def inputsH5(self, condition):
+        return self._inputsH5ByCondition[condition]
+
+    def inputsXML(self, condition):
+        return self._inputsXMLByCondition[condition]
+
 
 class ResequencingConditionTable(ConditionTable):
     """
@@ -251,6 +278,77 @@ class ResequencingConditionTable(ConditionTable):
         return self._referenceSetByCondition[condition]
 
 
+class PrimaryResequencingConditionTable(ResequencingConditionTable):
+
+    def _validateBasecaller(self):
+        required = ['TraceH5File', 'Basecaller', 'PPA', 'HQRF', 'Library']
+        # If you want the basecaller output to be copied to analysis/refarm,
+        # provide the following column:
+        optional = ['BasecallerName']
+        for rq in required:
+            if rq not in self.tbl.column_names:
+                raise TableValidationError(
+                    "'{}' column must be present".format(rq))
+
+    def _parsePPAString(self, condition):
+        ppa = self.condition(condition).PPA
+        exe, mod = parse_exe_or_module(ppa[0], 'baz2bam', ('ppa', 'basecaller'))
+        return mod, exe
+
+    def _parseBCString(self, condition):
+        bc = self.condition(condition).Basecaller
+        exe, mod = parse_exe_or_module(bc[0], 'basecaller-console-app',
+                                       'basecaller')
+        return mod, exe
+
+    def _parseBasecaller(self):
+        self._basecallerModuleByCondition = {}
+        self._basecallerExeByCondition = {}
+        self._ppaModuleByCondition = {}
+        self._ppaExeByCondition = {}
+        for condition in self.conditions:
+            try:
+                mod, exe = self._parseBCString(condition)
+                self._basecallerModuleByCondition[condition] = mod
+                self._basecallerExeByCondition[condition] = exe
+                mod, exe = self._parsePPAString(condition)
+                self._ppaModuleByCondition[condition] = mod
+                self._ppaExeByCondition[condition] = exe
+            except DataNotFound as e:
+                raise InputResolutionError(str(e))
+
+    def _resolveInputs(self, resolver):
+        super(PrimaryResequencingConditionTable, self)._resolveInputs(resolver)
+        self._parseBasecaller()
+
+    def _validateTable(self):
+        super(PrimaryResequencingConditionTable, self)._validateTable()
+        self._validateBasecaller()
+
+    def basecallerModule(self, condition):
+        return self._basecallerModuleByCondition[condition]
+
+    def basecallerExe(self, condition):
+        return self._basecallerExeByCondition[condition]
+
+    def ppaModule(self, condition):
+        return self._ppaModuleByCondition[condition]
+
+    def ppaExe(self, condition):
+        return self._ppaExeByCondition[condition]
+
+    def HQRF(self, condition):
+        return str2bool(self.condition(condition).HQRF[0])
+
+    def BasecallerName(self, condition):
+        if 'BasecallerName' in self.tbl.column_names:
+            return self.condition(condition).BasecallerName[0]
+        return ''
+
+    def callAdapters(self, condition):
+        return str2bool(self.condition(condition).Library[0])
+
+
 class CoverageTitrationConditionTable(ResequencingConditionTable):
 
     def _validateAtLeastOnePVariable(self):
@@ -296,3 +394,21 @@ class UnrolledMappingConditionTable(ResequencingConditionTable):
                 continue
             else:
                 raise TableValidationError("Unrolled mapping requires an unrolled reference")
+
+
+class IsoSeqConditionTable(ConditionTable):
+    """Override validate table for isoseq"""
+    def _validateTable(self): # override, isoseq jobs has no alignments
+        return
+
+    def _resolveInput(self, resolver, rowRecord):
+        """
+        Condition Tables must contain either ('SMRTLinkServer', 'JobId') or ('JobPath').
+        Return [JobPath], path to SMRTLink IsoSeq jobs."""
+        cols = self.tbl.column_names
+        if {"SMRTLinkServer", "JobId"}.issubset(cols):
+            return resolver.resolveJob(rowRecord.SMRTLinkServer, rowRecord.JobId)
+        elif {"JobPath"}.issubset(cols):
+            return rowRecord.JobPath
+        else:
+            raise TableValidationError("IsoSeq ConditionTable shoule either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")

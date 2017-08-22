@@ -21,8 +21,9 @@ from .subreads import subreadsPlan
 def subreadsMappingPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
-        return [ "collect-mappings.snake",
-                 "collect-references.snake" ]
+        return [ "collect-smrtlink-references.snake",
+                 "mapping-alignmentset.snake",
+                 "collect-mappings.snake" ]
     elif not args.no_smrtlink:
         # Use SMRTLink for mapping
         return [ "map-subreads-smrtlink.snake",
@@ -42,6 +43,7 @@ def subreadsMappingPlan(ct, args):
                 subreadsPlan(ct, args)
 
 
+
 class MappingReportsWorkflow(Workflow):
     """
     Align subreads to the reference and generate comprehensive
@@ -56,8 +58,11 @@ class MappingReportsWorkflow(Workflow):
                              "R/ReadPlots.R",
                              "R/constant_arrow.R",
                              "R/FishbonePlots.R",
+                             "R/ZMWstsPlots.R",
+                             "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
 
     def plan(self):
-        return ["summarize-mappings.snake", "constant-arrow.snake"] + \
+        return ["summarize-mappings.snake", "constant-arrow.snake", "heatmaps.snake", "locacc.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)

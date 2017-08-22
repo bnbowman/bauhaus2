@@ -29,9 +29,9 @@ rule map_unrolledNoHQ_smrtlink_launch:
         subreadSet="conditions/{condition}/subreads/input.subreadset.xml",
         referenceSet=lambda wc: ct.referenceSet(wc.condition)
     output:
-        pbserviceInfo="conditions/{condition}/mapped/pbservice.log"
+        pbserviceInfo="conditions/{condition}/mapped/pbservice.json"
     params:
-        presetXmlFile="extras/pbsmrtpipe-unrolled-mappings-preset.xml",
+        presetXmlFile="extras/pbsmrtpipe-unrolled-nohq-mappings-preset.xml",
         jobid = "Bauhaus2_Job_{condition}"
     shell:
         """
@@ -44,14 +44,15 @@ rule map_unrolledNoHQ_smrtlink_launch:
           -e {input.subreadSet} \
           -e {input.referenceSet} \
           --preset-xml {params.presetXmlFile} --job-title {params.jobid} \
+          --json \
         > {output}
         """
 
 rule map_unrolledNoHQ_smrtlink_poll:
-    input: "conditions/{condition}/mapped/pbservice.log"
+    input: "conditions/{condition}/mapped/pbservice.json"
     output:
         flagFile="conditions/{condition}/mapped/job_complete",
-        pollFile="conditions/{condition}/mapped/poll.log",
+        pollJson="conditions/{condition}/mapped/poll.json",
         localJobLink="conditions/{condition}/mapped/job_link"
     run:
         import time, sys, os
@@ -59,8 +60,8 @@ rule map_unrolledNoHQ_smrtlink_poll:
         jobRoot = extractJobPath(input[0])
         os.symlink(jobRoot, output.localJobLink)
         while True:
-            shell("pbservice get-job %s --host {sl_host} --port {sl_port} > {output.pollFile}" % jobId)
-            status = extractJobStatus(output.pollFile)
+            shell("pbservice get-job %s --host {sl_host} --port {sl_port} --json > {output.pollJson}" % jobId)
+            status = extractJobStatus(output.pollJson)
             print("Found status: %s" % status)
             if status in JobStatus.FAILED_STATES:
                 print("SMRTLink job has failed")
@@ -77,7 +78,7 @@ rule map_unrolledNoHQ_smrtlink_poll:
 rule map_unrolledNoHQ_smrtlink_collect:
     input:
         flagFile="conditions/{condition}/mapped/job_complete",
-        pollFile="conditions/{condition}/mapped/poll.log",
+        pollFile="conditions/{condition}/mapped/poll.json",
         localJobLink="conditions/{condition}/mapped/job_link",
         reference="conditions/{condition}/reference.fasta"
     output:
@@ -87,4 +88,5 @@ rule map_unrolledNoHQ_smrtlink_collect:
     shell:
         """
         dataset create {output} {input.localJobLink}/{params.locationOfAlignmentSet}
+        dataset newuuid --random {output}
         """
