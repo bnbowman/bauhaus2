@@ -70,6 +70,8 @@ def initializeMappedMetricsDictionary(zmws):
                       'end-time': np.empty((len(zmws), ), dtype='f'),
                       'aStart': np.empty((len(zmws), ), dtype='f'),
                       'aEnd': np.empty((len(zmws), ), dtype='f'),
+                      'tStart': np.empty((len(zmws), ), dtype='f'),
+                      'tEnd': np.empty((len(zmws), ), dtype='f'),
                       'spasmid': np.empty((len(zmws), ), dtype='f')}
 
     return mapped_metrics
@@ -197,6 +199,8 @@ def addAlignmentMetrics(mapped_metrics, cnt, alignment,
                                                 framerate)
     mapped_metrics['aStart'][cnt] = alignment.aStart
     mapped_metrics['aEnd'][cnt] = alignment.aEnd
+    mapped_metrics['tStart'][cnt] = alignment.tStart
+    mapped_metrics['tEnd'][cnt] = alignment.tEnd
     nErrs = alignment.nMM + alignment.nDel + alignment.nIns
     mapped_metrics['spasmid'][cnt] = 1. - np.divide(nErrs,
                                                     alignment.tEnd - \
@@ -246,11 +250,12 @@ def writeMappedMetricsCsv(mapped_metrics, output):
     """
     write mapped metrics to csv file
     """
-    columns = ['ZMW', 'Condition', 'spasmid', 'aStart', 'aEnd',
-               'start-time', 'end-time', 'mean-pw-A', 'mean-pw-C',
-               'mean-pw-G', 'mean-pw-T', 'median-pw-A', 'median-pw-C',
-               'median-pw-G', 'median-pw-T', 'median-ipd-A', 'median-ipd-C',
-               'median-ipd-G', 'median-ipd-T']
+    columns = ['ZMW', 'Condition', 'spasmid',
+               'aStart', 'aEnd', 'tStart', 'tEnd',
+               'start-time', 'end-time',
+               'mean-pw-A', 'mean-pw-C', 'mean-pw-G', 'mean-pw-T',
+               'median-pw-A', 'median-pw-C', 'median-pw-G', 'median-pw-T',
+               'median-ipd-A', 'median-ipd-C', 'median-ipd-G', 'median-ipd-T']
 
     with open(output, 'wb') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames=columns)
