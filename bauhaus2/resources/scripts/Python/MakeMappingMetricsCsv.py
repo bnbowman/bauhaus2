@@ -36,8 +36,8 @@ def grabArrowZmwsByCondition(arrow_csv, condition):
         reader = csv.DictReader(csvfile)
         for row in reader:
             if row['Condition'] == condition:
-                arrow_zmws.append(row['ZMW'])
-    return np.array(arrow_zmws, dtype=int)
+                arrow_zmws.append((row['ZMW'], row['AlnTLength']))
+    return np.array(arrow_zmws, dtype=[('ZMW', int), ('tSpan', int)])
 
 def grabConditionName(aset):
     # path to aset is structured, split string to get condition name
@@ -214,8 +214,13 @@ def grabMappedMetrics(condition, alignments, arrow_zmws):
     """
     index = alignments.index
     # alignment_indices of ZMWs fit w/ Arrow
-    intersect_indices = np.flatnonzero(np.in1d(index['holeNumber'],
-                                               arrow_zmws))
+    zmw_intersect_indices = np.flatnonzero(np.in1d(index['holeNumber'],
+                                                   arrow_zmws['ZMW']))
+    tspan_intersect_indices = np.flatnonzero(np.in1d((index['tEnd'] -
+                                                      index['tStart']),
+                                                     arrow_zmws['tSpan']))
+    intersect_indices = np.intersect1d(zmw_intersect_indices,
+                                       tspan_intersect_indices)
 
     mapped_metrics = initializeMappedMetricsDictionary(intersect_indices)
     for cnt, alignment_id in enumerate(intersect_indices):
