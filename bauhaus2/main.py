@@ -62,6 +62,9 @@ def parseArgs():
     parser.add_argument(
         "--noGrid", action="store_true",
         help="Disable the qsub submission to the grid; run tasks on local host")
+    parser.add_argument(
+        "--nproc", type=int, default=4,
+        help="When the qsub submission to the grid is disabled; define the core number on local host")
 
     subparsers = parser.add_subparsers(help="sub-command help", dest="subcommand")
     subparsers.required=True
