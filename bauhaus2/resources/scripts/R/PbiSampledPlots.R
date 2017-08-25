@@ -734,7 +734,7 @@ makeSamplingPlots <-
       tp <- tp +  geom_text(data = a, aes(label = PolRate), 
                             position = position_dodge(width = 0.9), vjust = -0.8) + 
         plTheme + themeTilt  + clFillScale + 
-        labs(x = "Reference", y = "Polymerization Rate", title = "Polymerization Rate by Reference")
+        labs(x = "Reference", y = "Advance Time (mean(PW + IPD))", title = "Advance Time by Reference")
       
       report$ggsave(
         "polrate_ref_box.png",
