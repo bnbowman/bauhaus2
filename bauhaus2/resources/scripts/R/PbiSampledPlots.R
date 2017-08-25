@@ -29,10 +29,6 @@ themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
 plotwidth = 7.2
 plotheight = 4.2
 
-# ipd and pw are filtered by maxIPD and maxPW
-maxIPD = 1.25
-maxPW = 0.25
-
 # Fuction to get p_variable names
 variableNames <- function(ct)
 {
@@ -191,6 +187,11 @@ makeSamplingPlots <-
       cd2$AccuBases <- "Inaccurate"
       cd2$AccuBases[cd2$read == cd2$ref] = "Accurate"
       cd2$DC <- cd2$ipd + cd2$pw
+      
+      
+      # ipd and pw are filtered by maxIPD and maxPW
+      maxIPD = quantile(cd2$ipd, 0.95)
+      maxPW = quantile(cd2$pw, 0.95)
       
       # Set a boolean variable to see if all the conditions are internal mode
       # Only when all the conditions are internal mode, the variable is set to TRUE
