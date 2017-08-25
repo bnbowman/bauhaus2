@@ -275,6 +275,44 @@ makeSamplingPlots <-
       
       # Plots based on startFrame (Only produced when "sf" is loaded)
       if (internalBAM) {
+        # template span vs start time scatter plot
+        tp = ggplot(cd3, aes(x = startTime / 60, y = tlen, color = Condition)) + geom_point(alpha = .2) +
+          plTheme  + geom_smooth(fill = NA) + clScale + labs(
+            y = "Template Span (bases)",
+            title = paste("Template Span vs. Start Time\n(From ", sampleSize, " Sampled Alignments)"),
+            x = "Start Time (minutes)"
+          ) + facet_wrap( ~ Condition, nrow = length(levels(cd3$Condition)))
+        img_height = min(49.5, plotheight * length(levels(cd3$Condition)))
+        report$ggsave(
+          "tlenvsstarttime.png",
+          tp,
+          id = "tlenvsstarttime",
+          width = plotwidth,
+          height = img_height,
+          title = "Template Span vs. Start Time",
+          caption = "Template Span vs. Start Time",
+          tags = c("sampled", "tlen", "time", "start", "template")
+        )
+        
+        # template span vs end time scatter plot
+        tp = ggplot(cd3, aes(x = endTime / 60, y = tlen, color = Condition)) + geom_point(alpha = .2) +
+          plTheme  + geom_smooth(fill = NA) + clScale + labs(
+            y = "Template Span (bases)",
+            title = paste("Template Span vs. End Time\n(From ", sampleSize, " Sampled Alignments)"),
+            x = "End Time (minutes)"
+          ) + facet_wrap( ~ Condition, nrow = length(levels(cd3$Condition)))
+        img_height = min(49.5, plotheight * length(levels(cd3$Condition)))
+        report$ggsave(
+          "tlenvsendtime.png",
+          tp,
+          id = "tlenvsendtime",
+          width = plotwidth,
+          height = img_height,
+          title = "Template Span vs. End Time",
+          caption = "Template Span vs. End Time",
+          tags = c("sampled", "tlen", "time", "end", "template")
+        )
+        
         # Global/Local PolRate plot
         tp = ggplot(cd3, aes(
           x = basepersecond * (medianpw + medianipd) / log(2),

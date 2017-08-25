@@ -335,7 +335,9 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- snrvsdeletion.png
   |   |   |-- snrvsindelrat.png
   |   |   |-- snrvsinsertion.png
-  |   |   `-- snrvsmismatch.png
+  |   |   |-- snrvsmismatch.png
+  |   |   |-- tlenvsendtime.png
+  |   |   `-- tlenvsstarttime.png
   |   |-- ReadPlots
   |   |   |-- clip_rate.png
   |   |   |-- deletion_norm.png
@@ -376,5 +378,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  25 directories, 334 files
+  25 directories, 336 files
 
