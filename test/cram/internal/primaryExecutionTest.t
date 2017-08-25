@@ -490,7 +490,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- snrvsdeletion.png
   |   |   |-- snrvsindelrat.png
   |   |   |-- snrvsinsertion.png
-  |   |   `-- snrvsmismatch.png
+  |   |   |-- snrvsmismatch.png
+  |   |   |-- tlenvsendtime.png
+  |   |   `-- tlenvsstarttime.png
   |   |-- ReadPlots
   |   |   |-- clip_rate.png
   |   |   |-- deletion_norm.png
@@ -531,5 +533,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  33 directories, 481 files
+  33 directories, 483 files
 
