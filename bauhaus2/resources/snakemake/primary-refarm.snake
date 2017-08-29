@@ -130,7 +130,7 @@ rule run_baz2bam:
         toCopy=lambda wc: refarm_paths[wc.condition],
         mov=lambda wc: trc2mov(remote_trcs[wc.condition]),
         cond=lambda wc: wc.condition
-    threads: 8
+    threads: 16
     shell:
         """
         module purge
