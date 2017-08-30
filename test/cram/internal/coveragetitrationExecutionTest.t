@@ -85,12 +85,12 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |-- consensus.40.fastq
   |   |       |-- consensus.5.fasta
   |   |       |-- consensus.5.fastq
-  |   |       |-- consensus.50.fasta
-  |   |       |-- consensus.50.fastq
-  |   |       |-- consensus.60.fasta
-  |   |       |-- consensus.60.fastq
-  |   |       |-- consensus.80.fasta
-  |   |       |-- consensus.80.fastq
+  |   |       |-- consensus.63.fasta
+  |   |       |-- consensus.63.fastq
+  |   |       |-- consensus.75.fasta
+  |   |       |-- consensus.75.fastq
+  |   |       |-- consensus.88.fasta
+  |   |       |-- consensus.88.fastq
   |   |       |-- masked-variants.10.gff
   |   |       |-- masked-variants.100.gff
   |   |       |-- masked-variants.15.gff
@@ -98,9 +98,9 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |-- masked-variants.30.gff
   |   |       |-- masked-variants.40.gff
   |   |       |-- masked-variants.5.gff
-  |   |       |-- masked-variants.50.gff
-  |   |       |-- masked-variants.60.gff
-  |   |       |-- masked-variants.80.gff
+  |   |       |-- masked-variants.63.gff
+  |   |       |-- masked-variants.75.gff
+  |   |       |-- masked-variants.88.gff
   |   |       |-- variants.10.gff
   |   |       |-- variants.100.gff
   |   |       |-- variants.15.gff
@@ -108,9 +108,9 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |-- variants.30.gff
   |   |       |-- variants.40.gff
   |   |       |-- variants.5.gff
-  |   |       |-- variants.50.gff
-  |   |       |-- variants.60.gff
-  |   |       `-- variants.80.gff
+  |   |       |-- variants.63.gff
+  |   |       |-- variants.75.gff
+  |   |       `-- variants.88.gff
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- chunks
@@ -178,12 +178,12 @@ Generate mapping reports workflow, starting from subreads.
   |           |-- consensus.40.fastq
   |           |-- consensus.5.fasta
   |           |-- consensus.5.fastq
-  |           |-- consensus.50.fasta
-  |           |-- consensus.50.fastq
-  |           |-- consensus.60.fasta
-  |           |-- consensus.60.fastq
-  |           |-- consensus.80.fasta
-  |           |-- consensus.80.fastq
+  |           |-- consensus.63.fasta
+  |           |-- consensus.63.fastq
+  |           |-- consensus.75.fasta
+  |           |-- consensus.75.fastq
+  |           |-- consensus.88.fasta
+  |           |-- consensus.88.fastq
   |           |-- masked-variants.10.gff
   |           |-- masked-variants.100.gff
   |           |-- masked-variants.15.gff
@@ -191,9 +191,9 @@ Generate mapping reports workflow, starting from subreads.
   |           |-- masked-variants.30.gff
   |           |-- masked-variants.40.gff
   |           |-- masked-variants.5.gff
-  |           |-- masked-variants.50.gff
-  |           |-- masked-variants.60.gff
-  |           |-- masked-variants.80.gff
+  |           |-- masked-variants.63.gff
+  |           |-- masked-variants.75.gff
+  |           |-- masked-variants.88.gff
   |           |-- variants.10.gff
   |           |-- variants.100.gff
   |           |-- variants.15.gff
@@ -201,9 +201,9 @@ Generate mapping reports workflow, starting from subreads.
   |           |-- variants.30.gff
   |           |-- variants.40.gff
   |           |-- variants.5.gff
-  |           |-- variants.50.gff
-  |           |-- variants.60.gff
-  |           `-- variants.80.gff
+  |           |-- variants.63.gff
+  |           |-- variants.75.gff
+  |           `-- variants.88.gff
   |-- config.json
   |-- log
   |-- prefix.sh
