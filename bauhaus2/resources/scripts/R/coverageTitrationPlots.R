@@ -210,7 +210,7 @@ makeResidualsTable <- function(ccsDf, variables)
     }
 
     #MIN.COVERAGE <- 40
-    ROUND.COVERAGE <- c(40, 60, 100)
+    ROUND.COVERAGE <- c(40, 75, 100)
     varTypeCounts <- ddply(
         subset(tbl, Coverage %in% ROUND.COVERAGE),
         append(c("Condition", "Coverage", "MaskedVariantsFile", "Genome"), variables),
