@@ -1461,7 +1461,7 @@ makeReport <- function(report) {
   
   conditions = report$condition.table
   # Load the pbi index for each data frame
-  dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
+  dfs = lapply(as.character(conditions$MappedSubreads), function(s) {
     loginfo(paste("Loading alignment set:", s))
     loadPBI2(s)
   })

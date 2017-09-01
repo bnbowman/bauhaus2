@@ -208,8 +208,8 @@ makeReport <- function(report) {
   
   # Load the read error rates for each dataset
   dfs = lapply(1:nrow(conditions), function(i) {
-    alnFile = as.character(unique(conditions$MappedSubreads[i]))
-    fasta = as.character(unique(conditions$Reference[i]))
+    alnFile = as.character(conditions$MappedSubreads[i])
+    fasta = as.character(conditions$Reference[i])
     loginfo(paste("Loading alignment set:", alnFile))
     pbbamr::getReadReport(datasetname = alnFile, indexedFastaName = fasta )
   })
