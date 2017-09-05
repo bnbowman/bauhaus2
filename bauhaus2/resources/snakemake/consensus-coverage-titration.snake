@@ -51,7 +51,7 @@ rule mask_variants_1:
 # -- summarize true available coverage levels
 
 # TODO: make "otherbin" tools available via "module load smrtanalysis/mainline-with-otherbins
-SUMMARIZE_COVERAGE="/pbi/dept/secondary/builds/mainline.old/current_smrttools_prebuilt_installdir/private/otherbins/internalall/bin/summarize_coverage"
+SUMMARIZE_COVERAGE="/pbi/dept/secondary/builds/links/current_develop_smrttools-cleanbuild_installdir/private/otherbins/internalall/bin/summarize_coverage"
 
 rule summarize_coverage:
     output: "conditions/{condition}/variant_calling/alignments-summary.gff"
