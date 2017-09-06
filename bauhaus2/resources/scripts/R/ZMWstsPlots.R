@@ -861,7 +861,7 @@ makeEmptyXMLPlots <- function(report) {
 makeSTSH5Heatmaps <- function(report, conditions) {
   MAXINT <<- 2 ^ 16
   N = c(8, 8)
-  dist = getDistMat(c(16, 8), key = 1e3)
+  dist = getDistMat(N, key = 1e3)
   
   try(lapply(1:nrow(conditions), function(k)
     generateStsH5Heatmaps(report, conditions$sts_h5[k], conditions$Condition[k], N, dist)), silent = FALSE)

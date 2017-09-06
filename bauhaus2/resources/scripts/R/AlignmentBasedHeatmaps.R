@@ -1180,7 +1180,7 @@ makeReport = function(report)
   refs = as.character(conditions$Reference)[w]
   labels = as.character(conditions$Condition)[w]
   
-  N = c(8, 16)
+  N = c(8, 8)
   key = 1e3
   dist = getDistMat(N, key)
   res = lapply(1:length(alnxmls), function(k)
