@@ -71,69 +71,19 @@ generateStsH5Heatmaps = function(report, file, label, N, dist = NULL)
   P2 = subset(S, Productivity == 2)
   P2 = P2[, c(nonalnedZMWMetrics, "HoleNumber", "X", "Y")]
   plotProductivityCategories(report, P2, "P2", label, N, dist)
-  
-  # Write table of productivity values vs. failure modes
-  r = data.frame(rbind(
-    countFailuresPerMode(P0),
-    countFailuresPerMode(P1),
-    countFailuresPerMode(P2)
-  ))
-  names(r) = c("DMEF.all", "DMEF.hqr", "No.hqr", "low.SNR", "OK.SNR")
-  row.names(r) = c("P0", "P1", "P2")
-  cat("Writing csv file.")
-  write.csv(r,
-            file = file.path(report$outputDir, paste(label, "csv", sep = ".")),
-            row.names = TRUE)
-  r
 }
 
 plotProductivityCategories = function(report, res, x, label, N, dist = NULL)
 {
-  dna = c("A", "C", "G", "T")
-  hq.snr = paste("HQRegionSnrMean", dna, sep = "_")
-  snr = paste("SnrMean", dna, sep = "_")
-  
   try(plotAllFields(
     report,
-    getDMEF.all(res, hq.snr, snr),
+    res,
     N,
-    paste(label, x, "DMEF.all", sep = "_"),
+    paste(label, x, sep = "_"),
     FALSE,
     dist
   ),
   silent = FALSE)
-  try(plotAllFields(
-    report,
-    getDMEF.hqr(res, hq.snr, snr),
-    N,
-    paste(label, x, "DMEF.hqr", sep = "_"),
-    FALSE,
-    dist
-  ),
-  silent = FALSE)
-  try(plotAllFields(report,
-                    getNoHQR(res, hq.snr, snr),
-                    N,
-                    paste(label, x, "No_HQR", sep = "_"),
-                    FALSE,
-                    dist),
-      silent = FALSE)
-  try(plotAllFields(
-    report,
-    getLowSNR(res, hq.snr, snr),
-    N,
-    paste(label, x, "Low_SNR", sep = "_"),
-    FALSE,
-    dist
-  ),
-  silent = FALSE)
-  try(plotAllFields(report,
-                    getOKsnr(res, hq.snr, snr),
-                    N,
-                    paste(label, x, "OK_SNR", sep = "_"),
-                    FALSE,
-                    dist),
-      silent = FALSE)
   1
 }
 
@@ -228,47 +178,6 @@ identifyEmptyOrSingleValuedColumns = function(res, exclude)
   c(exclude, nms[which(v < 1)])
 }
 
-getDMEF.all = function(x, hq.snr, snr)
-{
-  s = subset(x, is.na(x$HQRegionSnrMean_A) & is.na(x$SnrMean_A))
-  s[, which(names(s) %in% setdiff(names(x), c(hq.snr, snr)))]
-}
-
-getDMEF.hqr = function(x, hq.snr, snr)
-{
-  s = subset(x, (x$HQRegionSnrMean_A == -1) & !is.na(x$SnrMean_A))
-  s[, which(names(s) %in% setdiff(names(x), hq.snr))]
-}
-
-getNoHQR = function(x, hq.snr, snr)
-{
-  s = subset(x, is.na(x$HQRegionSnrMean_A) & !is.na(x$SnrMean_A))
-  s[, which(names(s) %in% setdiff(names(x), hq.snr))]
-}
-
-toFindLowVsOKsnr = function(x, hq.snr, snr)
-{
-  apply(as.matrix(x[, hq.snr]), 1, min)
-}
-
-getLowSNR = function(x, hq.snr, snr, minSNR = 4.0)
-{
-  subset(
-    x,!is.na(x$HQRegionSnrMean_A) & (x$HQRegionSnrMean_A != -1) &
-      !is.na(x$SnrMean_A) & (x$SnrMean_A != -1) &
-      toFindLowVsOKsnr(x, hq.snr, snr) < minSNR
-  )
-}
-
-getOKsnr = function(x, hq.snr, snr, minSNR = 4.0)
-{
-  subset(
-    x,!is.na(x$HQRegionSnrMean_A) & (x$HQRegionSnrMean_A != -1) &
-      !is.na(x$SnrMean_A) & (x$SnrMean_A != -1) &
-      toFindLowVsOKsnr(x, hq.snr, snr) >= minSNR
-  )
-}
-
 getStsH5Data = function(file, labelReadTypes = TRUE)
 {
   #' Open h5 file:
@@ -304,30 +213,6 @@ getStsH5Data = function(file, labelReadTypes = TRUE)
   
   #' Return non-fiducial ZMWs only:
   S[K[, 2] == 0, ]
-}
-
-countFailuresPerMode = function(P, minSNR = 4.0)
-{
-  dna = c("A", "C", "G", "T")
-  hq.snr = paste("HQRegionSnrMean", dna, sep = "_")
-  snr = paste("SnrMean", dna, sep = "_")
-  
-  # DME fails across entire trace:
-  r1 = nrow(getDMEF.all(P, hq.snr, snr))
-  
-  # DME fails inside HQ region:
-  r2 = nrow(getDMEF.hqr(P, hq.snr, snr))
-  
-  # HQ region not defined
-  r3 = nrow(getNoHQR(P, hq.snr, snr))
-  
-  # low SNR
-  r4 = nrow(getLowSNR(P, hq.snr, snr))
-  
-  # OK SNR
-  r5 = nrow(getOKsnr(P, hq.snr, snr))
-  
-  c(r1, r2, r3, r4, r5)
 }
 
 opDS = function(group, name, na.value = 2147483647)
