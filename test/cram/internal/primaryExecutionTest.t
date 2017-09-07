@@ -287,6 +287,7 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- Uniformity_metrics_HQLib.csv
   |   |   |-- Uniformity_metrics_HQunrolled.csv
   |   |   |-- Uniformity_metrics_noHQunrolled.csv
+  |   |   |-- barchart_of_center_to_edge.png
   |   |   |-- barchart_of_uniformity.png
   |   |   |-- rEnd_HQLib.png
   |   |   |-- rEnd_HQunrolled.png
@@ -533,5 +534,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  33 directories, 483 files
+  33 directories, 484 files
 
