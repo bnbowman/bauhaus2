@@ -1254,21 +1254,22 @@ makeReport = function(report)
     tp = ggplot(UniformityLong2, aes(factor(variable), value, fill = ID)) +
       geom_bar(stat = "identity", position = "dodge") +
       scale_fill_brewer(palette = "Set1") +
-      labs(x = "Variables", y = "Score", title = "Center to Edge Ratio")
+      labs(x = "Variables", y = "Score", title = "Center to Edge P1 Ratio")
     report$ggsave(
-      "barchart_of_center_to_edge.png",
+      "barchart_of_center_to_edge_p1.png",
       tp,
       width = plotwidth,
       height = plotheight,
-      id = "barchart_of_center_to_edge",
-      title = "Center to Edge Ratio",
-      caption = "barchart_of_center_to_edge",
+      id = "barchart_of_center_to_edge_p1",
+      title = "Center to Edge P1 Ratio",
+      caption = "barchart_of_center_to_edge_p1",
       tags = c(
         "bar",
         "barchart",
         "uniformity",
         "center",
-        "edge"
+        "edge",
+        "P1"
       )
     )
   }

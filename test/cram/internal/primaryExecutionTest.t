@@ -287,7 +287,7 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- Uniformity_metrics_HQLib.csv
   |   |   |-- Uniformity_metrics_HQunrolled.csv
   |   |   |-- Uniformity_metrics_noHQunrolled.csv
-  |   |   |-- barchart_of_center_to_edge.png
+  |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
   |   |   |-- rEnd_HQLib.png
   |   |   |-- rEnd_HQunrolled.png
