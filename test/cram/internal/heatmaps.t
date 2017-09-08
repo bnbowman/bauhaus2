@@ -161,6 +161,7 @@ Generate heatmaps workflow, starting from subreads.
   |   |   |-- Uniformity_histogram_MovieB.png
   |   |   |-- Uniformity_metrics_MovieA.csv
   |   |   |-- Uniformity_metrics_MovieB.csv
+  |   |   |-- barchart_of_center_to_edge.png
   |   |   |-- barchart_of_uniformity.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
@@ -195,4 +196,4 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  18 directories, 160 files
+  18 directories, 161 files

@@ -594,7 +594,7 @@ getColumnsForSummarization = function(names.res, dna)
     ),
     nMax = c("MaxSubreadLen", "rEnd", "tEnd"),
     nMin = c("rStart", "tStart"),
-    nSum = c("Matches", "Mismatches", "Inserts", "Dels", "AlnReadLen")
+    nSum = c("Matches", "Mismatches", "Inserts", "Dels", "AlnReadLen", "centerP1", "edgeP1")
   )
 }
 
@@ -641,6 +641,12 @@ applySummarization = function(res)
   refTable = names(table(res$Reference))
   res$Reference = match(res$Reference, refTable)
   res$MaxSubreadLen = res$AlnReadLen
+  # Chip hole: x: (64,1143) y: (64,1023)
+  # Center load: x: (222,985) y: (205,882). center percent: 49.96%
+  res$center = ifelse(res$X > 221 & res$X < 986 & res$Y > 206 & res$X < 883,1,0)
+  res$edge = ifelse(res$center == 0,1,0)
+  res$centerP1 = ifelse(duplicated(res[,c("X","Y")]),0,res$center)
+  res$edgeP1 = ifelse(duplicated(res[,c("X","Y")]),0,res$edge)
   colList = getColumnsForSummarization(names(res), dna)
   res = sumUpByMolecule(res, colList)
   postSummation(res, refTable)
@@ -672,8 +678,6 @@ convenientSummarizerbam = function(res,
   y = as.numeric(res$Y) - y.min + 1
   X = (x %/% N[1]) + (x %% N[1] > 0)
   Y = (y %/% N[2]) + (y %% N[2] > 0)
-  z = data.frame(data.table(X, Y)[, .N, by = .(X, Y)])
-  # z$N contains the number of alignments per N[1] x N[2] block
   
   if ("SNR_A" %in% names(res))
   {
@@ -693,12 +697,16 @@ convenientSummarizerbam = function(res,
     u = data.table(res[, -which(names(res) %in% excl)])
     u$X = X
     u$Y = Y
+    v = u[, c("X", "Y", "centerP1", "edgeP1")] %>% group_by(X, Y) %>% summarise(sumcenterP1 = sum(centerP1), sumedgeP1 = sum(edgeP1), N = n())
+    # v$N contains the number of alignments per N[1] x N[2] block
     FUN = function(x, na.rm = TRUE)
       as.double(median(x, na.rm))
     cols = setdiff(names(u), c("X", "Y"))
     tmp = data.frame(u[, lapply(.SD, FUN), by = .(X, Y), .SDcols = cols])
-    m = match(key * tmp$X + tmp$Y, key * z$X + z$Y)
-    tmp$Count = z$N[m]
+    m = match(key * tmp$X + tmp$Y, key * v$X + v$Y)
+    tmp$Count = v$N[m]
+    tmp$centerP1 = v$sumcenterP1[m]
+    tmp$edgeP1 = v$sumedgeP1[m]
   }
   
   #' Estimate average number of pols per ZMW in each block of ZMWs:
@@ -839,7 +847,9 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     "Dels",
     "AlnReadLenExtRange",
     "MaxSubreadLenExtRange",
-    "rStartExtRange"
+    "rStartExtRange",
+    "centerP1",
+    "edgeP1"
   )
   
   lapply(setdiff(names(df), excludeColumns), function(n)
@@ -1039,7 +1049,14 @@ getUniformityMetricsTable = function(res, label, N, com, SNR, dist, cutoff = 2)
   le = getLoadingEfficiency(counts, N)
   kv = getKVossMetric(res)
   
-  #' Compute Moran's I statistics and corresponding p-values
+  # Compute "center to edge" metric
+  # "center to edge" metric is a ratio of the loading (P1) of 
+  # the 50% of the inside zmws divided by the loading of the 50% outside zmws
+  centerLoad = sum(res$centerP1, na.rm = T)
+  edgeLoad = sum(res$edgeP1, na.rm = T)
+  centertoedge = centerLoad/edgeLoad
+  
+  # Compute Moran's I statistics and corresponding p-values
   mi = unlist(lapply(1:dist$nMatrices,
                      function(i)
                        ape.moranI(counts, dist$MatList[[i]], dist$S1.S2[[i]])))
@@ -1057,6 +1074,7 @@ getUniformityMetricsTable = function(res, label, N, com, SNR, dist, cutoff = 2)
     LambdaUniformity = le,
     CenterOfMass.X = com[1],
     CenterOfMass.Y = com[2],
+    CenterToEdge = centertoedge,
     MoransI.Inv = mi[1],
     MoransI.Inv.sd = mi[2],
     MoransI.Inv.p = mi[3],
@@ -1199,14 +1217,14 @@ makeReport = function(report)
   } else {
     Uniformity = rbindlist(lapply(csvfile, function(i) {
       read.csv(i)
-    }))[, c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N")]
+    }))[, c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N", "CenterToEdge")]
     Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
     Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
-    Uniformity = Uniformity[, c("ID",
+    UniformityMerge = Uniformity[, c("ID",
                                 "LambdaUniformity",
                                 "MoransI.Inv_percentage",
                                 "MoransI.N_percentage")]
-    UniformityLong = melt(Uniformity, id.vars = "ID")
+    UniformityLong = melt(UniformityMerge, id.vars = "ID")
     tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) +
       geom_bar(stat = "identity", position = "dodge") +
       scale_fill_brewer(palette = "Set1") +
@@ -1226,6 +1244,31 @@ makeReport = function(report)
         "Lambda",
         "MoransI",
         "Morans"
+      )
+    )
+    
+    # Center to edge histogram
+    UniformityCTE = Uniformity[, c("ID",
+                                   "CenterToEdge")]
+    UniformityLong2 = melt(UniformityCTE, id.vars = "ID")
+    tp = ggplot(UniformityLong2, aes(factor(variable), value, fill = ID)) +
+      geom_bar(stat = "identity", position = "dodge") +
+      scale_fill_brewer(palette = "Set1") +
+      labs(x = "Variables", y = "Score", title = "Center to Edge Ratio")
+    report$ggsave(
+      "barchart_of_center_to_edge.png",
+      tp,
+      width = plotwidth,
+      height = plotheight,
+      id = "barchart_of_center_to_edge",
+      title = "Center to Edge Ratio",
+      caption = "barchart_of_center_to_edge",
+      tags = c(
+        "bar",
+        "barchart",
+        "uniformity",
+        "center",
+        "edge"
       )
     )
   }

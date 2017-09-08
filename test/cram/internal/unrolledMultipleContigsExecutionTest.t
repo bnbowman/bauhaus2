@@ -180,6 +180,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Uniformity_histogram_MovieB.png
   |   |   |-- Uniformity_metrics_MovieA.csv
   |   |   |-- Uniformity_metrics_MovieB.csv
+  |   |   |-- barchart_of_center_to_edge.png
   |   |   |-- barchart_of_uniformity.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
@@ -401,5 +402,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  27 directories, 357 files
+  27 directories, 358 files
 
