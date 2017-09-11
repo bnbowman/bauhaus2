@@ -753,6 +753,8 @@ plotReferenceHeatmap = function(report, res, label)
       color = Reference
     ) +
       labs(title = title) +
+      scale_y_reverse() + 
+      scale_x_continuous(position = "top") +
       theme(aspect.ratio = ASP_RATIO)
   )
   
@@ -1176,7 +1178,6 @@ generateHeatmapsPerCondition = function(report,
     
     loginfo(paste("Summarize data for condition:", label))
     res$SMRTlinkID = label
-    res$X = 1164 - res$X
     
     loginfo(paste("Draw regular heatmaps for condition:", label))
     res = subset(res, SNR_A != -1 &

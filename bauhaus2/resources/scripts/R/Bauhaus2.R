@@ -87,6 +87,8 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL, 
       ) +
         scale_colour_gradientn(colours = rainbow(10)) +
         labs(title = title) +
+        scale_y_reverse() + 
+        scale_x_continuous(position = "top") +
         theme(aspect.ratio = ASP_RATIO)
     )
     
@@ -113,6 +115,8 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL, 
           colour = "black"
         ) +
         labs(title = title) +
+        scale_y_reverse() + 
+        scale_x_continuous(position = "top") +
         theme(aspect.ratio = ASP_RATIO)
     )
   }
