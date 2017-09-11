@@ -95,9 +95,10 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL, 
   }
   else
   {
-    # Above range gray ( na.value ), below range black
+    # Above range tan, below range black, na.value grey
     low = subset(res, res[, n] < limits[1])
-    tmp = subset(res, res[, n] >= limits[1])
+    high = subset(res, res[, n] > limits[2])
+    tmp = subset(res, res[, n] >= limits[1] & res[, n] <= limits[2])
     myplot = (
       qplot(
         data = tmp,
@@ -113,6 +114,13 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL, 
           size = I(0.75),
           alpha = I(0.05),
           colour = "black"
+        ) +
+        geom_point(
+          data = high,
+          aes(Y, X),
+          size = I(0.75),
+          alpha = I(0.05),
+          colour = "tan"
         ) +
         labs(title = title) +
         scale_y_reverse() + 
