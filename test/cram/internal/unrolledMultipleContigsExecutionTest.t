@@ -195,9 +195,22 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tStart_MovieA.png
   |   |   `-- tStart_MovieB.png
   |   |-- ConstantArrowFishbonePlots
-  |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode-simple.csv
   |   |   |-- errormode.csv
+  |   |   |-- errormode_MovieA_0.csv
+  |   |   |-- errormode_MovieA_1.csv
+  |   |   |-- errormode_MovieA_2.csv
+  |   |   |-- errormode_MovieA_3.csv
+  |   |   |-- errormode_MovieA_4.csv
+  |   |   |-- errormode_MovieA_5.csv
+  |   |   |-- errormode_MovieA_6.csv
+  |   |   |-- errormode_MovieB_1.csv
+  |   |   |-- errormode_MovieB_2.csv
+  |   |   |-- errormode_MovieB_3.csv
+  |   |   |-- errormode_MovieB_4.csv
+  |   |   |-- errormode_MovieB_5.csv
+  |   |   |-- errormode_MovieB_6.csv
+  |   |   |-- errormode_MovieB_7.csv
   |   |   |-- mapped-metrics.csv
   |   |   |-- modelReport.json
   |   |   |-- report.Rd
@@ -402,5 +415,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  27 directories, 358 files
+  27 directories, 371 files
 
