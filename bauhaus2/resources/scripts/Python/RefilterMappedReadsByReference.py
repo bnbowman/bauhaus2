@@ -31,8 +31,13 @@ def reDefineFilter(aset):
     alignments = AlignmentSet(aset)
     zmws = np.unique(alignments.index['holeNumber'])
     if len(zmws) > 1000:
-        zmws = random.sample(zmws, 1000)
-    alignments.filters.addRequirement(zm=[('=', zmws)])
+        zmws = np.array(random.sample(zmws, 1000))
+    if zmws.size == 0: # only make the swap if zmws is not empty
+        alignments.filters.addRequirement(zm=[('=', zmws)])
+    else: # otherwise make the filter nonsense
+        alignments.filters.addRequirement(zm=[('=', -1)])
+
+    # remove ref name filter for pbbam compatibility
     alignments.filters.removeRequirement('rname')
     alignments.write(aset)
 
