@@ -32,7 +32,7 @@ def reDefineFilter(aset):
     zmws = np.unique(alignments.index['holeNumber'])
     if len(zmws) > 1000:
         zmws = np.array(random.sample(zmws, 1000))
-    if zmws.size == 0: # only make the swap if zmws is not empty
+    if zmws.size > 0: # only make the swap if zmws is not empty
         alignments.filters.addRequirement(zm=[('=', zmws)])
     else: # otherwise make the filter nonsense
         alignments.filters.addRequirement(zm=[('=', -1)])
