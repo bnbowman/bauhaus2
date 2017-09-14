@@ -65,7 +65,13 @@ getPBFillScale <- function(numLevels = 9) {
 #' @seealso \code{\link{drawSummarizedHeatmaps}} which calls this function
 #' @export
 
-plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL, sts = FALSE)
+plotSingleSummarizedHeatmap = function(report,
+                                       res,
+                                       n,
+                                       label,
+                                       N,
+                                       limits = NULL,
+                                       sts = FALSE)
 {
   if (length(N) == 1) {
     N = c(N, N)
@@ -87,7 +93,7 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL, 
       ) +
         scale_colour_gradientn(colours = rainbow(10)) +
         labs(title = title) +
-        scale_y_reverse() + 
+        scale_y_reverse() +
         scale_x_continuous(position = "top") +
         theme(aspect.ratio = ASP_RATIO)
     )
@@ -123,7 +129,7 @@ plotSingleSummarizedHeatmap = function(report, res, n, label, N, limits = NULL, 
           colour = "tan"
         ) +
         labs(title = title) +
-        scale_y_reverse() + 
+        scale_y_reverse() +
         scale_x_continuous(position = "top") +
         theme(aspect.ratio = ASP_RATIO)
     )
@@ -316,6 +322,7 @@ bh2Reporter <-
                title = "Default Title",
                caption = "No caption specified",
                tags = c(),
+               uid = "Unique ID",
                ...)
       {
         if (!chkPng(img_file_name)) {

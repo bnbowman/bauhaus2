@@ -27,302 +27,513 @@ source(file.path(myDir, "Bauhaus2.R"))
 plTheme <- theme_bw(base_size = 18)
 clScale <- scale_colour_brewer(palette = "Set1")
 clFillScale <- scale_fill_brewer(palette = "Set1")
-themeTilt = theme(panel.border = element_blank(),
-                  panel.grid.minor = element_blank(),
-                  panel.spacing = unit(4/3, "lines"),
-                  strip.background = element_blank(),
-                  strip.text.y = element_text(angle = 0))
+themeTilt = theme(
+  panel.border = element_blank(),
+  panel.grid.minor = element_blank(),
+  panel.spacing = unit(4 / 3, "lines"),
+  strip.background = element_blank(),
+  strip.text.y = element_text(angle = 0)
+)
 pd <- position_dodge(0.2)
 dpi <- 160
 
-makeFishbonePlots <- function(errormodeMerge, report, minSample = 20) {
-  loginfo("making fishbone plots.")
-  
-  # some functions
-  concat <- function(...) paste(..., sep = "")
-  nam <- function(...) as.name(concat(...))
-  
-  # Filter the ZMWs with SNR = 0 and NAs
-  errormodeMerge <- errormodeMerge %>% na.omit()
-  errormodeMerge <- dplyr::filter(errormodeMerge, SNR.A > 0 & SNR.C > 0 & SNR.G > 0 & SNR.T > 0)
-  
-  breaks = c(0, 1:30)/1.5
-  bases <- c("A", "C", "G", "T")
-  
-  massage <- function(df, channel) {
-    # filter on data specifically under the expectation of the channel base
-    ch <- concat(channel, ".")
-    re <- concat("^", channel, "\\.")
-    df <- df %>%
-      dplyr::select(ZMW, starts_with("SNR."), starts_with(ch)) %>%
-      dplyr::rename_(.dots = setNames(names(.), gsub(re, "", names(.))))
+makeFishbonePlots <-
+  function(errormodeMerge, report, minSample = 20) {
+    loginfo("making fishbone plots.")
     
-    ci95 <- function(var) interp(~ sd(x)/sqrt(n()) * qt(0.975, n() - 1), x = lazy(var))
-    mvNams <- function(b, moves) unlist(lapply(c(moves), function(x) concat(x, ".", b)))
-    stNams <- function(b, moves) unlist(lapply(c(moves), function(x) concat(x, ".", b, ".", c("mu", "ci"))))
+    # some functions
+    concat <- function(...)
+      paste(..., sep = "")
+    nam <- function(...)
+      as.name(concat(...))
     
-    # collect the results for each outcome base
-    dfCh <- NULL
+    # Filter the ZMWs with SNR = 0 and NAs
+    errormodeMerge <- errormodeMerge %>% na.omit()
+    errormodeMerge <-
+      dplyr::filter(errormodeMerge, SNR.A > 0 &
+                      SNR.C > 0 & SNR.G > 0 & SNR.T > 0)
     
-    for (b in bases) {
-      # get the transition moves under the regime of expectedBase:observedBase
-      moves <- gsub(".[ACGT]$", "", colnames(dplyr::select(df, ends_with(concat(".", b)), -starts_with("SNR"))))
+    breaks = c(0, 1:30) / 1.5
+    bases <- c("A", "C", "G", "T")
+    
+    massage <- function(df, channel) {
+      # filter on data specifically under the expectation of the channel base
+      ch <- concat(channel, ".")
+      re <- concat("^", channel, "\\.")
+      df <- df %>%
+        dplyr::select(ZMW, starts_with("SNR."), starts_with(ch)) %>%
+        dplyr::rename_(.dots = setNames(names(.), gsub(re, "", names(.))))
       
-      # get the raw move names
-      nms <- mvNams(b, moves)
+      ci95 <-
+        function(var)
+          interp( ~ sd(x) / sqrt(n()) * qt(0.975, n() - 1), x = lazy(var))
+      mvNams <-
+        function(b, moves)
+          unlist(lapply(c(moves), function(x)
+            concat(x, ".", b)))
+      stNams <-
+        function(b, moves)
+          unlist(lapply(c(moves), function(x)
+            concat(x, ".", b, ".", c("mu", "ci"))))
       
-      # prepare the mean- and 95%ci-accumulating functions
-      mus <- lapply(nms, function(x) interp(~ mean(y), y = as.name(x)))
-      cis <- lapply(nms, function(x) eval(interp(ci95(y), y = as.name(x))))
+      # collect the results for each outcome base
+      dfCh <- NULL
       
-      # create the interleaved list of mean- and 95%ci-accumulating functions
-      obj <- c(rbind(mus, cis))
-      
-      # get the names of the statistical variables
-      nms <- stNams(b, moves)
-      
-      # add the number of observations to the list of variables (for later filtering)
-      obj <- c(obj, ~ n())
-      nms <- c(nms, "N")
-      
-      # group the samples by their SNR bin and collect summary mean and 95%ci
-      suppressWarnings({
-        dfStats <- df %>%
-          dplyr::select(ZMW, ends_with(concat(".", b))) %>%
-          dplyr::mutate_(snr = interp(~ cut(x, breaks), x = nam("SNR.", b))) %>%
-          dplyr::select(-starts_with("SNR.")) %>%
-          dplyr::group_by(snr) %>%
-          dplyr::summarize_(.dots = setNames(obj, nms)) %>%
-          dplyr::ungroup()
-      })
-      
-      # melt the data on which move and accumulate
-      dfObs <- NULL
-      
-      for (mv in moves) {
-        dfMv <- dfStats %>%
-          dplyr::select(snr, starts_with(mv), N) %>%
-          dplyr::rename_(.dots = setNames(names(.), gsub(concat(mv, "\\.", b, "\\."), "", names(.)))) %>%
-          dplyr::mutate(move = mv)
-        dfObs <- rbind(dfObs, dfMv)
+      for (b in bases) {
+        # get the transition moves under the regime of expectedBase:observedBase
+        moves <-
+          gsub(".[ACGT]$", "", colnames(dplyr::select(
+            df, ends_with(concat(".", b)),-starts_with("SNR")
+          )))
+        
+        # get the raw move names
+        nms <- mvNams(b, moves)
+        
+        # prepare the mean- and 95%ci-accumulating functions
+        mus <-
+          lapply(nms, function(x)
+            interp( ~ mean(y), y = as.name(x)))
+        cis <-
+          lapply(nms, function(x)
+            eval(interp(ci95(y), y = as.name(x))))
+        
+        # create the interleaved list of mean- and 95%ci-accumulating functions
+        obj <- c(rbind(mus, cis))
+        
+        # get the names of the statistical variables
+        nms <- stNams(b, moves)
+        
+        # add the number of observations to the list of variables (for later filtering)
+        obj <- c(obj, ~ n())
+        nms <- c(nms, "N")
+        
+        # group the samples by their SNR bin and collect summary mean and 95%ci
+        suppressWarnings({
+          dfStats <- df %>%
+            dplyr::select(ZMW, ends_with(concat(".", b))) %>%
+            dplyr::mutate_(snr = interp( ~ cut(x, breaks), x = nam("SNR.", b))) %>%
+            dplyr::select(-starts_with("SNR.")) %>%
+            dplyr::group_by(snr) %>%
+            dplyr::summarize_(.dots = setNames(obj, nms)) %>%
+            dplyr::ungroup()
+        })
+        
+        # melt the data on which move and accumulate
+        dfObs <- NULL
+        
+        for (mv in moves) {
+          dfMv <- dfStats %>%
+            dplyr::select(snr, starts_with(mv), N) %>%
+            dplyr::rename_(.dots = setNames(names(.), gsub(
+              concat(mv, "\\.", b, "\\."), "", names(.)
+            ))) %>%
+            dplyr::mutate(move = mv)
+          dfObs <- rbind(dfObs, dfMv)
+        }
+        
+        dfObs$obs <- b
+        dfCh <- rbind(dfCh, dfObs)
       }
       
-      dfObs$obs <- b
-      dfCh <- rbind(dfCh, dfObs)
+      dfCh$exp <- channel
+      dfCh
     }
     
-    dfCh$exp <- channel
-    dfCh
-  }
-  
-  # collect the results over each expected match base
-  dfErr = list()
-  
-  readcondition = errormodeMerge$Condition
-  for (i in 1:length(readcondition)) {
-    dfErr[[i]] = NA
-    for (b in bases) {
-      dfErr[[i]] <- rbind(dfErr[[i]], massage(errormodeMerge[errormodeMerge$Condition == readcondition[i],], b))
-      dfErr[[i]] = dfErr[[i]][c(2:nrow(dfErr[[i]])),]
+    # collect the results over each expected match base
+    dfErr = list()
+    
+    readcondition = errormodeMerge$Condition
+    for (i in 1:length(readcondition)) {
+      dfErr[[i]] = NA
+      for (b in bases) {
+        dfErr[[i]] <-
+          rbind(dfErr[[i]], massage(errormodeMerge[errormodeMerge$Condition == readcondition[i], ], b))
+        dfErr[[i]] = dfErr[[i]][c(2:nrow(dfErr[[i]])), ]
+      }
+      # make sure things are factors and the appropriate levels
+      levels(dfErr[[i]]$snr) <-
+        head(breaks, length(levels(dfErr[[i]]$snr)))
+      dfErr[[i]]$move <- as.factor(dfErr[[i]]$move)
+      dfErr[[i]]$exp <- as.factor(dfErr[[i]]$exp)
+      dfErr[[i]]$obs <- as.factor(dfErr[[i]]$obs)
+      dfErr[[i]] <- as.data.frame(dfErr[[i]])
+      row.names(dfErr[[i]]) <- seq.int(nrow(dfErr[[i]]))
+      # Add Condition name from the input file names
+      dfErr[[i]]$Condition = readcondition[i]
     }
-    # make sure things are factors and the appropriate levels
-    levels(dfErr[[i]]$snr) <- head(breaks, length(levels(dfErr[[i]]$snr)))
-    dfErr[[i]]$move <- as.factor(dfErr[[i]]$move)
-    dfErr[[i]]$exp <- as.factor(dfErr[[i]]$exp)
-    dfErr[[i]]$obs <- as.factor(dfErr[[i]]$obs)
-    dfErr[[i]] <- as.data.frame(dfErr[[i]])
-    row.names(dfErr[[i]]) <- seq.int(nrow(dfErr[[i]]))
-    # Add Condition name from the input file names
-    dfErr[[i]]$Condition = readcondition[i]
+    # write the data
+    dfErr = do.call(rbind, dfErr)
+    report$write.table("FishboneSnrBinnedSummary.csv",
+                       dfErr,
+                       id = "fishbone_snr_binned_summary",
+                       title = "Fishbone Snr Binned Summary")
+    
+    ## WRITE THE PLOTS ##
+    # filter by min number of samples in each SNR bin
+    dfErr_ <- dfErr %>% filter(N >= minSample)
+    loginfo("filtered %d of %d samples",
+            nrow(dfErr) - nrow(dfErr_),
+            nrow(dfErr))
+    if (nrow(dfErr_) == 0) {
+      warning("You have filtered out all of your data and need to increase the Min Sample!")
+      report = 0
+    } else {
+      t <-
+        function(mv)
+          ifelse(mv == "Match", "Mismatch", as.character(mv))
+      
+      dfErr_ <- dfErr_ %>%
+        dplyr::mutate(exp_ = exp, obs_ = concat(t(move), " ", obs))
+      dfErr_$exp_ <- as.factor(dfErr_$exp_)
+      dfErr_$obs_ <- as.factor(dfErr_$obs_)
+      
+      labelFn <- function(x) {
+        sprintf("%0.2f", x)
+      }
+      breaksFn <- function(x) {
+        seq(x[[1]], x[[2]], by = 0.05)
+      }
+      
+      df = errormodeMerge
+      dfSNR <- df %>%
+        select(Condition, starts_with("SNR.")) %>%
+        dplyr::rename_(.dots = setNames(names(.), gsub("SNR.", "", names(.)))) %>%
+        melt(id.vars = c("Condition"),
+             variable.name = "obs_") %>%
+        group_by(Condition, obs_) %>%
+        summarise(value = mean(value))
+      
+      addMove <-
+        function(df, mv)
+          df %>% dplyr::mutate(obs_ = concat(mv, " ", obs_))
+      
+      golden_ratio <- 1.618
+      xlimits <- c(0, 20)
+      ylimits <- c(0, 0.15)
+      ratio <- xlimits[[2]] / ylimits[[2]] / golden_ratio
+      dfIns <- dfErr_ %>% filter(move == "Insert")
+      breaks <- breaksFn(ylimits)
+      tp = ggplot(dfIns,
+                  aes(
+                    x = as.numeric(as.character(snr)),
+                    y = mu,
+                    group = Condition,
+                    colour = Condition
+                  )) +
+        geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
+        geom_errorbar(
+          aes(
+            ymin = mu - ci,
+            ymax = mu + ci,
+            colour = Condition
+          ),
+          width = 0.1,
+          position = pd
+        ) +
+        geom_vline(aes(xintercept = value, colour = Condition),
+                   dfSNR %>% addMove("Insert")) +
+        labs(x = "SNR", y = "Error Rate") +
+        coord_fixed(ratio = ratio) +
+        plTheme + clScale + themeTilt +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = Inf,
+          y = -Inf,
+          yend = -Inf,
+          size = 1
+        ) +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = -Inf,
+          y = -Inf,
+          yend = Inf,
+          size = 1
+        )
+      tp1 = tp + xlim(xlimits) +
+        scale_y_continuous(limits = ylimits, breaks = breaks) + facet_grid(exp_ ~ obs_)
+      report$ggsave(
+        "fishboneplot_insertion.png",
+        tp1,
+        width = 2000 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_insertion",
+        title = "FishbonePlot - Insertion",
+        caption = "FishbonePlot - Insertion",
+        tags = c("fishbone", "hmm", "errormode", "insertion"),
+        uid = "0010001"
+      )
+      tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
+      report$ggsave(
+        "fishboneplot_insertion_enlarged.png",
+        tp2,
+        width = 2000 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_insertion_enlarged",
+        title = "FishbonePlot - Insertion (Enlarged)",
+        caption = "FishbonePlot - Insertion (Enlarged)",
+        tags = c("fishbone", "hmm", "errormode", "insertion", "enlarged"),
+        uid = "0010002"
+      )
+      dfSNR_ <-
+        do.call(rbind, lapply(bases, function(b) {
+          dfSNR %>% transform(exp_ = b)
+        })) %>%
+        filter(obs_ != exp_) %>%
+        addMove("Mismatch")
+      dfSNRM_ <- dfSNR_
+      
+      dfMM <- dfErr_ %>% filter(move == "Match" & obs != exp)
+      breaks <- breaksFn(ylimits)
+      tp = ggplot(dfMM,
+                  aes(
+                    x = as.numeric(as.character(snr)),
+                    y = mu,
+                    group = Condition,
+                    colour = Condition
+                  )) +
+        geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
+        geom_errorbar(
+          aes(
+            ymin = mu - ci,
+            ymax = mu + ci,
+            colour = Condition
+          ),
+          width = 0.1,
+          position = pd
+        ) +
+        geom_vline(aes(xintercept = value, colour = Condition), dfSNR_) +
+        labs(x = "SNR", y = "Error Rate") +
+        coord_fixed(ratio = ratio) +
+        plTheme + clScale + themeTilt +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = Inf,
+          y = -Inf,
+          yend = -Inf,
+          size = 1
+        ) +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = -Inf,
+          y = -Inf,
+          yend = Inf,
+          size = 1
+        )
+      tp1 = tp + facet_grid(exp_ ~ obs_) +
+        scale_y_continuous(limits = ylimits, breaks = breaks) + xlim(xlimits)
+      report$ggsave(
+        "fishboneplot_mismatch.png",
+        tp1,
+        width = 2000 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_mismatch",
+        title = "FishbonePlot - MisMatch",
+        caption = "FishbonePlot - MisMatch",
+        tags = c("fishbone", "hmm", "errormode", "mismatch"),
+        uid = "0010003"
+      )
+      tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
+      report$ggsave(
+        "fishboneplot_mismatch_enlarged.png",
+        tp2,
+        width = 2000 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_mismatch_enlarged",
+        title = "FishbonePlot - MisMatch (Enlarged)",
+        caption = "FishbonePlot - MisMatch (Enlarged)",
+        tags = c("fishbone", "hmm", "errormode", "mismatch", "enlarged"),
+        uid = "0010004"
+      )
+      
+      dfSNR_ <-
+        rbind(dfSNR %>% transform(move = "Dark"),
+              dfSNR %>% transform(move = "Merge")) %>% dplyr::rename(exp_ = obs_, obs_ = move)
+      dfDel <- dfErr_ %>% filter(move == "Dark" | move == "Merge")
+      breaks <- breaksFn(ylimits)
+      tp = ggplot(dfDel,
+                  aes(
+                    x = as.numeric(as.character(snr)),
+                    y = mu,
+                    group = Condition,
+                    colour = Condition
+                  )) +
+        geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
+        geom_errorbar(
+          aes(
+            ymin = mu - ci,
+            ymax = mu + ci,
+            colour = Condition
+          ),
+          width = 0.1,
+          position = pd
+        ) +
+        geom_vline(aes(xintercept = value, colour = Condition), dfSNR_) +
+        labs(x = "SNR", y = "Error Rate") +
+        coord_fixed(ratio = ratio) +
+        plTheme + clScale + themeTilt +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = Inf,
+          y = -Inf,
+          yend = -Inf,
+          size = 1
+        ) +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = -Inf,
+          y = -Inf,
+          yend = Inf,
+          size = 1
+        )
+      tp1 = tp + facet_grid(exp_ ~ move) +
+        scale_y_continuous(limits = ylimits, breaks = breaks) + xlim(xlimits)
+      report$ggsave(
+        "fishboneplot_deletion.png",
+        tp1,
+        width = 1800 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_deletion",
+        title = "FishbonePlot - Deletion",
+        caption = "FishbonePlot - Deletion",
+        tags = c("fishbone", "hmm", "errormode", "deletion"),
+        uid = "0010005"
+      )
+      tp2 = tp + facet_grid(exp_ ~ move, scales = "free")
+      report$ggsave(
+        "fishboneplot_deletion_enlarged.png",
+        tp2,
+        width = 1800 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_deletion_enlarged",
+        title = "FishbonePlot - Deletion (Enlarged)",
+        caption = "FishbonePlot - Deletion (Enlarged)",
+        tags = c("fishbone", "hmm", "errormode", "deletion", "enlarged"),
+        uid = "0010006"
+      )
+      
+      # Plot a merged fishbone plot that contains insetion, deletion and mismatch
+      dfSNRM_ = rbind((do.call(rbind, lapply(bases, function(b) {
+        dfSNR %>% transform(exp_ = b)
+      })) %>% addMove("Insert")), dfSNR_, dfSNRM_)
+      dfSNRM_ = dfSNRM_[order(dfSNRM_$exp_), , drop = FALSE]
+      dfSNRM_$obs_ = factor(
+        dfSNRM_$obs_,
+        levels = c(
+          "Insert A",
+          "Insert C",
+          "Insert G",
+          "Insert T",
+          "Dark",
+          "Merge",
+          "Mismatch A",
+          "Mismatch C",
+          "Mismatch G",
+          "Mismatch T"
+        )
+      )
+      dfMerge <-
+        dfErr_ %>% filter(move == "Dark" |
+                            move == "Merge" |
+                            move == "Insert" | (move == "Match" & obs != exp))
+      dfMerge$obs_ = as.vector(dfMerge$obs_)
+      dfMerge$obs_[dfMerge$move == "Dark"] = "Dark"
+      dfMerge$obs_[dfMerge$move == "Merge"] = "Merge"
+      dfMerge$obs_ = factor(
+        dfMerge$obs_,
+        levels = c(
+          "Insert A",
+          "Insert C",
+          "Insert G",
+          "Insert T",
+          "Dark",
+          "Merge",
+          "Mismatch A",
+          "Mismatch C",
+          "Mismatch G",
+          "Mismatch T"
+        )
+      )
+      breaks <- breaksFn(ylimits)
+      tp = ggplot(dfMerge,
+                  aes(
+                    x = as.numeric(as.character(snr)),
+                    y = mu,
+                    colour = Condition,
+                    group = Condition
+                  )) +
+        geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) + geom_errorbar(
+          aes(
+            ymin = mu - ci,
+            ymax = mu + ci,
+            colour = Condition
+          ),
+          width = 0.1,
+          position = pd
+        ) +
+        geom_vline(aes(xintercept = value, colour = Condition), dfSNRM_) +
+        labs(x = "SNR by Event", y = "HMM Error") +
+        coord_fixed(ratio = ratio) +
+        plTheme + clScale + themeTilt +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = Inf,
+          y = -Inf,
+          yend = -Inf,
+          size = 1
+        ) +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = -Inf,
+          y = -Inf,
+          yend = Inf,
+          size = 1
+        )
+      tp1 = tp + facet_grid(exp_ ~ obs_) +
+        scale_y_continuous(limits = ylimits, breaks = breaks) + xlim(xlimits)
+      report$ggsave(
+        "fishboneplot_merge.png",
+        tp1,
+        width = 3000 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_merge",
+        title = "FishbonePlot - Merge",
+        caption = "FishbonePlot - Merge",
+        tags = c("fishbone", "hmm", "errormode", "merge"),
+        uid = "0010007"
+      )
+      tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
+      report$ggsave(
+        "fishboneplot_merge_enlarged.png",
+        tp2,
+        width = 3000 / dpi,
+        height = 1200 / dpi,
+        units = "in",
+        id = "fishboneplot_merge_enlarged",
+        title = "FishbonePlot - Merge (Enlarged)",
+        caption = "FishbonePlot - Merge (Enlarged)",
+        tags = c("fishbone", "hmm", "errormode", "merge", "enlarged"),
+        uid = "0010008"
+      )
+      dfErr
+    }
   }
-  # write the data
-  dfErr = do.call(rbind, dfErr)
-  report$write.table("FishboneSnrBinnedSummary.csv",
-                     dfErr,
-                     id = "fishbone_snr_binned_summary",
-                     title = "Fishbone Snr Binned Summary")
-  
-  ## WRITE THE PLOTS ##
-  # filter by min number of samples in each SNR bin
-  dfErr_ <- dfErr %>% filter(N >= minSample)
-  loginfo("filtered %d of %d samples", nrow(dfErr) - nrow(dfErr_), nrow(dfErr))
-  if (nrow(dfErr_) == 0) {
-    warning("You have filtered out all of your data and need to increase the Min Sample!")
-    report = 0
-  } else {
-    t <- function(mv) ifelse(mv == "Match", "Mismatch", as.character(mv))
-    
-    dfErr_ <- dfErr_ %>%
-      dplyr::mutate(exp_ = exp, obs_ = concat(t(move), " ", obs))
-    dfErr_$exp_ <- as.factor(dfErr_$exp_)
-    dfErr_$obs_ <- as.factor(dfErr_$obs_)
-    
-    labelFn <- function(x) { sprintf("%0.2f", x) }
-    breaksFn <- function(x) { seq(x[[1]], x[[2]], by = 0.05)}
-    
-    df = errormodeMerge
-    dfSNR <- df %>%
-      select(Condition, starts_with("SNR.")) %>%
-      dplyr::rename_(.dots = setNames(names(.), gsub("SNR.", "", names(.)))) %>%
-      melt(id.vars = c("Condition"), variable.name = "obs_") %>%
-      group_by(Condition, obs_) %>%
-      summarise(value = mean(value))
-    
-    addMove <- function(df, mv) df %>% dplyr::mutate(obs_ = concat(mv, " ", obs_))
-    
-    golden_ratio <- 1.618
-    xlimits <- c(0, 20)
-    ylimits <- c(0, 0.15)
-    ratio <- xlimits[[2]]/ylimits[[2]]/golden_ratio
-    dfIns <- dfErr_ %>% filter(move == "Insert")
-    breaks <- breaksFn(ylimits)
-    tp = ggplot(dfIns, aes(x = as.numeric(as.character(snr)), y = mu, group = Condition, colour = Condition)) +
-      geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
-      geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
-      geom_vline(aes(xintercept = value, colour = Condition), dfSNR %>% addMove("Insert")) +
-      labs(x = "SNR", y = "Error Rate") +
-      coord_fixed(ratio = ratio) +
-      plTheme + clScale + themeTilt +
-      annotate("segment", x = -Inf, xend = Inf, y = -Inf, yend = -Inf, size=1) +
-      annotate("segment", x = -Inf, xend = -Inf, y = -Inf, yend = Inf, size=1)
-    tp1 = tp + xlim(xlimits) + 
-      scale_y_continuous(limits = ylimits, breaks = breaks) + facet_grid(exp_ ~ obs_)
-    report$ggsave(
-      "fishboneplot_insertion.png",
-      tp1,
-      width = 2000/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_insertion",
-      title = "FishbonePlot - Insertion",
-      caption = "FishbonePlot - Insertion",
-      tags = c("fishbone", "hmm", "errormode", "insertion")
-    )
-    tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
-    report$ggsave(
-      "fishboneplot_insertion_enlarged.png",
-      tp2,
-      width = 2000/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_insertion_enlarged",
-      title = "FishbonePlot - Insertion (Enlarged)",
-      caption = "FishbonePlot - Insertion (Enlarged)",
-      tags = c("fishbone", "hmm", "errormode", "insertion", "enlarged")
-    )
-    dfSNR_ <- do.call(rbind, lapply(bases, function(b) { dfSNR %>% transform(exp_ = b) })) %>%
-      filter(obs_ != exp_) %>%
-      addMove("Mismatch")
-    dfSNRM_ <- dfSNR_
-    
-    dfMM <- dfErr_ %>% filter(move == "Match" & obs != exp)
-    breaks <- breaksFn(ylimits)
-    tp = ggplot(dfMM, aes(x = as.numeric(as.character(snr)), y = mu, group = Condition, colour = Condition)) +
-      geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
-      geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
-      geom_vline(aes(xintercept = value, colour = Condition), dfSNR_) +
-      labs(x = "SNR", y = "Error Rate") +
-      coord_fixed(ratio = ratio) +
-      plTheme + clScale + themeTilt +
-      annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size=1) +
-      annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, size=1)
-    tp1 = tp + facet_grid(exp_ ~ obs_) + 
-      scale_y_continuous(limits = ylimits, breaks = breaks) + xlim(xlimits)
-    report$ggsave(
-      "fishboneplot_mismatch.png",
-      tp1,
-      width = 2000/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_mismatch",
-      title = "FishbonePlot - MisMatch",
-      caption = "FishbonePlot - MisMatch",
-      tags = c("fishbone", "hmm", "errormode", "mismatch")
-    )
-    tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
-    report$ggsave(
-      "fishboneplot_mismatch_enlarged.png",
-      tp2,
-      width = 2000/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_mismatch_enlarged",
-      title = "FishbonePlot - MisMatch (Enlarged)",
-      caption = "FishbonePlot - MisMatch (Enlarged)",
-      tags = c("fishbone", "hmm", "errormode", "mismatch", "enlarged")
-    )
-    
-    dfSNR_ <- rbind(dfSNR %>% transform(move = "Dark"), dfSNR %>% transform(move = "Merge")) %>% dplyr::rename(exp_ = obs_, obs_ = move)
-    dfDel <- dfErr_ %>% filter(move == "Dark" | move == "Merge")
-    breaks <- breaksFn(ylimits)
-    tp = ggplot(dfDel, aes(x = as.numeric(as.character(snr)), y = mu, group = Condition, colour = Condition)) +
-      geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
-      geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
-      geom_vline(aes(xintercept = value, colour = Condition), dfSNR_) +
-      labs(x = "SNR", y = "Error Rate") +
-      coord_fixed(ratio = ratio) +
-      plTheme + clScale + themeTilt +
-      annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size=1) +
-      annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, size=1)
-    tp1 = tp + facet_grid(exp_ ~ move) + 
-      scale_y_continuous(limits = ylimits, breaks = breaks) + xlim(xlimits)
-    report$ggsave(
-      "fishboneplot_deletion.png",
-      tp1,
-      width = 1800/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_deletion",
-      title = "FishbonePlot - Deletion",
-      caption = "FishbonePlot - Deletion",
-      tags = c("fishbone", "hmm", "errormode", "deletion")
-    )
-    tp2 = tp + facet_grid(exp_ ~ move, scales = "free")
-    report$ggsave(
-      "fishboneplot_deletion_enlarged.png",
-      tp2,
-      width = 1800/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_deletion_enlarged",
-      title = "FishbonePlot - Deletion (Enlarged)",
-      caption = "FishbonePlot - Deletion (Enlarged)",
-      tags = c("fishbone", "hmm", "errormode", "deletion", "enlarged")
-    )
-    
-    # Plot a merged fishbone plot that contains insetion, deletion and mismatch
-    dfSNRM_ = rbind((do.call(rbind, lapply(bases, function(b) { dfSNR %>% transform(exp_ = b) })) %>% addMove("Insert")), dfSNR_, dfSNRM_)
-    dfSNRM_ = dfSNRM_[order(dfSNRM_$exp_), , drop = FALSE]
-    dfSNRM_$obs_ = factor(dfSNRM_$obs_, levels = c("Insert A", "Insert C", "Insert G", "Insert T", "Dark", "Merge", "Mismatch A", "Mismatch C", "Mismatch G", "Mismatch T"))
-    dfMerge <- dfErr_ %>% filter(move == "Dark" | move == "Merge" | move == "Insert" | (move == "Match" & obs != exp))
-    dfMerge$obs_ = as.vector(dfMerge$obs_)
-    dfMerge$obs_[dfMerge$move == "Dark"] = "Dark"
-    dfMerge$obs_[dfMerge$move == "Merge"] = "Merge"
-    dfMerge$obs_ = factor(dfMerge$obs_, levels = c("Insert A", "Insert C", "Insert G", "Insert T", "Dark", "Merge", "Mismatch A", "Mismatch C", "Mismatch G", "Mismatch T"))
-    breaks <- breaksFn(ylimits)
-    tp = ggplot(dfMerge, aes(x = as.numeric(as.character(snr)), y = mu, colour = Condition, group = Condition)) +
-      geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) + geom_errorbar(aes(ymin = mu - ci, ymax = mu + ci, colour = Condition), width = 0.1, position = pd) +
-      geom_vline(aes(xintercept = value, colour = Condition), dfSNRM_) +
-      labs(x = "SNR by Event", y = "HMM Error") +
-      coord_fixed(ratio = ratio) +
-      plTheme + clScale + themeTilt +
-      annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size=1) +
-      annotate("segment", x=-Inf, xend=-Inf, y=-Inf, yend=Inf, size=1)
-    tp1 = tp + facet_grid(exp_ ~ obs_) + 
-      scale_y_continuous(limits = ylimits, breaks = breaks) + xlim(xlimits)
-    report$ggsave(
-      "fishboneplot_merge.png",
-      tp1,
-      width = 3000/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_merge",
-      title = "FishbonePlot - Merge",
-      caption = "FishbonePlot - Merge",
-      tags = c("fishbone", "hmm", "errormode", "merge")
-    )
-    tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
-    report$ggsave(
-      "fishboneplot_merge_enlarged.png",
-      tp2,
-      width = 3000/dpi, height = 1200/dpi, units = "in",
-      id = "fishboneplot_merge_enlarged",
-      title = "FishbonePlot - Merge (Enlarged)",
-      caption = "FishbonePlot - Merge (Enlarged)",
-      tags = c("fishbone", "hmm", "errormode", "merge", "enlarged")
-    )
-    dfErr
-  }
-}
 
 makeReport <- function(report) {
-  
   conditions = report$condition.table
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
@@ -350,7 +561,8 @@ main <- function()
   report <- bh2Reporter(
     "condition-table.csv",
     "reports/ConstantArrowFishbonePlots/report.json",
-    "Constant Arrow Fishbone Plots")
+    "Constant Arrow Fishbone Plots"
+  )
   makeReport(report)
   0
 }
