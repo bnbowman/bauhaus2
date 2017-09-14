@@ -20,7 +20,8 @@ myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 
 #' Define a basic addition to all plots
-plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
+plTheme <-
+  theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
 clScale <- NULL #scale_colour_brewer(palette = "Set1")
 clFillScale <- NULL# scale_fill_brewer(palette = "Set1")
 themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -53,7 +54,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
       id = "template_span_survival",
       title = "Template Span Survival",
       caption = "Template Span Survival",
-      tags = c("basic", "pbiplots", "survival", "template")
+      tags = c("basic", "pbiplots", "survival", "template"),
+      uid = "0030001"
     )
     report$ggsave(
       "template_span_survival (Log-scale).png",
@@ -63,7 +65,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
       id = "template_span_survival(log)",
       title = "Template Span Survival (Log-scale)",
       caption = "Template Span Survival (Log-scale)",
-      tags = c("basic", "pbiplots", "survival", "template", "log")
+      tags = c("basic", "pbiplots", "survival", "template", "log"),
+      uid = "0030002"
     )
   }
   
@@ -90,7 +93,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
       id = "aligned_read_length_survival",
       title = "Aligned Read Length Survival",
       caption = "Aligned Read Length Survival",
-      tags = c("basic", "pbiplots", "survival", "read", "aligned")
+      tags = c("basic", "pbiplots", "survival", "read", "aligned"),
+      uid = "0030003"
     )
     report$ggsave(
       "aligned_read_length_survival (Log-scale).png",
@@ -100,7 +104,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
       id = "aligned_read_length_survival(log)",
       title = "Aligned Read Length Survival (Log-scale)",
       caption = "Aligned Read Length Survival (Log-scale)",
-      tags = c("basic", "pbiplots", "survival", "read", "log", "aligned")
+      tags = c("basic", "pbiplots", "survival", "read", "log", "aligned"),
+      uid = "0030004"
     )
   }
 }
@@ -117,7 +122,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     id = "acc_density",
     title = "Accuracy Distribution",
     caption = "Accuracy Distribution",
-    tags = c("basic", "pbiplots", "density", "accuracy")
+    tags = c("basic", "pbiplots", "density", "accuracy"),
+    uid = "0030005"
   )
   
   # loginfo("Making Accuracy Violin Plots")
@@ -180,7 +186,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     height = img_height,
     title = "Template Length v. Accuracy",
     caption = "Template Length v. Accuracy",
-    tags = c("basic", "pbiplots", "accuracy", "template")
+    tags = c("basic", "pbiplots", "accuracy", "template"),
+    uid = "0030006"
   )
   
   tp = ggplot(cd2, aes(x = alen, y = Accuracy, color = Condition)) + geom_point(alpha = .2) +
@@ -201,7 +208,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     height = img_height,
     title = "Aligned Read Length v. Accuracy",
     caption = "Aligned Read Length v. Accuracy",
-    tags = c("basic", "pbiplots", "accuracy", "read", "aligned")
+    tags = c("basic", "pbiplots", "accuracy", "read", "aligned"),
+    uid = "0030007"
   )
   
   tp = ggplot(cd2, aes(x = qrlen, y = alen, color = Condition)) + geom_point(alpha = .2) +
@@ -209,7 +217,11 @@ makeAccuracyDensityPlots <- function(report, cd) {
                            slope = 1,
                            color = "red") + clScale + labs(
                              y = "Aligned Read Length (aend - astart)",
-                             title = paste("Unaligned Read Length v. Aligned Read Length\n(Sampled to <= ", sampleSize, ")"),
+                             title = paste(
+                               "Unaligned Read Length v. Aligned Read Length\n(Sampled to <= ",
+                               sampleSize,
+                               ")"
+                             ),
                              x = "Unaligned Read Length (qend - qstart)"
                            ) + facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition)))
   report$ggsave(
@@ -220,12 +232,13 @@ makeAccuracyDensityPlots <- function(report, cd) {
     height = img_height,
     title = "Unaligned Read Length v. Aligned Read Length",
     caption = "Unaligned Read Length v. Aligned Read Length",
-    tags = c("basic", "pbiplots", "read", "aligned", "unaligned")
+    tags = c("basic", "pbiplots", "read", "aligned", "unaligned"),
+    uid = "0030008"
   )
   
   # loginfo("Making Template Span Violin Plot")
-  # tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_violin() + 
-  #   plTheme + clFillScale + themeTilt + 
+  # tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_violin() +
+  #   plTheme + clFillScale + themeTilt +
   #   labs(y = "Template Span (tend - tstart)", title = "Template Span Violin Plot", x = "Condition")
   # report$ggsave(
   #   "tlen_violin.png",
@@ -238,8 +251,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
   # )
   
   loginfo("Making Template Span Density Plot")
-  tp = ggplot(cd, aes(x = tlen, colour = Condition)) + geom_density() + 
-    plTheme + clScale + themeTilt + 
+  tp = ggplot(cd, aes(x = tlen, colour = Condition)) + geom_density() +
+    plTheme + clScale + themeTilt +
     labs(y = "Density", title = "Template Span Density Plot", x = "Template Span (tend - tstart)")
   report$ggsave(
     "tlen_density.png",
@@ -249,12 +262,13 @@ makeAccuracyDensityPlots <- function(report, cd) {
     height = plotheight,
     title = "Template Span Density Plot",
     caption = "Template Span Density Plot",
-    tags = c("basic", "pbiplots", "density", "template")
+    tags = c("basic", "pbiplots", "density", "template"),
+    uid = "0030009"
   )
   
   loginfo("Making Aligned Read Length Density Plot")
-  tp = ggplot(cd, aes(x = alen, colour = Condition)) + geom_density() + 
-    plTheme + clScale + themeTilt + 
+  tp = ggplot(cd, aes(x = alen, colour = Condition)) + geom_density() +
+    plTheme + clScale + themeTilt +
     labs(y = "Density", title = "Aligned Read Length Density Plot", x = "Aligned Read Length (aend - astart)")
   report$ggsave(
     "alen_density.png",
@@ -264,11 +278,12 @@ makeAccuracyDensityPlots <- function(report, cd) {
     height = plotheight,
     title = "Aligned Read Length Density Plot",
     caption = "Aligned Read Length Density Plot",
-    tags = c("basic", "pbiplots", "density", "read", "aligned")
+    tags = c("basic", "pbiplots", "density", "read", "aligned"),
+    uid = "0030010"
   )
   
   loginfo("Making Template Span Boxplot")
-  tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_boxplot() + 
+  tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_boxplot() +
     plTheme + clFillScale + themeTilt + stat_summary(
       fun.y = median,
       colour = "black",
@@ -276,7 +291,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
       show.legend = FALSE,
       vjust = -0.8,
       aes(label = round(..y..))
-    ) + 
+    ) +
     labs(y = "Template Span (tend - tstart)", title = "Template Span Boxplot", x = "Condition")
   report$ggsave(
     "tlen_box.png",
@@ -286,7 +301,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     height = plotheight,
     title = "Template Span Boxplot",
     caption = "Template Span Boxplot",
-    tags = c("basic", "pbiplots", "boxplot", "template")
+    tags = c("basic", "pbiplots", "boxplot", "template"),
+    uid = "0030011"
   )
 }
 
@@ -322,9 +338,11 @@ makeErateBoxPlots <- function(report, cd) {
   loginfo("Making Error Rate Boxplots")
   vnames = c("mmrate", "irate", "drate")
   labels = c("Mismatch", "Insertion", "Deletion")
+  uniqueids = c("0030012", "0030013", "0030014")
   mkErateBox <- function(i) {
     vname = vnames[i]
     label = labels[i]
+    uniqueid = uniqueids[i]
     tp = ggplot(cd, aes_string(x = "Condition", y = vname, fill = "Condition")) + geom_boxplot() +
       plTheme + clFillScale + themeTilt + stat_summary(
         fun.y = median,
@@ -347,7 +365,8 @@ makeErateBoxPlots <- function(report, cd) {
       id = paste("etype_", "_", vname, "_boxplot", sep = ""),
       title = paste(label, "Rate - Boxplot"),
       caption = paste(label, "Rate - Boxplot"),
-      tags = c("basic", "pbiplots", "boxplot", label)
+      tags = c("basic", "pbiplots", "boxplot", label),
+      uid = uniqueid
     )
   }
   pv = lapply(1:3, mkErateBox)
@@ -363,8 +382,8 @@ makeBasesDistribution <- function(report, cd) {
                 y = Bases,
                 fill = Condition,
                 group = Condition
-              )) + geom_bar(stat = "identity", position = "dodge") + 
-    plTheme + clFillScale + 
+              )) + geom_bar(stat = "identity", position = "dodge") +
+    plTheme + clFillScale +
     labs(y = "Total Bases\nsum(end - start)", title = "Total Bases by Condition", x = "Base Type")
   report$ggsave(
     "base_count_bar.png",
@@ -374,15 +393,16 @@ makeBasesDistribution <- function(report, cd) {
     id = "base_count_bar",
     title = "Total Bases",
     caption = "Total Bases",
-    tags = c("basic", "pbiplots", "bar", "base")
+    tags = c("basic", "pbiplots", "bar", "base"),
+    uid = "0030015"
   )
 }
 
 makeYieldHistogram <- function(report, cd) {
   loginfo("Making Yield Histogram")
-  tp = ggplot(cd, aes(Condition, fill = Condition)) + geom_bar() + 
-    geom_text(stat = 'count',aes(label = ..count..),vjust = -0.5) +
-    plTheme + themeTilt  + clFillScale + 
+  tp = ggplot(cd, aes(Condition, fill = Condition)) + geom_bar() +
+    geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
+    plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "nReads", title = "nReads by Condition")
   report$ggsave(
     "nreads_hist.png",
@@ -392,7 +412,8 @@ makeYieldHistogram <- function(report, cd) {
     id = "nreads_histogram",
     title = "nReads Histogram",
     caption = "nReads Histogram",
-    tags = c("basic", "pbiplots", "histogram", "nreads")
+    tags = c("basic", "pbiplots", "histogram", "nreads"),
+    uid = "0030016"
   )
 }
 
@@ -482,7 +503,7 @@ makeReport <- function(report) {
     try(makeBasesDistribution(report, cd), silent = TRUE)
     try(makeYieldHistogram(report, cd), silent = TRUE)
   }
-
+  
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
   
@@ -493,12 +514,11 @@ makeReport <- function(report) {
 
 main <- function()
 {
-    report <- bh2Reporter(
-        "condition-table.csv",
-        "reports/PbiPlots/report.json",
-        "Sampled ZMW metrics")
-    makeReport(report)
-    0
+  report <- bh2Reporter("condition-table.csv",
+                        "reports/PbiPlots/report.json",
+                        "Sampled ZMW metrics")
+  makeReport(report)
+  0
 }
 
 ## Leave this as the last line in the file.

@@ -18,7 +18,8 @@ myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 
 #' Define a basic addition to all plots
-plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
+plTheme <-
+  theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
 themeTilt = theme(axis.text.x = element_text(angle = 90, hjust = 1))
 plotwidth = 7.2
 plotheight = 4.2
@@ -42,8 +43,14 @@ makeGapSizePlots <- function(report, cd) {
   } else {
     ## Plot Deletion Sizes
     loginfo("Plot Deletion Sizes")
-    tp = ggplot(gapf, aes(x=gapSize, y = refFreq, group=Condition, color=Condition)) + geom_line() + geom_point() +
-      clScale + plTheme + labs(x="Deletion Size", y="Relative Frequency (Sum = 1)",
+    tp = ggplot(gapf,
+                aes(
+                  x = gapSize,
+                  y = refFreq,
+                  group = Condition,
+                  color = Condition
+                )) + geom_line() + geom_point() +
+      clScale + plTheme + labs(x = "Deletion Size", y = "Relative Frequency (Sum = 1)",
                                title = "Deletion Sizes")
     report$ggsave(
       "deletion_norm.png",
@@ -53,7 +60,8 @@ makeGapSizePlots <- function(report, cd) {
       id = "deletion_norm",
       title = "Deletion Sizes",
       caption = "Deletion Sizes",
-      tags = c("readplots", "deletion")
+      tags = c("readplots", "deletion"),
+      uid = "0050001"
     )
     
     loginfo("Plot log Deletion Sizes")
@@ -65,7 +73,8 @@ makeGapSizePlots <- function(report, cd) {
       id = "deletion_size_log",
       title = "Deletion Sizes (Log)",
       caption = "Deletion Sizes (Log)",
-      tags = c("readplots", "deletion", "log")
+      tags = c("readplots", "deletion", "log"),
+      uid = "0050002"
     )
   }
   
@@ -74,8 +83,14 @@ makeGapSizePlots <- function(report, cd) {
   } else {
     ## Now plot insertion sizes
     loginfo("Plot insertion sizes")
-    tp = ggplot(gapf, aes(x=gapSize, y = readFreq, group=Condition, color=Condition)) + geom_line() + geom_point() +
-      clScale + plTheme + labs(x="Insertion Size", y="Relative Frequency (Sum = 1)",
+    tp = ggplot(gapf,
+                aes(
+                  x = gapSize,
+                  y = readFreq,
+                  group = Condition,
+                  color = Condition
+                )) + geom_line() + geom_point() +
+      clScale + plTheme + labs(x = "Insertion Size", y = "Relative Frequency (Sum = 1)",
                                title = "Insertion Sizes")
     report$ggsave(
       "insert_size_norm.png",
@@ -85,7 +100,8 @@ makeGapSizePlots <- function(report, cd) {
       id = "insert_size_norm",
       title = "Insertion Sizes",
       caption = "Insertion Sizes",
-      tags = c("readplots", "insertion")
+      tags = c("readplots", "insertion"),
+      uid = "0050003"
     )
     
     loginfo("Plot log insertion sizes")
@@ -97,7 +113,8 @@ makeGapSizePlots <- function(report, cd) {
       id = "insert_size_log",
       title = "Insertion Sizes (Log)",
       caption = "Insertion Sizes (Log)",
-      tags = c("readplots", "insertion", "log")
+      tags = c("readplots", "insertion", "log"),
+      uid = "0050004"
     )
   }
 }
@@ -109,14 +126,15 @@ makeMismatchPlots <- function(report, cd) {
   # Remove uninteresting rows
   mm = mm[mm$ref != mm$read &
             mm$ref != "N" & mm$ref != "-" &
-            mm$read!= "N" & mm$read != "-",]
+            mm$read != "N" & mm$read != "-", ]
   
   # Convert to relative frequencies
   mmf = mm %>% group_by(Condition) %>% mutate(freq = cnts / sum(cnts)) %>% ungroup()
   mmf$Error = mmf$ref:mmf$read
   
-  tp = ggplot(mmf, aes(x=Error, y=freq, fill=Condition)) + geom_bar(stat="identity", position = "dodge") +
-    clFillScale + plTheme + labs(x="Ref:Read", y="Relative Frequency (Sum = 1)",
+  tp = ggplot(mmf, aes(x = Error, y = freq, fill = Condition)) + geom_bar(stat =
+                                                                            "identity", position = "dodge") +
+    clFillScale + plTheme + labs(x = "Ref:Read", y = "Relative Frequency (Sum = 1)",
                                  title = "Mismatch Frequencies")
   report$ggsave(
     "mismatch_rate.png",
@@ -126,7 +144,8 @@ makeMismatchPlots <- function(report, cd) {
     id = "mismatch_rate",
     title = "Mismatch Rates",
     caption = "Mismatch Rates",
-    tags = c("readplots", "mismatch")
+    tags = c("readplots", "mismatch"),
+    uid = "0050005"
   )
 }
 
@@ -135,13 +154,16 @@ makeIndelPlots <- function(report, cd) {
   ind = cd[["indelCnts"]]
   
   # Remove uninteresting rows
-  ind = ind[ind$bp != "-" & ind$bp != "N",]
+  ind = ind[ind$bp != "-" & ind$bp != "N", ]
   # Convert to relative frequencies
-  indf = ind %>% group_by(Condition) %>% mutate(delFreq = delFromRefCnt / sum(delFromRefCnt),
-                                                insFreq = insertIntoReadCnt / sum(insertIntoReadCnt)) %>% ungroup()
+  indf = ind %>% group_by(Condition) %>% mutate(
+    delFreq = delFromRefCnt / sum(delFromRefCnt),
+    insFreq = insertIntoReadCnt / sum(insertIntoReadCnt)
+  ) %>% ungroup()
   
-  tp = ggplot(indf, aes(x=bp, y = delFreq, fill=Condition)) + geom_bar(stat="identity", position = "dodge") +
-    clFillScale + plTheme + labs(x="Deleted Base", y="Relative Frequency (Sum = 1)",
+  tp = ggplot(indf, aes(x = bp, y = delFreq, fill = Condition)) + geom_bar(stat =
+                                                                             "identity", position = "dodge") +
+    clFillScale + plTheme + labs(x = "Deleted Base", y = "Relative Frequency (Sum = 1)",
                                  title = "Deletion Frequencies")
   report$ggsave(
     "deletion_rate.png",
@@ -151,12 +173,14 @@ makeIndelPlots <- function(report, cd) {
     id = "deletion_rate",
     title = "Deletion Rates",
     caption = "Deletion Rates",
-    tags = c("readplots", "deletion")
+    tags = c("readplots", "deletion"),
+    uid = "0050006"
   )
   
   loginfo("Make Insertion Rates Plot")
-  tp = ggplot(indf, aes(x=bp, y = insFreq, fill=Condition)) + geom_bar(stat="identity", position = "dodge") +
-    clFillScale + plTheme + labs(x="Inserted Base", y="Relative Frequency (Sum = 1)",
+  tp = ggplot(indf, aes(x = bp, y = insFreq, fill = Condition)) + geom_bar(stat =
+                                                                             "identity", position = "dodge") +
+    clFillScale + plTheme + labs(x = "Inserted Base", y = "Relative Frequency (Sum = 1)",
                                  title = "Insertion Frequencies")
   report$ggsave(
     "insertion_rate.png",
@@ -166,7 +190,8 @@ makeIndelPlots <- function(report, cd) {
     id = "insertion_rate",
     title = "Insertion Rates",
     caption = "Insertion Rates",
-    tags = c("readplots", "insertion")
+    tags = c("readplots", "insertion"),
+    uid = "0050007"
   )
 }
 
@@ -180,8 +205,9 @@ makeClippingPlot <- function(report, cd) {
   if (sum(clipsf$cnts) == 0) {
     warning("The sum of Counts for cliping cannot be 0!")
   } else {
-    tp = ggplot(clipsf[clipsf$state=="Clipped", ], aes(x=Condition, y=freq, fill=Condition)) + geom_bar(stat="identity") +
-      clFillScale + plTheme + labs(x="Condition", y="Soft Clipping Frequency", title = "Percentage of Bases Soft Clipped in Alignments") +
+    tp = ggplot(clipsf[clipsf$state == "Clipped",], aes(x = Condition, y = freq, fill =
+                                                          Condition)) + geom_bar(stat = "identity") +
+      clFillScale + plTheme + labs(x = "Condition", y = "Soft Clipping Frequency", title = "Percentage of Bases Soft Clipped in Alignments") +
       themeTilt
     report$ggsave(
       "clip_rate.png",
@@ -191,14 +217,14 @@ makeClippingPlot <- function(report, cd) {
       id = "clip_rate",
       title = "Clipping Rates",
       caption = "Clipping Rates",
-      tags = c("readplots", "clipping")
+      tags = c("readplots", "clipping"),
+      uid = "0050008"
     )
   }
 }
 
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
-  
   conditions = report$condition.table
   
   ## Let's set the graphic defaults
@@ -211,14 +237,15 @@ makeReport <- function(report) {
     alnFile = as.character(conditions$MappedSubreads[i])
     fasta = as.character(conditions$Reference[i])
     loginfo(paste("Loading alignment set:", alnFile))
-    pbbamr::getReadReport(datasetname = alnFile, indexedFastaName = fasta )
+    pbbamr::getReadReport(datasetname = alnFile, indexedFastaName = fasta)
   })
   
   loginfo("Finished loading aligned read data.")
   # Now combine into one large data frame
   # TODO: I hate using indexing here, perhaps another solution?
   cd = lapply(1:length(dfs[[1]]), function(i) {
-    mats = lapply(dfs, function(d) d[[i]])
+    mats = lapply(dfs, function(d)
+      d[[i]])
     combineConditions(mats, as.character(conditions$Condition))
   })
   names(cd) <- names(dfs[[1]])
@@ -250,7 +277,8 @@ main <- function()
   report <- bh2Reporter(
     "condition-table.csv",
     "reports/ReadPlots/report.json",
-    "All ZMW Cauculated Matrices")
+    "All ZMW Cauculated Matrices"
+  )
   makeReport(report)
   0
 }

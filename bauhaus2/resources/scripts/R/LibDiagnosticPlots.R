@@ -21,7 +21,8 @@ myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 
 #' Define a basic addition to all plots
-plTheme <- theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
+plTheme <-
+  theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
 clScale <- NULL #scale_colour_brewer(palette = "Set1")
 clFillScale <- NULL# scale_fill_brewer(palette = "Set1")
 themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
@@ -42,7 +43,8 @@ makeCDFofaStartPlots <- function(report, cd) {
     id = "cdf_astart",
     title = "CDF of aStart",
     caption = "CDF of aStart",
-    tags = c("libdiagnostic", "library", "diagnostic", "cdf", "astart")
+    tags = c("libdiagnostic", "library", "diagnostic", "cdf", "astart"),
+    uid = "0020001"
   )
   
   tp = ggplot(cd, aes(x = astart)) + stat_ecdf(aes(colour = Condition)) + scale_x_log10() + geom_vline(xintercept = 50, colour = "red") +
@@ -57,12 +59,20 @@ makeCDFofaStartPlots <- function(report, cd) {
     id = "cdf_astart_log",
     title = "CDF of aStart (Log-scale)",
     caption = "CDF of aStart (Log-scale)",
-    tags = c("libdiagnostic", "library", "diagnostic", "cdf", "astart", "log")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "cdf",
+      "astart",
+      "log"
+    ),
+    uid = "0020002"
   )
   
   # Yield (Subreads) by Reference
-  tp = ggplot(cd, aes(ref, fill = Condition)) + geom_bar(position = "dodge") + 
-    plTheme + themeTilt  + clFillScale + 
+  tp = ggplot(cd, aes(ref, fill = Condition)) + geom_bar(position = "dodge") +
+    plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "nSubreads", title = "Yield (Subreads) by Reference")
   
   report$ggsave(
@@ -73,15 +83,24 @@ makeCDFofaStartPlots <- function(report, cd) {
     id = "subreads_ref_hist",
     title = "Yield (Subreads) by Reference",
     caption = "Yield (Subreads) by Reference",
-    tags = c("libdiagnostic", "library", "diagnostic", "histogram", "yield", "reference", "subreads")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "histogram",
+      "yield",
+      "reference",
+      "subreads"
+    ),
+    uid = "0020003"
   )
   
   # Yield (Subreads) Percentage by Reference
   
   cdref = cd %>% group_by(Condition, ref) %>% summarise(n = n())
-  cdref = cdref %>% group_by(Condition) %>% mutate(nper = n/sum(n)) %>% ungroup()
+  cdref = cdref %>% group_by(Condition) %>% mutate(nper = n / sum(n)) %>% ungroup()
   tp = ggplot(cdref, aes(x = ref, y = nper, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
-    plTheme + themeTilt  + clFillScale + 
+    plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "(nSubreads by Reference)/nSubreads ", title = "Yield (Subreads) Percentage by Reference")
   
   report$ggsave(
@@ -92,15 +111,25 @@ makeCDFofaStartPlots <- function(report, cd) {
     id = "nsubreads_ref_hist_percentage",
     title = "Yield (Subreads) Percentage by Reference",
     caption = "Yield (Subreads) Percentage by Reference",
-    tags = c("libdiagnostic", "library", "diagnostic", "yield", "reference", "histogram", "subreads", "percentage")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "yield",
+      "reference",
+      "histogram",
+      "subreads",
+      "percentage"
+    ),
+    uid = "0020004"
   )
   
   # for unrolled data
   cdunrolled = cd %>% group_by(Condition, hole, ref) %>% summarise(unrolledT = sum(tlen))
   
   # Yield (Unrolled Alignments) by Reference
-  tp = ggplot(cdunrolled, aes(ref, fill = Condition)) + geom_bar(position = "dodge") + 
-    plTheme + themeTilt  + clFillScale + 
+  tp = ggplot(cdunrolled, aes(ref, fill = Condition)) + geom_bar(position = "dodge") +
+    plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "Unrolled Alignments", title = "Yield (Unrolled Alignments) by Reference")
   
   report$ggsave(
@@ -111,15 +140,26 @@ makeCDFofaStartPlots <- function(report, cd) {
     id = "unrolled_ref_hist",
     title = "Yield (Unrolled Alignments) by Reference",
     caption = "Yield (Unrolled Alignments) by Reference",
-    tags = c("libdiagnostic", "library", "diagnostic", "reference", "alignments", "unrolled", "yield", "histogram")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "reference",
+      "alignments",
+      "unrolled",
+      "yield",
+      "histogram"
+    ),
+    uid = "0020005"
   )
   
   # Yield (Unrolled Alignments) Percentage by Reference
   
   cdunrolledref = cdunrolled %>% group_by(Condition, ref) %>% summarise(n = n())
-  cdunrolledref = cdunrolledref %>% group_by(Condition) %>% mutate(nper = n/sum(n)) %>% ungroup()
+  cdunrolledref = cdunrolledref %>% group_by(Condition) %>% mutate(nper = n /
+                                                                     sum(n)) %>% ungroup()
   tp = ggplot(cdunrolledref, aes(x = ref, y = nper, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
-    plTheme + themeTilt  + clFillScale + 
+    plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "(Unrolled Alignments by Reference)/Unrolled Alignments ", title = "Yield (Unrolled Alignments) Percentage by Reference")
   
   report$ggsave(
@@ -130,15 +170,37 @@ makeCDFofaStartPlots <- function(report, cd) {
     id = "unrolled_ref_hist_percentage",
     title = "Yield (Unrolled Alignments) Percentage by Reference",
     caption = "Yield (Unrolled Alignments) Percentage by Reference",
-    tags = c("libdiagnostic", "library", "diagnostic", "reference", "alignments", "unrolled", "yield", "percentage", "histogram")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "reference",
+      "alignments",
+      "unrolled",
+      "yield",
+      "percentage",
+      "histogram"
+    ),
+    uid = "0020006"
   )
   
   # Template Span by Reference
-  tp <- ggplot(data = cd, aes(x = factor(ref), y = tlen, fill = factor(Condition))) +
-    geom_boxplot(position = position_dodge(width = 0.9)) 
-  a <- aggregate(tlen ~ ref + Condition , cd, function(i) round(median(i)))
-  tp <- tp +  geom_text(data = a, aes(label = tlen), 
-                 position = position_dodge(width = 0.9), vjust = -0.8)
+  tp <-
+    ggplot(data = cd, aes(
+      x = factor(ref),
+      y = tlen,
+      fill = factor(Condition)
+    )) +
+    geom_boxplot(position = position_dodge(width = 0.9))
+  a <-
+    aggregate(tlen ~ ref + Condition , cd, function(i)
+      round(median(i)))
+  tp <- tp +  geom_text(
+    data = a,
+    aes(label = tlen),
+    position = position_dodge(width = 0.9),
+    vjust = -0.8
+  )
   
   report$ggsave(
     "template_span_ref_box.png",
@@ -148,7 +210,15 @@ makeCDFofaStartPlots <- function(report, cd) {
     id = "template_span_ref_box",
     title = "Template Span by Reference",
     caption = "Template Span by Reference",
-    tags = c("libdiagnostic", "library", "diagnostic", "reference", "template", "boxplot")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "reference",
+      "template",
+      "boxplot"
+    ),
+    uid = "0020007"
   )
   
 }
@@ -224,7 +294,15 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
       height = plotheight,
       title = "Unrolled template Span Survival",
       caption = "Unrolled template Span Survival",
-      tags = c("libdiagnostic", "library", "diagnostic", "template", "survival", "unrolled")
+      tags = c(
+        "libdiagnostic",
+        "library",
+        "diagnostic",
+        "template",
+        "survival",
+        "unrolled"
+      ),
+      uid = "0020008"
     )
     report$ggsave(
       "unrolled_template_log.png",
@@ -234,7 +312,16 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
       height = plotheight,
       title = "Unrolled template Span Survival (Log-scale)",
       caption = "Unrolled template Span Survival (Log-scale)",
-      tags = c("libdiagnostic", "library", "diagnostic", "template", "survival", "unrolled", "log")
+      tags = c(
+        "libdiagnostic",
+        "library",
+        "diagnostic",
+        "template",
+        "survival",
+        "unrolled",
+        "log"
+      ),
+      uid = "0020009"
     )
   }
   
@@ -256,11 +343,19 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = plotheight,
     title = "Unrolled template Span (Boxplot)",
     caption = "Unrolled template Span (Boxplot)",
-    tags = c("libdiagnostic", "library", "diagnostic", "template", "boxplot", "unrolled")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "template",
+      "boxplot",
+      "unrolled"
+    ),
+    uid = "0020010"
   )
   
-  tp = ggplot(cd2, aes(x = UnrolledT, colour = Condition)) + geom_density(alpha = .5) + 
-    plTheme + themeTilt  + clScale + 
+  tp = ggplot(cd2, aes(x = UnrolledT, colour = Condition)) + geom_density(alpha = .5) +
+    plTheme + themeTilt  + clScale +
     labs(x = "Unrolled template Span - HighLow", title = "Unrolled template Span - HighLow (Density Plot)") + scale_x_log10()
   
   report$ggsave(
@@ -271,12 +366,21 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = plotheight,
     title = "Unrolled template Span - HighLow (Density Plot)",
     caption = "Unrolled template Span - HighLow (Density Plot)",
-    tags = c("libdiagnostic", "library", "diagnostic", "template", "density", "unrolled", "hignlow")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "template",
+      "density",
+      "unrolled",
+      "hignlow"
+    ),
+    uid = "0020011"
   )
   
   # Summation
-  tp = ggplot(cd2_summation, aes(x = UnrolledT, colour = Condition)) + geom_density(alpha = .5) + 
-    plTheme + themeTilt  + clScale + 
+  tp = ggplot(cd2_summation, aes(x = UnrolledT, colour = Condition)) + geom_density(alpha = .5) +
+    plTheme + themeTilt  + clScale +
     labs(x = "Unrolled template Span - Summation", title = "Unrolled template Span - Summation (Density Plot)") + scale_x_log10()
   
   report$ggsave(
@@ -287,12 +391,21 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = plotheight,
     title = "Unrolled template Span - Summation (Density Plot)",
     caption = "Unrolled template Span - Summation (Density Plot)",
-    tags = c("libdiagnostic", "library", "diagnostic", "template", "density", "unrolled", "summation")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "template",
+      "density",
+      "unrolled",
+      "summation"
+    ),
+    uid = "0020012"
   )
   
   # max insert length vs hqlen
-  tp = ggplot(cd2, aes(x = hqlen, y = MaxInsert)) + geom_point(aes(colour = Condition), size = 0.2) + 
-    xlim(0, limhq) + ylim(0, limhq) + facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
+  tp = ggplot(cd2, aes(x = hqlen, y = MaxInsert)) + geom_point(aes(colour = Condition), size = 0.2) +
+    xlim(0, limhq) + ylim(0, limhq) + facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme + themeTilt + labs(y = "Max Insert Length)", title = "Max Insert Length vs hqlen", x = "hqlen")
   
   report$ggsave(
@@ -303,12 +416,19 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Max Insert Length vs hqlen",
     caption = "Max Insert Length vs hqlen",
-    tags = c("libdiagnostic", "library", "diagnostic", "hqlen", "maxinsert")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "hqlen",
+      "maxinsert"
+    ),
+    uid = "0020013"
   )
   
   # CDF of (hqlen - MaxInsert)/hqlen
-  tp = ggplot(cd2, aes(x = (hqlen - MaxInsert) / hqlen)) + stat_ecdf(aes(colour = Condition)) + scale_x_log10() + 
-    plTheme + clScale + 
+  tp = ggplot(cd2, aes(x = (hqlen - MaxInsert) / hqlen)) + stat_ecdf(aes(colour = Condition)) + scale_x_log10() +
+    plTheme + clScale +
     labs(x = "(hqlen - MaxInsert)/hqlen", y = "C.D.F", title = "CDF of (hqlen - MaxInsert)/hqlen")
   report$ggsave(
     "cdf_hqlenmax.png",
@@ -318,13 +438,21 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = plotheight,
     title = "CDF of (hqlen - MaxInsert)/hqlen",
     caption = "CDF of (hqlen - MaxInsert)/hqlen",
-    tags = c("libdiagnostic", "library", "diagnostic", "hqlen", "maxinsert", "cdf")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "hqlen",
+      "maxinsert",
+      "cdf"
+    ),
+    uid = "0020014"
   )
   
   # max insert length vs unrolled aligned read length
-  tp = ggplot(cd2, aes(x = Unrolled, y = MaxInsert)) + geom_point(aes(colour = Region), size = 0.2) + 
-    xlim(0, lim) + ylim(0, lim) + facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
-    plTheme + themeTilt + 
+  tp = ggplot(cd2, aes(x = Unrolled, y = MaxInsert)) + geom_point(aes(colour = Region), size = 0.2) +
+    xlim(0, lim) + ylim(0, lim) + facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
+    plTheme + themeTilt +
     labs(y = "Max Insert Length)", title = "Max Insert Length vs Unrolled Aligned Read Length", x = "Unrolled Aligned Read Length")
   
   report$ggsave(
@@ -335,12 +463,20 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Max Insert Length vs Unrolled Aligned Read Length",
     caption = "Max Insert Length vs Unrolled Aligned Read Length",
-    tags = c("libdiagnostic", "library", "diagnostic", "maxinsert", "read", "unrolled")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "maxinsert",
+      "read",
+      "unrolled"
+    ),
+    uid = "0020015"
   )
   
-  tp = ggplot(cd2, aes(x = UnrolledT, y = MaxInsertT)) + geom_point(aes(colour = Condition), size = 0.2) + 
-    xlim(0, lim) + ylim(0, lim) + facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
-    plTheme + themeTilt + 
+  tp = ggplot(cd2, aes(x = UnrolledT, y = MaxInsertT)) + geom_point(aes(colour = Condition), size = 0.2) +
+    xlim(0, lim) + ylim(0, lim) + facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
+    plTheme + themeTilt +
     labs(y = "Max Subread Template Span)", title = "Max Subread Template Span vs Unrolled Template Span", x = "Unrolled Template Span")
   
   report$ggsave(
@@ -351,12 +487,20 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Max Subread Template Span vs Unrolled Template Span",
     caption = "Max Subread Template Span vs Unrolled Template Span",
-    tags = c("libdiagnostic", "library", "diagnostic", "template", "subread", "unrolled")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "template",
+      "subread",
+      "unrolled"
+    ),
+    uid = "0020016"
   )
   
-  tp = ggplot(cd2, aes(x = MaxInsert, fill = Region)) + geom_histogram(binwidth = 100) + 
-    facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
-    plTheme + 
+  tp = ggplot(cd2, aes(x = MaxInsert, fill = Region)) + geom_histogram(binwidth = 100) +
+    facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
+    plTheme +
     labs(y = "Frequency", title = "Histogram of Max Insert Length", x = "Max Insert Length")
   
   report$ggsave(
@@ -367,13 +511,20 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Histogram of Max Insert Length",
     caption = "Histogram of Max Insert Length",
-    tags = c("libdiagnostic", "library", "diagnostic", "maxinsert", "histogram")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "maxinsert",
+      "histogram"
+    ),
+    uid = "0020017"
   )
   
-  tp = ggplot(cd2, aes(x = MaxInsert, colour = Region)) + geom_density(alpha = .5) + 
-    facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
-    plTheme + themeTilt  + clScale + 
-    labs(y = "Density", title = "Denstiy Plot of Max Insert Length (by Region)", x = "Max Insert Length") 
+  tp = ggplot(cd2, aes(x = MaxInsert, colour = Region)) + geom_density(alpha = .5) +
+    facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
+    plTheme + themeTilt  + clScale +
+    labs(y = "Density", title = "Denstiy Plot of Max Insert Length (by Region)", x = "Max Insert Length")
   
   report$ggsave(
     "density_max_region.png",
@@ -383,12 +534,20 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Density Plot of Max Insert Length (by Region)",
     caption = "Density Plot of Max Insert Length (by Region)",
-    tags = c("libdiagnostic", "library", "diagnostic", "maxinsert", "density", "region")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "maxinsert",
+      "density",
+      "region"
+    ),
+    uid = "0020018"
   )
   
-  tp = ggplot(cd2, aes(x = MaxInsert, colour = Condition)) + geom_density(alpha = .5) + 
-    plTheme + themeTilt  + clScale + 
-    labs(y = "Density", title = "Denstiy Plot of Max Insert Length", x = "Max Insert Length") 
+  tp = ggplot(cd2, aes(x = MaxInsert, colour = Condition)) + geom_density(alpha = .5) +
+    plTheme + themeTilt  + clScale +
+    labs(y = "Density", title = "Denstiy Plot of Max Insert Length", x = "Max Insert Length")
   
   report$ggsave(
     "density_max.png",
@@ -398,13 +557,20 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     id = "density_max",
     title = "Density Plot of Max Insert Length",
     caption = "Density Plot of Max Insert Length",
-    tags = c("libdiagnostic", "library", "diagnostic", "density", "maxinsert")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "density",
+      "maxinsert"
+    ),
+    uid = "0020019"
   )
   
-  tp = ggplot(cd2, aes(x = Unrolled, fill = Region)) + geom_histogram(binwidth = 500) + 
-    facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
-    plTheme + 
-    labs(y = "Frequency", title = "Histogram of Unrolled Aligned Read Length", x = "Unrolled Aligned Read Length") 
+  tp = ggplot(cd2, aes(x = Unrolled, fill = Region)) + geom_histogram(binwidth = 500) +
+    facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
+    plTheme +
+    labs(y = "Frequency", title = "Histogram of Unrolled Aligned Read Length", x = "Unrolled Aligned Read Length")
   
   report$ggsave(
     "hist_unroll.png",
@@ -414,12 +580,20 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Histogram of Unrolled Aligned Read Length",
     caption = "Histogram of Unrolled Aligned Read Length",
-    tags = c("libdiagnostic", "library", "diagnostic", "read", "histogram", "unrolled")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "read",
+      "histogram",
+      "unrolled"
+    ),
+    uid = "0020020"
   )
   
-  tp = ggplot(cd2, aes(x = Unrolled, colour = Region)) + geom_density(alpha = .5) + 
-    facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
-    plTheme + themeTilt  + clScale + 
+  tp = ggplot(cd2, aes(x = Unrolled, colour = Region)) + geom_density(alpha = .5) +
+    facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
+    plTheme + themeTilt  + clScale +
     labs(y = "Density", title = "Denstiy Plot of Unrolled Aligned Read Length - HighLow", x = "Unrolled Aligned Read Length - HighLow")
   
   report$ggsave(
@@ -430,12 +604,21 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Density Plot of Unrolled Aligned Read Length - HighLow",
     caption = "Density Plot of Unrolled Aligned Read Length - HighLow",
-    tags = c("libdiagnostic", "library", "diagnostic", "read", "density", "unrolled", "highlow")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "read",
+      "density",
+      "unrolled",
+      "highlow"
+    ),
+    uid = "0020021"
   )
   # Summation
-  tp = ggplot(cd2_summation, aes(x = Unrolled, colour = Region)) + geom_density(alpha = .5) + 
-    facet_wrap(~Condition, nrow = length(levels(cd2$Condition))) + 
-    plTheme + themeTilt  + clScale + 
+  tp = ggplot(cd2_summation, aes(x = Unrolled, colour = Region)) + geom_density(alpha = .5) +
+    facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
+    plTheme + themeTilt  + clScale +
     labs(y = "Density", title = "Denstiy Plot of Unrolled Aligned Read Length - Summation", x = "Unrolled Aligned Read Length - Summation")
   report$ggsave(
     "density_unroll_summation.png",
@@ -445,12 +628,20 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = img_height,
     title = "Density Plot of Unrolled Aligned Read Length - Summation",
     caption = "Density Plot of Unrolled Aligned Read Length - Summation",
-    tags = c("libdiagnostic", "library", "diagnostic", "read", "density", "summation")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "read",
+      "density",
+      "summation"
+    ),
+    uid = "0020022"
   )
   
   cd2$Ratio  = (cd2$Unrolled - cd2$MaxInsert) / cd2$Unrolled
-  tp = ggplot(cd2, aes(x = Ratio)) + stat_ecdf(aes(colour = Condition)) + 
-    plTheme + 
+  tp = ggplot(cd2, aes(x = Ratio)) + stat_ecdf(aes(colour = Condition)) +
+    plTheme +
     labs(y = "C.D.F", title = "CDF plot of (Unrolled - Max)/Unrolled", x = "(Unrolled Aligned Read Length − Max Insert Length) / Unrolled Aligned Read Length")
   
   report$ggsave(
@@ -461,7 +652,15 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     height = plotheight,
     title = "CDF plot of (Unrolled - Max)/Unrolled",
     caption = "CDF plot of (Unrolled - Max)/Unrolled",
-    tags = c("libdiagnostic", "library", "diagnostic", "maxinsert", "cdf", "unrolled")
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "maxinsert",
+      "cdf",
+      "unrolled"
+    ),
+    uid = "0020023"
   )
 }
 
@@ -469,7 +668,7 @@ makeCDFofTemplatePlots <- function(report, cd) {
   loginfo("Making CDF of Template Span Plots")
   
   # Create and add a plot group
-  tp = ggplot(cd, aes(x = tlen)) + stat_ecdf(aes(colour = Condition)) + scale_y_log10() + 
+  tp = ggplot(cd, aes(x = tlen)) + stat_ecdf(aes(colour = Condition)) + scale_y_log10() +
     plTheme + clScale + labs(x = "Template Span", y = "C.D.F", title = "CDF of Template Span")
   
   report$ggsave(
@@ -480,7 +679,8 @@ makeCDFofTemplatePlots <- function(report, cd) {
     height = plotheight,
     title = "CDF of Template Span",
     caption = "CDF of Template Span",
-    tags = c("libdiagnostic", "library", "diagnostic", "template", "cdf")
+    tags = c("libdiagnostic", "library", "diagnostic", "template", "cdf"),
+    uid = "0020024"
   )
 }
 
@@ -707,8 +907,8 @@ fit_3_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
   #' Linear constraints on optimization:
   #' Breakpoint in vector b must be: b[1] < b[2] - min_sep + 1; 1 < b[1]; and b[2] < N
   
-  ui = as.matrix(rbind(c(-1, 1), c(1, 0), c(0,-1)))
-  ci = matrix(c(min_sep - 1, 1,-N) , ncol = 1)
+  ui = as.matrix(rbind(c(-1, 1), c(1, 0), c(0, -1)))
+  ci = matrix(c(min_sep - 1, 1, -N) , ncol = 1)
   
   #' Get three initial points
   init = get_initial_points(tmp$min, N, min_sep)
@@ -744,7 +944,7 @@ fit_3_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
   if (!is.null(opt$par)) {
     bpt = round(opt$par)
   } else {
-    bpt = c(0,0)
+    bpt = c(0, 0)
   }
   
   res = c(res, opt$value)
@@ -999,7 +1199,7 @@ writeTauEstimatesToCsv = function(report,
                                  nRegions = nRegions)
   taus = data.frame(rbind(
     tau = -1 / tau[, 2],
-    tmp[-2, ],
+    tmp[-2,],
     start = tau[, 5],
     stop = tau[, 6]
   ))
@@ -1098,8 +1298,8 @@ getTauFittingLinesForGGplot = function(p, nRegions)
 
 getFirstPassSubreads = function(x)
 {
-  x = x[order(x$hole, x$astart, decreasing = FALSE),]
-  x[!duplicated(x$hole),]
+  x = x[order(x$hole, x$astart, decreasing = FALSE), ]
+  x[!duplicated(x$hole), ]
 }
 
 #' Estimate tau values for three regions of the first pass, along with confidence intervals for each tau.
@@ -1118,7 +1318,7 @@ plotFirstPassTau = function(report, cd, nRegions = 3)
   loginfo("Draw first pass survival and estimate tau values.\n")
   s = split(1:nrow(cd), cd$Condition)
   tm = lapply(s, function(r)
-    getFirstPassSubreads(cd[r,]))
+    getFirstPassSubreads(cd[r, ]))
   
   loginfo("Use simple bootstrapping to get confidence intervals for tau estimates.\n")
   l0 = lapply(tm, function(x)
@@ -1164,7 +1364,8 @@ plotFirstPassTau = function(report, cd, nRegions = 3)
       "survival",
       "first",
       "pass"
-    )
+    ),
+    uid = "0020025"
   )
 }
 
@@ -1212,7 +1413,8 @@ plotDensityOfMaxSubreadLength = function(report,
     height = plotheight,
     title = title,
     caption = title,
-    tags = c("density", searchTags)
+    tags = c("density", searchTags),
+    uid = "0020026"
   )
   vapply(maxSubreadLens, function(x)
     mean(x$MaxSubreadLen, na.rm = TRUE), 0)
@@ -1266,7 +1468,8 @@ plot_N_k_UsingLongestSubreads = function(report,
     height = plotheight,
     title = title,
     caption = title,
-    tags = c("N50", "N25", "CDF", searchTags)
+    tags = c("N50", "N25", "CDF", searchTags),
+    uid  = "0020027"
   )
   
   loginfo("For each condition, compute N(k) for each value of k:")
@@ -1331,7 +1534,8 @@ plotSurvivalUsingLongestSubreads = function(report,
     height = plotheight,
     title = title,
     caption = title,
-    tags = c("CDF", "survival", "benchmark", searchTags)
+    tags = c("CDF", "survival", "benchmark", searchTags),
+    uid  = "0020028"
   )
   
   loginfo("What percentage of ZMWs have max subread length above each benchmark value?")
@@ -1421,7 +1625,7 @@ generateLongLibraryMetricsAndPlots = function(report, cd, perc, benchmark, deNov
   
   rows = split(1:nrow(cd), cd$Condition)
   maxSubreadLens = lapply(rows, function(r)
-    getMaxSubreadLengths(cd[r,]))
+    getMaxSubreadLengths(cd[r, ]))
   meanMaxSubread = plotDensityOfMaxSubreadLength(report, maxSubreadLens, deNovo, searchTags)
   
   #' Get and plot CDF and survival for max subread lengths:
@@ -1493,7 +1697,8 @@ makeReport <- function(report) {
       cd,
       perc = c(0.5, 0.25, 0.1),
       benchmark = c(5e3, 8e3, 1e4, 1.5e4)
-    ), silent = TRUE)
+    ),
+    silent = TRUE)
   }
   
   # Save the report object for later debugging
@@ -1507,7 +1712,8 @@ main <- function()
   report <- bh2Reporter(
     "condition-table.csv",
     "reports/LibDiagnosticPlots/report.json",
-    "Library Diagnostic Plots")
+    "Library Diagnostic Plots"
+  )
   makeReport(report)
   0
 }
