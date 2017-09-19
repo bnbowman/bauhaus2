@@ -12,6 +12,10 @@ local_fasta_files = \
       
 uid_tag_csv_file = "reports/uidTag.csv"
 
+uid_tag_csv_file = "reports/uidTag.csv"
+
+uid_tag_address = "http://confluence.nanofluidics.com:8090/display/ITG/Zia+Plot+Index"
+
 # -- Target rules --
 
 rule summarize_mappings:
@@ -64,4 +68,12 @@ rule ReadPlots:
     shell:
         """
         Rscript --vanilla scripts/R/ReadPlots.R
+        """
+        
+rule uidTagCSV:
+    output: csv = uid_tag_csv_file
+    shell:
+        """
+        module load anaconda
+        python scripts/Python/GetZiaTags.py {uid_tag_address} {output.csv}
         """
