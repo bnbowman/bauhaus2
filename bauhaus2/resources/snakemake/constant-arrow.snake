@@ -14,7 +14,8 @@ rule constant_arrow_plots:
         constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
 
 rule ConstantArrowPlots:
-    input: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    input: "reports/ConstantArrowFishbonePlots/errormode.csv",
+           uid_tag_csv_file
     output: "reports/ConstantArrowFishbonePlots/report.json"
     shell:
         """

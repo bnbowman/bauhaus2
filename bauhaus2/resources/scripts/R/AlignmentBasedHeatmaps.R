@@ -1289,6 +1289,9 @@ main = function()
     "Alignment Based Heatmaps"
   )
   makeReport(report)
+  jsonFile = "reports/AlignmentBasedHeatmaps/report.json"
+  uidTagCSV = "reports/uidTag.csv"
+  # rewriteJSON(jsonFile, uidTagCSV)
   0
 }
 

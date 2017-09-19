@@ -931,6 +931,9 @@ main <- function()
                         "reports/ZMWstsPlots/report.json",
                         "ZMW STS Plots")
   makeReport(report)
+  jsonFile = "reports/ZMWstsPlots/report.json"
+  uidTagCSV = "reports/uidTag.csv"
+  # rewriteJSON(jsonFile, uidTagCSV)
   0
 }
 

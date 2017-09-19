@@ -10,6 +10,10 @@ local_fasta_files = \
     { c : expand("conditions/{condition}/reference.fasta", condition=c)
       for c in ct.conditions }
 
+uid_tag_csv_file = "reports/uidTag.csv"
+
+uid_tag_address = "http://confluence.nanofluidics.com:8090/display/ITG/Zia+Plot+Index"
+
 # -- Target rules --
 
 rule summarize_mappings:
@@ -26,7 +30,8 @@ rule summarize_mappings:
 
 rule PbiPlots:
     input: mapped_subreads.values(),
-           local_fasta_files.values()
+           local_fasta_files.values(),
+           uid_tag_csv_file
     output: "reports/PbiPlots/report.json"
     shell:
         """
@@ -35,7 +40,8 @@ rule PbiPlots:
 
 rule PbiSampledPlots:
     input: mapped_subreads.values(),
-           local_fasta_files.values()
+           local_fasta_files.values(),
+           uid_tag_csv_file
     output: "reports/PbiSampledPlots/report.json"
     shell:
         """
@@ -44,7 +50,8 @@ rule PbiSampledPlots:
 
 rule LibDiagnosticPlots:
     input: mapped_subreads.values(),
-           local_fasta_files.values()
+           local_fasta_files.values(),
+           uid_tag_csv_file
     output: "reports/LibDiagnosticPlots/report.json"
     shell:
         """
@@ -53,9 +60,18 @@ rule LibDiagnosticPlots:
 
 rule ReadPlots:
     input: mapped_subreads.values(),
-           local_fasta_files.values()
+           local_fasta_files.values(),
+           uid_tag_csv_file
     output: "reports/ReadPlots/report.json"
     shell:
         """
         Rscript --vanilla scripts/R/ReadPlots.R
+        """
+        
+rule uidTagCSV:
+    output: csv = uid_tag_csv_file
+    shell:
+        """
+        module load anaconda
+        python scripts/Python/GetZiaTags.py {uid_tag_address} {output.csv}
         """

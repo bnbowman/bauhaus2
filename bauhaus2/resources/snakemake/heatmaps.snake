@@ -19,7 +19,8 @@ rule heatmap_plots:
 
 rule AlignmentBasedHeatmaps:
     input: mapped_subreads.values(),
-           local_fasta_files.values()
+           local_fasta_files.values(),
+           uid_tag_csv_file
     output: "reports/AlignmentBasedHeatmaps/report.json"
     shell:
         """
@@ -28,7 +29,8 @@ rule AlignmentBasedHeatmaps:
 
 rule ZMWstsPlots:
     input: mapped_subreads.values(),
-           local_fasta_files.values()
+           local_fasta_files.values(),
+           uid_tag_csv_file
     output: "reports/ZMWstsPlots/report.json"
     shell:
         """

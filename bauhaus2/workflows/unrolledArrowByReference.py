@@ -47,7 +47,8 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
                              "Python/MakeChunkedConditionTable.py",
                              "Python/RefilterMappedReadsByReference.py",
-                             "Python/ConsolidateArrowConditions.py" )
+                             "Python/ConsolidateArrowConditions.py",
+                             "Python/GetZiaTags.py")
 
     def plan(self):
         return ["summarize-mappings.snake", "scatter-constant-arrow-by-reference.snake", "heatmaps.snake", "locacc.snake"] + \

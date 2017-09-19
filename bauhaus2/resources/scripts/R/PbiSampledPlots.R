@@ -569,7 +569,7 @@ makeSamplingPlots <-
               sep = ""
             ),
             tags = c("sampled", "pkmid", "histogram", variableTitle[i]),
-            uid = uniqueidD
+            uid = uniqueidD[i]
           )
         }
         
@@ -1549,6 +1549,9 @@ main <- function()
     "Sampled ZMW metrics"
   )
   makeReport(report)
+  jsonFile = "reports/PbiSampledPlots/report.json"
+  uidTagCSV = "reports/uidTag.csv"
+  rewriteJSON(jsonFile, uidTagCSV)
   0
 }
 

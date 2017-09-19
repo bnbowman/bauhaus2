@@ -564,6 +564,11 @@ main <- function()
     "Constant Arrow Fishbone Plots"
   )
   makeReport(report)
+  jsonFile = "reports/ConstantArrowFishbonePlots/report.json"
+  uidTagCSV = "reports/uidTag.csv"
+  if (file.exists(jsonFile)) {
+    rewriteJSON(jsonFile, uidTagCSV)
+  }
   0
 }
 
