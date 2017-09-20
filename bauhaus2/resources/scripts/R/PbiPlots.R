@@ -511,10 +511,6 @@ makeReport <- function(report) {
   report$write.report()
 }
 
-# json = "/home/ytian/bauhaus2/test/test/reports/PbiPlots/report.json"
-# jsonReport = fromJSON(json)
-
-
 main <- function()
 {
   report <- bh2Reporter("condition-table.csv",

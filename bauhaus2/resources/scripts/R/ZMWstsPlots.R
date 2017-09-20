@@ -933,6 +933,8 @@ main <- function()
   makeReport(report)
   jsonFile = "reports/ZMWstsPlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
+  
+  # TODO: currently we don't rewrite the json report since the uid is not added to the heatmaps yet
   # rewriteJSON(jsonFile, uidTagCSV)
   0
 }
