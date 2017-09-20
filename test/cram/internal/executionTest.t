@@ -572,7 +572,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "polrate_template_per_second.png",
         "title": "Polymerization Rate (template bases per second)",
         "caption": "Polymerization Rate (template bases per second)",
-        "tags": "sampled, boxplot, polrate, template, time"
+        "tags": ["sampled", "boxplot", "polrate", "template", "time"]
       },
       {
         "uid": "0040024",
@@ -580,7 +580,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "polrate_ref_box.png",
         "title": "Polymerization Rate by Reference",
         "caption": "Polymerization Rate by Reference",
-        "tags": "sampled, boxplot, polrate, reference"
+        "tags": ["sampled", "boxplot", "polrate", "reference"]
       },
       {
         "uid": "0040025",
@@ -588,7 +588,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pw_by_template.png",
         "title": "Pulse Width by Template Base",
         "caption": "Pulse Width by Template Base",
-        "tags": "sampled, density, pw"
+        "tags": ["sampled", "density", "pw"]
       },
       {
         "uid": "0040026",
@@ -596,7 +596,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pw_by_template_cdf.png",
         "title": "Pulse Width by Template Base (CDF)",
         "caption": "Pulse Width by Template Base (CDF)",
-        "tags": "sampled, pw, cdf"
+        "tags": ["sampled", "pw", "cdf"]
       },
       {
         "uid": "0040027",
@@ -604,7 +604,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "ipddistbybase_boxplot.png",
         "title": "IPD Distribution by Ref Base - Boxplot",
         "caption": "IPD Distribution by Ref Base - Boxplot",
-        "tags": "sampled, boxplot, ipd"
+        "tags": ["sampled", "boxplot", "ipd"]
       },
       {
         "uid": "0040028",
@@ -612,7 +612,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pw_boxplot.png",
         "title": "PW Distribution - Boxplot",
         "caption": "PW Distribution - Boxplot",
-        "tags": "sampled, boxplot, pw"
+        "tags": ["sampled", "boxplot", "pw"]
       },
       {
         "uid": "0040029",
@@ -620,7 +620,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "median_pw_boxplot_by_base.png",
         "title": "Median PW Distribution By Base",
         "caption": "Median PW Distribution",
-        "tags": "sampled, pw, boxplot, median"
+        "tags": ["sampled", "pw", "boxplot", "median"]
       },
       {
         "uid": "0040030",
@@ -628,7 +628,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "mean_pw_boxplot_by_base.png",
         "title": "Mean PW Distribution By Base",
         "caption": "Mean PW Distribution",
-        "tags": "sampled, pw, boxplot, mean"
+        "tags": ["sampled", "pw", "boxplot", "mean"]
       },
       {
         "uid": "0040031",
@@ -644,7 +644,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "localpolrate_boxplot.png",
         "title": "Local PolRate - Boxplot",
         "caption": "Local PolRate - Boxplot",
-        "tags": "sampled, boxplot, polrate"
+        "tags": ["sampled", "boxplot", "polrate"]
       },
       {
         "uid": "0040034",
