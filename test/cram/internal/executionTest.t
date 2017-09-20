@@ -568,7 +568,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "polrate_template_per_second.png",
         "title": "Polymerization Rate (template bases per second)",
         "caption": "Polymerization Rate (template bases per second)",
-        "tags": "sampled, boxplot, polrate, template, time"
+        "tags": ["sampled", "boxplot", "polrate", "template", "time"]
       },
       {
         "uid": "0040024",
@@ -576,7 +576,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "polrate_ref_box.png",
         "title": "Polymerization Rate by Reference",
         "caption": "Polymerization Rate by Reference",
-        "tags": "sampled, boxplot, polrate, reference"
+        "tags": ["sampled", "boxplot", "polrate", "reference"]
       },
       {
         "uid": "0040025",
@@ -584,7 +584,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pw_by_template.png",
         "title": "Pulse Width by Template Base",
         "caption": "Pulse Width by Template Base",
-        "tags": "sampled, density, pw"
+        "tags": ["sampled", "density", "pw"]
       },
       {
         "uid": "0040026",
@@ -592,7 +592,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pw_by_template_cdf.png",
         "title": "Pulse Width by Template Base (CDF)",
         "caption": "Pulse Width by Template Base (CDF)",
-        "tags": "sampled, pw, cdf"
+        "tags": ["sampled", "pw", "cdf"]
       },
       {
         "uid": "0040027",
@@ -600,7 +600,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "ipddistbybase_boxplot.png",
         "title": "IPD Distribution by Ref Base - Boxplot",
         "caption": "IPD Distribution by Ref Base - Boxplot",
-        "tags": "sampled, boxplot, ipd"
+        "tags": ["sampled", "boxplot", "ipd"]
       },
       {
         "uid": "0040028",
@@ -608,7 +608,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pw_boxplot.png",
         "title": "PW Distribution - Boxplot",
         "caption": "PW Distribution - Boxplot",
-        "tags": "sampled, boxplot, pw"
+        "tags": ["sampled", "boxplot", "pw"]
       },
       {
         "uid": "0040029",
@@ -616,7 +616,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "median_pw_boxplot_by_base.png",
         "title": "Median PW Distribution By Base",
         "caption": "Median PW Distribution",
-        "tags": "sampled, pw, boxplot, median"
+        "tags": ["sampled", "pw", "boxplot", "median"]
       },
       {
         "uid": "0040030",
@@ -624,7 +624,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "mean_pw_boxplot_by_base.png",
         "title": "Mean PW Distribution By Base",
         "caption": "Mean PW Distribution",
-        "tags": "sampled, pw, boxplot, mean"
+        "tags": ["sampled", "pw", "boxplot", "mean"]
       },
       {
         "uid": "0040031",
@@ -632,7 +632,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "dutycycle_boxplot.png",
         "title": "Duty Cycle - Boxplot",
         "caption": "Duty Cycle - Boxplot",
-        "tags": "sampled, boxplot, duty cycle"
+        "tags": ["sampled", "boxplot", "dutycycle"]
       },
       {
         "uid": "0040032",
@@ -640,7 +640,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "localpolrate_boxplot.png",
         "title": "Local PolRate - Boxplot",
         "caption": "Local PolRate - Boxplot",
-        "tags": "sampled, boxplot, polrate"
+        "tags": ["sampled", "boxplot", "polrate"]
       },
       {
         "uid": "0040034",
@@ -648,7 +648,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "bperr_rate_by_snr.png",
         "title": "BP Error Rates by SNR",
         "caption": "BP Error Rates by SNR",
-        "tags": "sampled, error rate, base"
+        "tags": ["sampled", "errorrate", "base"]
       },
       {
         "uid": "0040035",
@@ -656,7 +656,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "bpmm_rate_by_snr.png",
         "title": "Mismatch Rates by SNR",
         "caption": "Mismatch Rates by SNR",
-        "tags": "sampled, mismatch, error rate"
+        "tags": ["sampled", "mismatch", "errorrate"]
       },
       {
         "uid": "0040036",
@@ -664,7 +664,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrvsacc.png",
         "title": "SNR vs Accuracy",
         "caption": "SNR vs. Accuracy",
-        "tags": "sampled, snr, accuracy"
+        "tags": ["sampled", "snr", "accuracy"]
       },
       {
         "uid": "0040037",
@@ -672,7 +672,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrvsinsertion.png",
         "title": "SNR vs Insertion Rate",
         "caption": "SNR vs. Insertion Rate",
-        "tags": "sampled, snr, insertion"
+        "tags": ["sampled", "snr", "insertion"]
       },
       {
         "uid": "0040038",
@@ -680,7 +680,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrvsdeletion.png",
         "title": "SNR vs Deletion Rate",
         "caption": "SNR vs. Deletion Rate",
-        "tags": "sampled, snr, deletion"
+        "tags": ["sampled", "snr", "deletion"]
       },
       {
         "uid": "0040039",
@@ -688,7 +688,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrvsmismatch.png",
         "title": "SNR vs Mismatch Rate",
         "caption": "SNR vs. Mismatch Rate",
-        "tags": "sampled, snr, mismatch"
+        "tags": ["sampled", "snr", "mismatch"]
       },
       {
         "uid": "0040040",
@@ -696,7 +696,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrvsindelrat.png",
         "title": "SNR vs Relative Indels",
         "caption": "SNR vs. Indel Rate / Deletion Rate",
-        "tags": "sampled, snr, deletion"
+        "tags": ["sampled", "snr", "deletion"]
       },
       {
         "uid": "0040041",
@@ -704,7 +704,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrDensity.png",
         "title": "SNR Density Plot",
         "caption": "Distribution of SNR in Aligned Files (Density plot)",
-        "tags": "sampled, snr, density,#dye,#photonics"
+        "tags": ["sampled", "snr", "density", "#dye", "#photonics"]
       },
       {
         "uid": "0040042",
@@ -712,56 +712,63 @@ Generate mapping reports workflow, starting from subreads.
         "image": "snrBoxNoViolin.png",
         "title": "SNR Box Plot",
         "caption": "Distribution of SNR in Aligned Files (Boxplot)",
-        "tags": "sampled, snr, boxplot,#dye,#photonics"
+        "tags": ["sampled", "snr", "boxplot", "#dye", "#photonics"]
       },
       {
         "uid": "Unique ID",
         "id": "medianAccuracyvsp_Enzbyp_LP",
         "image": "medianAccuracyvsp_Enzbyp_LP.png",
         "title": "Median of Accuracy vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP"
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": [null]
       },
       {
         "uid": "Unique ID",
         "id": "medianiratevsp_Enzbyp_LP",
         "image": "medianiratevsp_Enzbyp_LP.png",
         "title": "Median of irate vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP"
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": [null]
       },
       {
         "uid": "Unique ID",
         "id": "mediantlenvsp_Enzbyp_LP",
         "image": "mediantlenvsp_Enzbyp_LP.png",
         "title": "Median of tlen vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP"
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": [null]
       },
       {
         "uid": "Unique ID",
         "id": "medianalenvsp_Enzbyp_LP",
         "image": "medianalenvsp_Enzbyp_LP.png",
         "title": "Median of alen vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP"
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": [null]
       },
       {
         "uid": "Unique ID",
         "id": "mediansnrCvsp_Enzbyp_LP",
         "image": "mediansnrCvsp_Enzbyp_LP.png",
         "title": "Median of snrC vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP"
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": [null]
       },
       {
         "uid": "Unique ID",
         "id": "mediandratevsp_Enzbyp_LP",
         "image": "mediandratevsp_Enzbyp_LP.png",
         "title": "Median of drate vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP"
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": [null]
       },
       {
         "uid": "Unique ID",
         "id": "medianmmratevsp_Enzbyp_LP",
         "image": "medianmmratevsp_Enzbyp_LP.png",
         "title": "Median of mmrate vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP"
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": [null]
       }
     ],
     "tables": [

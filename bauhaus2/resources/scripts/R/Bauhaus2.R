@@ -18,13 +18,14 @@ rewriteJSON <- function(jsonFile, uidTagCSV) {
       
       index = readLines(uidTagCSV)
       index = gsub("\"", "", index)
+      index = gsub(" ", "", index)
       index <- strsplit(index, ",")
       
       indexdf = data.frame(matrix(ncol = length(index[[1]]), nrow = length(index)))
       colnames(indexdf) = c("uid", "tags")
       for (i in 2:length(index)) {
         indexdf$uid[i - 1] = index[[i]][1]
-        indexdf$tags[i - 1] = paste(index[[i]][2:length(index[[i]])], collapse = ",")
+        indexdf$tags[i - 1] = list(index[[i]][2:length(index[[i]])])
       }
       
       jsonReport$plots = merge(x = jsonReport$plots, y = indexdf, by = "uid", all.x = TRUE)

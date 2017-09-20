@@ -51,5 +51,5 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "Python/GetZiaTags.py")
 
     def plan(self):
-        return ["summarize-mappings.snake", "scatter-constant-arrow-by-reference.snake", "heatmaps.snake", "locacc.snake"] + \
+        return ["summarize-mappings.snake", "scatter-constant-arrow-by-reference.snake", "heatmaps.snake", "locacc.snake", "uid-tag.snake"] + \
             UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)

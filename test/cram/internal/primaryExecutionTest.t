@@ -536,5 +536,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  33 directories, 484 files
+  33 directories, 486 files
 
