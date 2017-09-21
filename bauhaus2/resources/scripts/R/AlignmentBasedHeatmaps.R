@@ -823,8 +823,17 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "rStartExtRange", label, N, limits = c(0, 25000)),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "SNR_C", label, N, limits = c(5, 13)),
-      silent = FALSE)
+  
+  # Target SNR: SNR_A="5.438" SNR_C="10.406" SNR_G="4.875" SNR_T="7.969"
+  targetSNR = data.frame(base = c("A", "G", "C", "T"), targetSNRvalue = c(5.438, 4.875, 10.406, 7.969))
+  targetSNR$range = 0.5
+  targetSNR$LowerLimit = targetSNR$targetSNRvalue * (1 - targetSNR$range)
+  targetSNR$UpperLimit = targetSNR$targetSNRvalue * (1 + targetSNR$range)
+  
+  for (k in targetSNR$base) {
+    try(plotSingleSummarizedHeatmap(report, df, paste("SNR_", k, sep = ""), label, N, limits = c(targetSNR$LowerLimit[targetSNR$base == k], targetSNR$UpperLimit[targetSNR$base == k])), silent = FALSE)
+  }
+  
   try(plotSingleSummarizedHeatmap(report,
                                   df,
                                   "MaxSubreadLenExtRange",
@@ -842,6 +851,9 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     "AlnReadLen",
     "rStart",
     "SNR_C",
+    "SNR_A",
+    "SNR_G",
+    "SNR_T",
     "Reference",
     "Matches",
     "Mismatches",
