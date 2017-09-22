@@ -25,12 +25,6 @@ class GetZiaTags:
     
     @staticmethod
     def parse_html_table(table):
-            for i in range(len(tables)):
-                df = self.parse_html_table(tables[i])
-                tagtable = pd.concat([tagtable, df[['ID','Tags']]])
-            return tagtable
-    
-    def parse_html_table(self, table):
         n_columns = 0
         n_rows=0
         column_names = []
@@ -82,6 +76,3 @@ gzt = GetZiaTags()
 tagtable = gzt.parse_url_for_tagtable(args.uri)
 
 tagtable.to_csv(args.path, index=False, encoding = 'utf-8')
-
-
-    

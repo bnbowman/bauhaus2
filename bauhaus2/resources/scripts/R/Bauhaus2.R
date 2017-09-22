@@ -351,7 +351,7 @@ bh2Reporter <-
                title = "Default Title",
                caption = "No caption specified",
                tags = c(),
-               uid = "Unique ID",
+               uid = "0000000",
                ...)
       {
         if (!chkPng(img_file_name)) {

@@ -406,5 +406,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  27 directories, 360 files
+  27 directories, 362 files
 

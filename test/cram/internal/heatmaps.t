@@ -201,4 +201,4 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 163 files
+  19 directories, 165 files

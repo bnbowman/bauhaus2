@@ -556,7 +556,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 502 files
+  35 directories, 504 files
 
 
 
@@ -719,60 +719,60 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "snr", "boxplot", "#dye", "#photonics"]
       },
       {
-        "uid": "Unique ID",
-        "id": "medianAccuracyvsp_Enzbyp_LP",
-        "image": "medianAccuracyvsp_Enzbyp_LP.png",
-        "title": "Median of Accuracy vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": [null]
-      },
-      {
-        "uid": "Unique ID",
-        "id": "medianiratevsp_Enzbyp_LP",
-        "image": "medianiratevsp_Enzbyp_LP.png",
-        "title": "Median of irate vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": [null]
-      },
-      {
-        "uid": "Unique ID",
+        "uid": "0040052",
         "id": "mediantlenvsp_Enzbyp_LP",
         "image": "mediantlenvsp_Enzbyp_LP.png",
         "title": "Median of tlen vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": [null]
+        "tags": ["sampled", "p_", "titration", "median", "tlen"]
       },
       {
-        "uid": "Unique ID",
+        "uid": "0040053",
         "id": "medianalenvsp_Enzbyp_LP",
         "image": "medianalenvsp_Enzbyp_LP.png",
         "title": "Median of alen vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": [null]
+        "tags": ["sampled", "p_", "titration", "median", "alen"]
       },
       {
-        "uid": "Unique ID",
-        "id": "mediansnrCvsp_Enzbyp_LP",
-        "image": "mediansnrCvsp_Enzbyp_LP.png",
-        "title": "Median of snrC vs p_Enz grouped by p_LP",
+        "uid": "0040054",
+        "id": "medianAccuracyvsp_Enzbyp_LP",
+        "image": "medianAccuracyvsp_Enzbyp_LP.png",
+        "title": "Median of Accuracy vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": [null]
+        "tags": ["sampled", "p_", "titration", "median", "Accuracy"]
       },
       {
-        "uid": "Unique ID",
+        "uid": "0040055",
+        "id": "medianiratevsp_Enzbyp_LP",
+        "image": "medianiratevsp_Enzbyp_LP.png",
+        "title": "Median of irate vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "irate"]
+      },
+      {
+        "uid": "0040056",
         "id": "mediandratevsp_Enzbyp_LP",
         "image": "mediandratevsp_Enzbyp_LP.png",
         "title": "Median of drate vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": [null]
+        "tags": ["sampled", "p_", "titration", "median", "drate"]
       },
       {
-        "uid": "Unique ID",
+        "uid": "0040057",
         "id": "medianmmratevsp_Enzbyp_LP",
         "image": "medianmmratevsp_Enzbyp_LP.png",
         "title": "Median of mmrate vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": [null]
+        "tags": ["sampled", "p_", "titration", "median", "mmrate"]
+      },
+      {
+        "uid": "0040058",
+        "id": "mediansnrCvsp_Enzbyp_LP",
+        "image": "mediansnrCvsp_Enzbyp_LP.png",
+        "title": "Median of snrC vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "snrC"]
       }
     ],
     "tables": [

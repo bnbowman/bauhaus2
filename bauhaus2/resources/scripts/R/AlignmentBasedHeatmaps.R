@@ -865,6 +865,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     "AlnReadLenExtRange",
     "MaxSubreadLenExtRange",
     "rStartExtRange",
+    "AccuracyExtRange",
     "centerP1",
     "edgeP1"
   )
