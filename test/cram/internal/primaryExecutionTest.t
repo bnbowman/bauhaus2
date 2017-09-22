@@ -233,6 +233,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
+  |   |   |-- AccuracyExtRange_HQLib.png
+  |   |   |-- AccuracyExtRange_HQunrolled.png
+  |   |   |-- AccuracyExtRange_noHQunrolled.png
   |   |   |-- Accuracy_HQLib.png
   |   |   |-- Accuracy_HQunrolled.png
   |   |   |-- Accuracy_noHQunrolled.png
@@ -536,5 +539,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  33 directories, 486 files
+  33 directories, 487 files
 

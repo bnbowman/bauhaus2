@@ -144,6 +144,8 @@ Generate mapping reports workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
+  |   |   |-- AccuracyExtRange_MovieA.png
+  |   |   |-- AccuracyExtRange_MovieB.png
   |   |   |-- Accuracy_MovieA.png
   |   |   |-- Accuracy_MovieB.png
   |   |   |-- AlnReadLenExtRange_MovieA.png

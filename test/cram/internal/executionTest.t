@@ -227,6 +227,10 @@ Generate mapping reports workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
+  |   |   |-- AccuracyExtRange_MovieA.png
+  |   |   |-- AccuracyExtRange_MovieB.png
+  |   |   |-- AccuracyExtRange_MovieC.png
+  |   |   |-- AccuracyExtRange_MovieD.png
   |   |   |-- Accuracy_MovieA.png
   |   |   |-- Accuracy_MovieB.png
   |   |   |-- Accuracy_MovieC.png
@@ -552,7 +556,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 500 files
+  35 directories, 502 files
 
 
 

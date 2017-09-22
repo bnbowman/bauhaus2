@@ -802,6 +802,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   df$AlnReadLenExtRange = df$AlnReadLen
   df$rStartExtRange = df$rStart
   df$MaxSubreadLenExtRange = df$MaxSubreadLen
+  df$AccuracyExtRange = df$Accuracy
   addLoadingUniformityPlots(report, df, N, label, dist)
   
   loginfo(paste("Plot individual heatmaps for condition:", label))
@@ -809,6 +810,8 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   try(plotSingleSummarizedHeatmap(report, df, "Count", label, N, limits = c(0, 60)),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "Accuracy", label, N, limits = c(0.70, 0.85)),
+      silent = FALSE)
+  try(plotSingleSummarizedHeatmap(report, df, "AccuracyExtRange", label, N, limits = c(0.70, 0.91)),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report, df, "AlnReadLen", label, N, limits = c(500, 9000)),
       silent = FALSE)
