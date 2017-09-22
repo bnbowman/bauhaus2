@@ -5,9 +5,6 @@ Created on Sep 1, 2017
 @author: deasmith
 '''
 
-if __name__ == '__main__':
-    pass
-
 import argparse
 import requests
 import pandas as pd
@@ -21,12 +18,13 @@ class GetZiaTags:
             tables = soup.find_all('table')
             
             tagtable=pd.DataFrame(columns=['ID', 'Tags'])
-            for i in range(len(tables)):
-                df = self.parse_html_table(tables[i])
+            for i in tables:
+                df = GetZiaTags.parse_html_table(i)
                 tagtable = pd.concat([tagtable, df[['ID','Tags']]])
             return tagtable
     
-    def parse_html_table(self, table):
+    @staticmethod
+    def parse_html_table(table):
         n_columns = 0
         n_rows=0
         column_names = []
@@ -65,13 +63,6 @@ class GetZiaTags:
                 column_marker += 1
             if len(columns) > 0:
                 row_marker += 1
-                
-        # Convert to float if possible
-        # for col in df:
-        #     try:
-        #         df[col] = df[col].astype(float)
-        #     except ValueError:
-        #         pass
         
         return df
 
