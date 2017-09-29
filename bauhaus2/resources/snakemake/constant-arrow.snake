@@ -7,6 +7,8 @@ mapped_subreads = \
     { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
       for c in ct.conditions }
 
+uid_tag_csv_file = "reports/uidTag.csv"
+
 # -- Target rules --
 
 rule constant_arrow_plots:
@@ -14,7 +16,8 @@ rule constant_arrow_plots:
         constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
 
 rule ConstantArrowPlots:
-    input: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    input: "reports/ConstantArrowFishbonePlots/errormode.csv",
+           uid_tag_csv_file
     output: "reports/ConstantArrowFishbonePlots/report.json"
     shell:
         """

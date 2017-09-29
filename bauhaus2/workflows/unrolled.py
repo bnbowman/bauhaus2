@@ -44,8 +44,9 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/ZMWstsPlots.R",
                              "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
-    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", )
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
+                             "Python/GetZiaTags.py")
 
     def plan(self):
-        return ["summarize-mappings.snake", "constant-arrow.snake", "heatmaps.snake", "locacc.snake"] + \
+        return ["summarize-mappings.snake", "constant-arrow.snake", "heatmaps.snake", "locacc.snake", "uid-tag.snake"] + \
             UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)

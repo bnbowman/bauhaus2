@@ -93,6 +93,8 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
   if (length(p_Var) == 1) {
     # Plot selected variables verses the p variable, groupd by condition
     # Note: When p_Var is categorical, the boxplots will overlap, so the plot is set to transparent with colored border
+    # definte the vector of unique ids
+    uidlist1= paste('00',c(seq(0040045, 0040051, 1)), sep='')
     for (i in 1:length(plotVariables)) {
       tp <- ggplot(cd, aes_string(x = p_Var,
                                   y = cd[, match(plotVariables[i], names(cd))])) +
@@ -110,7 +112,8 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
         id = paste(plotVariables[i], "vs", p_Var, sep = ""),
         title = paste(plotVariables[i], " vs. ", p_Var, sep = ""),
         caption = paste(plotVariables[i], " vs. ", p_Var, sep = ""),
-        tags = c("sampled", "p_", "titration", plotVariables[i], "boxplot")
+        tags = c("sampled", "p_", "titration", plotVariables[i], "boxplot"),
+        uid = uidlist1[i]
       )
     }
   } else if (length(p_Var) == 2)  {
@@ -138,6 +141,8 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
     cdp = merge(cdp, conditions[, c("Condition", p_Var)], by = "Condition")
     
     # Generate plots of each plotVariables verses the p variables
+    # Define the vector of unique ids
+    uidlist2= paste('00',c(seq(0040052, 0040058, 1)), sep='')
     for (i in 1:length(plotVariables)) {
       tp = ggplot(cdp,
                   aes_string(
@@ -181,7 +186,8 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
           p_Var[1],
           sep = ""
         ),
-        tags = c("sampled", "p_", "titration", "median", plotVariables[i])
+        tags = c("sampled", "p_", "titration", "median", plotVariables[i]),
+        uid = uidlist2[i]
       )
     }
   } else {
@@ -569,7 +575,7 @@ makeSamplingPlots <-
               sep = ""
             ),
             tags = c("sampled", "pkmid", "histogram", variableTitle[i]),
-            uid = uniqueidD
+            uid = uniqueidD[i]
           )
         }
         
@@ -1549,6 +1555,9 @@ main <- function()
     "Sampled ZMW metrics"
   )
   makeReport(report)
+  jsonFile = "reports/PbiSampledPlots/report.json"
+  uidTagCSV = "reports/uidTag.csv"
+  rewriteJSON(jsonFile, uidTagCSV)
   0
 }
 

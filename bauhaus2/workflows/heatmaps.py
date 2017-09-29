@@ -13,7 +13,7 @@ class HeatmapsWorkflow(Workflow):
     R_SCRIPTS            = ( "R/AlignmentBasedHeatmaps.R",
                              "R/ZMWstsPlots.R",
                              "R/Bauhaus2.R" )
-
+    PYTHON_SCRIPTS       = ( "Python/GetZiaTags.py",)
     def plan(self):
-        return ["heatmaps.snake"] + \
+        return ["heatmaps.snake", "uid-tag.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)

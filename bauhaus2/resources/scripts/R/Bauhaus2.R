@@ -7,6 +7,35 @@ library(jsonlite)
 ## Core functions for operation in a bauhaus2/zia environment.
 ##
 
+# Rewrite json file by providing a uid-tag table
+
+rewriteJSON <- function(jsonFile, uidTagCSV) {
+  json = jsonFile
+  if (file.exists(json)) {
+    jsonReport = fromJSON(json)
+    if (!length(jsonReport$plots) == 0) {
+      jsonReport$plots = jsonReport$plots[, !names(jsonReport$plots) %in% c("tags")]
+      
+      index = readLines(uidTagCSV)
+      index = gsub("\"", "", index)
+      index = gsub(" ", "", index)
+      index <- strsplit(index, ",")
+      
+      indexdf = data.frame(matrix(ncol = length(index[[1]]), nrow = length(index)))
+      colnames(indexdf) = c("uid", "tags")
+      for (i in 2:length(index)) {
+        indexdf$uid[i - 1] = index[[i]][1]
+        indexdf$tags[i - 1] = list(index[[i]][2:length(index[[i]])])
+      }
+      
+      jsonReport$plots = merge(x = jsonReport$plots, y = indexdf, by = "uid", all.x = TRUE)
+      newjson = toJSON(jsonReport, pretty = TRUE)
+      write(newjson, file = json)
+    }
+  }
+  0
+}
+
 # Random utils
 
 chkClass <- function(var, classname, msg) {
@@ -322,7 +351,7 @@ bh2Reporter <-
                title = "Default Title",
                caption = "No caption specified",
                tags = c(),
-               uid = "Unique ID",
+               uid = "0000000",
                ...)
       {
         if (!chkPng(img_file_name)) {
@@ -337,7 +366,8 @@ bh2Reporter <-
           image = unbox(img_file_name),
           title = unbox(title),
           caption = unbox(caption),
-          tags = as.vector(tags, mode = "character")
+          tags = as.vector(tags, mode = "character"),
+          uid = unbox(uid)
         )
         plotsToOutput <<- rbind(plotsToOutput, thisPlot)
       }
@@ -348,7 +378,8 @@ bh2Reporter <-
                tbl,
                id,
                title = "Default Title",
-               tags = c())
+               tags = c(),
+               uid = uid)
       {
         if (!chkCsv(tbl_file_name)) {
           tbl_file_name = paste(tbl_file_name, ".csv")

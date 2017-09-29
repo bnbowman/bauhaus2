@@ -227,6 +227,10 @@ Generate mapping reports workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
+  |   |   |-- AccuracyExtRange_MovieA.png
+  |   |   |-- AccuracyExtRange_MovieB.png
+  |   |   |-- AccuracyExtRange_MovieC.png
+  |   |   |-- AccuracyExtRange_MovieD.png
   |   |   |-- Accuracy_MovieA.png
   |   |   |-- Accuracy_MovieB.png
   |   |   |-- Accuracy_MovieC.png
@@ -521,20 +525,22 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- mismatch_rate.png
   |   |   |-- report.Rd
   |   |   `-- report.json
-  |   `-- ZMWstsPlots
-  |       |-- accuracy_by_readtype_boxplot.png
-  |       |-- adapter_dimer_fraction.png
-  |       |-- nzmws_productivity_hist_percentage.png
-  |       |-- nzmws_readtype_hist_percentage.png
-  |       |-- readTypeAgg.1.png
-  |       |-- readTypeAgg.2.png
-  |       |-- report.Rd
-  |       |-- report.json
-  |       |-- short_insert_fraction.png
-  |       `-- unrolled_template_length_by_readtype_boxplot.png
+  |   |-- ZMWstsPlots
+  |   |   |-- accuracy_by_readtype_boxplot.png
+  |   |   |-- adapter_dimer_fraction.png
+  |   |   |-- nzmws_productivity_hist_percentage.png
+  |   |   |-- nzmws_readtype_hist_percentage.png
+  |   |   |-- readTypeAgg.1.png
+  |   |   |-- readTypeAgg.2.png
+  |   |   |-- report.Rd
+  |   |   |-- report.json
+  |   |   |-- short_insert_fraction.png
+  |   |   `-- unrolled_template_length_by_readtype_boxplot.png
+  |   `-- uidTag.csv
   |-- run.sh
   |-- scripts
   |   |-- Python
+  |   |   |-- GetZiaTags.py
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
@@ -550,7 +556,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 498 files
+  35 directories, 504 files
 
 
 
@@ -561,104 +567,7 @@ Generate mapping reports workflow, starting from subreads.
   {
     "plots": [
       {
-        "id": "snr_density",
-        "image": "snrDensity.png",
-        "title": "SNR Density Plot",
-        "caption": "Distribution of SNR in Aligned Files (Density plot)",
-        "tags": ["sampled", "snr", "density"]
-      },
-      {
-        "id": "snr_boxplot",
-        "image": "snrBoxNoViolin.png",
-        "title": "SNR Box Plot",
-        "caption": "Distribution of SNR in Aligned Files (Boxplot)",
-        "tags": ["sampled", "snr", "boxplot"]
-      },
-      {
-        "id": "mediantlenvsp_Enzbyp_LP",
-        "image": "mediantlenvsp_Enzbyp_LP.png",
-        "title": "Median of tlen vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": ["sampled", "p_", "titration", "median", "tlen"]
-      },
-      {
-        "id": "medianalenvsp_Enzbyp_LP",
-        "image": "medianalenvsp_Enzbyp_LP.png",
-        "title": "Median of alen vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": ["sampled", "p_", "titration", "median", "alen"]
-      },
-      {
-        "id": "medianAccuracyvsp_Enzbyp_LP",
-        "image": "medianAccuracyvsp_Enzbyp_LP.png",
-        "title": "Median of Accuracy vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": ["sampled", "p_", "titration", "median", "Accuracy"]
-      },
-      {
-        "id": "medianiratevsp_Enzbyp_LP",
-        "image": "medianiratevsp_Enzbyp_LP.png",
-        "title": "Median of irate vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": ["sampled", "p_", "titration", "median", "irate"]
-      },
-      {
-        "id": "mediandratevsp_Enzbyp_LP",
-        "image": "mediandratevsp_Enzbyp_LP.png",
-        "title": "Median of drate vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": ["sampled", "p_", "titration", "median", "drate"]
-      },
-      {
-        "id": "medianmmratevsp_Enzbyp_LP",
-        "image": "medianmmratevsp_Enzbyp_LP.png",
-        "title": "Median of mmrate vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": ["sampled", "p_", "titration", "median", "mmrate"]
-      },
-      {
-        "id": "mediansnrCvsp_Enzbyp_LP",
-        "image": "mediansnrCvsp_Enzbyp_LP.png",
-        "title": "Median of snrC vs p_Enz grouped by p_LP",
-        "caption": "Median Template Length vs p_Enz grouped by p_LP",
-        "tags": ["sampled", "p_", "titration", "median", "snrC"]
-      },
-      {
-        "id": "snr_vs_acc",
-        "image": "snrvsacc.png",
-        "title": "SNR vs Accuracy",
-        "caption": "SNR vs. Accuracy",
-        "tags": ["sampled", "snr", "accuracy"]
-      },
-      {
-        "id": "snr_vs_ins",
-        "image": "snrvsinsertion.png",
-        "title": "SNR vs Insertion Rate",
-        "caption": "SNR vs. Insertion Rate",
-        "tags": ["sampled", "snr", "insertion"]
-      },
-      {
-        "id": "snr_vs_del",
-        "image": "snrvsdeletion.png",
-        "title": "SNR vs Deletion Rate",
-        "caption": "SNR vs. Deletion Rate",
-        "tags": ["sampled", "snr", "deletion"]
-      },
-      {
-        "id": "snr_vs_mm",
-        "image": "snrvsmismatch.png",
-        "title": "SNR vs Mismatch Rate",
-        "caption": "SNR vs. Mismatch Rate",
-        "tags": ["sampled", "snr", "mismatch"]
-      },
-      {
-        "id": "snr_vs_indel_rat",
-        "image": "snrvsindelrat.png",
-        "title": "SNR vs Relative Indels",
-        "caption": "SNR vs. Indel Rate / Deletion Rate",
-        "tags": ["sampled", "snr", "deletion"]
-      },
-      {
+        "uid": "0040023",
         "id": "polrate_template_per_second",
         "image": "polrate_template_per_second.png",
         "title": "Polymerization Rate (template bases per second)",
@@ -666,6 +575,7 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "boxplot", "polrate", "template", "time"]
       },
       {
+        "uid": "0040024",
         "id": "polrate_ref_box",
         "image": "polrate_ref_box.png",
         "title": "Polymerization Rate by Reference",
@@ -673,6 +583,7 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "boxplot", "polrate", "reference"]
       },
       {
+        "uid": "0040025",
         "id": "pw_by_template.png",
         "image": "pw_by_template.png",
         "title": "Pulse Width by Template Base",
@@ -680,6 +591,7 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "density", "pw"]
       },
       {
+        "uid": "0040026",
         "id": "pw_by_template_cdf.png",
         "image": "pw_by_template_cdf.png",
         "title": "Pulse Width by Template Base (CDF)",
@@ -687,6 +599,7 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "pw", "cdf"]
       },
       {
+        "uid": "0040027",
         "id": "ipd_boxplot_by_base",
         "image": "ipddistbybase_boxplot.png",
         "title": "IPD Distribution by Ref Base - Boxplot",
@@ -694,6 +607,7 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "boxplot", "ipd"]
       },
       {
+        "uid": "0040028",
         "id": "pw_boxplot",
         "image": "pw_boxplot.png",
         "title": "PW Distribution - Boxplot",
@@ -701,6 +615,7 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "boxplot", "pw"]
       },
       {
+        "uid": "0040029",
         "id": "median_pw_boxplot_by_base",
         "image": "median_pw_boxplot_by_base.png",
         "title": "Median PW Distribution By Base",
@@ -708,6 +623,7 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "pw", "boxplot", "median"]
       },
       {
+        "uid": "0040030",
         "id": "mean_pw_boxplot_by_base",
         "image": "mean_pw_boxplot_by_base.png",
         "title": "Mean PW Distribution By Base",
@@ -715,13 +631,15 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "pw", "boxplot", "mean"]
       },
       {
+        "uid": "0040031",
         "id": "dutycycle_boxplot",
         "image": "dutycycle_boxplot.png",
         "title": "Duty Cycle - Boxplot",
         "caption": "Duty Cycle - Boxplot",
-        "tags": ["sampled", "boxplot", "duty cycle"]
+        "tags": ["sampled", "boxplot", "dutycycle"]
       },
       {
+        "uid": "0040032",
         "id": "localpolrate_boxplot",
         "image": "localpolrate_boxplot.png",
         "title": "Local PolRate - Boxplot",
@@ -729,18 +647,132 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "boxplot", "polrate"]
       },
       {
+        "uid": "0040034",
         "id": "bp_err_rate_by_snr",
         "image": "bperr_rate_by_snr.png",
         "title": "BP Error Rates by SNR",
         "caption": "BP Error Rates by SNR",
-        "tags": ["sampled", "error rate", "base"]
+        "tags": ["sampled", "errorrate", "base"]
       },
       {
+        "uid": "0040035",
         "id": "bp_mm_err_rate_by_snr",
         "image": "bpmm_rate_by_snr.png",
         "title": "Mismatch Rates by SNR",
         "caption": "Mismatch Rates by SNR",
-        "tags": ["sampled", "mismatch", "error rate"]
+        "tags": ["sampled", "mismatch", "errorrate"]
+      },
+      {
+        "uid": "0040036",
+        "id": "snr_vs_acc",
+        "image": "snrvsacc.png",
+        "title": "SNR vs Accuracy",
+        "caption": "SNR vs. Accuracy",
+        "tags": ["sampled", "snr", "accuracy"]
+      },
+      {
+        "uid": "0040037",
+        "id": "snr_vs_ins",
+        "image": "snrvsinsertion.png",
+        "title": "SNR vs Insertion Rate",
+        "caption": "SNR vs. Insertion Rate",
+        "tags": ["sampled", "snr", "insertion"]
+      },
+      {
+        "uid": "0040038",
+        "id": "snr_vs_del",
+        "image": "snrvsdeletion.png",
+        "title": "SNR vs Deletion Rate",
+        "caption": "SNR vs. Deletion Rate",
+        "tags": ["sampled", "snr", "deletion"]
+      },
+      {
+        "uid": "0040039",
+        "id": "snr_vs_mm",
+        "image": "snrvsmismatch.png",
+        "title": "SNR vs Mismatch Rate",
+        "caption": "SNR vs. Mismatch Rate",
+        "tags": ["sampled", "snr", "mismatch"]
+      },
+      {
+        "uid": "0040040",
+        "id": "snr_vs_indel_rat",
+        "image": "snrvsindelrat.png",
+        "title": "SNR vs Relative Indels",
+        "caption": "SNR vs. Indel Rate / Deletion Rate",
+        "tags": ["sampled", "snr", "deletion"]
+      },
+      {
+        "uid": "0040041",
+        "id": "snr_density",
+        "image": "snrDensity.png",
+        "title": "SNR Density Plot",
+        "caption": "Distribution of SNR in Aligned Files (Density plot)",
+        "tags": ["sampled", "snr", "density", "#dye", "#photonics"]
+      },
+      {
+        "uid": "0040042",
+        "id": "snr_boxplot",
+        "image": "snrBoxNoViolin.png",
+        "title": "SNR Box Plot",
+        "caption": "Distribution of SNR in Aligned Files (Boxplot)",
+        "tags": ["sampled", "snr", "boxplot", "#dye", "#photonics"]
+      },
+      {
+        "uid": "0040052",
+        "id": "mediantlenvsp_Enzbyp_LP",
+        "image": "mediantlenvsp_Enzbyp_LP.png",
+        "title": "Median of tlen vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "tlen"]
+      },
+      {
+        "uid": "0040053",
+        "id": "medianalenvsp_Enzbyp_LP",
+        "image": "medianalenvsp_Enzbyp_LP.png",
+        "title": "Median of alen vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "alen"]
+      },
+      {
+        "uid": "0040054",
+        "id": "medianAccuracyvsp_Enzbyp_LP",
+        "image": "medianAccuracyvsp_Enzbyp_LP.png",
+        "title": "Median of Accuracy vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "Accuracy"]
+      },
+      {
+        "uid": "0040055",
+        "id": "medianiratevsp_Enzbyp_LP",
+        "image": "medianiratevsp_Enzbyp_LP.png",
+        "title": "Median of irate vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "irate"]
+      },
+      {
+        "uid": "0040056",
+        "id": "mediandratevsp_Enzbyp_LP",
+        "image": "mediandratevsp_Enzbyp_LP.png",
+        "title": "Median of drate vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "drate"]
+      },
+      {
+        "uid": "0040057",
+        "id": "medianmmratevsp_Enzbyp_LP",
+        "image": "medianmmratevsp_Enzbyp_LP.png",
+        "title": "Median of mmrate vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "mmrate"]
+      },
+      {
+        "uid": "0040058",
+        "id": "mediansnrCvsp_Enzbyp_LP",
+        "image": "mediansnrCvsp_Enzbyp_LP.png",
+        "title": "Median of snrC vs p_Enz grouped by p_LP",
+        "caption": "Median Template Length vs p_Enz grouped by p_LP",
+        "tags": ["sampled", "p_", "titration", "median", "snrC"]
       }
     ],
     "tables": [

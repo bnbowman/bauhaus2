@@ -14,8 +14,9 @@ class ConstantArrowWorkflow(Workflow):
     R_SCRIPTS            = ( "R/constant_arrow.R",
                              "R/FishbonePlots.R",
                              "R/Bauhaus2.R" )
-    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",)
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
+                             "Python/GetZiaTags.py")
 
     def plan(self):
-        return ["constant-arrow.snake"] + \
+        return ["constant-arrow.snake", "uid-tag.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)

@@ -511,13 +511,15 @@ makeReport <- function(report) {
   report$write.report()
 }
 
-
 main <- function()
 {
   report <- bh2Reporter("condition-table.csv",
                         "reports/PbiPlots/report.json",
                         "Sampled ZMW metrics")
   makeReport(report)
+  jsonFile = "reports/PbiPlots/report.json"
+  uidTagCSV = "reports/uidTag.csv"
+  rewriteJSON(jsonFile, uidTagCSV)
   0
 }
 

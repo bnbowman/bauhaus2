@@ -125,6 +125,8 @@ Generate heatmaps workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- AlignmentBasedHeatmaps
+  |   |   |-- AccuracyExtRange_MovieA.png
+  |   |   |-- AccuracyExtRange_MovieB.png
   |   |   |-- Accuracy_MovieA.png
   |   |   |-- Accuracy_MovieB.png
   |   |   |-- AlnReadLenExtRange_MovieA.png
@@ -175,19 +177,22 @@ Generate heatmaps workflow, starting from subreads.
   |   |   |-- tEnd_MovieB.png
   |   |   |-- tStart_MovieA.png
   |   |   `-- tStart_MovieB.png
-  |   `-- ZMWstsPlots
-  |       |-- accuracy_by_readtype_boxplot.png
-  |       |-- adapter_dimer_fraction.png
-  |       |-- nzmws_productivity_hist_percentage.png
-  |       |-- nzmws_readtype_hist_percentage.png
-  |       |-- readTypeAgg.1.png
-  |       |-- readTypeAgg.2.png
-  |       |-- report.Rd
-  |       |-- report.json
-  |       |-- short_insert_fraction.png
-  |       `-- unrolled_template_length_by_readtype_boxplot.png
+  |   |-- ZMWstsPlots
+  |   |   |-- accuracy_by_readtype_boxplot.png
+  |   |   |-- adapter_dimer_fraction.png
+  |   |   |-- nzmws_productivity_hist_percentage.png
+  |   |   |-- nzmws_readtype_hist_percentage.png
+  |   |   |-- readTypeAgg.1.png
+  |   |   |-- readTypeAgg.2.png
+  |   |   |-- report.Rd
+  |   |   |-- report.json
+  |   |   |-- short_insert_fraction.png
+  |   |   `-- unrolled_template_length_by_readtype_boxplot.png
+  |   `-- uidTag.csv
   |-- run.sh
   |-- scripts
+  |   |-- Python
+  |   |   `-- GetZiaTags.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -196,4 +201,4 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  18 directories, 161 files
+  19 directories, 165 files

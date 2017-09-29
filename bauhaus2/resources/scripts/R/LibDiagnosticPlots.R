@@ -1715,6 +1715,9 @@ main <- function()
     "Library Diagnostic Plots"
   )
   makeReport(report)
+  jsonFile = "reports/LibDiagnosticPlots/report.json"
+  uidTagCSV = "reports/uidTag.csv"
+  rewriteJSON(jsonFile, uidTagCSV)
   0
 }
 
