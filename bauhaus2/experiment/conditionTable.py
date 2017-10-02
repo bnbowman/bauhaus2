@@ -7,6 +7,7 @@ __all__ = [ "InputType",
             "CoverageTitrationConditionTable",
             "UnrolledMappingConditionTable",
             "IsoSeqConditionTable",
+            "LimaConditionTable",
             "TableValidationError",
             "InputResolutionError" ]
 
@@ -412,3 +413,41 @@ class IsoSeqConditionTable(ConditionTable):
             return rowRecord.JobPath
         else:
             raise TableValidationError("IsoSeq ConditionTable shoule either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
+
+class LimaConditionTable(ConditionTable):
+    """
+    This workflow is for barcoding (lima) QC jobs
+    """
+    def isSymmetric(self, condition):
+        try:
+            return bool(self.condition(condition).SymmetricBarcodeSet)
+        except:
+            return False
+
+    def isAsymmetric(self, condition):
+        try:
+            return bool(self.condition(condition).AsymmetricBarcodeSet)
+        except:
+            return False
+
+    def barcodeSet(self, condition):
+        try:
+            return self.condition(condition).SymmetricBarcodeSet
+        except:  ## TODO(lhepler): use proper exception here for SymmetricBarcodeSet lookup failure
+            try:
+                return self.condition(condition).AsymmetricBarcodeSet
+            except:
+                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+
+    def barcodeSetXml(self, condition):
+        return self._barcodeSetXmlByCondition[condition]
+
+    def _resolveInputs(self, resolver):
+        super(LimaConditionTable, self)._resolveInputs(resolver)
+        self._barcodeSetXmlByCondition = {}
+        for condition in self.conditions:
+            try:
+                barcodeSet = self.barcodeSet(condition)
+                self._barcodeSetXmlByCondition[condition] = resolver.resolveBarcodeSet(barcodeSet)
+            except DataNotFound as e:
+                raise InputResolutionError(str(e))

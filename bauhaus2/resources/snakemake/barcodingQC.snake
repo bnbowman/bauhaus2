@@ -1,0 +1,20 @@
+
+# ---------------------------------------------------------------------------------------------------
+# barcodingQC.snake : lima QC reports
+
+from bauhaus2.runtime import ct
+
+lima_reports = \
+    { c : expand("conditions/{condition}/lima/lima.report", condition=c)
+      for c in ct.conditions }
+
+# -- Target rules --
+
+rule barcode_and_qc_report:
+    output: "reports/BarcodingQC/report.json"
+    input: lima_reports.values()
+    shell:
+        """
+        Rscript --vanilla scripts/R/limaReportSummary.R {input}
+        Rscript --vanilla scripts/R/limaReportDetail.R {input}
+        """
