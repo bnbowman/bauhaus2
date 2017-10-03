@@ -5,7 +5,7 @@
 from bauhaus2.runtime import ct
 
 lima_reports = \
-    { c : expand("conditions/{condition}/lima/lima.report", condition=c)
+    { c : expand("conditions/{condition}/lima/barcoded.lima.report", condition=c)
       for c in ct.conditions }
 
 # -- Target rules --
@@ -16,5 +16,4 @@ rule barcode_and_qc_report:
     shell:
         """
         Rscript --vanilla scripts/R/limaReportSummary.R {input}
-        Rscript --vanilla scripts/R/limaReportDetail.R {input}
         """

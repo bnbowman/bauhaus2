@@ -2,43 +2,55 @@
 # ---------------------------------------------------------------------------------------------------
 # barcoding.snake
 
-lima_chunks = \
-    { c : expand("conditions/{condition}/lima/chunks/barcoded.chunk{chunkNo}.subreadset.xml",
-                 condition=c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
+local_subreadset = {
+    c: expand("conditions/{condition}/subreads/input.subreadset.xml",
+              condition=c)
+    for c in ct.conditions}
+    
+local_limareport = {
+    c: expand("conditions/{condition}/lima/lima.report",
+              condition=c)
+    for c in ct.conditions}
+    
+local_barcodeset = \
+    { c : expand("conditions/{condition}/barcodeset.fasta", condition=c)
       for c in ct.conditions }
-
-gathered_lima_chunks = \
-    { c : expand("conditions/{condition}/lima/barcoded.subreadset.xml", condition=c)
+      
+remote_barcodeset = \
+    { c : ct.barcodeSet(c)
       for c in ct.conditions }
+      
+ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
 
 # -- Target rules --
 
 rule lima:
-    input: gathered_lima_chunks.values()
-
-rule lima_chunks:
-    input: listConcat(lima_chunks.values())
+    input:
+        limareport = local_limareport.values()
 
 # -- Worker rules --
 
-rule lima_one_chunk:
-    input:  "conditions/{condition}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml"
+rule lima_one_condition:
+    input:  subreadset = "conditions/{condition}/subreads/input.subreadset.xml",
+            barcodeset = "conditions/{condition}/barcodeset.fasta"
     output:
-        dset="conditions/{condition}/lima/chunks/barcoded.chunk{chunkNo}.subreadset.xml",
-        bam= "conditions/{condition}/lima/chunks/barcoded.chunk{chunkNo}.subreads.bam",  # this will likely need to be changed
-        limaReport="conditions/{condition}/lima/chunks/lima.chunk{chunkNo}.report"       # this will likely need to be changed
+        bam= "conditions/{condition}/lima/barcoded.bam",  
+        limaReport="conditions/{condition}/lima/barcoded.lima.report"       
     threads: 8
     shell:
         """
         . /etc/profile.d/modules.sh
         module add smrttools/incremental
-        lima --num-threads {threads} {input.subreadset} {input.barcodeset} {output.dset}
+        lima --num-threads {threads} {input.subreadset} {input.barcodeset} {output.bam} {ct_prefix}
         """
-
-rule lima_one_condition:
-    input: lambda wc: lima_chunks[wc.condition]
-    output: "conditions/{condition}/lima/barcoded.subreadset.xml"
+        
+rule collect_barcodeset_one_condition:
+    input:
+        barcode=lambda wc: remote_barcodeset[wc.condition],
+    output:
+        barcode="conditions/{condition}/barcodeset.fasta",
     shell:
         """
-        dataset merge {output} {input}
+        ln -s {input.barcode} {output.barcode}
         """
+        

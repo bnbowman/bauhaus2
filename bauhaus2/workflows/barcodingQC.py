@@ -5,8 +5,7 @@ from .subreads import subreadsPlan
 
 def BarcodingPlan(ct, args):
     # test if consensusReadSet and do differently if so
-    return [ "barcoding.snake",
-             "scatter-subreads.snake" ] + \
+    return [ "barcoding.snake"] + \
              subreadsPlan(ct, args)
 
 class BarcodingQCWorkflow(Workflow):
@@ -15,7 +14,9 @@ class BarcodingQCWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "BarcodingQC"
     CONDITION_TABLE_TYPE = LimaConditionTable
-    R_SCRIPTS = ("R/limaReportDetail.R", "R/limaReportSummary.R", "R/Bauhaus2.R")
+    R_SCRIPTS = ("R/limaReportDetail.R", 
+                 "R/limaReportSummary.R", 
+                 "R/Bauhaus2.R")
 
     def plan(self):
         return [ "barcodingQC.snake" ] + \

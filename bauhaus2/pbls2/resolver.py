@@ -191,16 +191,11 @@ class Resolver(object):
         return self.findSmrtlinkSubreadSet(jobDir)
         
     def resolveBarcodeSet(self, barcodeSet):
-        xml = op.join(self.BARCODE_SETS_ROOT, barcodeSet, barcodeSet + ".barcodeset.xml")
         if op.isfile(barcodeSet):
             return barcodeSet
-        elif op.isfile(xml):
-            return xml
-        elif not op.exists(self.BARCODE_SETS_ROOT):
-            raise ResolverFailure("NFS unavailable?")
         else:
             raise DataNotFound(barcodeSet)
-
+            
     def ensureSubreadSet(self, subreadSet):
         if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".subreads.bam")):
             raise InvalidDataset("%s not a subreadset" % subreadSet)
