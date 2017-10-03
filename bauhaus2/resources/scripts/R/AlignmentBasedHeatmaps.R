@@ -766,7 +766,8 @@ plotReferenceHeatmap = function(report, res, label)
     id = "Reference_heatmap",
     title = paste("Reference Heatmap:", label),
     caption = paste("Reference_heatmap", label, sep = "_"),
-    tags = c("heatmap", "heatmaps", "reference", "ref")
+    tags = c("heatmap", "heatmaps", "reference", "ref"),
+    uid = "0070001"
   )
 }
 
@@ -807,24 +808,24 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   
   loginfo(paste("Plot individual heatmaps for condition:", label))
   plotReferenceHeatmap(report, res, label)
-  try(plotSingleSummarizedHeatmap(report, df, "Count", label, N, limits = c(0, 60)),
+  try(plotSingleSummarizedHeatmap(report, df, "Count", label, N, limits = c(0, 60), uid = "0070002"),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "Accuracy", label, N, limits = c(0.70, 0.85)),
+  try(plotSingleSummarizedHeatmap(report, df, "Accuracy", label, N, limits = c(0.70, 0.85), uid = "0070003"),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "AccuracyExtRange", label, N, limits = c(0.70, 0.91)),
+  try(plotSingleSummarizedHeatmap(report, df, "AccuracyExtRange", label, N, limits = c(0.70, 0.91), uid = "0070022"),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "AlnReadLen", label, N, limits = c(500, 9000)),
+  try(plotSingleSummarizedHeatmap(report, df, "AlnReadLen", label, N, limits = c(500, 9000), uid = "0070004"),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report,
                                   df,
                                   "AlnReadLenExtRange",
                                   label,
                                   N,
-                                  limits = c(500, 30000)),
+                                  limits = c(500, 30000), uid = "0070005"),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "rStart", label, N, limits = c(0, 9000)),
+  try(plotSingleSummarizedHeatmap(report, df, "rStart", label, N, limits = c(0, 9000), uid = "0070009"),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "rStartExtRange", label, N, limits = c(0, 25000)),
+  try(plotSingleSummarizedHeatmap(report, df, "rStartExtRange", label, N, limits = c(0, 25000), uid = "0070011"),
       silent = FALSE)
   
   # Target SNR: SNR_A="5.438" SNR_C="10.406" SNR_G="4.875" SNR_T="7.969"
@@ -832,9 +833,11 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   targetSNR$range = 0.5
   targetSNR$LowerLimit = targetSNR$targetSNRvalue * (1 - targetSNR$range)
   targetSNR$UpperLimit = targetSNR$targetSNRvalue * (1 + targetSNR$range)
+  #define a column of uids
+  targetSNR$uidcol = c("0070014", "0070015", "0070016", "0070017")
   
   for (k in targetSNR$base) {
-    try(plotSingleSummarizedHeatmap(report, df, paste("SNR_", k, sep = ""), label, N, limits = c(targetSNR$LowerLimit[targetSNR$base == k], targetSNR$UpperLimit[targetSNR$base == k])), silent = FALSE)
+    try(plotSingleSummarizedHeatmap(report, df, paste("SNR_", k, sep = ""), label, N, limits = c(targetSNR$LowerLimit[targetSNR$base == k], targetSNR$UpperLimit[targetSNR$base == k]), uid = targetSNR$uidcol[targetSNR$base==k]), silent = FALSE)
   }
   
   try(plotSingleSummarizedHeatmap(report,
@@ -842,7 +845,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
                                   "MaxSubreadLenExtRange",
                                   label,
                                   N,
-                                  limits = c(0, 15000)),
+                                  limits = c(0, 15000), uid = "0070007"),
       silent = FALSE)
   
   excludeColumns = c(
@@ -870,11 +873,17 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     "edgeP1"
   )
   
+  #create a dataframe 'Non_excl_uid' that has column names of the non-excluded columns and corresponding uid's
+  Non_excl_columns = c ("MaxSubreadLen", "MaxSubreadLenToAlnReadLenRatio", "rEnd", "tStart", "tEnd", "MismatchRate", 
+                        "InsertionRate", "DeletionRate", "AvgPolsPerZMW")
+  uidcolumn = c ("0070006", "0070008", "0070010", "0070012", "0070013", "0070018","0070019","0070020", "0070021")
+  Non_excl_uid = data.frame(Non_excl_columns, uidcolumn)
   lapply(setdiff(names(df), excludeColumns), function(n)
-  {
-    try(plotSingleSummarizedHeatmap(report, df, n, label, N),
-        silent = FALSE)
-    1
+  { if (is.null(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n]))
+        {warning("Columns non-excluded different from set list")}
+    else {
+        try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n]),
+        silent = FALSE)}
   })
 }
 
@@ -921,7 +930,8 @@ drawHistogramForUniformity = function(report, label, counts, N, tbl)
     id = paste("uniformity_histogram", label, sep = "_"),
     title = title,
     caption = paste("Loading Uniformity Histogram:", label),
-    tags = c("heatmap", "heatmaps", "uniformity", "loading", label)
+    tags = c("heatmap", "heatmaps", "uniformity", "loading", label),
+    uid = "0071000"
   )
 }
 
@@ -1149,7 +1159,8 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
     tbl,
     id = "loading_metrics_table",
     title = paste(label, "Loading_uniformity_metrics", sep = "_"),
-    tags = c("table", "uniformity", "loading", "metrics")
+    tags = c("table", "uniformity", "loading", "metrics"),
+    uid = "0073000"
   )
 }
 
@@ -1261,7 +1272,8 @@ makeReport = function(report)
         "Lambda",
         "MoransI",
         "Morans"
-      )
+      ),
+      uid="0072000"
     )
     
     # Center to edge histogram
@@ -1287,7 +1299,8 @@ makeReport = function(report)
         "center",
         "edge",
         "P1"
-      )
+      ),
+      uid="0074000"
     )
   }
   # Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.Inv.sd", "MoransI.N", "MoransI.N.sd")]

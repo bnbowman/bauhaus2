@@ -100,7 +100,8 @@ plotSingleSummarizedHeatmap = function(report,
                                        label,
                                        N,
                                        limits = NULL,
-                                       sts = FALSE)
+                                       sts = FALSE,
+                                       uid = "0000000")
 {
   if (length(N) == 1) {
     N = c(N, N)
@@ -174,7 +175,8 @@ plotSingleSummarizedHeatmap = function(report,
       id = paste(n, "STSheatmap", label, sep = "_"),
       title = paste(n, "STSHeatmap:", label),
       caption = paste(n, "STSheatmap", label, sep = "_"),
-      tags = c("heatmap", "heatmaps", n, "sts", "h5", label)
+      tags = c("heatmap", "heatmaps", n, "sts", "h5", label),
+      uid = uid
     )
   } else {
     report$ggsave(
@@ -185,7 +187,8 @@ plotSingleSummarizedHeatmap = function(report,
       id = paste(n, "heatmap", label, sep = "_"),
       title = paste(n, "Heatmap:", label),
       caption = paste(n, "heatmap", label, sep = "_"),
-      tags = c("heatmap", "heatmaps", n)
+      tags = c("heatmap", "heatmaps", n),
+      uid = uid
     )
   }
 }
