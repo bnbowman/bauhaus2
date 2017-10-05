@@ -58,7 +58,7 @@ uid_column = paste ("00", 60001:60012, sep="")
 uid_table = data.frame(plot_names, uid_column)
 
 #create a dataframe with all columns that are plotted for separately for P0, P1 and P2 and the corresponding uid
-plot_names2 = c("Count", nonalnedZMWMetrics[1:8], paste("HQPkmid", dna, sep = "_"), nonalnedZMWMetrics[17:28], "BaseIpd","BaseRate","BaseWidth","HQRegionEnd","HQRegionEndTime","HQRegionStart","HQRegionStartTime", "InsertReadLength" ,"LocalBaseRate", "MedianInsertLength",  "Pausiness", "Productivity", paste("BaseFraction", dna, sep = "_"), paste("HQRegionSnrMean_", dna, sep = "_"), paste("DyeAngle", dna, sep = "_"))
+plot_names2 = c("Count", nonalnedZMWMetrics[1:8], paste("HQPkmid", dna, sep = "_"), nonalnedZMWMetrics[17:28], "BaseIpd","BaseRate","BaseWidth","HQRegionEnd","HQRegionEndTime","HQRegionStart","HQRegionStartTime", "InsertReadLength" ,"LocalBaseRate", "MedianInsertLength",  "Pausiness", "Productivity", paste("BaseFraction", dna, sep = "_"), paste("HQRegionSnrMean", dna, sep = "_"), paste("DyeAngle", dna, sep = "_"))
 uid_P0 = paste("00", 71001:71049, sep='')
 uid_P1 = paste("00", 72001:72049, sep='')
 uid_P2 = paste("00", 73001:73049, sep='')
