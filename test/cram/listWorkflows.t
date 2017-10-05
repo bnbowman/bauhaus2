@@ -1,6 +1,7 @@
 
   $ bauhaus2 list-workflows
   ArrowTraining
+  BarcodingQC
   CCSMappingReports
   ConstantArrow
   CoverageTitration
