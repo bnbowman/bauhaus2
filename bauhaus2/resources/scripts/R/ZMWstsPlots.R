@@ -53,15 +53,48 @@ nonalnedZMWMetrics = c(
   paste("SnrMean", dna, sep = "_"))
 
 #create a dataframe with all column names that are NOT plotted separately for P0, P1 and P2 and the corresponding uid 
-plot_names = c ("Unrolled Alignments Length (Summation) by Read Type", "Accuracy (per ZMW) by Read Type", "readTypeAgg.1", "readTypeAgg.2", "Yield (ZMWs) Percentage by Read Type", "Yield (ZMWs) Percentage by Productivity", "Adapter Dimer Fraction by Condition", "Short Insert Fraction by Condition", "BaselineLevel Box Plot", "BaselineLevel Density Plot", "BaselineLevel CDF Plot", "BaselineLevel CDF Plot (Log-scale)")
-uid_column = paste ("00", 60001:60012, sep="")
+plot_names = c (
+  "Unrolled Alignments Length (Summation) by Read Type",
+  "Accuracy (per ZMW) by Read Type",
+  "readTypeAgg.1",
+  "readTypeAgg.2",
+  "Yield (ZMWs) Percentage by Read Type",
+  "Yield (ZMWs) Percentage by Productivity",
+  "Adapter Dimer Fraction by Condition",
+  "Short Insert Fraction by Condition",
+  "BaselineLevel Box Plot",
+  "BaselineLevel Density Plot",
+  "BaselineLevel CDF Plot",
+  "BaselineLevel CDF Plot (Log-scale)"
+)
+uid_column = paste ("00", 60001:60012, sep = "")
 uid_table = data.frame(plot_names, uid_column)
 
 #create a dataframe with all columns that are plotted for separately for P0, P1 and P2 and the corresponding uid
-plot_names2 = c("Count", nonalnedZMWMetrics[1:8], paste("HQPkmid", dna, sep = "_"), nonalnedZMWMetrics[17:28], "BaseIpd","BaseRate","BaseWidth","HQRegionEnd","HQRegionEndTime","HQRegionStart","HQRegionStartTime", "InsertReadLength" ,"LocalBaseRate", "MedianInsertLength",  "Pausiness", "Productivity", paste("BaseFraction", dna, sep = "_"), paste("HQRegionSnrMean", dna, sep = "_"), paste("DyeAngle", dna, sep = "_"))
-uid_P0 = paste("00", 71001:71049, sep='')
-uid_P1 = paste("00", 72001:72049, sep='')
-uid_P2 = paste("00", 73001:73049, sep='')
+plot_names2 = c(
+  "Count",
+  nonalnedZMWMetrics[1:8],
+  paste("HQPkmid", dna, sep = "_"),
+  nonalnedZMWMetrics[17:28],
+  "BaseIpd",
+  "BaseRate",
+  "BaseWidth",
+  "HQRegionEnd",
+  "HQRegionEndTime",
+  "HQRegionStart",
+  "HQRegionStartTime",
+  "InsertReadLength" ,
+  "LocalBaseRate",
+  "MedianInsertLength",
+  "Pausiness",
+  "Productivity",
+  paste("BaseFraction", dna, sep = "_"),
+  paste("HQRegionSnrMean", dna, sep = "_"),
+  paste("DyeAngle", dna, sep = "_")
+)
+uid_P0 = paste("00", 71001:71049, sep = '')
+uid_P1 = paste("00", 72001:72049, sep = '')
+uid_P2 = paste("00", 73001:73049, sep = '')
 pplot_uid_table = data.frame(plot_names2, uid_P0, uid_P1, uid_P2)
 
 generateStsH5Heatmaps = function(report, file, label, N, dist = NULL)
@@ -105,16 +138,14 @@ generateStsH5Heatmaps = function(report, file, label, N, dist = NULL)
 
 plotProductivityCategories = function(report, res, x, label, N, dist = NULL)
 {
-  try(plotAllFields(
-    report,
-    res,
-    pvalue = x,
-    N,
-    paste(label, x, sep = "_"),
-    FALSE,
-    dist
-  ),
-  silent = FALSE)
+  try(plotAllFields(report,
+                    res,
+                    pvalue = x,
+                    N,
+                    paste(label, x, sep = "_"),
+                    FALSE,
+                    dist),
+      silent = FALSE)
   1
 }
 
@@ -141,22 +172,35 @@ plotAllFields = function(report,
   loadingUnif = NULL
   res = convenientSummarizersts(res, N = N)
   pvaluefind = 0
-  if (pvalue=='P0') {pvaluefind = 2}
-  if (pvalue =="P1") {pvaluefind = 3}
-  if (pvalue =="P2"){pvaluefind = 4}
+  if (pvalue == 'P0') {
+    pvaluefind = 2
+  }
+  if (pvalue == "P1") {
+    pvaluefind = 3
+  }
+  if (pvalue == "P2") {
+    pvaluefind = 4
+  }
   
   lapply(c("Count", colNames), function(n) {
-    if (is.null(pplot_uid_table[,pvaluefind][plot_names2==n]))
-    {warning("Columns non-excluded different from set list")}
+    if (is.null(pplot_uid_table[, pvaluefind][plot_names2 == n]))
+    {
+      warning("Columns non-excluded different from set list")
+    }
     else {
-    try(plotSingleSummarizedHeatmap(report,
-                                    res,
-                                    n,
-                                    label = label,
-                                    N = N,
-                                    sts = TRUE, uid = as.vector(pplot_uid_table[,pvaluefind][plot_names2==n])))}
+      try(plotSingleSummarizedHeatmap(
+        report,
+        res,
+        n,
+        label = label,
+        N = N,
+        sts = TRUE,
+        uid = as.vector(pplot_uid_table[, pvaluefind][plot_names2 == n])
+      ),
+      silent = FALSE)
+    }
   })
-
+  
   countUniqueZMWs(res)
 }
 
@@ -193,7 +237,7 @@ convenientSummarizersts = function(res,
     "Reference",
     "SMRTlinkID"
   )
-  u = data.table(res[,-which(names(res) %in% excl)])
+  u = data.table(res[, -which(names(res) %in% excl)])
   u$X = X
   u$Y = Y
   FUN = function(x, na.rm = TRUE)
