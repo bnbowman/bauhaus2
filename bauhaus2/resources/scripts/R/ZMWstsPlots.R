@@ -33,6 +33,36 @@ themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
 plotwidth = 7.2
 plotheight = 4.2
 ASP_RATIO = 0.5
+dna = c("A", "C", "G", "T")
+channel = c("Green", "Red")
+nonalnedZMWMetrics = c(
+  "Loading",
+  "NumBases",
+  "NumPulses",
+  "PulseRate",
+  "PulseWidth",
+  "ReadLength",
+  "ReadType",
+  "ReadScore",
+  paste("HQRegionSnrMean", dna, sep = "_"),
+  paste("HQPkmid", dna, sep = "_"),
+  paste("BaselineLevel", channel, sep = "_"),
+  paste("BaselineStd", channel, sep = "_"),
+  paste("HQBaselineLevel", channel, sep = "_"),
+  paste("HQBaselineStd", channel, sep = "_"),
+  paste("SnrMean", dna, sep = "_"))
+
+#create a dataframe with all column names that are NOT plotted separately for P0, P1 and P2 and the corresponding uid 
+plot_names = c ("Unrolled Alignments Length (Summation) by Read Type", "Accuracy (per ZMW) by Read Type", "readTypeAgg.1", "readTypeAgg.2", "Yield (ZMWs) Percentage by Read Type", "Yield (ZMWs) Percentage by Productivity", "Adapter Dimer Fraction by Condition", "Short Insert Fraction by Condition", "BaselineLevel Box Plot", "BaselineLevel Density Plot", "BaselineLevel CDF Plot", "BaselineLevel CDF Plot (Log-scale)")
+uid_column = paste ("00", 60001:60012, sep="")
+uid_table = data.frame(plot_names, uid_column)
+
+#create a dataframe with all columns that are plotted for separately for P0, P1 and P2 and the corresponding uid
+plot_names2 = c("Count", nonalnedZMWMetrics[1:8], paste("HQPkmid", dna, sep = "_"), nonalnedZMWMetrics[17:28], "BaseIpd","BaseRate","BaseWidth","HQRegionEnd","HQRegionEndTime","HQRegionStart","HQRegionStartTime", "InsertReadLength" ,"LocalBaseRate", "MedianInsertLength",  "Pausiness", "Productivity", paste("BaseFraction", dna, sep = "_"), paste("HQRegionSnrMean_", dna, sep = "_"), paste("DyeAngle", dna, sep = "_"))
+uid_P0 = paste("00", 71001:71049, sep='')
+uid_P1 = paste("00", 72001:72049, sep='')
+uid_P2 = paste("00", 73001:73049, sep='')
+pplot_uid_table = data.frame(plot_names2, uid_P0, uid_P1, uid_P2)
 
 generateStsH5Heatmaps = function(report, file, label, N, dist = NULL)
 {
@@ -78,6 +108,7 @@ plotProductivityCategories = function(report, res, x, label, N, dist = NULL)
   try(plotAllFields(
     report,
     res,
+    pvalue = x,
     N,
     paste(label, x, sep = "_"),
     FALSE,
@@ -90,6 +121,7 @@ plotProductivityCategories = function(report, res, x, label, N, dist = NULL)
 plotAllFields = function(report,
                          res,
                          N,
+                         pvalue,
                          label,
                          addUnif,
                          dist = NULL,
@@ -108,17 +140,23 @@ plotAllFields = function(report,
   colNames = setdiff(names(res), exclude)
   loadingUnif = NULL
   res = convenientSummarizersts(res, N = N)
+  pvaluefind = 0
+  if (pvalue=='P0') {pvaluefind = 2}
+  if (pvalue =="P1") {pvaluefind = 3}
+  if (pvalue =="P2"){pvaluefind = 4}
   
   lapply(c("Count", colNames), function(n) {
+    if (is.null(pplot_uid_table[,pvaluefind][plot_names2==n]))
+    {warning("Columns non-excluded different from set list")}
+    else {
     try(plotSingleSummarizedHeatmap(report,
                                     res,
                                     n,
                                     label = label,
                                     N = N,
-                                    sts = TRUE),
-        silent = FALSE)
+                                    sts = TRUE, uid = as.vector(pplot_uid_table[,pvaluefind][plot_names2==n])))}
   })
-  
+
   countUniqueZMWs(res)
 }
 
@@ -357,7 +395,8 @@ makeReadTypePlots <- function(report, cd2) {
              "boxplot",
              "unrolled",
              "template",
-             "readtype")
+             "readtype"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Unrolled Alignments Length (Summation) by Read Type"])
   )
   
   tp <-
@@ -380,7 +419,8 @@ makeReadTypePlots <- function(report, cd2) {
              "h5",
              "boxplot",
              "accuracy",
-             "readtype")
+             "readtype"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Accuracy (per ZMW) by Read Type"])
   )
   
   # Primary readType metric and agg plots
@@ -441,7 +481,8 @@ makeReadTypePlots <- function(report, cd2) {
                "h5",
                "agg",
                "readTypeAgg.1",
-               "readtype")
+               "readtype"),
+      uid = as.vector(uid_table$uid_column[uid_table$plot_names == "readTypeAgg.1"])
     )
     
     tp2 <- poissonPlot(d2, "readTypeAgg.2")
@@ -457,7 +498,8 @@ makeReadTypePlots <- function(report, cd2) {
                "h5",
                "agg",
                "readTypeAgg.2",
-               "readtype")
+               "readtype"),
+      uid = as.vector(uid_table$uid_column[uid_table$plot_names == "readTypeAgg.2"])
     )
   }
 }
@@ -486,7 +528,8 @@ makeYieldPlots <- function(report, cdH5) {
              "histogram",
              "readtype",
              "zmws",
-             "percentage")
+             "percentage"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Yield (ZMWs) Percentage by Read Type"])
   )
   
   # Yield (ZMWs) Percentage by Productivity
@@ -512,7 +555,8 @@ makeYieldPlots <- function(report, cdH5) {
       "productivity",
       "zmws",
       "percentage"
-    )
+    ),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Yield (ZMWs) Percentage by Productivity"])
   )
 }
 
@@ -539,7 +583,8 @@ makestsXMLPlots <- function(report, cdXML) {
              "histogram",
              "adapter",
              "zmws",
-             "fraction")
+             "fraction"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Adapter Dimer Fraction by Condition"])
   )
   
   # Short Insert Fraction by Condition
@@ -562,7 +607,8 @@ makestsXMLPlots <- function(report, cdXML) {
              "histogram",
              "shortinsert",
              "zmws",
-             "fraction")
+             "fraction"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Short Insert Fraction by Condition"])
   )
 }
 
@@ -598,7 +644,8 @@ makeEmptyPlots <- function(report) {
       "template",
       "readtype",
       "missing"
-    )
+    ),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Unrolled Alignments Length (Summation) by Read Type"])
   )
   
   report$ggsave(
@@ -614,7 +661,8 @@ makeEmptyPlots <- function(report) {
              "boxplot",
              "accuracy",
              "readtype",
-             "missing")
+             "missing"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Accuracy (per ZMW) by Read Type"])
   )
   
   report$ggsave(
@@ -633,7 +681,8 @@ makeEmptyPlots <- function(report) {
       "zmws",
       "percentage",
       "missing"
-    )
+    ),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Yield (ZMWs) Percentage by Read Type"])
   )
   
   report$ggsave(
@@ -652,7 +701,8 @@ makeEmptyPlots <- function(report) {
       "zmws",
       "percentage",
       "missing"
-    )
+    ),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Yield (ZMWs) Percentage by Productivity"])
   )
   
   report$ggsave(
@@ -668,7 +718,8 @@ makeEmptyPlots <- function(report) {
              "agg",
              "readTypeAgg.1",
              "readtype",
-             "missing")
+             "missing"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "readTypeAgg.1"])
   )
   
   report$ggsave(
@@ -684,7 +735,8 @@ makeEmptyPlots <- function(report) {
              "agg",
              "readTypeAgg.2",
              "readtype",
-             "missing")
+             "missing"),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "readTypeAgg.2"])
   )
 }
 
@@ -720,7 +772,8 @@ makeEmptyXMLPlots <- function(report) {
       "zmws",
       "fraction",
       "missing"
-    )
+    ),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Adapter Dimer Fraction by Condition"])
   )
   
   report$ggsave(
@@ -739,7 +792,8 @@ makeEmptyXMLPlots <- function(report) {
       "zmws",
       "fraction",
       "missing"
-    )
+    ),
+    uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Short Insert Fraction by Condition"])
   )
 }
 
@@ -810,7 +864,8 @@ makeReport <- function(report) {
       id = "baselinelevel_boxplot",
       title = "BaselineLevel Box Plot",
       caption = "Distribution of BaselineLevel(Boxplot)",
-      tags = c("sampled", "baselinelevel", "boxplot")
+      tags = c("sampled", "baselinelevel", "boxplot"),
+      uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel Box Plot"])
     )
     
     tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + geom_density(alpha = .5) +
@@ -825,7 +880,8 @@ makeReport <- function(report) {
       id = "baselinelevel_density",
       title = "BaselineLevel Density Plot",
       caption = "Distribution of BaselineLevel (Density plot)",
-      tags = c("sampled", "baselinelevel", "density")
+      tags = c("sampled", "baselinelevel", "density"),
+      uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel Density Plot"])
     )
     
     tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf() +
@@ -840,7 +896,8 @@ makeReport <- function(report) {
       id = "baselinelevel_CDF",
       title = "BaselineLevel CDF Plot",
       caption = "Distribution of BaselineLevel (CDF)",
-      tags = c("sampled", "baselinelevel", "cdf")
+      tags = c("sampled", "baselinelevel", "cdf"),
+      uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel CDF Plot"])
     )
     
     tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf(aes(colour = Condition)) + 
@@ -855,7 +912,8 @@ makeReport <- function(report) {
       id = "baselinelevel_CDFlog",
       title = "BaselineLevel CDF Plot (Log-scale)",
       caption = "Distribution of BaselineLevel (Log-scale CDF)",
-      tags = c("sampled", "baselinelevel", "cdf", "log")
+      tags = c("sampled", "baselinelevel", "cdf", "log"),
+      uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel CDF Plot (Log-scale)"])
     )
     
     # Make Read Type and Productivity as factor
