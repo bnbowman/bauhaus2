@@ -453,12 +453,6 @@ class LimaConditionTable(ConditionTable):
             except:
                 return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
 
-    def isAsymmetric(self, condition):
-        try:
-            return bool(self.condition(condition).AsymmetricBarcodeSet)
-        except:
-            return False
-
     def barcodeSet(self, condition):
         try:
             return self.condition(condition).SymmetricBarcodeSet
