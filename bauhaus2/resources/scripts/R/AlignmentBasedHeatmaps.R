@@ -837,7 +837,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   targetSNR$uidcol = c("0070014", "0070015", "0070016", "0070017")
   
   for (k in targetSNR$base) {
-    try(plotSingleSummarizedHeatmap(report, df, paste("SNR_", k, sep = ""), label, N, limits = c(targetSNR$LowerLimit[targetSNR$base == k], targetSNR$UpperLimit[targetSNR$base == k]), uid = targetSNR$uidcol[targetSNR$base==k]), silent = FALSE)
+    try(plotSingleSummarizedHeatmap(report, df, paste("SNR_", k, sep = ""), label, N, limits = c(targetSNR$LowerLimit[targetSNR$base == k], targetSNR$UpperLimit[targetSNR$base == k]), uid = as.vector(targetSNR$uidcol[targetSNR$base==k])), silent = FALSE)
   }
   
   try(plotSingleSummarizedHeatmap(report,
@@ -882,7 +882,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   { if (is.null(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n]))
         {warning("Columns non-excluded different from set list")}
     else {
-        try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n]),
+        try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = as.vector(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n])),
         silent = FALSE)}
   })
 }
