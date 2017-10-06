@@ -10,6 +10,7 @@ from .hqrf      import *
 from .primary      import *
 from .isoseq_rc0      import *
 from .heatmaps       import *
+from .barcodingQC       import *
 
 from bauhaus2 import Workflow
 

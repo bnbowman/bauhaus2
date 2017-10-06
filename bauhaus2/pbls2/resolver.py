@@ -40,6 +40,7 @@ class Resolver(object):
     """
     REFERENCE_MASKS_ROOT = "/pbi/dept/consensus/bauhaus/genome-masks/"  # Maintained by consensus group
     REFERENCES_ROOT = "/pbi/dept/secondary/siv/references"              # This is a central location for SA3+ references
+    BARCODE_SETS_ROOT = "/pbi/dept/secondary/siv/barcodes"              # This is the central location for SA3+ barcodeSets
 
     SMRTLINK_SERVER_TO_JOBS_ROOT = \
         { serverName : ("/pbi/" + smrtLinkJobPath + "/smrtlink/" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
@@ -188,7 +189,13 @@ class Resolver(object):
     def resolveSmrtlinkSubreadSet(self, smrtLinkServer, jobId):
         jobDir = self.resolveJob(smrtLinkServer, jobId)
         return self.findSmrtlinkSubreadSet(jobDir)
-
+        
+    def resolveBarcodeSet(self, barcodeSet):
+        if op.isfile(barcodeSet):
+            return barcodeSet
+        else:
+            raise DataNotFound(barcodeSet)
+            
     def ensureSubreadSet(self, subreadSet):
         if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".subreads.bam")):
             raise InvalidDataset("%s not a subreadset" % subreadSet)

@@ -7,6 +7,7 @@ __all__ = [ "InputType",
             "CoverageTitrationConditionTable",
             "UnrolledMappingConditionTable",
             "IsoSeqConditionTable",
+            "LimaConditionTable",
             "TableValidationError",
             "InputResolutionError" ]
 
@@ -135,7 +136,10 @@ class ConditionTable(object):
             return resolver.ensureAlignmentSet(rowRecord.AlignmentSet)
         elif {"TraceH5File"}.issubset(cols):
             return resolver.ensureTraceH5File(rowRecord.TraceH5File)
-
+        elif {"SymmetricBarcodeSet"}.issubset(cols):
+            return resolver.ensureBarcodeSet(rowRecord.SymmetricBarcodeSet)
+        elif {"AsymmetricBarcodeSet"}.issubset(cols):
+            return resolver.ensureBarcodeSet(rowRecord.AsymmetricBarcodeSet)
 
     def _resolveInputs(self, resolver):
         self._inputsByCondition = {}
@@ -412,3 +416,56 @@ class IsoSeqConditionTable(ConditionTable):
             return rowRecord.JobPath
         else:
             raise TableValidationError("IsoSeq ConditionTable shoule either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
+
+class LimaConditionTable(ConditionTable):
+    """
+    This workflow is for barcoding (lima) QC jobs
+    """
+    
+    """Override validate table for lima"""
+    def _validateBarcode(self):
+        required = ['Condition', 'SubreadSet']
+        exclusive = ['AsymmetricBarcodeSet', 'SymmetricBarcodeSet']
+        for rq in required:
+            if rq not in self.tbl.column_names:
+                raise TableValidationError(
+                    "'{}' column must be present".format(rq))
+        if exclusive[0] in self.tbl.column_names and exclusive[1] in self.tbl.column_names:
+            raise TableValidationError(
+                    "LimaConditionTable should only contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+        elif exclusive[0] not in self.tbl.column_names and exclusive[1] not in self.tbl.column_names:
+            raise TableValidationError(
+                    "LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+        
+    def _validateTable(self):
+        super(LimaConditionTable, self)._validateTable()
+        self._validateBarcode()
+        
+    def prefix(self, condition):
+        prefixlist = ['--same', '--min-passes 1']
+        try:
+            if bool(self.condition(condition).SymmetricBarcodeSet):
+                return prefixlist[0]
+        except:
+            try:
+                if bool(self.condition(condition).AsymmetricBarcodeSet):
+                    return prefixlist[1]
+            except:
+                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+
+    def barcodeSet(self, condition):
+        try:
+            return self.condition(condition).SymmetricBarcodeSet
+        except:  ## TODO(lhepler): use proper exception here for SymmetricBarcodeSet lookup failure
+            try:
+                return self.condition(condition).AsymmetricBarcodeSet
+            except:
+                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+
+    def _resolveInputs(self, resolver):
+        super(LimaConditionTable, self)._resolveInputs(resolver)
+        for condition in self.conditions:
+            try:
+                barcodeSet = self.barcodeSet(condition)
+            except DataNotFound as e:
+                raise InputResolutionError(str(e))
