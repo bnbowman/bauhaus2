@@ -35,6 +35,7 @@ Generate heatmaps workflow, starting from subreads.
   |   `-- BarcodingQC
   |       |-- report.Rd
   |       |-- report.json
+  |       |-- summary_score_hist.png
   |       `-- summary_yield_zmw.png
   |-- run.sh
   |-- scripts
@@ -46,5 +47,5 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  10 directories, 20 files
+  10 directories, 21 files
  
