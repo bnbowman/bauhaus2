@@ -84,11 +84,23 @@ makeReport <- function(reportbh) {
     tags = c("lima")
   )
   
-  # g = ggplot(report) +
-  #   geom_histogram(aes(ScoreCombined),fill="gray",color="black",alpha=.3,binwidth = 1)+
-  #   scale_y_continuous(labels=comma)+ scale_x_continuous(limits = c(0, 100))+
-  #   theme_minimal() + theme(axis.text.x = element_text(hjust=1)) + xlab("Mean Barcode Score") + ylab("Number of Barcoded Samples")
+  g = ggplot(report) +
+    geom_histogram(aes(ScoreCombined),fill="gray",color="black",alpha=.3,binwidth = 1)+
+    scale_y_continuous(labels=comma)+ scale_x_continuous(limits = c(0, 100))+
+    theme_minimal() + theme(axis.text.x = element_text(hjust=1)) + xlab("Mean Barcode Score") + ylab("Number of Barcoded Samples")
   # ggsave("summary_score_hist.png",g,width=20,height=15,dpi=150,units="cm")
+  reportbh$ggsave(
+    "summary_score_hist.png",
+    g,
+    width = 20,
+    height = 15,
+    units="cm",
+    id = "summary_score_hist",
+    title = "summary_score_hist",
+    caption = "summary_score_hist",
+    tags = c("lima")
+  )
+  
   # 
   # binned = report %>% filter(Barcoded) %>% filter(IdxFirst == IdxCombined) %>% select(BarcodePair, ScoreCombined) %>% arrange(BarcodePair) %>% group_by(BarcodePair) %>%  count(ScoreCombined) %>% arrange(BarcodePair, ScoreCombined)
   # binned = rename(binned, counts=n)
