@@ -29,6 +29,28 @@ themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
 plotwidth = 7.2
 plotheight = 4.2
 
+findN <- function(vec, perc) {
+  sort(vec)[which.min(abs(cumsum(sort(vec)) - sum(vec) * perc))]
+}
+
+generateNvalueMetrics <- function(report, cd) {
+  loginfo("Generating Nvalue Metrics:")
+  cd2 = cd[, c("Condition", "tlen", "alen")]
+  cd3 = cd2 %>% group_by(Condition) %>% summarise(
+    nZMWs = n(),
+    alenN10 = findN(alen, 0.9),
+    alenN25 = findN(alen, 0.75),
+    alenN50 = findN(alen, 0.5),
+    tlenN10 = findN(tlen, 0.9),
+    tlenN25 = findN(tlen, 0.75),
+    tlenN50 = findN(tlen, 0.5)
+  )
+  report$write.table("Nvalues.csv",
+                     cd3,
+                     id = "nvalues",
+                     title = "Nvalues")
+}
+
 makeCDFofaStartPlots <- function(report, cd) {
   loginfo("Making CDF of aStart Plots")
   
@@ -1442,13 +1464,13 @@ plot_N_k_UsingLongestSubreads = function(report,
                                          searchTags)
 {
   label = ifelse(deNovo,
-                 "de_novo_max_subread_len_cdf_with_N50",
-                 "max_subread_len_cdf_with_N50")
+                 "de_novo_max_subread_len_cdf_with_50th_percentile",
+                 "max_subread_len_cdf_with_50th_percentile")
   title = ifelse(deNovo,
-                 "de Novo Max Subread Length CDFs and N(k)",
-                 "Max Subread Length CDFs and N(k)")
+                 "de Novo Max Subread Length CDFs and Nth percentile",
+                 "Max Subread Length CDFs and Nth percentile")
   
-  loginfo("Plot CDF of max subread lengths with one horizontal bar at N(k) for each value of k:")
+  loginfo("Plot CDF of max subread lengths with one horizontal bar at Nth percentile for each value of k:")
   tb = ggplot(bind_rows(maxSubreadLenCDFs),
               aes(x = x, y = y, colour = Condition)) +
     geom_line(lwd = 0.5) +
@@ -1468,7 +1490,7 @@ plot_N_k_UsingLongestSubreads = function(report,
     height = plotheight,
     title = title,
     caption = title,
-    tags = c("N50", "N25", "CDF", searchTags),
+    tags = c("percentile", "CDF", searchTags),
     uid  = "0020027"
   )
   
@@ -1478,7 +1500,7 @@ plot_N_k_UsingLongestSubreads = function(report,
                               vapply(perc, function(p)
                                 z$x[which.min(abs(z$y - p))], 0))))
   
-  names(res) = paste("N", perc * 100, sep = "")
+  names(res) = paste(perc * 100, "th percentile", sep = "")
   res$nZMWs = vapply(maxSubreadLenCDFs, function(z)
     z$nReads[1], 0)
   res
@@ -1641,14 +1663,14 @@ generateLongLibraryMetricsAndPlots = function(report, cd, perc, benchmark, deNov
   row.names(tbl) = NULL
   
   label = ifelse(deNovo,
-                 "de_novo_long_library_metrics",
-                 "long_library_metrics")
+                 "de_novo_max_subreads_per_zmw_metrics",
+                 "max_subreads_per_zmw_metrics")
   report$write.table(
     paste(label, "csv", sep = "."),
     tbl,
     id = label,
-    title = "Long Library Metrics",
-    tags = c("table", "metrics", "long_library_metrics", searchTags)
+    title = "MaxSubreads per ZMW Metrics",
+    tags = c("table", "metrics", "max_subreads_per_zmw_metrics", searchTags)
   )
 }
 
@@ -1688,6 +1710,7 @@ makeReport <- function(report) {
     cd$alen = as.numeric(cd$aend - cd$astart)
     
     # Make Plots
+    try(generateNvalueMetrics(report, cd), silent = TRUE)
     try(makeCDFofaStartPlots(report, cd), silent = TRUE)
     try(makeMaxVsUnrolledPlots(report, cd), silent = TRUE)
     try(makeCDFofTemplatePlots(report, cd), silent = TRUE)
