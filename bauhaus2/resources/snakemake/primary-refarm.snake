@@ -123,13 +123,15 @@ rule run_baz2bam:
         adapters="conditions/{condition}/primary/input.adapters.fasta"
     output:
         sset="conditions/{condition}/primary/input.subreadset.xml",
+        stsh5="conditions/{condition}/sts.h5",
+        stsxml="conditions/{condition}/sts.xml"
     params:
         module=lambda wc: ct.ppaModule(wc.condition),
         exe=lambda wc: ct.ppaExe(wc.condition),
         prefix="conditions/{condition}/primary/input",
         toCopy=lambda wc: refarm_paths[wc.condition],
         mov=lambda wc: trc2mov(remote_trcs[wc.condition]),
-        cond=lambda wc: wc.condition
+        cond=lambda wc: wc.condition,
     threads: 16
     shell:
         """
@@ -138,6 +140,8 @@ rule run_baz2bam:
         {params.exe} -o {params.prefix} -m {input.meta} \
         -j {threads} -b {threads} --adapters={input.adapters} \
         {input.baz}
+        ln -sf `pwd`/{params.prefix}.sts.h5 `pwd`/{output.stsh5}
+        ln -sf `pwd`/{params.prefix}.sts.xml `pwd`/{output.stsxml}
         module load smrtlink/siv
         if [ {params.toCopy} ] ;
         then mkdir -p {params.toCopy} ;
