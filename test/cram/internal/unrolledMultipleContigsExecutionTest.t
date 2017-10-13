@@ -207,6 +207,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- LibDiagnosticPlots
   |   |   |-- MovieA_Tau_Estimates.csv
   |   |   |-- MovieB_Tau_Estimates.csv
+  |   |   |-- Nvalues.csv
   |   |   |-- cdf_astart.png
   |   |   |-- cdf_astart_log.png
   |   |   |-- cdf_hqlenmax.png
@@ -219,11 +220,11 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- first_pass_tau.png
   |   |   |-- hist_max.png
   |   |   |-- hist_unroll.png
-  |   |   |-- long_library_metrics.csv
   |   |   |-- max_hqlen.png
-  |   |   |-- max_subread_len_cdf_with_N50.png
+  |   |   |-- max_subread_len_cdf_with_50th_percentile.png
   |   |   |-- max_subread_len_density.png
   |   |   |-- max_subread_len_survival.png
+  |   |   |-- max_subreads_per_zmw_metrics.csv
   |   |   |-- max_unrolled.png
   |   |   |-- maxt_unrolledt.png
   |   |   |-- nsubreads_ref_hist_percentage.png
@@ -406,5 +407,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  27 directories, 362 files
+  27 directories, 363 files
 
