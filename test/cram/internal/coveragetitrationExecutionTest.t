@@ -210,7 +210,9 @@ Generate mapping reports workflow, starting from subreads.
   |-- reports
   |   `-- CoverageTitration
   |       |-- concordance-by-condition.png
-  |       `-- coverage-titration.csv
+  |       |-- coverage-diagnostic-plot.png
+  |       |-- coverage-titration.csv
+  |       `-- report.json
   |-- run.sh
   |-- scripts
   |   `-- R
@@ -220,4 +222,4 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 184 files
+  19 directories, 186 files

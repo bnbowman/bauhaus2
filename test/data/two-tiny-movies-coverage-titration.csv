@@ -1,3 +1,3 @@
 Condition,SubreadSet,Genome,p_Automation
-MovieA,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_052519-50zmws.subreads.bam,ecoliK12_pbi_March2013,Diffusion
-MovieB,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_111434-50zmws.subreads.bam,ecoliK12_pbi_March2013,Diffusion
+MovieA,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample1.subreads.bam,ecoliK12_pbi_March2013,Diffusion
+MovieB,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample2.subreads.bam,ecoliK12_pbi_March2013,Diffusion
