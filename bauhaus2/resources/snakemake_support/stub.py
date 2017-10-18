@@ -8,5 +8,5 @@ sl_host = sl_host.replace("-", "/")
 
 shell.executable("/bin/bash")
 prefix = open("prefix.sh").read()
-prefix = prefix.replace("smrtlink/siv", sl_host)
+prefix = prefix.replace("smrtlink/internal", sl_host)
 shell.prefix(prefix)

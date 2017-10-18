@@ -46,7 +46,7 @@ class Workflow(object):
             acc["bh2.smrtlink.host"] = self.cliArgs.smrtlink_host
             acc["bh2.smrtlink.services_port"] = self.cliArgs.smrtlink_services_port
         else: # Here add this option for loading module "smrtlink/siv" in "prefix.sh" when no-smrtlink is selected
-            acc["bh2.smrtlink.host"] = "smrtlink-siv"
+            acc["bh2.smrtlink.host"] = "smrtlink-internal"
         for snakeFile in self.plan():
             jsonPath = configJsonPath(snakeFile.replace(".snake", ".json"))
             jsonData = json.load(open(jsonPath))

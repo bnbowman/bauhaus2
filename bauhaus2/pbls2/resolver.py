@@ -47,7 +47,9 @@ class Resolver(object):
           for (serverName, smrtLinkJobPath, smrtLinkId) in [ ("smrtlink-beta", "dept/secondary/siv", "smrtlink-beta"), 
                                                              ("smrtlink-alpha", "dept/secondary/siv", "smrtlink-alpha"), 
                                                              ("smrtlink-siv", "dept/secondary/siv", "smrtlink-siv"), 
-                                                             ("smrtlink-internal", "dept/secondary/siv", "smrtlink-internal"), 
+                                                             ("smrtlink-internal", "dept/secondary/siv", "smrtlink-internal"),
+                                                             ("smrtlink-siv-alpha", "dept/secondary/siv", "smrtlink-siv-alpha"),
+                                                             ("smrtlink-sms", "dept/secondary/siv", "smrtlink-sms"),
                                                              ("smrtlink-release", "analysis", "release") ] }
 
     def __init__(self):
