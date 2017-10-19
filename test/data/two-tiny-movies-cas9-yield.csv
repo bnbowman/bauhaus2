@@ -1,0 +1,3 @@
+Condition,SubreadBam
+MovieA,/pbi/dept/secondary/siv/testdata/itg/cas9-yield-bam/m160716_163901_42139_50zmw_sample1.subreads.bam
+MovieB,/pbi/dept/secondary/siv/testdata/itg/cas9-yield-bam/m160716_163901_42139_50zmw_sample2.subreads.bam
