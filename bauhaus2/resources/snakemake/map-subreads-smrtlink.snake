@@ -51,10 +51,9 @@ rule map_subreads_smrtlink_launch:
         module add parallel
 
         # Call pbservice; bail out on failure
-        sem --no-notice --id smrtlink-siv-semaphore -j1 --fg \
         pbservice run-pipeline pbsmrtpipe.pipelines.sa3_ds_align \
           --host {sl_host} --port {sl_port} \
-          -e {input.subreadSet} \
+          -e $(readlink -f {input.subreadSet}) \
           -e {input.referenceSet} \
           --preset-xml {params.presetXmlFile} --job-title {params.jobid} \
           --json \
