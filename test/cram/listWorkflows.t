@@ -3,6 +3,7 @@
   ArrowTraining
   BarcodingQC
   CCSMappingReports
+  Cas9Yield
   ConstantArrow
   CoverageTitration
   EvaluateHQRF
