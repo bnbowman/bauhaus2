@@ -421,7 +421,7 @@ class IsoSeqConditionTable(ConditionTable):
         elif {"JobPath"}.issubset(cols):
             return rowRecord.JobPath
         else:
-            raise TableValidationError("IsoSeq ConditionTable shoule either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
+            raise TableValidationError("IsoSeq ConditionTable should either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
 
 class LimaConditionTable(ConditionTable):
     """
@@ -489,4 +489,4 @@ class Cas9ConditionTable(ConditionTable):
         if {"SubreadBam"}.issubset(cols):
             return rowRecord.SubreadBam
         else:
-            raise TableValidationError("Cas9 ConditionTable shoule contain 'SubreadBam'")
+            raise TableValidationError("Cas9 ConditionTable should contain 'SubreadBam'")
