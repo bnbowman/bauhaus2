@@ -18,8 +18,10 @@ rule chunk_subreads_one_condition:
     output:
         expand("conditions/{{condition}}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml",
                chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
-    params: outdir="conditions/{condition}/subreads/chunks"
+    params:
+        chunkNo=config["bh2.scatter_subreads.chunks_per_condition"],
+        outdir="conditions/{condition}/subreads/chunks"
     shell:
         """
-        dataset split --zmws --targetSize 1 --chunks 8 --outdir {params.outdir} {input}
+        dataset split --zmws --targetSize 1 --chunks {params.chunkNo} --outdir {params.outdir} {input}
         """

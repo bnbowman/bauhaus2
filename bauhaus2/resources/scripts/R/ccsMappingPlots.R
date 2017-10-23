@@ -43,9 +43,9 @@ makeCCSDataFrame1 <-
                HoleNumber = hole,
                ReadQuality = qual,
                ReadQualityPhred = toPhred(qual),
-               Identity = 1. - (mismatches + inserts + dels) / (aend - astart),
+               Identity = 1. - (mismatches + inserts + dels) / (tend - tstart),
                IdentityPhred = toPhred(1. - (mismatches + inserts + dels) /
-                                         (aend - astart)),
+                                         (tend - tstart)),
                NumErrors = (mismatches + inserts + dels),
                TemplateSpan = (tend - tstart),
                ReadLength = (aend - astart),
@@ -184,7 +184,7 @@ doCCSReadQualityCalibrationPlots <- function(report, ccsDf)
     title = "Read quality versus empirical accuracy",
     caption = "Read quality versus empirical accuracy"
   )
-  
+
   p <-
     qplot(ReadQualityPhred,
           IdentityPhred,
@@ -204,19 +204,23 @@ doCCSReadQualityCalibrationPlots <- function(report, ccsDf)
 
 doCCSTitrationPlots <- function(report, ccsDf)
 {
-  accVsNp <- ccsDf %>% group_by(Condition, NumPasses) %>% summarize(MeanIdentity =
-                                                                      1 - (max(1, sum(NumErrors)) / sum(ReadLength)),
-                                                                    TotalBases = sum(ReadLength)) %>% mutate(MeanIdentityPhred = toPhred(MeanIdentity))
-  
+  accVsNp <- ccsDf %>%
+      group_by(Condition) %>% filter(NumPasses <= quantile(NumPasses, probs = 0.98)) %>% ungroup() %>%
+      group_by(Condition, NumPasses) %>%
+      summarize(
+                MeanIdentity = 1 - (max(1, sum(NumErrors)) / sum(TemplateSpan)),
+                TotalBases = sum(TemplateSpan)) %>%
+      mutate(MeanIdentityPhred = toPhred(MeanIdentity))
+
   p <-
     qplot(
       NumPasses,
       MeanIdentityPhred,
       size = TotalBases,
-      weight = TotalBases,
-      data = filter(accVsNp, NumPasses < 20)
+      weight = TotalBases
     ) +
-    facet_grid(. ~ Condition) + geom_smooth()
+    facet_grid(. ~ Condition) + geom_smooth() +
+    geom_hline(yintercept = 30, alpha = 0.5) + geom_vline(xintercept = 15, alpha = 0.5)
   report$ggsave(
     "ccs_titration.png",
     p,
