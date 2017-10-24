@@ -8,6 +8,7 @@ __all__ = [ "InputType",
             "UnrolledMappingConditionTable",
             "IsoSeqConditionTable",
             "LimaConditionTable",
+            "Cas9ConditionTable",
             "TableValidationError",
             "InputResolutionError" ]
 
@@ -415,7 +416,7 @@ class IsoSeqConditionTable(ConditionTable):
         elif {"JobPath"}.issubset(cols):
             return rowRecord.JobPath
         else:
-            raise TableValidationError("IsoSeq ConditionTable shoule either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
+            raise TableValidationError("IsoSeq ConditionTable should either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
 
 class LimaConditionTable(ConditionTable):
     """
@@ -469,3 +470,18 @@ class LimaConditionTable(ConditionTable):
                 barcodeSet = self.barcodeSet(condition)
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
+
+class Cas9ConditionTable(ConditionTable):
+    """Override validate table for Cas9Yield"""
+    def _validateTable(self): # override, Cas9 jobs has no alignments
+        return
+
+    def _resolveInput(self, resolver, rowRecord):
+        """
+        Condition Tables must contain ('SubreadSet').
+        Return [SubreadSet]."""
+        cols = self.tbl.column_names
+        if {"SubreadSet"}.issubset(cols):
+            return rowRecord.SubreadSet
+        else:
+            raise TableValidationError("Cas9 ConditionTable should contain 'SubreadSet'")

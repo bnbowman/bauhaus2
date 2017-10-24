@@ -1,0 +1,56 @@
+
+# ---------------------------------------------------------------------------------------------------
+# cas9-yield.snake
+
+from bauhaus2.runtime import ct
+      
+cas19reference = "/pbi/dept/secondary/siv/references/hg19_M_sorted/sequence/hg19_M_sorted.fasta"
+
+cas19referencesa = "/pbi/dept/secondary/siv/references/hg19_M_sorted/sequence/hg19_M_sorted.fasta.sa"
+      
+report_json = \
+    { c : "reports/Cas9YieldDiagnosticPlots_{condition}/report.json".format(condition=c)
+      for c in ct.conditions }
+
+# -- Target --
+
+rule collect_report:
+    input: report_json.values()
+
+# -- Worker rules ---
+        
+rule map_subreads_bam_one_condition:
+    input:
+        local_subreadset="conditions/{condition}/subreads/input.subreadset.xml",
+    output: 
+        mappedbam="conditions/{condition}/mapped/OUTPUT_BAM"
+    threads: 16
+    shell:
+        """
+        blasr {input.local_subreadset} {cas19reference} --sa {cas19referencesa} --out {output.mappedbam} --bam --nproc 16 --bestn 1
+        """
+
+rule index_mapped_bam_one_condition:
+    input:
+        mappedbam="conditions/{condition}/mapped/OUTPUT_BAM",
+    output: 
+        indexedbam="conditions/{condition}/mapped/OUTPUT_BAM.pbi"
+    shell:
+        """
+        pbindex {input.mappedbam}
+        """
+        
+rule cas9_yield_diagnostic_report_one_condition:
+    input: indexedbam="conditions/{condition}/mapped/OUTPUT_BAM.pbi",
+    output:
+        reportjson="reports/Cas9YieldDiagnosticPlots_{condition}/report.json",
+        reportdir="reports/Cas9YieldDiagnosticPlots_{condition}"
+    params:
+        conditionname="{condition}"
+    shell:
+        """
+        module load smstools
+        cd {output.reportdir}
+        cas9YieldDiagnostic {params.conditionname} ../../{input.indexedbam}
+        cd ../..
+        """
