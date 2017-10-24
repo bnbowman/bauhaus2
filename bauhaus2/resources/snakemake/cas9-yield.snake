@@ -3,14 +3,6 @@
 # cas9-yield.snake
 
 from bauhaus2.runtime import ct
-
-local_subreadbam = \
-    { c : "conditions/{condition}/subreadbam/input.subreads.bam".format(condition=c)
-      for c in ct.conditions }
-
-remote_subreadbam = \
-    { c : ct.inputs(c)
-      for c in ct.conditions }
       
 cas19reference = "/pbi/dept/secondary/siv/references/hg19_M_sorted/sequence/hg19_M_sorted.fasta"
 
@@ -26,24 +18,16 @@ rule collect_report:
     input: report_json.values()
 
 # -- Worker rules ---
-
-rule collect_subreads_one_condition:
-    input: bam=lambda wc: remote_subreadbam[wc.condition]
-    output: bam="conditions/{condition}/subreadbam/input.subreads.bam"
-    shell:
-        """
-        ln -s {input.bam} {output.bam}
-        """
         
 rule map_subreads_bam_one_condition:
     input:
-        subreadbam="conditions/{condition}/subreadbam/input.subreads.bam",
+        local_subreadset="conditions/{condition}/subreads/input.subreadset.xml",
     output: 
         mappedbam="conditions/{condition}/mapped/OUTPUT_BAM"
     threads: 16
     shell:
         """
-        blasr {input.subreadbam} {cas19reference} --sa {cas19referencesa} --out {output.mappedbam} --bam --nproc 16 --bestn 1
+        blasr {input.local_subreadset} {cas19reference} --sa {cas19referencesa} --out {output.mappedbam} --bam --nproc 16 --bestn 1
         """
 
 rule index_mapped_bam_one_condition:

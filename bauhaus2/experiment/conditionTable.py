@@ -109,8 +109,6 @@ class ConditionTable(object):
             inputEncodings += 1
         if {"JobPath"}.issubset(cols):
             inputEncodings += 1
-        if {"SubreadBam"}.issubset(cols):
-            inputEncodings += 1
         if {"SubreadSet"}.issubset(cols):
             inputEncodings += 1
         if {"AlignmentSet"}.issubset(cols):
@@ -118,7 +116,7 @@ class ConditionTable(object):
         if {"TraceH5File"}.issubset(cols):
             inputEncodings += 1
         if inputEncodings == 0:
-          raise TableValidationError("Input data not encoded in condition table. Table requires one and only one column (or pair of columns) as follows: ReportsPath, RunCode+ReportsFolder, SMRTLinkServer+JobId, JobPath, SubreadBam, SubreadSet, AlignmentSet")
+          raise TableValidationError("Input data not encoded in condition table. Table requires one and only one column (or pair of columns) as follows: ReportsPath, RunCode+ReportsFolder, SMRTLinkServer+JobId, JobPath, SubreadSet, AlignmentSet")
         if inputEncodings > 1:
             raise TableValidationError("Condition table can only represent input data in one way")
 
@@ -133,8 +131,6 @@ class ConditionTable(object):
                    resolver.resolveSmrtlinkSubreadSet(rowRecord.SMRTLinkServer, rowRecord.JobId)]
         elif {"JobPath"}.issubset(cols):
             return resolver.findAlignmentSet(rowRecord.JobPath)
-        elif {"SubreadBam"}.issubset(cols):
-            return resolver.findAlignmentSet(rowRecord.SubreadBam)
         elif {"SubreadSet"}.issubset(cols):
             return resolver.ensureSubreadSet(rowRecord.SubreadSet)
         elif {"AlignmentSet"}.issubset(cols):
@@ -210,7 +206,6 @@ class ConditionTable(object):
     def inputType(self):
         cols = self.tbl.column_names
         if {"ReportsPath"}.issubset(cols) or \
-           {"SubreadBam"}.issubset(cols) or \
            {"RunCode", "ReportsFolder"}.issubset(cols) or \
            {"SubreadSet"}.issubset(cols):
             return InputType.SubreadSet
@@ -483,10 +478,10 @@ class Cas9ConditionTable(ConditionTable):
 
     def _resolveInput(self, resolver, rowRecord):
         """
-        Condition Tables must contain ('SubreadBam').
-        Return [SubreadBam], path to SMRTLink IsoSeq jobs."""
+        Condition Tables must contain ('SubreadSet').
+        Return [SubreadSet]."""
         cols = self.tbl.column_names
-        if {"SubreadBam"}.issubset(cols):
-            return rowRecord.SubreadBam
+        if {"SubreadSet"}.issubset(cols):
+            return rowRecord.SubreadSet
         else:
-            raise TableValidationError("Cas9 ConditionTable should contain 'SubreadBam'")
+            raise TableValidationError("Cas9 ConditionTable should contain 'SubreadSet'")
