@@ -217,7 +217,8 @@ doCCSTitrationPlots <- function(report, ccsDf)
       NumPasses,
       MeanIdentityPhred,
       size = TotalBases,
-      weight = TotalBases
+      weight = TotalBases,
+      data = accVsNp
     ) +
     facet_grid(. ~ Condition) + geom_smooth() +
     geom_hline(yintercept = 30, alpha = 0.5) + geom_vline(xintercept = 15, alpha = 0.5)
