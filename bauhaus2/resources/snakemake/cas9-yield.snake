@@ -51,6 +51,6 @@ rule cas9_yield_diagnostic_report_one_condition:
         """
         module load smstools
         cd {output.reportdir}
-        cas9YieldDiagnostic {params.conditionname} ../../{input.indexedbam}
+        AmpFreeYieldDiagnostic {params.conditionname} ../../{input.indexedbam}
         cd ../..
         """
