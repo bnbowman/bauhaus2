@@ -90,8 +90,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped-ccs.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> /home/sxu/bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/sxu/bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -175,8 +175,8 @@ Generate mapping reports workflow, starting from subreads.
   |       |   `-- mapped-ccs.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> /home/sxu/bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |       |-- sts.xml -> /home/sxu/bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -194,6 +194,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- reports
   |   `-- CCSMappingReports
   |       |-- ccs-mapping.csv
+  |       |-- ccs_boxplot_ref1.png
   |       |-- ccs_titration.png
   |       |-- fractional_yield_ccs_accuracy.png
   |       |-- numpasses_dist_density.png
@@ -212,5 +213,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  21 directories, 174 files
+  21 directories, 175 files
 
