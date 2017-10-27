@@ -243,6 +243,43 @@ makeCDFofaStartPlots <- function(report, cd) {
     uid = "0020007"
   )
   
+  #Using dataframes cdref and cdunrolledref to store all subreads statistics for each reference and condition
+  
+  report$write.table(
+    "Yieldbycdandref.csv",
+    cdref,
+    id = "subreads_yield_table",
+    title = "Yield and Yield Perc By Condition and Reference",
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "histogram",
+      "yield",
+      "reference",
+      "subreads",
+      "table"
+    )
+  )
+  
+  report$write.table(
+    "Yieldbycdandref_unrolled.csv",
+    cdunrolledref,
+    id = "subreads_yield_unrolled_table",
+    title = "Unrolled Yield and Yield Perc By Condition and Reference",
+    tags = c(
+      "libdiagnostic",
+      "library",
+      "diagnostic",
+      "histogram",
+      "yield",
+      "reference",
+      "subreads",
+      "unrolled",
+      "table"
+    )
+  )
+  
 }
 
 makeMaxVsUnrolledPlots <- function(report, cd) {
