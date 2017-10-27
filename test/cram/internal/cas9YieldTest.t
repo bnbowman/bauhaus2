@@ -21,14 +21,14 @@ Generate heatmaps workflow, starting from subreads.
   |   |   |-- mapped
   |   |   |   |-- OUTPUT_BAM
   |   |   |   `-- OUTPUT_BAM.pbi
-  |   |   `-- subreadbam
-  |   |       `-- input.subreads.bam -> /pbi/dept/secondary/siv/testdata/itg/cas9-yield-bam/m160716_163901_42139_50zmw_sample1.subreads.bam
+  |   |   `-- subreads
+  |   |       `-- input.subreadset.xml
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- OUTPUT_BAM
   |       |   `-- OUTPUT_BAM.pbi
-  |       `-- subreadbam
-  |           `-- input.subreads.bam -> /pbi/dept/secondary/siv/testdata/itg/cas9-yield-bam/m160716_163901_42139_50zmw_sample2.subreads.bam
+  |       `-- subreads
+  |           `-- input.subreadset.xml
   |-- config.json
   |-- log
   |-- prefix.sh

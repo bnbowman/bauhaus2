@@ -231,6 +231,41 @@ doCCSTitrationPlots <- function(report, ccsDf)
   )
 }
 
+doCCSTitrationBoxPlots <- function(report, ccsDf)
+{
+  toPhred2 <- function(nErr, tSpan) {
+    return(-10 * log10((nErr + 1)/(tSpan + 1)));
+  }
+
+  refData <- ccsDf %>%
+    group_by(Condition, Reference) %>%
+    summarize(TemplateSpan = mean(TemplateSpan)) %>%
+    mutate(MaxQV = toPhred2(0, TemplateSpan))
+
+  i <- 1
+  for (ref in levels(ccsDf$Reference)) {
+    refDf <- ccsDf %>%
+      filter(Reference == ref) %>%
+      group_by(Condition) %>% filter(NumPasses <= min(quantile(NumPasses, 0.98), 30)) %>% ungroup() %>%
+      mutate(QV = toPhred2(NumErrors, TemplateSpan))
+
+    refDf$NumPasses <- as.factor(refDf$NumPasses)
+    p <- ggplot(refDf, aes(NumPasses, QV, fill = Condition)) +
+      geom_boxplot() +
+      geom_hline(aes(yintercept = MaxQV, color = Condition), filter(refData, Reference == ref)) +
+      ggtitle(ref)
+
+    report$ggsave(
+      paste0("ccs_boxplot_ref", i, ".png"),
+      p,
+      id = paste0("ccs_boxplot_ref", i),
+      title = paste0("CCS Box Plot ", i, " - ", ref),
+      caption = paste0("CCS Box Plot ", i, " - ", ref)
+    )
+    i <- i + 1
+  }
+}
+
 
 doAllCCSPlots <- function(report, ccsDf)
 {
@@ -239,6 +274,7 @@ doAllCCSPlots <- function(report, ccsDf)
   doCCSNumPassesCDF(report, ccsDf)
   doCCSReadQualityCalibrationPlots(report, ccsDf)
   doCCSCumulativeYieldPlots(report, ccsDf)
+  doCCSTitrationBoxPlots(report, ccsDf)
 }
 
 makeReport <- function(report) {
