@@ -193,3 +193,20 @@ rule nohq:
         module load {params.module}
         bam2bam -o {params.prefix} --fullHQ {params.subreads} {params.scraps}
         """
+
+rule run_poc_1c4a_1919_refarm:
+    input:
+        trc="conditions/{condition}/primary/input.trc.h5"
+        meta="conditions/{condition}/primary/input.metadata.xml"
+    output:
+        "conditions/{condition}/primary/input.subreadset.xml"
+    params:
+        module=lambda wc: ct.basecallerModule(wc.condition),
+        exe=lambda wc: ct.basecallerExe(wc.condition)
+    threads: 8
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} -i {input} -o {output} -p {threads}
+        """
