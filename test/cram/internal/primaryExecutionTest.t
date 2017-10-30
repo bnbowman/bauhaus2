@@ -328,6 +328,8 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- HQLib_Tau_Estimates.csv
   |   |   |-- HQunrolled_Tau_Estimates.csv
   |   |   |-- Nvalues.csv
+  |   |   |-- Yieldbycdandref.csv
+  |   |   |-- Yieldbycdandref_unrolled.csv
   |   |   |-- cdf_astart.png
   |   |   |-- cdf_astart_log.png
   |   |   |-- cdf_hqlenmax.png

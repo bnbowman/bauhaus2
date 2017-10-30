@@ -348,6 +348,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- MovieC_Tau_Estimates.csv
   |   |   |-- MovieD_Tau_Estimates.csv
   |   |   |-- Nvalues.csv
+  |   |   |-- Yieldbycdandref.csv
+  |   |   |-- Yieldbycdandref_unrolled.csv
   |   |   |-- cdf_astart.png
   |   |   |-- cdf_astart_log.png
   |   |   |-- cdf_hqlenmax.png
@@ -557,7 +559,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 505 files
+  35 directories, 507 files
 
 
 
