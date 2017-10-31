@@ -34,14 +34,14 @@ Generate heatmaps workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   |-- Cas9YieldDiagnosticPlots_MovieA
-  |   |   |-- MovieA_subread_coverage.png
-  |   |   |-- MovieA_target_table.png
-  |   |   |-- MovieA_zmw_coverage.png
+  |   |   |-- moviea_subread_coverage.png
+  |   |   |-- moviea_target_table.png
+  |   |   |-- moviea_zmw_coverage.png
   |   |   `-- report.json
   |   `-- Cas9YieldDiagnosticPlots_MovieB
-  |       |-- MovieB_subread_coverage.png
-  |       |-- MovieB_target_table.png
-  |       |-- MovieB_zmw_coverage.png
+  |       |-- movieb_subread_coverage.png
+  |       |-- movieb_target_table.png
+  |       |-- movieb_zmw_coverage.png
   |       `-- report.json
   |-- run.sh
   |-- scripts
