@@ -159,6 +159,8 @@ def lookupInput(wc):
     if (hasattr(ct, 'callAdapters') and hasattr(ct, 'HQRF')
             and ct.callAdapters(wc.condition) and not ct.HQRF(wc.condition)):
         tbr = 'conditions/{condition}/nohq/input.subreadset.xml'
+    elif ( ct.Basecaller(wc.condition).startswith( 'poc_basecaller' ) ):
+        tbr = 'conditions/{condition}/poc/input.subreadset.xml'
     else:
         tbr = 'conditions/{condition}/primary/input.subreadset.xml'
     return tbr.format(condition=wc.condition)
@@ -192,4 +194,27 @@ rule nohq:
         module purge
         module load {params.module}
         bam2bam -o {params.prefix} --fullHQ {params.subreads} {params.scraps}
+        """
+
+rule run_poc_basecaller:
+    input:
+        trc="conditions/{condition}/primary/input.trc.h5"
+        meta="conditions/{condition}/primary/input.metadata.xml",
+        adapters="conditions/{condition}/primary/input.adapters.fasta"
+    output:
+        "conditions/{condition}/poc/input.subreadset.xml"
+    params:
+        module=lambda wc: ct.basecallerModule(wc.condition),
+        exe=lambda wc: ct.basecallerExe(wc.condition)
+    threads: 8
+    shell:
+        """
+        module purge
+        module load {params.module}
+        {params.exe} \
+            --inputfile {input.trc} \
+            --metadata {input.meta} \
+            --adapters {input.adapters} \
+            --numthreads {threads} \
+            --outputfile {output}
         """
