@@ -303,7 +303,7 @@ class PrimaryResequencingConditionTable(ResequencingConditionTable):
     def _parseBCString(self, condition):
         bc = self.condition(condition).Basecaller
         exe, mod = parse_exe_or_module(bc[0], 'basecaller-console-app',
-                                       'basecaller', 'poc_basecaller')
+                                       ('basecaller', 'poc_basecaller'))
         return mod, exe
 
     def _parseBasecaller(self):
