@@ -159,7 +159,7 @@ def lookupInput(wc):
     if (hasattr(ct, 'callAdapters') and hasattr(ct, 'HQRF')
             and ct.callAdapters(wc.condition) and not ct.HQRF(wc.condition)):
         tbr = 'conditions/{condition}/nohq/input.subreadset.xml'
-    elif ( ct.Basecaller(wc.condition).startswith( 'poc_basecaller' ) ):
+    elif ( ct.basecallerModule(wc.condition).startswith( 'poc_basecaller' ) ):
         tbr = 'conditions/{condition}/poc/input.subreadset.xml'
     else:
         tbr = 'conditions/{condition}/primary/input.subreadset.xml'
