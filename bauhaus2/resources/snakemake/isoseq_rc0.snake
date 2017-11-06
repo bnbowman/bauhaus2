@@ -15,11 +15,10 @@ rule print_env: # check environment variables
         done="log/print_env.done"
     shell: 
         """
-        source /mnt/software/Modules/current/init/bash && module load pbtranscript-internal-validation/1.0.0
+        source /mnt/software/Modules/current/init/bash && module purge && module load pbtranscript-internal-validation/2.0.0
         env > {output.done}
         echo 'which validate_smrtlink_isoseq_rc0.py' >> {output.done}
         which validate_smrtlink_isoseq_rc0.py >> {output.done}
-        which Rscript >> {output.done}
         """
 
 rule isoseq_rc0_plot:
@@ -28,6 +27,8 @@ rule isoseq_rc0_plot:
         report_json="reports/IsoSeqRC0Plots/report.json"
     shell:
         """
+        source /mnt/software/Modules/current/init/bash && module load R/3.2.3-internal
+        which Rscript
         Rscript --vanilla scripts/R/IsoSeqRC0Plots.R .
         """
  
@@ -38,7 +39,7 @@ rule call:
         done="conditions/{condition}/validate_smrtlink_isoseq_rc0.done"
     shell:
         """
-        source /mnt/software/Modules/current/init/bash && module load pbtranscript-internal-validation/1.0.0
+        source /mnt/software/Modules/current/init/bash && module purge && module load pbtranscript-internal-validation/2.0.0
         validate_smrtlink_isoseq_rc0.py {input} {output.dir} --make_readlength --reseq_to_human 2>&1 | tee {output.dir}/log
         touch {output.done}
         """
