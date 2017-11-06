@@ -1,0 +1,17 @@
+
+# ---------------------------------------------------------------------------------------------------
+# constant-arrow-short-movie.snake: fit constant arrow model with filter = 360bp.
+
+mapped_subreads = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+rule ConstantArrow:
+    input:
+        asets = mapped_subreads.values(),
+        fastas = expand("conditions/{condition}/reference.fasta", condition=ct.conditions)
+    output: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    shell:
+        """
+        Rscript --vanilla scripts/R/constant_arrow.R --minAlnLength 360
+        """

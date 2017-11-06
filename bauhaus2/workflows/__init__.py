@@ -2,6 +2,7 @@ from .arrow     import *
 from .ccs       import *
 from .consensus import *
 from .hmm       import *
+from .hmmshort       import *
 from .mapping   import *
 from .subreads  import *
 from .unrolled  import *

@@ -33,13 +33,3 @@ rule MakeMappingMetricsCsv:
         """
         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
         """
-
-rule ConstantArrow:
-    input:
-        asets = mapped_subreads.values(),
-        fastas = expand("conditions/{condition}/reference.fasta", condition=ct.conditions)
-    output: "reports/ConstantArrowFishbonePlots/errormode.csv"
-    shell:
-        """
-        Rscript --vanilla scripts/R/constant_arrow.R
-        """
