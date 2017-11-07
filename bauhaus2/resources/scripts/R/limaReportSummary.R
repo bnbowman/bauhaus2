@@ -38,8 +38,6 @@ makeReport <- function(reportbh) {
   relevant_bps = report_sum %>% filter(PassedFilters == 1) %>% group_by(BarcodePair) %>% summarize(n=n()) %>% filter(n>100)
   if (nrow(relevant_bps) > 500)
     relevant_bps = relevant_bps[1:500,]
-  
-  report_sum = report_sum %>% filter(BarcodePair %in% relevant_bps$BarcodePair)
 
   zmwYieldVsMeanScore1 = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ScoreCombined) %>% group_by(BarcodePair) %>% summarise(MeanScore=mean(ScoreCombined))
   zmwYieldVsMeanScore2 = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ScoreCombined) %>% group_by(BarcodePair) %>% count(BarcodePair)
