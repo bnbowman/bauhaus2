@@ -5,6 +5,7 @@
   CCSMappingReports
   Cas9Yield
   ConstantArrow
+  ConstantArrowForShortMovie
   CoverageTitration
   EvaluateHQRF
   Heatmaps

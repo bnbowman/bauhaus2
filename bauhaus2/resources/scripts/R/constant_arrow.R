@@ -20,8 +20,8 @@ library(lazyeval)
 # load sample size for argument, default sample size = 1000
 parser <- ArgumentParser()
 parser$add_argument("--sampleByRef", nargs = 1, default = FALSE, help = "subsample ZMWs for different references or not")
-parser$add_argument("--minalnlength", nargs = 1, default = 1000, help = "minimum alignment length to be considered")
-parser$add_argument("--sampleSize", nargs = 1, default = 1000, help = "number of samples (ZMWs) for each condition")
+parser$add_argument("--minAlnLength", nargs = 1, type = "integer", default = 1000, help = "minimum alignment length to be considered")
+parser$add_argument("--sampleSize", nargs = 1, type = "integer", default = 1000, help = "number of samples (ZMWs) for each condition")
 parser$add_argument("--noCT", action = "store_true", default = FALSE, help = "skip the condition table input and takes alignment/reference input")
 parser$add_argument("--input_aln", nargs = 1, default = "", help = "input alignment")
 parser$add_argument("--input_ref", nargs = 1, default = "", help = "input reference")
@@ -32,7 +32,7 @@ set.seed(args$seed)
 
 ## PARAMETERS THAT SHOULD BECOME TASK OPTIONS
 # Used to filter out alignments that don't have enough data for fitting
-MIN_ALN_LENGTH = args$minalnlength # Should be larger, but test data was ~930 bp in size and wanted to keep that working.
+MIN_ALN_LENGTH = args$minAlnLength # Should be larger, but test data was ~930 bp in size and wanted to keep that working.
 # Set up sample size of the sampled ZMW for each condition:
 SAMPLING_SIZE = args$sampleSize
 # Check whether the arrow model samples from each condition or from each condition and reference
@@ -140,6 +140,7 @@ constantArrow <-
     loginfo(paste("Input Aln:", input_aln))
     loginfo(paste("Input Ref:", input_ref))
     loginfo(paste("Requested Sampling Size:", SAMPLING_SIZE))
+    loginfo(paste("Requested Min Alignment Length:", MIN_ALN_LENGTH))
     loginfo(paste(
       "R_LIBS is: ",
       .libPaths(),

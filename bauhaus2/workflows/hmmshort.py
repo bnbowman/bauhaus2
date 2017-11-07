@@ -3,12 +3,12 @@ from bauhaus2 import Workflow
 
 from .mapping import subreadsMappingPlan
 
-class ConstantArrowWorkflow(Workflow):
+class ConstantArrowForShortMovieWorkflow(Workflow):
     """
     Align subreads to the reference and run constant arrow model,
     generate csv file of errormode.
     """
-    WORKFLOW_NAME        = "ConstantArrow"
+    WORKFLOW_NAME        = "ConstantArrowForShortMovie"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
     SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
     R_SCRIPTS            = ( "R/constant_arrow.R",
@@ -18,5 +18,5 @@ class ConstantArrowWorkflow(Workflow):
                              "Python/GetZiaTags.py")
 
     def plan(self):
-        return ["constant-arrow.snake", "constant-arrow-regular.snake", "uid-tag.snake"] + \
+        return ["constant-arrow.snake", "constant-arrow-short-movie.snake", "uid-tag.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)

@@ -39,6 +39,7 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # constant-arrow-regular.snake: fit constant arrow model with filter = 1000bp.
   # heatmaps.snake: Generate alignment based heatmaps.
   # locacc.snake: Generate locacc plots (tool from Martin).
   # uid-tag.snake: Generate a csv file that matches the uid and tags.
@@ -58,6 +59,7 @@ Now let's use SMRTLink for mapping.  The plan looks different.
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # constant-arrow-regular.snake: fit constant arrow model with filter = 1000bp.
   # heatmaps.snake: Generate alignment based heatmaps.
   # locacc.snake: Generate locacc plots (tool from Martin).
   # uid-tag.snake: Generate a csv file that matches the uid and tags.
@@ -83,6 +85,7 @@ of a mapping:
   # summarize-mappings.snake: analyze mapping results, generating plots and tables.
   # constant-arrow.snake: fit constant arrow model, generating csv file of errormode,
   # and make Fishbone plots using the csv file.
+  # constant-arrow-regular.snake: fit constant arrow model with filter = 1000bp.
   # heatmaps.snake: Generate alignment based heatmaps.
   # locacc.snake: Generate locacc plots (tool from Martin).
   # uid-tag.snake: Generate a csv file that matches the uid and tags.
