@@ -29,10 +29,17 @@ makeReport <- function(reportbh) {
   report_sum$IdxHighestNamed[report_sum$IdxHighest == -1] = "X"
   report_sum$BarcodePair = paste(report_sum$IdxLowestNamed,report_sum$IdxHighestNamed,sep="--")
   report_sum$Barcoded = report_sum$IdxLowestNamed!="X" & report_sum$IdxHighestNamed!="X"
-
+  report_sum = report_sum %>% arrange(BarcodePair)
   unique_bps = report_sum %>% filter(Barcoded) %>% filter(PassedFilters == 1) %>% distinct(BarcodePair)
   zmwYield = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW) %>% count(BarcodePair)
   zmwYield = rename(zmwYield, NumZMWs = n)
+  
+  report_sum = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
+  relevant_bps = report_sum %>% filter(PassedFilters == 1) %>% group_by(BarcodePair) %>% summarize(n=n()) %>% filter(n>100)
+  if (nrow(relevant_bps) > 500)
+    relevant_bps = relevant_bps[1:500,]
+  
+  report_sum = report_sum %>% filter(BarcodePair %in% relevant_bps$BarcodePair)
 
   zmwYieldVsMeanScore1 = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ScoreCombined) %>% group_by(BarcodePair) %>% summarise(MeanScore=mean(ScoreCombined))
   zmwYieldVsMeanScore2 = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ScoreCombined) %>% group_by(BarcodePair) %>% count(BarcodePair)
@@ -210,42 +217,44 @@ makeReport <- function(reportbh) {
   report$HQLength = sapply(report$ReadLengths,sum)
 
   unique_bps = report %>% filter(Barcoded) %>% filter(PassedFilters == 1) %>% distinct(BarcodePair)
-  reportFilteredADP = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
+  report_relevant = report %>% filter(BarcodePair %in% relevant_bps$BarcodePair)
+  reportFilteredADP = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
   reportFilteredADP$NumAdapters = as.numeric(reportFilteredADP$NumAdapters)
   if (any(reportFilteredADP$NumAdapters >= 2)) reportFilteredADP[reportFilteredADP$NumAdapters >= 2,]$NumAdapters = 2
   reportFilteredADP = reportFilteredADP%>% mutate(Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
 
-  reportFilteredADP_pass = report %>% filter(Barcoded, PassedFilters == 1) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
+  reportFilteredADP_pass = report_relevant %>% filter(Barcoded, PassedFilters == 1) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
   reportFilteredADP_pass$NumAdapters = as.numeric(reportFilteredADP_pass$NumAdapters)
   if (any(reportFilteredADP_pass$NumAdapters >= 2)) reportFilteredADP_pass[reportFilteredADP_pass$NumAdapters >= 2,]$NumAdapters = 2
 
-  reportFiltered = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% mutate(Filter = "NONE", ScoreLead = ifelse(ScoreLead==-1,NA,ScoreLead))
+  reportFiltered = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% mutate(Filter = "NONE", ScoreLead = ifelse(ScoreLead==-1,NA,ScoreLead))
   reportFiltered_pass = reportFiltered %>% filter(PassedFilters == 1) %>% mutate(Filter = "PASS")
 
   reportFiltered$ScoreCombinedAll = reportFiltered$ScoreCombined
   if (any(reportFiltered$PassedFilters == 0)) reportFiltered[reportFiltered$PassedFilters == 0,]$ScoreCombined = NA
 
-  numadapters = report %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, NumAdapters,Barcoded) %>% group_by(BarcodePair, NumAdapters, Barcoded)
+  numadapters = report_relevant %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, NumAdapters,Barcoded) %>% group_by(BarcodePair, NumAdapters, Barcoded)
 
-  baseYield = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, PassedFilters) %>% unnest(ReadLengths) %>% group_by(BarcodePair,PassedFilters) %>% mutate(MegaBases = sum(ReadLengths) / 1000000) %>% select(BarcodePair, MegaBases, PassedFilters) %>% ungroup() %>% distinct(BarcodePair,MegaBases, PassedFilters) %>% mutate(Filter = PassedFilters) %>% ungroup() %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
-  readYield = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, PassedFilters) %>% unnest(ReadLengths) %>% group_by(BarcodePair,PassedFilters) %>% count(BarcodePair, PassedFilters) %>% rename(NumReads = n) %>% mutate(Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
-  zmwYield = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, PassedFilters) %>% count(BarcodePair, PassedFilters) %>% rename(NumZMWs = n, Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
+  baseYield = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, PassedFilters) %>% unnest(ReadLengths) %>% group_by(BarcodePair,PassedFilters) %>% mutate(MegaBases = sum(ReadLengths) / 1000000) %>% select(BarcodePair, MegaBases, PassedFilters) %>% ungroup() %>% distinct(BarcodePair,MegaBases, PassedFilters) %>% mutate(Filter = PassedFilters) %>% ungroup() %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
+  readYield = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, PassedFilters) %>% unnest(ReadLengths) %>% group_by(BarcodePair,PassedFilters) %>% count(BarcodePair, PassedFilters) %>% rename(NumReads = n) %>% mutate(Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
+  zmwYield = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, PassedFilters) %>% count(BarcodePair, PassedFilters) %>% rename(NumZMWs = n, Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
 
-  readLengthsUnnestedByBC = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, ScoreCombined) %>% unnest(ReadLengths) %>% mutate(ReadLengths = ReadLengths / 1000)
-  readLengthsUnnestedByBCZmw = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ReadLengths, ScoreCombined) %>% unnest(ReadLengths) %>% group_by(BarcodePair,ZMW) %>% mutate(KiloBases = sum(ReadLengths) / 1000) %>% select(BarcodePair, KiloBases,ScoreCombined, ZMW) %>% ungroup() %>% distinct(BarcodePair,KiloBases,ScoreCombined, ZMW)
+  readLengthsUnnestedByBC = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, ScoreCombined) %>% unnest(ReadLengths) %>% mutate(ReadLengths = ReadLengths / 1000)
+  readLengthsUnnestedByBCZmw = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ReadLengths, ScoreCombined) %>% unnest(ReadLengths) %>% group_by(BarcodePair,ZMW) %>% mutate(KiloBases = sum(ReadLengths) / 1000) %>% select(BarcodePair, KiloBases,ScoreCombined, ZMW) %>% ungroup() %>% distinct(BarcodePair,KiloBases,ScoreCombined, ZMW)
 
-  barcodeCounts = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% count(BarcodePair)
-  titration = report %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ScoreCombined) %>% group_by(BarcodePair) %>% arrange(BarcodePair,desc(ScoreCombined)) %>% count(BarcodePair,ScoreCombined) %>% mutate(cs = cumsum(n))
+  barcodeCounts = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% count(BarcodePair)
+  titration = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ScoreCombined) %>% group_by(BarcodePair) %>% arrange(BarcodePair,desc(ScoreCombined)) %>% count(BarcodePair,ScoreCombined) %>% mutate(cs = cumsum(n))
   titration$Filter = "NONE"
-  titration_pass = report %>% filter(Barcoded, PassedFilters) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ScoreCombined) %>% group_by(BarcodePair) %>% arrange(BarcodePair,desc(ScoreCombined)) %>% count(BarcodePair,ScoreCombined) %>% mutate(cs = cumsum(n))
+  titration_pass = report_relevant %>% filter(Barcoded, PassedFilters) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ScoreCombined) %>% group_by(BarcodePair) %>% arrange(BarcodePair,desc(ScoreCombined)) %>% count(BarcodePair,ScoreCombined) %>% mutate(cs = cumsum(n))
   titration_pass$Filter = "PASS"
 
   readLengthsUnnested = report %>% select(ReadLengths, Barcoded) %>% unnest(ReadLengths)
 
   dpi = 150
-  facetHeight = max(nrow(unique_bps)+1,4)/4*5+1
-  yieldHeight = max(nrow(unique_bps)+1,4)*0.5+3
-  facetWidth = 5 + min(nrow(unique_bps)+1,4)*5
+  unique_bps_relevant = unique_bps %>% filter(BarcodePair %in% relevant_bps$BarcodePair)
+  facetHeight = max(nrow(unique_bps_relevant)+1,4)/4*5+1
+  yieldHeight = max(nrow(unique_bps_relevant)+1,4)*0.5+3
+  facetWidth = 5 + min(nrow(unique_bps_relevant)+1,4)*5
 
   g = ggplot(bind_rows(titration,titration_pass)) +
     facet_wrap(~BarcodePair, scales = "free_y", ncol = 4)+
@@ -346,7 +355,7 @@ makeReport <- function(reportbh) {
     geom_bar(aes(BarcodePair, NumZMWs, fill=Filter), stat='identity', width = .5)+
     scale_y_continuous(labels=comma)+ coord_flip()+
     theme_minimal() + theme(axis.text.x = element_text(hjust=1)) + ylab("Number of ZMWs")+
-    ggtitle(paste("CV with filter: NONE=",(zmwYield %>% group_by(BarcodePair) %>% mutate(n=sum(NumZMWs)) %>% distinct(BarcodePair,n) %>% ungroup() %>% summarize(cv=round(100*sd(n)/mean(n))))$cv," PASS=",(zmwYield %>% filter(Filter=="PASS") %>% ungroup() %>% summarize(cv=round(100*sd(NumZMWs)/mean(NumZMWs))))$cv,sep=""))+
+    ggtitle(paste("CV with filter: NONE=",(zmwYield %>% group_by(BarcodePair) %>% mutate(n=sum(NumZMWs)) %>% ungroup() %>% distinct(BarcodePair,n)%>% summarize(cv=round(100*sd(n)/mean(n))))$cv," PASS=",(zmwYield %>% filter(Filter=="PASS") %>% ungroup() %>% summarize(cv=round(100*sd(NumZMWs)/mean(NumZMWs))))$cv,sep=""))+
     theme(plot.title = element_text(hjust = 0.5))
   reportbh$ggsave("detail_yield_zmw.png",
                   g,
@@ -365,7 +374,7 @@ makeReport <- function(reportbh) {
     geom_bar(aes(BarcodePair, NumReads, fill=Filter), stat='identity', width = .5)+
     scale_y_continuous(labels=comma)+ coord_flip()+
     theme_minimal() + theme(axis.text.x = element_text(hjust=1)) + ylab("Number of Reads")+
-    ggtitle(paste("CV with filter: NONE=",(readYield %>% group_by(BarcodePair) %>% mutate(n=sum(NumReads)) %>% distinct(BarcodePair,n) %>% ungroup() %>% summarize(cv=round(100*sd(n)/mean(n))))$cv," PASS=",(readYield %>% filter(Filter=="PASS") %>% ungroup() %>% summarize(cv=round(100*sd(NumReads)/mean(NumReads))))$cv,sep=""))+
+    ggtitle(paste("CV with filter: NONE=",(readYield %>% group_by(BarcodePair) %>% mutate(n=sum(NumReads)) %>% ungroup() %>% distinct(BarcodePair,n) %>% summarize(cv=round(100*sd(n)/mean(n))))$cv," PASS=",(readYield %>% filter(Filter=="PASS") %>% ungroup() %>% summarize(cv=round(100*sd(NumReads)/mean(NumReads))))$cv,sep=""))+
     theme(plot.title = element_text(hjust = 0.5))
   reportbh$ggsave("detail_yield_read.png",
                   g,
@@ -384,7 +393,7 @@ makeReport <- function(reportbh) {
     geom_bar(aes(BarcodePair, MegaBases, fill=Filter), stat='identity', width = .5)+
     scale_y_continuous(labels=comma)+
     theme_minimal() +coord_flip() + theme(axis.text.x = element_text(hjust=1)) + ylab("Yield in Mega Bases")+
-    ggtitle(paste("CV with filter: NONE=",(baseYield %>% group_by(BarcodePair) %>% mutate(n=sum(MegaBases)) %>% distinct(BarcodePair,n) %>% ungroup() %>% summarize(cv=round(100*sd(n)/mean(n))))$cv," PASS=",(baseYield %>% filter(Filter=="PASS") %>% ungroup() %>% summarize(cv=round(100*sd(MegaBases)/mean(MegaBases))))$cv,sep=""))+
+    ggtitle(paste("CV with filter: NONE=",(baseYield %>% group_by(BarcodePair) %>% mutate(n=sum(MegaBases)) %>% ungroup() %>% distinct(BarcodePair,n) %>% summarize(cv=round(100*sd(n)/mean(n))))$cv," PASS=",(baseYield %>% filter(Filter=="PASS") %>% ungroup() %>% summarize(cv=round(100*sd(MegaBases)/mean(MegaBases))))$cv,sep=""))+
     theme(plot.title = element_text(hjust = 0.5))
   reportbh$ggsave("detail_yield_base.png",
                   g,
