@@ -19,6 +19,9 @@ library(hexbin,quietly = TRUE, warn.conflicts = FALSE)
 
 # The core function, change the implementation in this to add new features.
 makeReport <- function(reportbh) {
+  s = unlist(strsplit(args[1],'/'))
+  args[1] = paste(s[1:length(s)-1],collapse = "/")
+  
   reportbh$write.table("guess.csv",
                        as.data.frame(fread(paste0(args[1],"/barcoded.lima.guess"))),
                        id = "guess.csv",
