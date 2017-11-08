@@ -71,7 +71,7 @@ makeReport <- function(reportbh) {
     g,width=20,height=15,units="cm",
     id = "summary_meanscore_vs_yield_jitter",
     title = "summary_meanscore_vs_yield_jitter",
-    caption = "summary_meanscore_vs_yield_jitter",
+    caption = "summary_meanscore_vs_yield_jitter: ZMW yield vs Mean Score, as jitter",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -86,7 +86,7 @@ makeReport <- function(reportbh) {
     g,width=20,height=15,units="cm",
     id = "summary_meanscore_vs_yield_jitter_log10",
     title = "summary_meanscore_vs_yield_jitter_log10",
-    caption = "summary_meanscore_vs_yield_jitter_log10",
+    caption = "summary_meanscore_vs_yield_jitter_log10: ZMW yield vs Mean Score, as jitter, on a y-log scale",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -101,7 +101,7 @@ makeReport <- function(reportbh) {
     g,width=20,height=15,units="cm",
     id = "summary_meanscore_vs_yield_hex",
     title = "summary_meanscore_vs_yield_hex",
-    caption = "summary_meanscore_vs_yield_hex",
+    caption = "summary_meanscore_vs_yield_hex: ZMW yield vs Mean Score, as hexbin",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -116,7 +116,7 @@ makeReport <- function(reportbh) {
     g,width=20,height=15,units="cm",
     id = "summary_meanscore_vs_yield_hex_log10",
     title = "summary_meanscore_vs_yield_hex_log10",
-    caption = "summary_meanscore_vs_yield_hex_log10",
+    caption = "summary_meanscore_vs_yield_hex_log10: ZMW yield vs Mean Score, as hexbin, on a y-log scale",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -130,7 +130,7 @@ makeReport <- function(reportbh) {
     g,width=20,height=15,units="cm",
     id = "summary_yield_zmw",
     title = "summary_yield_zmw",
-    caption = "summary_yield_zmw",
+    caption = "summary_yield_zmw: Yield per barcode",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -144,7 +144,7 @@ makeReport <- function(reportbh) {
     g,width=20,height=15,units="cm",
     id = "summary_score_hist",
     title = "summary_score_hist",
-    caption = "summary_score_hist",
+    caption = "summary_score_hist: Score distribution across all barcodes",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -162,7 +162,7 @@ makeReport <- function(reportbh) {
     width=50,height=15,units="cm",g,
     id = "summary_score_hist_2d",
     title = "summary_score_hist_2d",
-    caption = "summary_score_hist_2d",
+    caption = "summary_score_hist_2d: Score distribution per barcode pair",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -180,7 +180,7 @@ makeReport <- function(reportbh) {
     width=50,height=15,units="cm",g,
     id = "summary_read_length_hist_2d",
     title = "summary_read_length_hist_2d",
-    caption = "summary_read_length_hist_2d",
+    caption = "summary_read_length_hist_2d: Read length distribution per barcode",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -198,7 +198,7 @@ makeReport <- function(reportbh) {
     units="cm",g,
     id = "summary_hq_length_hist_2d",
     title = "summary_hq_length_hist_2d",
-    caption = "summary_hq_length_hist_2d",
+    caption = "summary_hq_length_hist_2d: HQ length distribution per barcode",
     tags = c("lima"),
     limitsize = FALSE
   )
@@ -286,7 +286,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_score_vs_yield",
                   title = "detail_score_vs_yield",
-                  caption = "detail_score_vs_yield",
+                  caption = "detail_score_vs_yield: If we would threshold at a barcode score X, how much cumulative yield would be lost",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -304,7 +304,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_score_lead",
                   title = "detail_score_lead",
-                  caption = "detail_score_lead",
+                  caption = "detail_score_lead: Advanced metric score lead describes score distance between the best barcode pair and the second best pair. Definition: The mean absolute element-wise score difference of the best to alternative pair.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -322,7 +322,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_signal_increase",
                   title = "detail_signal_increase",
-                  caption = "detail_signal_increase",
+                  caption = "detail_signal_increase: Advanced metric signal increase, what is the score gain between using only one barcode or a pair of barcodes. Definition: Difference of ScoreFirst to a combination of ScoreFirst and ScoreSecondCandidate.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -342,7 +342,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_hq_length_vs_score",
                   title = "detail_hq_length_vs_score",
-                  caption = "detail_hq_length_vs_score",
+                  caption = "detail_hq_length_vs_score: Hexbin over Mean Score vs HQ Length in Kilo Bases (99.9% percentile). Colors correspond to counts in each bin. Enables us to spot where the ZMW mass of each barcode pair is located.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -362,7 +362,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_read_length_vs_score",
                   title = "detail_read_length_vs_score",
-                  caption = "detail_read_length_vs_score",
+                  caption = "detail_read_length_vs_score: Hexbin over Mean Score vs Subread Length in Kilo Bases (99.9% percentile). Colors correspond to counts in each bin. Enables us to spot where the ZMW mass of each barcode pair is located.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -381,7 +381,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_yield_zmw",
                   title = "detail_yield_zmw",
-                  caption = "detail_yield_zmw",
+                  caption = "detail_yield_zmw: Per barcode pair ZMW yield",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -400,7 +400,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_yield_read",
                   title = "detail_yield_read",
-                  caption = "detail_yield_read",
+                  caption = "detail_yield_read: Per barcode pair read yield",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -419,7 +419,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_yield_base",
                   title = "detail_yield_base",
-                  caption = "detail_yield_base",
+                  caption = "detail_yield_base: Per barcode pair mega base yield",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -436,7 +436,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_hq_length_hist_barcoded_or_not",
                   title = "detail_hq_length_hist_barcoded_or_not",
-                  caption = "detail_hq_length_hist_barcoded_or_not",
+                  caption = "detail_hq_length_hist_barcoded_or_not: Histogram over the HQ region length, also known as polymerase read length, grouped by successfully barcoded and non-barcoded. Useful for microbial multiplex with the goal to maximize barcode-able insert size.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -453,7 +453,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_read_length_hist_barcoded_or_not",
                   title = "detail_read_length_hist_barcoded_or_not",
-                  caption = "detail_read_length_hist_barcoded_or_not",
+                  caption = "detail_read_length_hist_barcoded_or_not: Histogram over the subread length, grouped by successfully barcoded and non-barcoded.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -475,7 +475,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_scores_per_adapter",
                   title = "detail_scores_per_adapter",
-                  caption = "detail_scores_per_adapter",
+                  caption = "detail_scores_per_adapter: Score per number of adapters (lines) and all adapters (histogram).",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -496,7 +496,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_num_adapters",
                   title = "detail_num_adapters",
-                  caption = "detail_num_adapters",
+                  caption = "detail_num_adapters: Histogram over number of adapters per barcode pair.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -515,7 +515,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_read_length_hist_group_same_y",
                   title = "detail_read_length_hist_group_same_y",
-                  caption = "detail_read_length_hist_group_same_y",
+                  caption = "detail_read_length_hist_group_same_y: Histogram over read lengths per barcode pair (99.9% percentile, 1000 binwidth). Facets share y-axis limit per row.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -533,7 +533,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_read_length_hist_group_free_y",
                   title = "detail_read_length_hist_group_free_y",
-                  caption = "detail_read_length_hist_group_free_y",
+                  caption = "detail_read_length_hist_group_free_y: Histogram over read lengths per barcode pair (99.9% percentile, 1000 binwidth). Each facet has its own y-axis limit.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -550,7 +550,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_read_length_linehist_nogroup",
                   title = "detail_read_length_linehist_nogroup",
-                  caption = "detail_read_length_linehist_nogroup",
+                  caption = "detail_read_length_linehist_nogroup: Line histogram over read lengths, grouped and colored by barcode pair (99.9% percentile, 1000 binwidth).",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -569,7 +569,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_hq_length_hist_group_same_y",
                   title = "detail_hq_length_hist_group_same_y",
-                  caption = "detail_hq_length_hist_group_same_y",
+                  caption = "detail_hq_length_hist_group_same_y: Histogram over HQ lengths per barcode pair (99.9% percentile, 1000 binwidth). Facets share y-axis limit per row.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -587,7 +587,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_hq_length_hist_group_free_y",
                   title = "detail_hq_length_hist_group_free_y",
-                  caption = "detail_hq_length_hist_group_free_y",
+                  caption = "detail_hq_length_hist_group_free_y: Histogram over HQ lengths per barcode pair (99.9% percentile, 1000 binwidth). Each facet has its own y-axis limit.",
                   tags=c("lima"),
                   dpi=dpi
   )
@@ -604,7 +604,7 @@ makeReport <- function(reportbh) {
                   limitsize = FALSE,
                   id = "detail_hq_length_linehist_nogroup",
                   title = "detail_hq_length_linehist_nogroup",
-                  caption = "detail_hq_length_linehist_nogroup",
+                  caption = "detail_hq_length_linehist_nogroup: Line histogram over HQ lengths, grouped and colored by barcode pair (99.9% percentile, 1000 binwidth).",
                   tags=c("lima"),
                   dpi=dpi
   )
