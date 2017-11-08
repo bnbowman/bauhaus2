@@ -74,6 +74,6 @@ Generate heatmaps workflow, starting from subreads.
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
-
-  10 directories, 50 files
+  
+  10 directories, 49 files
 
