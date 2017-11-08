@@ -70,11 +70,10 @@ Generate heatmaps workflow, starting from subreads.
   |-- scripts
   |   `-- R
   |       |-- Bauhaus2.R
-  |       |-- limaReportDetail.R
-  |       `-- limaReportSummary.R
+  |       `-- limaReport.R
   |-- snakemake.log
   `-- workflow
       `-- Snakefile
-  
+
   10 directories, 50 files
- 
+
