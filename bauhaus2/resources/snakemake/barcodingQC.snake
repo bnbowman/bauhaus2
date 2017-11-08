@@ -15,5 +15,5 @@ rule barcode_and_qc_report:
     input: lima_reports.values()
     shell:
         """
-        Rscript --vanilla scripts/R/limaReportSummary.R {input}
+        Rscript --vanilla scripts/R/limaReport.R {input}
         """

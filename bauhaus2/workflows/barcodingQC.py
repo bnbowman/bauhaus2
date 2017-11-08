@@ -3,21 +3,22 @@ from bauhaus2 import Workflow
 
 from .subreads import subreadsPlan
 
+
 def BarcodingPlan(ct, args):
     # test if consensusReadSet and do differently if so
-    return [ "barcoding.snake"] + \
-             subreadsPlan(ct, args)
+    return ["barcoding.snake"] + \
+        subreadsPlan(ct, args)
+
 
 class BarcodingQCWorkflow(Workflow):
     """
     Push reads through lima and generate barcoding QC reports
     """
-    WORKFLOW_NAME        = "BarcodingQC"
+    WORKFLOW_NAME = "BarcodingQC"
     CONDITION_TABLE_TYPE = LimaConditionTable
-    R_SCRIPTS = ("R/limaReportDetail.R", 
-                 "R/limaReportSummary.R", 
+    R_SCRIPTS = ("R/limaReport.R",
                  "R/Bauhaus2.R")
 
     def plan(self):
-        return [ "barcodingQC.snake" ] + \
+        return ["barcodingQC.snake"] + \
             BarcodingPlan(self.conditionTable, self.cliArgs)

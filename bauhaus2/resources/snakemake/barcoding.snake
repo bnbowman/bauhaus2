@@ -36,12 +36,12 @@ rule lima_one_condition:
     output:
         bam= "conditions/{condition}/lima/barcoded.bam",  
         limaReport="conditions/{condition}/lima/barcoded.lima.report"       
-    threads: 8
+    threads: 24
     shell:
         """
         . /etc/profile.d/modules.sh
         module add smrttools/incremental
-        lima --num-threads {threads} {input.subreadset} {input.barcodeset} {output.bam} {ct_prefix}
+        lima --num-threads {threads} {input.subreadset} {input.barcodeset} {output.bam} {ct_prefix} --peek 35000 --guess 45 --guess-min-count 10
         """
         
 rule collect_barcodeset_one_condition:
