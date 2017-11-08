@@ -7,7 +7,7 @@ until we have a better plan.
 
 Generate heatmaps workflow, starting from subreads.
 
-  $ bauhaus2 --no-smrtlink --noGrid generate -w BarcodingQC -t ${BH_ROOT}test/data/one-tiny-lima-asymmetric-barcode.csv -o lima
+  $ bauhaus2 --no-smrtlink --noGrid generate -w BarcodingQC -t ${BH_ROOT}test/data/barcode2test.csv -o lima
   Validation and input resolution succeeded.
   Generated runnable workflow to "lima"
 
@@ -23,6 +23,7 @@ Generate heatmaps workflow, starting from subreads.
   |       |   |-- barcoded.bam
   |       |   |-- barcoded.bam.pbi
   |       |   |-- barcoded.lima.counts
+  |       |   |-- barcoded.lima.guess
   |       |   |-- barcoded.lima.report
   |       |   |-- barcoded.lima.summary
   |       |   `-- barcoded.subreadset.xml
@@ -33,9 +34,37 @@ Generate heatmaps workflow, starting from subreads.
   |-- prefix.sh
   |-- reports
   |   `-- BarcodingQC
+  |       |-- counts.csv
+  |       |-- detail_hq_length_hist_barcoded_or_not.png
+  |       |-- detail_hq_length_hist_group_free_y.png
+  |       |-- detail_hq_length_hist_group_same_y.png
+  |       |-- detail_hq_length_linehist_nogroup.png
+  |       |-- detail_hq_length_vs_score.png
+  |       |-- detail_num_adapters.png
+  |       |-- detail_read_length_hist_barcoded_or_not.png
+  |       |-- detail_read_length_hist_group_free_y.png
+  |       |-- detail_read_length_hist_group_same_y.png
+  |       |-- detail_read_length_linehist_nogroup.png
+  |       |-- detail_read_length_vs_score.png
+  |       |-- detail_score_lead.png
+  |       |-- detail_score_vs_yield.png
+  |       |-- detail_scores_per_adapter.png
+  |       |-- detail_signal_increase.png
+  |       |-- detail_yield_base.png
+  |       |-- detail_yield_read.png
+  |       |-- detail_yield_zmw.png
+  |       |-- guess.csv
   |       |-- report.Rd
   |       |-- report.json
+  |       |-- summary.csv
+  |       |-- summary_hq_length_hist_2d.png
+  |       |-- summary_meanscore_vs_yield_hex.png
+  |       |-- summary_meanscore_vs_yield_hex_log10.png
+  |       |-- summary_meanscore_vs_yield_jitter.png
+  |       |-- summary_meanscore_vs_yield_jitter_log10.png
+  |       |-- summary_read_length_hist_2d.png
   |       |-- summary_score_hist.png
+  |       |-- summary_score_hist_2d.png
   |       `-- summary_yield_zmw.png
   |-- run.sh
   |-- scripts
@@ -47,5 +76,5 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  10 directories, 21 files
+  10 directories, 50 files
  
