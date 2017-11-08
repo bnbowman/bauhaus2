@@ -44,6 +44,8 @@ def parse_exe_or_module(cmd, exe_name, module_prefix, libs_only=None,
     """
     if not isinstance(module_prefix, (tuple, list)):
         module_prefix = (module_prefix,)
+    if not isinstance(exe_name, (tuple, list)):
+        exe_name = [exe_name for _ in module_prefix]
     found = False
     if cmd:
         if which(cmd.split()[0]):
@@ -67,15 +69,19 @@ def parse_exe_or_module(cmd, exe_name, module_prefix, libs_only=None,
                 exe = ' '.join(cmd.split()[1:])
             else:
                 # or no args, in which case we need to use a default exe
-                exe = exe_name
+                for i, opt in enumerate(module_prefix):
+                    if cmd.split()[0].startswith(opt):
+                        module = i
+                exe = exe_name[module]
             module = cmd.split()[0]
             log.info("Module provided, using {m} and {e}".format(
                 m=module[:-1], e=exe))
-        elif cmd.split()[0] == exe_name:
+        elif cmd.split()[0] in exe_name:
             # we want the mainline module, but are potentially supplying args
             found = True
             exe = cmd
-            module = '{}/mainline\n'.format(module_prefix[0])
+            module = '{}/mainline\n'.format(
+                module_prefix[exe_name.index(cmd.split()[0])])
             log.info("Exe provided, using {m} and {e}".format(
                 m=module[:-1], e=exe))
     elif env in os.environ:
@@ -86,7 +92,7 @@ def parse_exe_or_module(cmd, exe_name, module_prefix, libs_only=None,
                                           module_prefix, libs_only=libs_only)
     if not found:
         # fallback on mainline module
-        log.warn("{} not specified, using mainline module".format(exe_name))
-        exe = exe_name
+        log.warn("{} not specified or not found, using mainline module".format(exe_name))
+        exe = exe_name[0]
         module = "{}/mainline\n".format(module_prefix[0])
     return exe, module

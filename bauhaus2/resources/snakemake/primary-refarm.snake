@@ -135,6 +135,9 @@ rule run_baz2bam:
     threads: 16
     shell:
         """
+        if [ -e {output.stsh5} ] ;
+        then unlink `pwd`/{output.stsh5} ; unlink `pwd`/{output.stsxml} ;
+        fi
         module purge
         module load {params.module}
         {params.exe} -o {params.prefix} -m {input.meta} \
@@ -148,6 +151,7 @@ rule run_baz2bam:
         dataset copyto {output.sset} \
         {params.toCopy}/{params.mov}.subreadset.xml ;
         cp {input.baz} {params.toCopy}/{params.mov}.baz ;
+        cp {output.stsh5} {params.toCopy}/{params.mov}.sts.h5 ;
         pwd > {params.toCopy}/{params.mov}.Bauhaus2analysis.txt ;
         echo "Condition: {params.cond}" >> \
         {params.toCopy}/{params.mov}.bauhaus2analysis.txt ;
