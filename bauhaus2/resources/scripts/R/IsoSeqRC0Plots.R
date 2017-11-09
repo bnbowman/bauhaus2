@@ -43,7 +43,10 @@ makeReadLengthPlots <- function(report, conditions) {
             logging::loginfo(paste('Could not find all files in ', print(conditions$CSV), sep=''))
             return (NA)
         } # stop processing if some files missing
-
+        if (nrow(read.table(conditions$CSV, header=TRUE)) == 0) {
+            logging::loginfo(paste('File ', print(conditions$CSV), ' is empty', sep=''))
+            return (NA)
+        } # stop processing if csv file is empty
         make_dat_from_csv <- function(csv_fn, cd) {
             # input csv file must contain fields, ('name', 'readlength') where 'name' repsent read name
             # return data frame ('readlength', 'condition')
@@ -62,7 +65,7 @@ makeReadLengthPlots <- function(report, conditions) {
         # Make vars to display in plot
         id <- paste("isoseq_rc0_", csv_prefix, "_readlength_hist", sep="")
         png_fn <- paste(id, ".png", sep="")
-        title <- paste("IsoSeq RC0 ", csv_desc, "Read Length Histogram", sep="")
+        title <- paste("IsoSeq RC0", csv_desc, "Read Length Histogram", sep=" ")
         caption <- title
         tags <- c("isoseq", "rc0", csv_prefix, "histogram")
 
@@ -111,7 +114,7 @@ makeSIRVPlots <- function(report, conditions)
         # make vars to display in plot
         id <- paste("isoseq_rc0_", prefix, sep="")
         png_fn <- paste(id, ".png", sep="")
-        title <- paste("IsoSeq RC0 ", desc, sep="")
+        title <- paste("IsoSeq RC0", desc, sep=" ")
         caption <- title
         tags <- c("isoseq", "rc0", 'sirv', "histogram")
         # Make data frame
