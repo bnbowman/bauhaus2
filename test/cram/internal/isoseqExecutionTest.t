@@ -20,6 +20,7 @@ Check reports.
   isoseq_rc0_collapse_to_sirv_n_false_negative.png
   isoseq_rc0_collapse_to_sirv_n_false_positive.png
   isoseq_rc0_collapse_to_sirv_n_true_positive.png
+  isoseq_rc0_collapsed_to_sirv_rep_readlength_hist.png
   isoseq_rc0_consensus_isoforms_readlength_hist.png
   isoseq_rc0_flnc_readlength_hist.png
   isoseq_rc0_flnc_reseq_to_hg_selected.png
