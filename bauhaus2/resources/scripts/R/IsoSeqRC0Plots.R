@@ -43,15 +43,11 @@ makeReadLengthPlots <- function(report, conditions) {
             logging::loginfo(paste('Could not find all files in ', print(conditions$CSV), sep=''))
             return (NA)
         } # stop processing if some files missing
-        if (nrow(read.table(conditions$CSV, header=TRUE)) == 0) {
-            logging::loginfo(paste('File ', print(conditions$CSV), ' is empty', sep=''))
-            return (NA)
-        } # stop processing if csv file is empty
         make_dat_from_csv <- function(csv_fn, cd) {
             # input csv file must contain fields, ('name', 'readlength') where 'name' repsent read name
             # return data frame ('readlength', 'condition')
             data.frame(readlength<-read.table(csv_fn, header=TRUE, colClasses=c("NULL", "integer")),
-                       condition<-factor(rep(cd, length(readlength))))
+                       condition<-factor(rep(cd, nrow(readlength))))
         }
         make_dat_from_csvs <- function(csv_fns, conditions) { # return rbind data frame ('readlength', 'condition')
             stopifnot(length(csv_fns) == length(conditions))
