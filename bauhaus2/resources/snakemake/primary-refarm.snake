@@ -210,7 +210,7 @@ rule run_poc_basecaller:
     params:
         module=lambda wc: ct.basecallerModule(wc.condition),
         exe=lambda wc: ct.basecallerExe(wc.condition)
-    threads: 8
+    threads: 2
     shell:
         """
         module purge
@@ -219,6 +219,6 @@ rule run_poc_basecaller:
             --inputfile {input.trc} \
             --metadata {input.meta} \
             --adapters {input.adapters} \
-            --numthreads {threads} \
+            --numthreads 8 \
             --outputfile {output}
         """
