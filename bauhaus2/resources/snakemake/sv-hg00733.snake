@@ -1,0 +1,30 @@
+from bauhaus2.runtime import ct
+
+ct_csv = "condition-table.csv"
+
+rule summary:
+    input:
+        print_env_log="log/print_env.log",
+        plots_csv="reports/plt.csv",
+        zia_report_json='reports/zia.report.json'
+
+rule validation:
+    input: ct_csv
+    output: 
+        print_env="log/print_env.log",
+        dir="conditions",
+        report_csv="conditions/sv-hg00733.report.csv",
+        plt_dir="reports",
+        plt_csv="reports/plt.csv",
+        zia_report_json='reports/zia.report.json'
+    shell:
+        """
+        source /mnt/software/Modules/current/init/bash && module purge && module load pbsvvv
+        
+        env > {output.print_env} &&  which validate-sv-hg00733-jobs >> {output.print_env} && which validate-sv-plots >> {output.print_env}
+        validate-sv-hg00733-jobs {input} {output.dir} {output.report_csv} 2>&1 | tee {output.dir}/log
+        validate-sv-plots {output.report_csv} {output.plt_dir} {output.plt_csv} 2>&1 | tee {output.dir}/log
+
+        module load R/3.2.3-internal
+        Rscript --vanilla scripts/R/SV.R -i {output.plt_csv} -o {output.zia_report_json} 2>&1 | tee {output.dir}/log
+        """

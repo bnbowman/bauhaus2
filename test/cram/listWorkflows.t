@@ -12,5 +12,7 @@
   IsoSeqRC0
   MappingReports
   PrimaryRefarm
+  SV-FY1679
+  SV-HG00733
   UnrolledNoHQMapping
   UnrolledNoHQMappingArrowByReference

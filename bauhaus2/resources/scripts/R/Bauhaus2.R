@@ -400,7 +400,15 @@ bh2Reporter <-
         
         tablesToOutput <<- rbind(tablesToOutput, thisTbl)
       }
-    
+
+    ## Reigster a pre-existing png file to zia
+    .register.png <- function(png_file_name, id, title='Default Title', caption='No caption specified', tags=c(), uid="000000")
+    {
+      logging::loginfo("Registering png file:", print(png_file_name), ', id: ', print(id), sep=' ')
+      thisPlt <- list(id=unbox(id), image=unbox(png_file_name), title=unbox(title), caption=unbox(caption), tags=as.vector(tags, mode="character"), uid=unbox(id))
+      plotsToOutput <<- rbind(plotsToOutput, thisPlt)
+    }
+
     ## Output the report file as json.
     .write.report <- function()
     {
@@ -411,34 +419,15 @@ bh2Reporter <-
       write_json(list(plots = pp, tables = tt), reportOutputFile, pretty =
                    T)
       logging::loginfo(paste("Wrote report to: ", reportOutputFile))
-    }
-    
+    } 
     
     list(
       condition.table = cond_table,
       ggsave = .ggsave,
       write.table = .write.table,
       write.report = .write.report,
+      register.png = .register.png,
       outputDir = reportOutputDir,
       outputJSON = reportOutputFile
     )
   }
-
-
-if (0) {
-  r <-
-    bh2Reporter(
-      "~dalexander/Projects/rsync/bauhaus/test/data/two-tiny-movies.csv",
-      "/tmp/report.json"
-    )
-  
-  p <- qplot()
-  r$ggsave("1.png", p, "Id1", "Title1", "Caption1", tags = c())
-  r$ggsave("2.png", p, "Id2", "Title2", "Caption2", tags = c("A"))
-  
-  t <- data.frame(a = 1:3, b = 4:6)
-  r$write.table("foo.csv", t, "T1", "TTitle1", tags = c("A"))
-  r$write.table("foo2.csv", t, "T2", "TTitle2", tags = c())
-  
-  r$write.report()
-}
