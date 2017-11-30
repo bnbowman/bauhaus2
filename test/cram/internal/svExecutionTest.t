@@ -15,7 +15,7 @@ until we have a better plan.
   $ (cd sv && ./run.sh >/dev/null 2>&1)
 
 Check reports.
-  $ cd ${CWD}/sv/reports
+  $ cd ${CWD}/sv/reports/SV
   $ ls call_in_true.png 2>&1 >/dev/null && echo $?
   0
   $ ls call_not_true.png 2>&1 >/dev/null && echo $?
@@ -30,5 +30,5 @@ Check reports.
   0
   $ ls report.Rd 2>&1 >/dev/null && echo $?
   0
-  $ ls zia.report.json 2>&1 >/dev/null && echo $?
+  $ ls report.json 2>&1 >/dev/null && echo $?
   0

@@ -7,7 +7,7 @@ myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 plotwidth = 7.2
 plotheight = 4.2
-
+tags = c('SV')
 
 makeReport <- function(report, csv_fn)
 {
@@ -17,9 +17,10 @@ makeReport <- function(report, csv_fn)
     logging::loginfo(head(csv))
     for (i in 1:nrow(csv)) {
         name <- as.character(csv$name[i])
-        path <- as.character(csv$path[i])
+        path <- basename(as.character(csv$path[i]))
+        title <- gsub('_', ' ', gsub("\\.", " ", name))
         logging::loginfo(paste("PNG plot filepath:", print(path), ", id:", print(name), sep=" "))
-        report$register.png(path, name)
+        report$register.png(path, name, title=title, caption=title, tags=tags)
     }
     # Save the report object for later debugging
     save(report, file = file.path(report$outputDir, "report.Rd"))

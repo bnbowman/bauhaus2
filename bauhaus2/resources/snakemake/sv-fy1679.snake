@@ -5,24 +5,25 @@ ct_csv = "condition-table.csv"
 rule summary:
     input:
         print_env_log="log/print_env.log",
-        plots_csv="reports/plt.csv",
-        zia_report_json='reports/zia.report.json'
+        zia_report_json='reports/SV/report.json'
 
+# Must write report.json to under reports/subdir/ directory, otherwise, zia won't display
 rule validation:
     input: ct_csv
     output: 
         print_env="log/print_env.log",
         dir="conditions",
         report_csv="conditions/sv-fy1679.report.csv",
-        plt_dir="reports",
-        plt_csv="reports/plt.csv",
-        zia_report_json='reports/zia.report.json'
+        plt_dir="reports/SV",
+        plt_csv="reports/SV/plt.csv",
+        zia_report_json='reports/SV/report.json'
     shell:
         """
         source /mnt/software/Modules/current/init/bash && module purge && module load pbsvvv
         
         env > {output.print_env} &&  which validate-sv-fy1679-jobs >> {output.print_env} && which validate-sv-plots >> {output.print_env}
         validate-sv-fy1679-jobs {input} {output.dir} {output.report_csv} 2>&1 | tee {output.dir}/log
+        mkdir -p {output.plt_dir}
         validate-sv-plots {output.report_csv} {output.plt_dir} {output.plt_csv} 2>&1 | tee {output.dir}/log
 
         module load R/3.2.3-internal
