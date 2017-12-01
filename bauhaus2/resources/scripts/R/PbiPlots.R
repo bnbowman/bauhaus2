@@ -31,12 +31,12 @@ plotheight = 4.2
 
 makeReadLengthSurvivalPlots <- function(report, cd) {
   loginfo("Making Template Span Survival Plots")
-  
   cd2 = cd %>% dplyr::group_by(hole, Condition) %>% dplyr::summarise(tlen = sum(tlen))
   cd2 <- as.data.frame(cd2)
   
   cd2$SurvObj <- with(cd2, Surv(tlen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
+
   
   # When cd2.by.con is empty or only has one row, skip the following two plots
   if (nrow(cd2.by.con) > 1) {
@@ -45,7 +45,6 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
     p2 <-
       autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Template Span", title = "Template Span Survival (Log-scale)") + plTheme
     #  tp <- arrangeGrob(p1, p2, nrow = 2)
-    
     report$ggsave(
       "template_span_survival.png",
       p1,
@@ -78,35 +77,54 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
   cd2$SurvObj <- with(cd2, Surv(alen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
   
+  #against subread length
+  cd0 = as.data.frame(cd)
+  cd0$SurvObj <- with(cd0, Surv(tlen))
+  cd0.by.con <- survfit(SurvObj ~ Condition, data = cd0)
+  
   if (nrow(cd2.by.con) > 1) {
     p1 <-
-      autoplot(cd2.by.con) + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival") + plTheme
+      autoplot(cd2.by.con) + labs(x = "Aligned Pol Read Length", title = "Aligned Pol Read Length Survival") + plTheme
+    p3 <-
+      autoplot(cd0.by.con) + labs(x = "Aligned Subread Read Length", title = "Aligned Subread Read Length Survival") + plTheme
     p2 <-
-      autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Aligned Read Length", title = "Aligned Read Length Survival (Log-scale)") + plTheme
+      autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Aligned Pol Read Length", title = "Aligned Pol Read Length Survival (Log-scale)") + plTheme
     #  tp <- arrangeGrob(p1, p2, nrow = 2)
     
+    
     report$ggsave(
-      "aligned_read_length_survival.png",
+      "aligned_pol_read_length_survival.png",
       p1,
       width = plotwidth,
       height = plotheight,
-      id = "aligned_read_length_survival",
-      title = "Aligned Read Length Survival",
-      caption = "Aligned Read Length Survival",
+      id = "aligned_pol_read_length_survival",
+      title = "Aligned Pol Read Length Survival",
+      caption = "Aligned Pol Read Length Survival",
       tags = c("basic", "pbiplots", "survival", "read", "aligned"),
       uid = "0030003"
     )
     report$ggsave(
-      "aligned_read_length_survival (Log-scale).png",
+      "aligned_pol_read_length_survival (Log-scale).png",
       p2,
       width = plotwidth,
       height = plotheight,
-      id = "aligned_read_length_survival(log)",
-      title = "Aligned Read Length Survival (Log-scale)",
-      caption = "Aligned Read Length Survival (Log-scale)",
+      id = "aligned_pol_read_length_survival(log)",
+      title = "Aligned Pol Read Length Survival (Log-scale)",
+      caption = "Aligned Pol Read Length Survival (Log-scale)",
       tags = c("basic", "pbiplots", "survival", "read", "log", "aligned"),
       uid = "0030004"
     )
+     report$ggsave(
+      "aligned_subread_read_length_survival.png",
+       p3,
+       width = plotwidth,
+       height = plotheight,
+       id = "aligned_subread_read_length_survival",
+       title = "Aligned Subread Read Length Survival",
+       caption = "Aligned Subread Read Length Survival",
+       tags = c("basic", "pbiplots", "survival", "read", "aligned"),
+       uid = "0030017"
+     )
   }
 }
 
@@ -236,6 +254,8 @@ makeAccuracyDensityPlots <- function(report, cd) {
     uid = "0030008"
   )
   
+  
+  
   # loginfo("Making Template Span Violin Plot")
   # tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_violin() +
   #   plTheme + clFillScale + themeTilt +
@@ -266,20 +286,38 @@ makeAccuracyDensityPlots <- function(report, cd) {
     uid = "0030009"
   )
   
-  loginfo("Making Aligned Read Length Density Plot")
+  loginfo("Making Aligned Subread Read Length Density Plot")
   tp = ggplot(cd, aes(x = alen, colour = Condition)) + geom_density() +
     plTheme + clScale + themeTilt +
-    labs(y = "Density", title = "Aligned Read Length Density Plot", x = "Aligned Read Length (aend - astart)")
+    labs(y = "Density", title = "Aligned Subread Read Length Density Plot", x = "Aligned Subread Read Length (aend - astart)")
   report$ggsave(
-    "alen_density.png",
+    "alen_subread_density.png",
     tp,
-    id = "alen_density",
+    id = "alen_subread_density",
     width = plotwidth,
     height = plotheight,
-    title = "Aligned Read Length Density Plot",
-    caption = "Aligned Read Length Density Plot",
+    title = "Aligned Subread Read Length Density Plot",
+    caption = "Aligned Subread Read Length Density Plot",
     tags = c("basic", "pbiplots", "density", "read", "aligned"),
     uid = "0030010"
+  )
+  
+  loginfo("Making Aligned Pol Read Length Density Plot")
+  cd3 = cd %>% dplyr::group_by(hole, Condition) %>% dplyr::summarise(tlen = sum(tlen))
+  cd3 <- as.data.frame(cd3)
+  tp2 = ggplot(cd3, aes(x = tlen, colour = Condition)) + geom_density() +
+    plTheme + clScale + themeTilt +
+    labs(y = "Density", title = "Aligned Pol Read Length Density Plot", x = "Aligned Pol Read Length")
+  report$ggsave(
+    "alen_pol_density.png",
+    tp2,
+    id = "alen_pol_density",
+    width = plotwidth,
+    height = plotheight,
+    title = "Aligned Pol Read Length Density Plot",
+    caption = "Aligned Pol Read Length Density Plot",
+    tags = c("basic", "pbiplots", "density", "read", "aligned"),
+    uid = "0030018"
   )
   
   loginfo("Making Template Span Boxplot")

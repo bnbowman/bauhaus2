@@ -468,10 +468,12 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- acc_accvrl.png
   |   |   |-- acc_accvtl.png
   |   |   |-- acc_density.png
-  |   |   |-- alen_density.png
+  |   |   |-- alen_pol_density.png
+  |   |   |-- alen_subread_density.png
   |   |   |-- alen_v_qlen.png
-  |   |   |-- aligned_read_length_survival\ (Log-scale).png
-  |   |   |-- aligned_read_length_survival.png
+  |   |   |-- aligned_pol_read_length_survival\ (Log-scale).png
+  |   |   |-- aligned_pol_read_length_survival.png
+  |   |   |-- aligned_subread_read_length_survival.png
   |   |   |-- base_count_bar.png
   |   |   |-- etype__drate_boxplot.png
   |   |   |-- etype__irate_boxplot.png
@@ -559,7 +561,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 507 files
+  35 directories, 509 files
 
 
 
