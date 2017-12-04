@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+set -o pipefail
 THISDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 cd $THISDIR
 
