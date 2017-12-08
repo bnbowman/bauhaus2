@@ -155,6 +155,7 @@ rule run_baz2bam:
         pwd > {params.toCopy}/{params.mov}.Bauhaus2analysis.txt ;
         echo "Condition: {params.cond}" >> \
         {params.toCopy}/{params.mov}.bauhaus2analysis.txt ;
+        chmod g+w -R {params.toCopy} || true
         fi
         """
 
