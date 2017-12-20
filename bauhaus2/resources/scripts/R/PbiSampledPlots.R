@@ -285,7 +285,7 @@ makeSamplingPlots <-
           "pkMid Histogram - inaccurate reference reads",
           "pkMid Density Plot - Accurate vs Inaccurate bases",
           "PW Trend by Time",
-          "PolRate Trend by Time",
+          "1/PolRate Trend by Time",
           "IPD Trend by Time",
           "Mean Pulse Width by Time",
           "Mean Pkmid by Time",
@@ -718,17 +718,17 @@ makeSamplingPlots <-
                       color = Condition,
                       group = Condition
                     )) + geom_point() +
-          geom_line()  + clScale + plTheme + themeTilt + labs(y = "PolRate",
+          geom_line()  + clScale + plTheme + themeTilt + labs(y = "1/PolRate",
                                                               x = "Minute",
-                                                              title = "PolRate Trend by Time")
+                                                              title = "1/PolRate Trend by Time")
         report$ggsave(
           "PolRate_by_time.png",
           tp,
           width = plotwidth,
           height = plotheight,
           id = "PolRate_by_time",
-          title = "PolRate by Time",
-          caption = "PolRate by Time",
+          title = "1/PolRate by Time",
+          caption = "1/PolRate by Time",
           tags = c("sampled", "polrate", "time"),
           uid = "0040019"
         )
