@@ -277,3 +277,10 @@ class Resolver(object):
             raise DataNotFound("Trc.h5 file %s not found" % traceH5File)
         else:
             return traceH5File
+            
+    def ensureMapping(self, Mapping):
+        filepath = "/pbi/dept/secondary/siv/zulu/"+ Mapping+".zulu"
+        if not op.isfile(filepath):
+            raise DataNotFound("Mapping %s not found" % Mapping)
+        else:
+            return filepath

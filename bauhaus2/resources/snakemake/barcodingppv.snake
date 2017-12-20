@@ -44,6 +44,18 @@ rule lima_one_condition:
         lima --num-threads {threads} {input.subreadset} {input.barcodeset} {output.bam} {ct_prefix} --peek 35000 --guess 45 --guess-min-count 10
         """
         
+rule lima_align:
+    input:  bam= "conditions/{condition}/lima/barcoded.bam",
+            reference = "conditions/{condition}/reference.fasta"
+    output:
+        bam = "conditions/{condition}/align/align.bam"  
+    threads: 24
+    shell:
+        """
+        module load pbmm2
+        pbmm2 {input.bam} {genome} {output.bam} -j {threads}
+        """
+        
 rule collect_barcodeset_one_condition:
     input:
         barcode=lambda wc: remote_barcodeset[wc.condition],
