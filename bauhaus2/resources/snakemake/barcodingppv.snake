@@ -1,0 +1,56 @@
+
+# ---------------------------------------------------------------------------------------------------
+# barcoding.snake
+
+local_subreadset = {
+    c: expand("conditions/{condition}/subreads/input.subreadset.xml",
+              condition=c)
+    for c in ct.conditions}
+    
+local_limareport = {
+    c: expand("conditions/{condition}/lima/lima.report",
+              condition=c)
+    for c in ct.conditions}
+    
+local_barcodeset = \
+    { c : expand("conditions/{condition}/barcodeset.fasta", condition=c)
+      for c in ct.conditions }
+      
+remote_barcodeset = \
+    { c : ct.barcodeSet(c)
+      for c in ct.conditions }
+      
+ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
+
+# -- Target rules --
+
+rule lima:
+    input:
+        limareport = local_limareport.values()
+
+# -- Worker rules --
+
+rule lima_one_condition:
+    input:  subreadset = "conditions/{condition}/subreads/input.subreadset.xml",
+            barcodeset = "conditions/{condition}/barcodeset.fasta"
+    output:
+        bam= "conditions/{condition}/lima/barcoded.bam",  
+        limaReport="conditions/{condition}/lima/barcoded.lima.report"       
+    threads: 24
+    shell:
+        """
+        . /etc/profile.d/modules.sh
+        module add smrttools/incremental
+        lima --num-threads {threads} {input.subreadset} {input.barcodeset} {output.bam} {ct_prefix} --peek 35000 --guess 45 --guess-min-count 10
+        """
+        
+rule collect_barcodeset_one_condition:
+    input:
+        barcode=lambda wc: remote_barcodeset[wc.condition],
+    output:
+        barcode="conditions/{condition}/barcodeset.fasta",
+    shell:
+        """
+        ln -s {input.barcode} {output.barcode}
+        """
+        
