@@ -53,7 +53,7 @@ rule lima_align:
     shell:
         """
         module load pbmm2
-        pbmm2 {input.bam} {genome} {output.bam} -j {threads}
+        pbmm2 {input.bam} {input.reference} {output.bam} -j {threads}
         """
         
 rule collect_barcodeset_one_condition:

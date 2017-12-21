@@ -636,7 +636,6 @@ class LimaConditionTable2(ConditionTable):
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
         
-  
    # def variables(self):
         """
         In addition to the "p_" variables, "Genome" is considered an implicit
