@@ -69,21 +69,6 @@ rule coverage_titration:
     input: variant_calls.values()
 
 
-def modelPathArg(config):
-    if ("bh2.variant_calling.model_path" not in config or
-        not config["bh2.variant_calling.model_path"]):
-        return ""
-    else:
-        return "--parametersFile %s" % config["bh2.variant_calling.model_path"]
-
-def modelSpecArg(config):
-    if ("bh2.variant_calling.model_spec" not in config or
-        not config["bh2.variant_calling.model_spec"]):
-        return ""
-    else:
-        return "--parametersSpec %s" % config["bh2.variant_calling.model_spec"]
-
-
 rule variant_call_fixed_coverage_one_condition:
     input: "conditions/{condition}/mapped/mapped.alignmentset.xml"
     output:
@@ -92,13 +77,13 @@ rule variant_call_fixed_coverage_one_condition:
         fastq="conditions/{condition}/variant_calling/consensus.{depth}.fastq"
     params:
         algorithm=config.get("bh2.variant_calling.consensus_algorithm", "arrow"),
-        modelPathArg=modelPathArg(config),
-        modelSpecArg=modelSpecArg(config),
+        modelPath=lambda wc: ct.modelPathArg(wc.condition, "-P"),
+        modelSpec=lambda wc: ct.modelSpecArg(wc.condition, "-p"),
         reference=lambda wc: ct.reference(wc.condition)
     threads: 8
     shell:
         """
-        variantCaller {params.modelPathArg} {params.modelSpecArg} --algorithm={params.algorithm} \
+        variantCaller {params.modelPath} {params.modelSpec} --algorithm={params.algorithm} \
              -X{wildcards.depth} -x0 -q0 -j {threads} --reportEffectiveCoverage \
             {input} -r {params.reference} -o {output.gff} \
             -o {output.fasta} -o {output.fastq}

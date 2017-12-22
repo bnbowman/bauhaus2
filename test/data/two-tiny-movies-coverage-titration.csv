@@ -1,3 +1,5 @@
-Condition,SubreadSet,Genome,p_Automation
-MovieA,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample1.subreads.bam,ecoliK12_pbi_March2013,Diffusion
-MovieB,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample2.subreads.bam,ecoliK12_pbi_March2013,Diffusion
+Condition,SubreadSet,Genome,ModelPath,p_Automation
+MovieA,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample1.subreads.bam,ecoliK12_pbi_March2013,,Diffusion
+MovieB,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample2.subreads.bam,ecoliK12_pbi_March2013,,Diffusion
+MovieBModelPath,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample2.subreads.bam,ecoliK12_pbi_March2013,/pbi/dept/itg/zia/projects/1638/fit.json,Diffusion
+MovieBZiaJob,/pbi/dept/secondary/siv/testdata/itg/coverage-titration-bam/m54004_170922_184956_50zmw_sample2.subreads.bam,ecoliK12_pbi_March2013,1638,Diffusion
