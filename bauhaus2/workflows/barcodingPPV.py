@@ -7,7 +7,8 @@ from .subreads import subreadsPlan
 def BarcodingPlan(ct, args):
     # test if consensusReadSet and do differently if so
     return ["barcodingppv.snake", 
-            "collect-references.snake"] + \
+            "collect-references.snake",
+            "collect-zulu-params.snake"] + \
            subreadsPlan(ct, args)
 
 

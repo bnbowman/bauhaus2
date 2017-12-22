@@ -1,0 +1,11 @@
+# collect-zulu-params.snake
+rule collect_zulu_params:
+    input:
+        zulu_params = lambda wc: ct(wc.condition).Mapping
+    output:
+        zulu_params="conditions/{condition}/mapping.dat"
+    shell:
+        """
+        ln -s {input.zulu_params} {output.zulu_params}
+        """
+
