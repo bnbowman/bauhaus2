@@ -251,6 +251,7 @@ class ResequencingConditionTable(ConditionTable):
         super(ResequencingConditionTable, self)._resolveInputs(resolver)
         self._referenceByCondition = {}
         self._referenceSetByCondition = {}
+        self._trainingsByCondition = {}
         for condition in self.conditions:
             genome = self.genome(condition)
             try:
@@ -258,6 +259,12 @@ class ResequencingConditionTable(ConditionTable):
                 self._referenceSetByCondition[condition] = resolver.resolveReferenceSet(genome)
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
+        if "ModelPath" in self.tbl.column_names:
+            for condition in self.conditions:
+                models = self.condition(condition).ModelPath
+                assert len(models) == 1
+                self._trainingsByCondition[condition] = \
+                        resolver.resolveArrowTraining(models[0])
 
     @property
     def variables(self):
@@ -282,6 +289,15 @@ class ResequencingConditionTable(ConditionTable):
     def referenceSet(self, condition):
         return self._referenceSetByCondition[condition]
 
+    def modelPathArg(self, condition, arg):
+        path, _ = self._trainingsByCondition[condition]
+        if path is None: return ""
+        return "%s %s" % (arg, path)
+
+    def modelSpecArg(self, condition, arg):
+        _, spec = self._trainingsByCondition[condition]
+        if spec is None: return ""
+        return "%s %s" % (arg, spec)
 
 class PrimaryResequencingConditionTable(ResequencingConditionTable):
 

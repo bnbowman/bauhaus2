@@ -15,13 +15,13 @@ rule variant_call_fixed_coverage_one_condition:
         fastq="conditions/{condition}/variant_calling/consensus.{depth}.fastq"
     params:
         algorithm=config.get("bh2.variant_calling.consensus_algorithm", "arrow"),
-        modelPathArg=("" if "bh2.variant_calling.model_path" not in config else ("--parametersFile %s" % config.get("bh2.variant_calling.model_path"))),
-        modelSpecArg=("" if "bh2.variant_calling.model_spec" not in config else ("--parametersSpec %s" % config.get("bh2.variant_calling.model_spec"))),
+        modelPath=lambda wc: ct.modelPathArg(wc.condition, "-P")
+        modelSpec=lambda wc: ct.modelSpecArg(wc.condition, "-p")
         reference=reference=lambda wc: ct.reference(wc.condition)
     threads: 8
     shell:
         """
-        variantCaller {params.modelPathArg} {params.modelSpecArg} --algorithm={params.algorithm} \
+        variantCaller {params.modelPath} {params.modelSpec} --algorithm={params.algorithm} \
              -X{depth} -x0 -q0 -j $ncpus --reportEffectiveCoverage \
             {input} -r {params.reference} -o {output.gff} \
             -o {output.fasta} -o {output.fastq}

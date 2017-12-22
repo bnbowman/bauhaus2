@@ -41,6 +41,7 @@ class Resolver(object):
     REFERENCE_MASKS_ROOT = "/pbi/dept/consensus/bauhaus/genome-masks/"  # Maintained by consensus group
     REFERENCES_ROOT = "/pbi/dept/secondary/siv/references"              # This is a central location for SA3+ references
     BARCODE_SETS_ROOT = "/pbi/dept/secondary/siv/barcodes"              # This is the central location for SA3+ barcodeSets
+    ZIA_PROJECTS_ROOT = "/pbi/dept/itg/zia/projects"                    # This is where Zia stores its projects
 
     SMRTLINK_SERVER_TO_JOBS_ROOT = \
         { serverName : ("/pbi/" + smrtLinkJobPath + "/smrtlink/" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
@@ -158,6 +159,19 @@ class Resolver(object):
                 raise DataNotFound("Multiple ReferenceSets xml files present")
             else:
                 return candidates[0]
+
+    def resolveArrowTraining(self, trainingPath):
+        if not trainingPath: return None, None
+        if trainingPath.isdigit():
+            trainingPath = op.join(self.ZIA_PROJECTS_ROOT, trainingPath, "fit.json")
+        if not op.exists(trainingPath): raise DataNotFound(trainingPath)
+        with open(trainingPath) as h:
+            try:
+                d = json.load(h)
+                spec = d["ChemistryName"]
+                return trainingPath, spec
+            except:
+                raise InvalidDataSet("%s is not an Arrow training file" % trainingPath)
 
     def resolveReferenceMask(self, referenceName):
         maskGff = op.join(self.REFERENCE_MASKS_ROOT, referenceName + "-mask.gff")
