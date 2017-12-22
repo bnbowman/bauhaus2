@@ -55,7 +55,19 @@ rule lima_align:
         module load pbmm2
         pbmm2 {input.bam} {input.reference} {output.bam} -j {threads}
         """
-        
+rule zulu:
+    input:  bam = "conditions/{condition}/align/align.bam",
+            mappingfile = "conditions/{condition}/mapping.dat"
+    output:
+            prefix = "conditions/{condition}/zulu/test.zulu" 
+    threads: 24
+    shell:
+        """
+        module purge
+        module load smrttools/incremental
+        zulu {input.bam} {output.prefix} -l 600 -m $(cat {input.mappingfile}
+        """
+       
 rule collect_barcodeset_one_condition:
     input:
         barcode=lambda wc: remote_barcodeset[wc.condition],
