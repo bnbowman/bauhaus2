@@ -149,8 +149,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta.fai
-  |   |   |-- sts.h5 -> /var/lib/bamboo/bamboo-agent-home/xml-data/build-dir/ITG-BAUH201-JOB1/VE/lib/python3.5/site-packages/bauhaus2-0.2.0-py3.5.egg/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /var/lib/bamboo/bamboo-agent-home/xml-data/build-dir/ITG-BAUH201-JOB1/VE/lib/python3.5/site-packages/bauhaus2-0.2.0-py3.5.egg/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   |-- subreads
   |   |   |   |-- chunks
   |   |   |   |   |-- input.chunk0.subreadset.xml
@@ -242,8 +242,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta.fai
-  |   |   |-- sts.h5 -> /var/lib/bamboo/bamboo-agent-home/xml-data/build-dir/ITG-BAUH201-JOB1/VE/lib/python3.5/site-packages/bauhaus2-0.2.0-py3.5.egg/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /var/lib/bamboo/bamboo-agent-home/xml-data/build-dir/ITG-BAUH201-JOB1/VE/lib/python3.5/site-packages/bauhaus2-0.2.0-py3.5.egg/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   |-- subreads
   |   |   |   |-- chunks
   |   |   |   |   |-- input.chunk0.subreadset.xml
