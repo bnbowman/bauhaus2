@@ -111,7 +111,7 @@ getGCandCov = function( covreadlen, ref, winsize, half = floor( winsize / 2.0 ),
 #' @param label = string title for plots
 #' @export
 
-boxplotVsGC = function( report, p, name, label )
+boxplotVsGC = function( report, p, name, label, uid )
 {
   r = range( p$GC_Content, na.rm = TRUE )
   p$nSites = cut( p$GC_Content, breaks = seq( r[1], r[2], 0.05 ) )
@@ -140,7 +140,7 @@ boxplotVsGC = function( report, p, name, label )
     title = tag,
     caption = tag,
     tags = c("gc", "content", name, label ),
-    uid = "008000"
+    uid = uid
   )
 }
 
@@ -152,7 +152,7 @@ boxplotVsGC = function( report, p, name, label )
 #' @param name = string name of p column: "GC_Content", "Coverage", or "Subread_Length"
 #' @export
 
-plotVrefPosition = function( report, p, label, name )
+plotVrefPosition = function( report, p, label, name, uid )
 {
   myplot = ( ggplot( data = p, aes( x = pos, y = p[,name] ) ) +
                geom_line( ) +
@@ -167,7 +167,8 @@ plotVrefPosition = function( report, p, label, name )
     id = tag,
     title = tag,
     caption = tag,
-    tags = c( "position", "gc", "coverage", "content", name, label, tag )
+    tags = c( "position", "gc", "coverage", "content", name, label, tag ),
+    uid = uid
   )
 }
 
@@ -184,11 +185,11 @@ singleRef = function( report, data, ref, label, winsize )
 {
   coverage = getCovAndReadLen( data, length( ref ) )
   p = getGCandCov( coverage, ref, winsize )
-  plotVrefPosition( report, p, label, "GC_Content" )
-  plotVrefPosition( report, p, label, "Coverage" )
-  plotVrefPosition( report, p, label, "Subread_Length" )
-  boxplotVsGC( report, p, "Coverage", label )
-  boxplotVsGC( report, p, "Subread_Length", label )
+  plotVrefPosition( report, p, label, "GC_Content", uid = "0075000" )
+  plotVrefPosition( report, p, label, "Coverage", uid = "0075001" )
+  plotVrefPosition( report, p, label, "Subread_Length", uid = "0075002" )
+  boxplotVsGC( report, p, "Coverage", label, uid = "0075003" )
+  boxplotVsGC( report, p, "Subread_Length", label, uid = "0075004" )
 }
 
 
