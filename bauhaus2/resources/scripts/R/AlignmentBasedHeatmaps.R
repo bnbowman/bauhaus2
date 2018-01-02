@@ -9,6 +9,7 @@ require(pbbamr)
 require(pbcommandR)
 
 source("./scripts/R/Bauhaus2.R")
+source("./scripts/R/GCvsCoverage.R")
 
 #' Use the following aspect ratio, width, and height for all heatmaps
 
@@ -880,10 +881,10 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   Non_excl_uid = data.frame(Non_excl_columns, uidcolumn)
   lapply(setdiff(names(df), excludeColumns), function(n)
   { if (is.null(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n]))
-        {warning("Columns non-excluded different from set list")}
+  {warning("Columns non-excluded different from set list")}
     else {
-        try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = as.vector(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n])),
-        silent = FALSE)}
+      try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = as.vector(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n])),
+          silent = FALSE)}
   })
 }
 
@@ -1164,6 +1165,8 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
   )
 }
 
+
+
 #' Main function called by makeReport
 #'
 #' 1. Load data from aligned BAM files
@@ -1189,10 +1192,12 @@ generateHeatmapsPerCondition = function(report,
                                         N,
                                         key)
 {
+  loginfo(paste("Render coverage vs. GC content plots for condition:", label))
+  gcVcoverage( report, alnxml, reference, label )
+  
   loginfo(paste("Get data for condition:", label))
   fastaname = getReferencePath(reference)
   res = simpleErrorHandling(alnxml, fastaname)
-  
   if (is.null(res)) {
     loginfo("[WARNING] - Empty BAM file.")
     return(0)
@@ -1249,9 +1254,9 @@ makeReport = function(report)
     Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
     Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
     UniformityMerge = Uniformity[, c("ID",
-                                "LambdaUniformity",
-                                "MoransI.Inv_percentage",
-                                "MoransI.N_percentage")]
+                                     "LambdaUniformity",
+                                     "MoransI.Inv_percentage",
+                                     "MoransI.N_percentage")]
     UniformityLong = melt(UniformityMerge, id.vars = "ID")
     tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) +
       geom_bar(stat = "identity", position = "dodge") +
