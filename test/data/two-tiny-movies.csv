@@ -1,3 +1,3 @@
-Condition,SubreadSet,Genome,ModelPath
-MovieA,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_052519-50zmws.subreads.bam,pBR322_EcoRV,
-MovieB,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_111434-50zmws.subreads.bam,pBR322_EcoRV,1638
+Condition,SubreadSet,Genome
+MovieA,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_052519-50zmws.subreads.bam,pBR322_EcoRV
+MovieB,/pbi/dept/secondary/siv/testdata/itg/production-bam/m54006_170202_111434-50zmws.subreads.bam,pBR322_EcoRV

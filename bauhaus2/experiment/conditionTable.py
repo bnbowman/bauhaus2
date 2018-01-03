@@ -265,6 +265,9 @@ class ResequencingConditionTable(ConditionTable):
                 assert len(models) == 1
                 self._trainingsByCondition[condition] = \
                         resolver.resolveArrowTraining(models[0])
+        else:
+            for condition in self.conditions:
+                self._trainingsByCondition[condition] = (None, None)
 
     @property
     def variables(self):
