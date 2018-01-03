@@ -14,7 +14,7 @@ Generate mapping reports workflow, starting from subreads.
   $ (cd coverage-titration && ./run.sh >/dev/null 2>&1)
 
 
-  $ tree -I __pycache__ coverage-titration
+  $ tree -I __pycache__ coverage-titration | sed 's|\ ->.*||'
   coverage-titration
   |-- condition-table.csv
   |-- conditions
@@ -54,10 +54,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |   `-- mapped.alignmentset.xml
-  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta
-  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta.fai
-  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |   |   |-- reference.fasta
+  |   |   |-- reference.fasta.fai
+  |   |   |-- sts.h5
+  |   |   |-- sts.xml
   |   |   |-- subreads
   |   |   |   |-- chunks
   |   |   |   |   |-- input.chunk0.subreadset.xml
@@ -147,10 +147,10 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |       |   |   `-- mapped.chunk7.alignmentset.xml
   |       |   `-- mapped.alignmentset.xml
-  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta
-  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta.fai
-  |       |-- sts.h5 -> /home/UNIXHOME/lhepler/bb/bauhaus2/ve-dev/lib/python3.6/site-packages/bauhaus2/resources/extras/no_sts.h5
-  |       |-- sts.xml -> /home/UNIXHOME/lhepler/bb/bauhaus2/ve-dev/lib/python3.6/site-packages/bauhaus2/resources/extras/no_sts.xml
+  |       |-- reference.fasta
+  |       |-- reference.fasta.fai
+  |       |-- sts.h5
+  |       |-- sts.xml
   |       |-- subreads
   |       |   |-- chunks
   |       |   |   |-- input.chunk0.subreadset.xml
@@ -233,7 +233,7 @@ Generate mapping reports workflow, starting from subreads.
   $ (cd coverage-titration && ./run.sh >/dev/null 2>&1)
 
 
-  $ tree -I __pycache__ coverage-titration
+  $ tree -I __pycache__ coverage-titration | sed 's|\ ->.*||'
   coverage-titration
   |-- condition-table.csv
   |-- conditions
@@ -273,10 +273,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |   `-- mapped.alignmentset.xml
-  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta
-  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta.fai
-  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |   |   |-- reference.fasta
+  |   |   |-- reference.fasta.fai
+  |   |   |-- sts.h5
+  |   |   |-- sts.xml
   |   |   |-- subreads
   |   |   |   |-- chunks
   |   |   |   |   |-- input.chunk0.subreadset.xml
@@ -366,10 +366,10 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |       |   |   `-- mapped.chunk7.alignmentset.xml
   |       |   `-- mapped.alignmentset.xml
-  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta
-  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/ecoliK12_pbi_March2013/sequence/ecoliK12_pbi_March2013.fasta.fai
-  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |       |-- reference.fasta
+  |       |-- reference.fasta.fai
+  |       |-- sts.h5
+  |       |-- sts.xml
   |       |-- subreads
   |       |   |-- chunks
   |       |   |   |-- input.chunk0.subreadset.xml

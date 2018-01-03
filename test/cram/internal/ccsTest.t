@@ -14,7 +14,7 @@ Generate mapping reports workflow, starting from subreads.
   $ (cd ccsmappingreports && ./run.sh >/dev/null 2>&1)
 
 
-  $ tree -I __pycache__ ccsmappingreports
+  $ tree -I __pycache__ ccsmappingreports | sed 's|\ ->.*||'
   ccsmappingreports
   |-- condition-table.csv
   |-- conditions
@@ -88,10 +88,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   |-- mapped-ccs.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped-ccs.chunk7.alignmentset.xml
   |   |   |   `-- mapped-ccs.alignmentset.xml
-  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |   |   |-- reference.fasta
+  |   |   |-- reference.fasta.fai
+  |   |   |-- sts.h5
+  |   |   |-- sts.xml
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -173,10 +173,10 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   |-- mapped-ccs.chunk7.alignmentset.bam.pbi
   |       |   |   `-- mapped-ccs.chunk7.alignmentset.xml
   |       |   `-- mapped-ccs.alignmentset.xml
-  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |       |-- reference.fasta
+  |       |-- reference.fasta.fai
+  |       |-- sts.h5
+  |       |-- sts.xml
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -224,7 +224,7 @@ Generate mapping reports workflow, starting from subreads.
   $ (cd ccsmappingreports && ./run.sh >/dev/null 2>&1)
 
 
-  $ tree -I __pycache__ ccsmappingreports
+  $ tree -I __pycache__ ccsmappingreports | sed 's|\ ->.*||'
   ccsmappingreports
   |-- condition-table.csv
   |-- conditions
@@ -298,10 +298,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   |-- mapped-ccs.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped-ccs.chunk7.alignmentset.xml
   |   |   |   `-- mapped-ccs.alignmentset.xml
-  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> /home/UNIXHOME/lhepler/bb/bauhaus2/ve-dev/lib/python3.6/site-packages/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/UNIXHOME/lhepler/bb/bauhaus2/ve-dev/lib/python3.6/site-packages/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- reference.fasta
+  |   |   |-- reference.fasta.fai
+  |   |   |-- sts.h5
+  |   |   |-- sts.xml
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -383,10 +383,10 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   |-- mapped-ccs.chunk7.alignmentset.bam.pbi
   |       |   |   `-- mapped-ccs.chunk7.alignmentset.xml
   |       |   `-- mapped-ccs.alignmentset.xml
-  |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
-  |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> /home/UNIXHOME/lhepler/bb/bauhaus2/ve-dev/lib/python3.6/site-packages/bauhaus2/resources/extras/no_sts.h5
-  |       |-- sts.xml -> /home/UNIXHOME/lhepler/bb/bauhaus2/ve-dev/lib/python3.6/site-packages/bauhaus2/resources/extras/no_sts.xml
+  |       |-- reference.fasta
+  |       |-- reference.fasta.fai
+  |       |-- sts.h5
+  |       |-- sts.xml
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
