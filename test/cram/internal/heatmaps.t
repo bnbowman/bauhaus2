@@ -137,8 +137,11 @@ Generate heatmaps workflow, starting from subreads.
   |   |   |-- AvgPolsPerZMW_MovieB.png
   |   |   |-- Count_MovieA.png
   |   |   |-- Count_MovieB.png
+  |   |   |-- Coverage_vs_GC_Content.png
+  |   |   |-- Coverage_vs_tpl_position.png
   |   |   |-- DeletionRate_MovieA.png
   |   |   |-- DeletionRate_MovieB.png
+  |   |   |-- GC_Content_vs_tpl_position.png
   |   |   |-- InsertionRate_MovieA.png
   |   |   |-- InsertionRate_MovieB.png
   |   |   |-- MaxSubreadLenExtRange_MovieA.png
@@ -159,6 +162,8 @@ Generate heatmaps workflow, starting from subreads.
   |   |   |-- SNR_G_MovieB.png
   |   |   |-- SNR_T_MovieA.png
   |   |   |-- SNR_T_MovieB.png
+  |   |   |-- Subread_Length_vs_GC_Content.png
+  |   |   |-- Subread_Length_vs_tpl_position.png
   |   |   |-- Uniformity_histogram_MovieA.png
   |   |   |-- Uniformity_histogram_MovieB.png
   |   |   |-- Uniformity_metrics_MovieA.csv
@@ -201,4 +206,4 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 165 files
+  19 directories, 170 files

@@ -251,10 +251,13 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Count_MovieB.png
   |   |   |-- Count_MovieC.png
   |   |   |-- Count_MovieD.png
+  |   |   |-- Coverage_vs_GC_Content.png
+  |   |   |-- Coverage_vs_tpl_position.png
   |   |   |-- DeletionRate_MovieA.png
   |   |   |-- DeletionRate_MovieB.png
   |   |   |-- DeletionRate_MovieC.png
   |   |   |-- DeletionRate_MovieD.png
+  |   |   |-- GC_Content_vs_tpl_position.png
   |   |   |-- InsertionRate_MovieA.png
   |   |   |-- InsertionRate_MovieB.png
   |   |   |-- InsertionRate_MovieC.png
@@ -295,6 +298,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- SNR_T_MovieB.png
   |   |   |-- SNR_T_MovieC.png
   |   |   |-- SNR_T_MovieD.png
+  |   |   |-- Subread_Length_vs_GC_Content.png
+  |   |   |-- Subread_Length_vs_tpl_position.png
   |   |   |-- Uniformity_histogram_MovieA.png
   |   |   |-- Uniformity_histogram_MovieB.png
   |   |   |-- Uniformity_histogram_MovieC.png
@@ -561,7 +566,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 509 files
+  35 directories, 514 files
 
 
 

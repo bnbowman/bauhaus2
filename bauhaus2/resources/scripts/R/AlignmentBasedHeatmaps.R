@@ -7,6 +7,8 @@ require(logging)
 require(ggplot2)
 require(pbbamr)
 require(pbcommandR)
+require(Biostrings)
+
 
 source("./scripts/R/Bauhaus2.R")
 
@@ -15,6 +17,221 @@ source("./scripts/R/Bauhaus2.R")
 ASP_RATIO = 0.5
 plotwidth = 7.2
 plotheight = 4.2
+
+
+
+#---------------------------------------------------------------
+# Functions for plotting coverage and subread length vs. GC content
+#---------------------------------------------------------------
+
+#' Called by \code{\link{getCovAndReadLen}}
+#'
+#' @param k = vector of coverage or mean read length at a subset of refererence positions
+#' @param N = length of reference genome
+#' @export
+#' @examples
+
+fillInMissingPositions = function( k, N )
+{
+  # n = complete vector of coverages:
+  n = rep( NA, N )
+  n[ as.numeric( names( k ) ) ] <- k
+  
+  # Fill in any missing reference positions with last non-missing value:
+  w = !is.na( n )
+  if ( sum( w ) > 0 )
+  {
+    w = which( w )[1]
+    prev = n[w]
+    if ( w > 1 ) { n[1:(w-1)] <- prev }
+    bool = is.na( n )
+    for ( i in (w+1):N ) 
+    {  
+      if ( bool[i] ) { n[i] <- prev }
+      else { prev <- n[i] } 
+    }
+  }
+  n
+}
+
+
+
+#' Return a vector the length of the reference genome with the mean unaligned subread length at each position
+#'
+#' @param data = output of pbbamr::loadPBI
+#' @param N = length of reference genome
+#' @export
+#' @examples
+
+getCovAndReadLen = function( data, N )
+{ 
+  data$len = data$qend - data$qstart
+  data$tstart = data$tstart + 1
+  data$tend = data$tend + 1 
+  n = nrow( data )
+  z = c( data$tstart, data$tend )
+  label1 = c( data$len, -data$len )
+  label0 = c( rep( 1, n ), rep( -1, n ) )
+  o = order( z )
+  k1 = cumsum( vapply( split( label1[o], z[o] ), sum, 0 ) )
+  k0 = cumsum( vapply( split( label0[o], z[o] ), sum, 0 ) )
+  coverage = fillInMissingPositions( k0, N )
+  readlen  = fillInMissingPositions( k1 / k0, N )
+  cbind( coverage, readlen )
+}
+
+
+
+
+#' Return data frame with coverage vs. gc content at each template position in reference
+#'
+#' @param coverage = output of getCovAndReadLen above
+#' @param ref = output of Biostrings::DNAStringSet from reference fasta
+#' @param winsize = window size for computing GC content
+#' @export
+#' @examples
+
+getGCandCov = function( covreadlen, ref, winsize, half = floor( winsize / 2.0 ), N = length( ref ) )
+{
+  y = strsplit( as.character( ref ), "" )[[1]]
+  d = diff( cumsum( y %in% c("G", "C") ), winsize ) / winsize
+  res = data.frame( pos = (half + 1):(N - half), GC_Content = d )
+  res$Coverage = covreadlen[ res$pos, 1 ]
+  res$Subread_Length = covreadlen[ res$pos, 2 ]
+  subset( res, !is.na( Coverage ) & !is.na( GC_Content ) )
+}
+
+
+
+
+#' Plot normalized coverage or normalized readlength vs. GC-content 
+#'
+#' @param p = data frame output of \code{\link{{getGCandCov}}
+#' @param stat = string, either "Coverage", or "SubreadLength" -- columns of p
+#' @param label = string title for plots
+#' @export
+
+boxplotVsGC = function( report, p, name, label, uid )
+{
+  r = range( p$GC_Content, na.rm = TRUE )
+  p$nSites = cut( p$GC_Content, breaks = seq( r[1], r[2], 0.05 ) )
+  p = subset( p, !is.na( nSites ) )
+  s = split( 1:nrow( p ), p$nSites )
+  n = vapply( s, length, 0 )
+  p$nSites = factor( n[ match( p$nSites, names( s ) ) ], levels = n )
+  
+  m = median( p[,name], na.rm = TRUE )
+  p[,name] = p[,name] / m
+  loginfo( paste( "m = ", m ) )
+  myplot = ( ggplot( p, aes( x = p[,"GC_Content"], y = p[,name], fill = p[,"nSites"] ) ) +
+               geom_boxplot() +
+               geom_hline( yintercept = 1.0 ) + 
+               labs( x = "GC Content", y = paste( name, "/ Median" ), title = paste( label, "\n Median", name, ":", format( m, digits = 4 ) ) ) )
+  
+  tag = paste( name, "vs_GC_Content", sep = "_" )
+  pngfile = paste( tag, "png", sep = "." )
+  
+  report$ggsave(
+    pngfile,
+    myplot,
+    width = plotwidth,
+    height = plotheight,
+    id = tag,
+    title = tag,
+    caption = tag,
+    tags = c("gc", "content", name, label ),
+    uid = uid
+  )
+}
+
+
+#' Generate line plot with reference position on the x-axis
+#'
+#' @param p = data frame output of \code{\link{getGCandCov}}
+#' @param label = string title for plots
+#' @param name = string name of p column: "GC_Content", "Coverage", or "Subread_Length"
+#' @export
+
+plotVrefPosition = function( report, p, label, name, uid )
+{
+  myplot = ( ggplot( data = p, aes( x = pos, y = p[,name] ) ) +
+               geom_line( ) +
+               labs( x = "Ref. Position", y = name, title = label ) )
+  tag = paste( name, "vs_tpl_position", sep = "_" )
+  pngfile = paste( tag, "png", sep = "." )
+  report$ggsave(
+    pngfile,
+    myplot,
+    width = plotwidth,
+    height = plotheight,
+    id = tag,
+    title = tag,
+    caption = tag,
+    tags = c( "position", "gc", "coverage", "content", name, label, tag ),
+    uid = uid
+  )
+}
+
+
+
+#' Plot coverage vs. gc content for a single reference
+#'
+#' @param data = pbbamr::loadPBI output
+#' @param ref = Biostrings::readDNAStringSet output using fasta file as input
+#' @param label = string title for plots
+#' @param winsize = window size for computing GC content
+
+singleRef = function( report, data, ref, label, winsize )
+{
+  coverage = getCovAndReadLen( data, length( ref ) )
+  p = getGCandCov( coverage, ref, winsize )
+  plotVrefPosition( report, p, label, "GC_Content", uid = "0075000" )
+  plotVrefPosition( report, p, label, "Coverage", uid = "0075001" )
+  plotVrefPosition( report, p, label, "Subread_Length", uid = "0075002" )
+  boxplotVsGC( report, p, "Coverage", label, uid = "0075003" )
+  boxplotVsGC( report, p, "Subread_Length", label, uid = "0075004" )
+}
+
+
+
+
+
+#' Main function called by makeReport
+#' Load aligned bam pbi files.
+#' Use Biostrings to open reference fasta.
+#' For each reference in fasta, call \link{singleRef} above
+#'
+#' @param alndir = smrtlink alignment directory
+#' @param reffasta = path to reference fasta file 
+#' @param label = string title for plots
+#' @param winsize = window size for computing GC content
+#' @export
+
+gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
+{
+  fastaname = getReferencePath( reference )
+  refs = readDNAStringSet( fastaname )
+  data = loadPBI( alnxml )
+  s = split( 1:nrow( data ), as.character( data$ref ) )
+  
+  for ( refName in names( s ) )
+  {
+    loginfo( paste( "Draw plots for reference:", refName ) )
+    tmp = subset( data, ref == refName )
+    if ( nrow( tmp ) < 100 ) { return( 0 ) }
+    ref = refs[[ which( grepl( pattern = refName, x = names( refs ) ) ) ]]
+    singleRef( report, tmp, ref, paste( label, refName ), winsize ) 
+  }
+  1
+}
+
+
+#---------------------------------------------------------------
+# End of functions for GC content plots
+#---------------------------------------------------------------
+
+
+
 
 #----------------------------------------------------------------
 # Convenience functions for extracting specific metrics from bam file using pbbamr
@@ -880,10 +1097,10 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   Non_excl_uid = data.frame(Non_excl_columns, uidcolumn)
   lapply(setdiff(names(df), excludeColumns), function(n)
   { if (is.null(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n]))
-        {warning("Columns non-excluded different from set list")}
+  {warning("Columns non-excluded different from set list")}
     else {
-        try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = as.vector(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n])),
-        silent = FALSE)}
+      try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = as.vector(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n])),
+          silent = FALSE)}
   })
 }
 
@@ -1164,6 +1381,8 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
   )
 }
 
+
+
 #' Main function called by makeReport
 #'
 #' 1. Load data from aligned BAM files
@@ -1189,10 +1408,12 @@ generateHeatmapsPerCondition = function(report,
                                         N,
                                         key)
 {
+  loginfo(paste("Render coverage vs. GC content plots for condition:", label))
+  gcVcoverage( report, alnxml, reference, label )
+  
   loginfo(paste("Get data for condition:", label))
   fastaname = getReferencePath(reference)
   res = simpleErrorHandling(alnxml, fastaname)
-  
   if (is.null(res)) {
     loginfo("[WARNING] - Empty BAM file.")
     return(0)
@@ -1249,9 +1470,9 @@ makeReport = function(report)
     Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
     Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
     UniformityMerge = Uniformity[, c("ID",
-                                "LambdaUniformity",
-                                "MoransI.Inv_percentage",
-                                "MoransI.N_percentage")]
+                                     "LambdaUniformity",
+                                     "MoransI.Inv_percentage",
+                                     "MoransI.N_percentage")]
     UniformityLong = melt(UniformityMerge, id.vars = "ID")
     tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) +
       geom_bar(stat = "identity", position = "dodge") +

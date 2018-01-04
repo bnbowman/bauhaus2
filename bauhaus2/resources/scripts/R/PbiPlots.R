@@ -36,7 +36,7 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
   
   cd2$SurvObj <- with(cd2, Surv(tlen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-
+  
   
   # When cd2.by.con is empty or only has one row, skip the following two plots
   if (nrow(cd2.by.con) > 1) {
@@ -114,17 +114,17 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
       tags = c("basic", "pbiplots", "survival", "read", "log", "aligned"),
       uid = "0030004"
     )
-     report$ggsave(
+    report$ggsave(
       "aligned_subread_read_length_survival.png",
-       p3,
-       width = plotwidth,
-       height = plotheight,
-       id = "aligned_subread_read_length_survival",
-       title = "Aligned Subread Read Length Survival",
-       caption = "Aligned Subread Read Length Survival",
-       tags = c("basic", "pbiplots", "survival", "read", "aligned"),
-       uid = "0030017"
-     )
+      p3,
+      width = plotwidth,
+      height = plotheight,
+      id = "aligned_subread_read_length_survival",
+      title = "Aligned Subread Read Length Survival",
+      caption = "Aligned Subread Read Length Survival",
+      tags = c("basic", "pbiplots", "survival", "read", "aligned"),
+      uid = "0030017"
+    )
   }
 }
 
