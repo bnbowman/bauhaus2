@@ -25,5 +25,5 @@ rule LocAccPlots:
         module use /mnt/software/modulefiles
         module load primary-toolkit
 
-        locacc {input.alignments} {params.names} --nreads 5000 -o reports/LocAccPlots/LocAcc --warnonly
+        locacc {input.alignments} {params.names} --nreads 5000 -o reports/LocAccPlots/LocAcc --warnonly --mask
         """
