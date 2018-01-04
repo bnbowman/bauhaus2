@@ -1,5 +1,5 @@
 Condition,SMRTLinkServer,JobId,Genome
-Lambda,smrtlink-beta,4183,lambdaNEB
-Lambda,smrtlink-beta,4206,lambdaNEB
-Ecoli,smrtlink-beta,4110,ecoliK12_pbi_March2013
-Ecoli,smrtlink-beta,4111,ecoliK12_pbi_March2013
+Lambda1,smrtlink-beta,4183,lambdaNEB
+Lambda2,smrtlink-beta,4206,lambdaNEB
+Ecoli1,smrtlink-beta,4110,ecoliK12_pbi_March2013
+Ecoli2,smrtlink-beta,4111,ecoliK12_pbi_March2013
