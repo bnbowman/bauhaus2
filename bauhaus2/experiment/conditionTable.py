@@ -87,6 +87,7 @@ class ConditionTable(object):
         """
         self._validateConditionsAreHomogeneous()
         self._validateSingleInputEncoding()
+        self._validateUniqueConditionNames()
 
     def _validateConditionsAreHomogeneous(self):
         for c in self.conditions:
@@ -119,6 +120,10 @@ class ConditionTable(object):
           raise TableValidationError("Input data not encoded in condition table. Table requires one and only one column (or pair of columns) as follows: ReportsPath, RunCode+ReportsFolder, SMRTLinkServer+JobId, JobPath, SubreadSet, AlignmentSet")
         if inputEncodings > 1:
             raise TableValidationError("Condition table can only represent input data in one way")
+
+    def _validateUniqueConditionNames(self):
+        if len(set(self.conditions)) != len(self.conditions):
+            raise TableValidationError("Condition names must be unique")
 
     def _resolveInput(self, resolver, rowRecord):
         cols = self.tbl.column_names
@@ -172,7 +177,9 @@ class ConditionTable(object):
 
     @property
     def conditions(self):
-        return _unique(self.tbl.Condition)
+        # we don't want to modify the order of the condition names, as ordering
+        # matters all the way through to the reports
+        return self.tbl.Condition
 
     def condition(self, condition):
         # Get subtable for condition
