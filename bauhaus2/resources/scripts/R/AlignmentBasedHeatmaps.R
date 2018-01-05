@@ -1087,7 +1087,10 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     "rStartExtRange",
     "AccuracyExtRange",
     "centerP1",
-    "edgeP1"
+    "edgeP1",
+    "GC_Content",
+    "Coverage",
+    "Subread_Length"
   )
   
   #create a dataframe 'Non_excl_uid' that has column names of the non-excluded columns and corresponding uid's
