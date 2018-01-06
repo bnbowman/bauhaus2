@@ -128,9 +128,8 @@ boxplotVsGC = function( report, p, name, label, uid )
                geom_hline( yintercept = 1.0 ) + 
                labs( x = "GC Content", y = paste( name, "/ Median" ), title = paste( label, "\n Median", name, ":", format( m, digits = 4 ) ) ) )
   
-  tag = paste( name, "vs_GC_Content", sep = "_" )
-  pngfile = paste( tag, "png", sep = "." )
-  
+  tag = paste(label,name, "vs_GC_Content", sep = "_" )
+  pngfile = paste(tag, "png", sep = "." )
   report$ggsave(
     pngfile,
     myplot,
@@ -157,7 +156,7 @@ plotVrefPosition = function( report, p, label, name, uid )
   myplot = ( ggplot( data = p, aes( x = pos, y = p[,name] ) ) +
                geom_line( ) +
                labs( x = "Ref. Position", y = name, title = label ) )
-  tag = paste( name, "vs_tpl_position", sep = "_" )
+  tag = paste(label,name, "vs_tpl_position", sep = "_" )
   pngfile = paste( tag, "png", sep = "." )
   report$ggsave(
     pngfile,
@@ -220,7 +219,7 @@ gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
     tmp = subset( data, ref == refName )
     if ( nrow( tmp ) < 100 ) { return( 0 ) }
     ref = refs[[ which( grepl( pattern = refName, x = names( refs ) ) ) ]]
-    singleRef( report, tmp, ref, paste( label, refName ), winsize ) 
+    singleRef( report, tmp, ref, paste( label, refName, sep = "_" ), winsize ) 
   }
   1
 }
@@ -1087,7 +1086,10 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     "rStartExtRange",
     "AccuracyExtRange",
     "centerP1",
-    "edgeP1"
+    "edgeP1",
+    "GC_Content",
+    "Coverage",
+    "Subread_Length"
   )
   
   #create a dataframe 'Non_excl_uid' that has column names of the non-excluded columns and corresponding uid's
@@ -1409,7 +1411,7 @@ generateHeatmapsPerCondition = function(report,
                                         key)
 {
   loginfo(paste("Render coverage vs. GC content plots for condition:", label))
-  gcVcoverage( report, alnxml, reference, label )
+  gcVcoverage(report, alnxml, reference, label)
   
   loginfo(paste("Get data for condition:", label))
   fastaname = getReferencePath(reference)
@@ -1452,6 +1454,7 @@ makeReport = function(report)
   dist = getDistMat(N, key)
   res = lapply(1:length(alnxmls), function(k)
     generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k], dist, N, key))
+  
   # Make barplot for Uniformity metrics
   csvfile = paste(report$outputDir,
                   "/Uniformity_metrics_",

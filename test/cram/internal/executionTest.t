@@ -251,13 +251,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Count_MovieB.png
   |   |   |-- Count_MovieC.png
   |   |   |-- Count_MovieD.png
-  |   |   |-- Coverage_vs_GC_Content.png
-  |   |   |-- Coverage_vs_tpl_position.png
   |   |   |-- DeletionRate_MovieA.png
   |   |   |-- DeletionRate_MovieB.png
   |   |   |-- DeletionRate_MovieC.png
   |   |   |-- DeletionRate_MovieD.png
-  |   |   |-- GC_Content_vs_tpl_position.png
   |   |   |-- InsertionRate_MovieA.png
   |   |   |-- InsertionRate_MovieB.png
   |   |   |-- InsertionRate_MovieC.png
@@ -278,6 +275,26 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- MismatchRate_MovieB.png
   |   |   |-- MismatchRate_MovieC.png
   |   |   |-- MismatchRate_MovieD.png
+  |   |   |-- MovieA_pBR322_EcoRV_Coverage_vs_GC_Content.png
+  |   |   |-- MovieA_pBR322_EcoRV_Coverage_vs_tpl_position.png
+  |   |   |-- MovieA_pBR322_EcoRV_GC_Content_vs_tpl_position.png
+  |   |   |-- MovieA_pBR322_EcoRV_Subread_Length_vs_GC_Content.png
+  |   |   |-- MovieA_pBR322_EcoRV_Subread_Length_vs_tpl_position.png
+  |   |   |-- MovieB_pBR322_EcoRV_Coverage_vs_GC_Content.png
+  |   |   |-- MovieB_pBR322_EcoRV_Coverage_vs_tpl_position.png
+  |   |   |-- MovieB_pBR322_EcoRV_GC_Content_vs_tpl_position.png
+  |   |   |-- MovieB_pBR322_EcoRV_Subread_Length_vs_GC_Content.png
+  |   |   |-- MovieB_pBR322_EcoRV_Subread_Length_vs_tpl_position.png
+  |   |   |-- MovieC_pBR322_EcoRV_Coverage_vs_GC_Content.png
+  |   |   |-- MovieC_pBR322_EcoRV_Coverage_vs_tpl_position.png
+  |   |   |-- MovieC_pBR322_EcoRV_GC_Content_vs_tpl_position.png
+  |   |   |-- MovieC_pBR322_EcoRV_Subread_Length_vs_GC_Content.png
+  |   |   |-- MovieC_pBR322_EcoRV_Subread_Length_vs_tpl_position.png
+  |   |   |-- MovieD_pBR322_EcoRV_Coverage_vs_GC_Content.png
+  |   |   |-- MovieD_pBR322_EcoRV_Coverage_vs_tpl_position.png
+  |   |   |-- MovieD_pBR322_EcoRV_GC_Content_vs_tpl_position.png
+  |   |   |-- MovieD_pBR322_EcoRV_Subread_Length_vs_GC_Content.png
+  |   |   |-- MovieD_pBR322_EcoRV_Subread_Length_vs_tpl_position.png
   |   |   |-- Reference_Heatmap_MovieA.png
   |   |   |-- Reference_Heatmap_MovieB.png
   |   |   |-- Reference_Heatmap_MovieC.png
@@ -298,8 +315,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- SNR_T_MovieB.png
   |   |   |-- SNR_T_MovieC.png
   |   |   |-- SNR_T_MovieD.png
-  |   |   |-- Subread_Length_vs_GC_Content.png
-  |   |   |-- Subread_Length_vs_tpl_position.png
   |   |   |-- Uniformity_histogram_MovieA.png
   |   |   |-- Uniformity_histogram_MovieB.png
   |   |   |-- Uniformity_histogram_MovieC.png
@@ -566,7 +581,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  35 directories, 514 files
+  35 directories, 529 files
 
 
 
