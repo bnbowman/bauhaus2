@@ -56,6 +56,7 @@ class PrimaryRefarmWorkflow(Workflow):
                              "Python/GetZiaTags.py")
 
     def plan(self):
-        return (["summarize-mappings.snake", "constant-arrow.snake", "constant-arrow-regular.snake", 
-                 "heatmaps.snake", "locacc.snake", "uid-tag.snake", "primary-refarm.snake"]
+        return (["primary-refarm.snake", "summarize-mappings.snake",
+                 "constant-arrow.snake", "constant-arrow-regular.snake",
+                 "heatmaps.snake", "locacc.snake", "uid-tag.snake"]
                 + subreadsMappingPlan(self.conditionTable, self.cliArgs))
