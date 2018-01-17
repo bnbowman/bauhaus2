@@ -41,6 +41,23 @@ def trc2adapters(wildcards, input):
 def trc2mov(trc):
     return os.path.basename(trc)[:-1 * len('.trc.h5')]
 
+# -- Target rules --
+
+# copied from summarize_mappings. Needs to be kept up to date, because rule
+# inheritance isn't a thing and the top rule rules the roost
+rule primary_summarize_mappings:
+    input:
+        pbiPlots="reports/PbiPlots/report.json",
+        pbiSampledPlots="reports/PbiSampledPlots/report.json",
+        libDiagnosticPlots="reports/LibDiagnosticPlots/report.json",
+        readPlots="reports/ReadPlots/report.json",
+        constantArrowPlots="reports/ConstantArrowFishbonePlots/report.json",
+        makeMappingMetricsCsv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv",
+        ZMWstsPlots="reports/ZMWstsPlots/report.json",
+        AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json",
+        LocAccPlots="reports/LocAccPlots/report.json",
+        AccDeltaPlots="reports/AccDeltaPlots/report.json",
+        RuntimePlots="reports/PrimaryRuntime/report.json"
 
 # -- Target --
 
@@ -107,6 +124,7 @@ rule run_basecaller_console_app:
     params:
         module=lambda wc: ct.basecallerModule(wc.condition),
         exe=lambda wc: ct.basecallerExe(wc.condition)
+    benchmark: "benchmarks/{condition}_primary.tsv"
     threads: 16
     shell:
         """
@@ -133,6 +151,7 @@ rule run_baz2bam:
         mov=lambda wc: trc2mov(remote_trcs[wc.condition]),
         cond=lambda wc: wc.condition,
     threads: 16
+    benchmark: "benchmarks/{condition}_postprimary.tsv"
     shell:
         """
         if [ -e {output.stsh5} ] ;
@@ -211,6 +230,7 @@ rule run_poc_basecaller:
     params:
         module=lambda wc: ct.basecallerModule(wc.condition),
         exe=lambda wc: ct.basecallerExe(wc.condition)
+    benchmark: "benchmarks/{condition}_primary.tsv"
     threads: 2
     shell:
         """

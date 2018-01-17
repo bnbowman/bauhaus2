@@ -16,6 +16,8 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ unrolled-mapping
   unrolled-mapping
+  |-- benchmarks
+  |   `-- locacc.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -388,5 +390,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  25 directories, 346 files
+  26 directories, 347 files
 

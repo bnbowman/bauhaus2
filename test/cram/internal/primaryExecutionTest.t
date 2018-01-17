@@ -16,6 +16,15 @@ Generate mapping reports workflow, starting from trace files and basecallers
 
   $ tree -I __pycache__ primary-refarm
   primary-refarm
+  |-- benchmarks
+  |   |-- HQLib_postprimary.tsv
+  |   |-- HQLib_primary.tsv
+  |   |-- HQunrolled_postprimary.tsv
+  |   |-- HQunrolled_primary.tsv
+  |   |-- accdelta.tsv
+  |   |-- locacc.tsv
+  |   |-- noHQunrolled_postprimary.tsv
+  |   `-- noHQunrolled_primary.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- HQLib
@@ -232,6 +241,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |-- log
   |-- prefix.sh
   |-- reports
+  |   |-- AccDeltaPlots
+  |   |   |-- report.json
+  |   |   `-- traceviewer_links.txt
   |   |-- AlignmentBasedHeatmaps
   |   |   |-- AccuracyExtRange_HQLib.png
   |   |   |-- AccuracyExtRange_HQunrolled.png
@@ -254,6 +266,16 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- DeletionRate_HQLib.png
   |   |   |-- DeletionRate_HQunrolled.png
   |   |   |-- DeletionRate_noHQunrolled.png
+  |   |   |-- HQLib_11k_pbell_H1-6_ScaI_Coverage_vs_GC_Content.png
+  |   |   |-- HQLib_11k_pbell_H1-6_ScaI_Coverage_vs_tpl_position.png
+  |   |   |-- HQLib_11k_pbell_H1-6_ScaI_GC_Content_vs_tpl_position.png
+  |   |   |-- HQLib_11k_pbell_H1-6_ScaI_Subread_Length_vs_GC_Content.png
+  |   |   |-- HQLib_11k_pbell_H1-6_ScaI_Subread_Length_vs_tpl_position.png
+  |   |   |-- HQunrolled_11k_pbell_H1-6_ScaI_Coverage_vs_GC_Content.png
+  |   |   |-- HQunrolled_11k_pbell_H1-6_ScaI_Coverage_vs_tpl_position.png
+  |   |   |-- HQunrolled_11k_pbell_H1-6_ScaI_GC_Content_vs_tpl_position.png
+  |   |   |-- HQunrolled_11k_pbell_H1-6_ScaI_Subread_Length_vs_GC_Content.png
+  |   |   |-- HQunrolled_11k_pbell_H1-6_ScaI_Subread_Length_vs_tpl_position.png
   |   |   |-- InsertionRate_HQLib.png
   |   |   |-- InsertionRate_HQunrolled.png
   |   |   |-- InsertionRate_noHQunrolled.png
@@ -292,6 +314,11 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- Uniformity_metrics_noHQunrolled.csv
   |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
+  |   |   |-- noHQunrolled_11k_pbell_H1-6_ScaI_Coverage_vs_GC_Content.png
+  |   |   |-- noHQunrolled_11k_pbell_H1-6_ScaI_Coverage_vs_tpl_position.png
+  |   |   |-- noHQunrolled_11k_pbell_H1-6_ScaI_GC_Content_vs_tpl_position.png
+  |   |   |-- noHQunrolled_11k_pbell_H1-6_ScaI_Subread_Length_vs_GC_Content.png
+  |   |   |-- noHQunrolled_11k_pbell_H1-6_ScaI_Subread_Length_vs_tpl_position.png
   |   |   |-- rEnd_HQLib.png
   |   |   |-- rEnd_HQunrolled.png
   |   |   |-- rEnd_noHQunrolled.png
@@ -434,10 +461,12 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- acc_accvrl.png
   |   |   |-- acc_accvtl.png
   |   |   |-- acc_density.png
-  |   |   |-- alen_density.png
+  |   |   |-- alen_pol_density.png
+  |   |   |-- alen_subread_density.png
   |   |   |-- alen_v_qlen.png
-  |   |   |-- aligned_read_length_survival\ (Log-scale).png
-  |   |   |-- aligned_read_length_survival.png
+  |   |   |-- aligned_pol_read_length_survival\ (Log-scale).png
+  |   |   |-- aligned_pol_read_length_survival.png
+  |   |   |-- aligned_subread_read_length_survival.png
   |   |   |-- base_count_bar.png
   |   |   |-- etype__drate_boxplot.png
   |   |   |-- etype__irate_boxplot.png
@@ -500,6 +529,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- snrvsmismatch.png
   |   |   |-- tlenvsendtime.png
   |   |   `-- tlenvsstarttime.png
+  |   |-- PrimaryRuntime
+  |   |   |-- report.json
+  |   |   `-- runtimes.total_times.png
   |   |-- ReadPlots
   |   |   |-- clip_rate.png
   |   |   |-- deletion_norm.png
@@ -867,5 +899,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  33 directories, 815 files
+  36 directories, 846 files
 

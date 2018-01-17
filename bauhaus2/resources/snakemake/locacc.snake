@@ -12,13 +12,15 @@ cond_names = ['-n {}'.format(c) for c in ct.conditions]
 
 rule locacc_plots:
     input:
-        LocAccPlots="reports/LocAccPlots/report.json"
+        LocAccPlots="reports/LocAccPlots/report.json",
+        AccDeltaPlots="reports/AccDeltaPlots/report.json"
 
 rule LocAccPlots:
     input:
         alignments = mapped_subreads
     output: "reports/LocAccPlots/report.json"
     params: names = cond_names
+    benchmark: "benchmarks/locacc.tsv"
     shell:
         """
         module use /pbi/dept/primary/modulefiles
@@ -26,4 +28,52 @@ rule LocAccPlots:
         module load primary-toolkit
 
         locacc {input.alignments} {params.names} --nreads 5000 -o reports/LocAccPlots/LocAcc --warnonly --mask
+        """
+
+""" If the trc.h5 is not shared between conditions (and by shared I mean
+identical, once you resolve the link) this report will be empty
+"""
+traces = ['-t conditions/{}/primary/input.trc.h5'.format(c)
+          for c in ct.conditions]
+
+subreadsets = ['-s conditions/{}/primary/input.subreadset.xml'.format(c)
+               for c in ct.conditions]
+
+""" this is different than mapped subreads because we have to put the flag
+before each path: """
+alignmentsets = ['-a conditions/{}/mapped/mapped.alignmentset.xml'.format(c)
+                 for c in ct.conditions]
+
+
+rule AccDeltaPlots:
+    input:
+        alignments = mapped_subreads
+    output: "reports/AccDeltaPlots/report.json"
+    params:
+        names = cond_names,
+        trcs = traces,
+        ssets = subreadsets,
+        asets = alignmentsets
+    benchmark: "benchmarks/accdelta.tsv"
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module use /mnt/software/modulefiles
+        module load primary-toolkit
+
+        accdelta {params.trcs} {params.ssets} {params.asets} {params.names} --nreads 5000 -o reports/AccDeltaPlots/AccDelta --warnonly --linkfn reports/AccDeltaPlots/traceviewer_links.txt
+        """
+
+"""make sure we're done with everything, we'll glob up the log files in
+the script:"""
+rule Runtimes:
+    input: "reports/AccDeltaPlots/report.json"
+    output: "reports/PrimaryRuntime/report.json"
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module use /mnt/software/modulefiles
+        module load primary-toolkit
+
+        primetime `pwd` reports/PrimaryRuntime/runtimes --warnonly
         """
