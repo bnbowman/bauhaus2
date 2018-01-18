@@ -1,0 +1,15 @@
+
+# ---------------------------------------------------------------------------------------------------
+# collect-ppa-burst-metrics.snake: collect ppa-classified bursts, if available.
+
+subreadsets = \
+    { c : "conditions/{condition}/subreads/input.subreadset.xml".format(condition=c)
+      for c in ct.conditions }
+
+rule collect_ppa_bursts:
+	input: "conditions/{condition}/subreads/input.subreadset.xml"
+	output: "conditions/{condition}/subreads/ppa_burst_metrics.csv"
+	shell:
+		"""
+		python scripts/Python/CollectPpaBurstMetrics.py {input} {output}
+		"""

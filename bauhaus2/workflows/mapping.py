@@ -21,7 +21,8 @@ from .subreads import subreadsPlan
 def subreadsMappingPlan(ct, args):
     if ct.inputsAreMapped:
         # Mapping already happened, link it.
-        return [ "collect-smrtlink-references.snake",
+        return [ "collect-smrtlink-subreads.snake",
+                 "collect-smrtlink-references.snake",
                  "mapping-alignmentset.snake",
                  "collect-mappings.snake" ]
     elif not args.no_smrtlink:
