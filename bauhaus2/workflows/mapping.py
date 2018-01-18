@@ -62,9 +62,16 @@ class MappingReportsWorkflow(Workflow):
                              "R/ZMWstsPlots.R",
                              "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
-    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", 
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
+                             "Python/CollectPpaBurstMetrics.py",
                              "Python/GetZiaTags.py")
 
     def plan(self):
-        return ["summarize-mappings.snake", "constant-arrow.snake", "constant-arrow-regular.snake", "heatmaps.snake", "locacc.snake", "uid-tag.snake"] + \
+        return ["summarize-mappings.snake", 
+                "constant-arrow.snake", 
+                "constant-arrow-regular.snake",
+                "heatmaps.snake",
+                "locacc.snake",
+                "uid-tag.snake",
+                "collect-ppa-burst-metrics.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)
