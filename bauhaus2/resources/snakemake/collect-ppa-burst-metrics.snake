@@ -8,8 +8,9 @@ subreadsets = \
 
 rule collect_ppa_bursts:
 	input: "conditions/{condition}/subreads/input.subreadset.xml"
-	output: "conditions/{condition}/subreads/ppa_burst_metrics.csv"
+	output: bursts="conditions/{condition}/subreads/ppa_burst_metrics.csv",
+			reads="conditions/{condition}/subreads/read_metrics.csv"
 	shell:
 		"""
-		python scripts/Python/CollectPpaBurstMetrics.py {input} {output}
+		python scripts/Python/CollectPpaBurstMetrics.py {input} {output.bursts} {output.reads}
 		"""
