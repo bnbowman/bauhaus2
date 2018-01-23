@@ -9,6 +9,10 @@ mapped_subreads = \
 local_fasta_files = \
     { c : expand("conditions/{condition}/reference.fasta", condition=c)
       for c in ct.conditions }
+
+burst_metrics_csv_files = \
+    { c : "conditions/{condition}/subreads/ppa_burst_metrics.csv".format(condition=c)
+      for c in ct.conditions }
       
 uid_tag_csv_file = "reports/uidTag.csv"
 
@@ -17,7 +21,8 @@ uid_tag_csv_file = "reports/uidTag.csv"
 rule heatmap_plots:
     input:
         ZMWstsPlots="reports/ZMWstsPlots/report.json",
-        AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json"
+        AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json",
+        PpaBurstMetrics=burst_metrics_csv_files.values()
 
 rule AlignmentBasedHeatmaps:
     input: mapped_subreads.values(),

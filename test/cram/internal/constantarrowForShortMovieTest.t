@@ -56,8 +56,8 @@ Generate constant arrow for short movie workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |   |   |-- sts.h5 -> /pbi/dept/enzymology/Kristofor/repos/bauhaus2/bauhaus2/resources/extras/no_sts.h5
+  |   |   |-- sts.xml -> /pbi/dept/enzymology/Kristofor/repos/bauhaus2/bauhaus2/resources/extras/no_sts.xml
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -68,7 +68,9 @@ Generate constant arrow for short movie workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       `-- input.subreadset.xml
+  |   |       |-- input.subreadset.xml
+  |   |       |-- ppa_burst_metrics.csv
+  |   |       `-- read_metrics.csv
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- chunks
@@ -107,8 +109,8 @@ Generate constant arrow for short movie workflow, starting from subreads.
   |       |   `-- mapped.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |       |-- sts.h5 -> /pbi/dept/enzymology/Kristofor/repos/bauhaus2/bauhaus2/resources/extras/no_sts.h5
+  |       |-- sts.xml -> /pbi/dept/enzymology/Kristofor/repos/bauhaus2/bauhaus2/resources/extras/no_sts.xml
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -119,7 +121,9 @@ Generate constant arrow for short movie workflow, starting from subreads.
   |           |   |-- input.chunk5.subreadset.xml
   |           |   |-- input.chunk6.subreadset.xml
   |           |   `-- input.chunk7.subreadset.xml
-  |           `-- input.subreadset.xml
+  |           |-- input.subreadset.xml
+  |           |-- ppa_burst_metrics.csv
+  |           `-- read_metrics.csv
   |-- config.json
   |-- log
   |-- prefix.sh
@@ -142,6 +146,7 @@ Generate constant arrow for short movie workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
+  |   |   |-- CollectPpaBurstMetrics.py
   |   |   |-- GetZiaTags.py
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
@@ -152,4 +157,4 @@ Generate constant arrow for short movie workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  18 directories, 117 files
+  18 directories, 122 files

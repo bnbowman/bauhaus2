@@ -12,6 +12,7 @@ Generate mapping reports workflow, starting from subreads.
   Generated runnable workflow to "coverage-titration"
 
   $ (cd coverage-titration && ./run.sh >/dev/null 2>&1)
+  [1]
 
 
   $ tree -I __pycache__ coverage-titration | sed 's|\ ->.*||'
@@ -70,47 +71,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   `-- input.chunk7.subreadset.xml
   |   |   |   `-- input.subreadset.xml
   |   |   `-- variant_calling
-  |   |       |-- alignments-summary.gff
-  |   |       |-- consensus.10.fasta
-  |   |       |-- consensus.10.fastq
-  |   |       |-- consensus.100.fasta
-  |   |       |-- consensus.100.fastq
-  |   |       |-- consensus.15.fasta
-  |   |       |-- consensus.15.fastq
-  |   |       |-- consensus.20.fasta
-  |   |       |-- consensus.20.fastq
-  |   |       |-- consensus.30.fasta
-  |   |       |-- consensus.30.fastq
-  |   |       |-- consensus.40.fasta
-  |   |       |-- consensus.40.fastq
-  |   |       |-- consensus.5.fasta
-  |   |       |-- consensus.5.fastq
-  |   |       |-- consensus.63.fasta
-  |   |       |-- consensus.63.fastq
-  |   |       |-- consensus.75.fasta
-  |   |       |-- consensus.75.fastq
-  |   |       |-- consensus.88.fasta
-  |   |       |-- consensus.88.fastq
-  |   |       |-- masked-variants.10.gff
-  |   |       |-- masked-variants.100.gff
-  |   |       |-- masked-variants.15.gff
-  |   |       |-- masked-variants.20.gff
-  |   |       |-- masked-variants.30.gff
-  |   |       |-- masked-variants.40.gff
-  |   |       |-- masked-variants.5.gff
-  |   |       |-- masked-variants.63.gff
-  |   |       |-- masked-variants.75.gff
-  |   |       |-- masked-variants.88.gff
-  |   |       |-- variants.10.gff
-  |   |       |-- variants.100.gff
-  |   |       |-- variants.15.gff
-  |   |       |-- variants.20.gff
-  |   |       |-- variants.30.gff
-  |   |       |-- variants.40.gff
-  |   |       |-- variants.5.gff
-  |   |       |-- variants.63.gff
-  |   |       |-- variants.75.gff
-  |   |       `-- variants.88.gff
+  |   |       `-- alignments-summary.gff
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- chunks
@@ -163,56 +124,11 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   `-- input.chunk7.subreadset.xml
   |       |   `-- input.subreadset.xml
   |       `-- variant_calling
-  |           |-- alignments-summary.gff
-  |           |-- consensus.10.fasta
-  |           |-- consensus.10.fastq
-  |           |-- consensus.100.fasta
-  |           |-- consensus.100.fastq
-  |           |-- consensus.15.fasta
-  |           |-- consensus.15.fastq
-  |           |-- consensus.20.fasta
-  |           |-- consensus.20.fastq
-  |           |-- consensus.30.fasta
-  |           |-- consensus.30.fastq
-  |           |-- consensus.40.fasta
-  |           |-- consensus.40.fastq
-  |           |-- consensus.5.fasta
-  |           |-- consensus.5.fastq
-  |           |-- consensus.63.fasta
-  |           |-- consensus.63.fastq
-  |           |-- consensus.75.fasta
-  |           |-- consensus.75.fastq
-  |           |-- consensus.88.fasta
-  |           |-- consensus.88.fastq
-  |           |-- masked-variants.10.gff
-  |           |-- masked-variants.100.gff
-  |           |-- masked-variants.15.gff
-  |           |-- masked-variants.20.gff
-  |           |-- masked-variants.30.gff
-  |           |-- masked-variants.40.gff
-  |           |-- masked-variants.5.gff
-  |           |-- masked-variants.63.gff
-  |           |-- masked-variants.75.gff
-  |           |-- masked-variants.88.gff
-  |           |-- variants.10.gff
-  |           |-- variants.100.gff
-  |           |-- variants.15.gff
-  |           |-- variants.20.gff
-  |           |-- variants.30.gff
-  |           |-- variants.40.gff
-  |           |-- variants.5.gff
-  |           |-- variants.63.gff
-  |           |-- variants.75.gff
-  |           `-- variants.88.gff
+  |           `-- alignments-summary.gff
   |-- config.json
   |-- log
   |-- prefix.sh
   |-- reports
-  |   `-- CoverageTitration
-  |       |-- concordance-by-condition.png
-  |       |-- coverage-diagnostic-plot.png
-  |       |-- coverage-titration.csv
-  |       `-- report.json
   |-- run.sh
   |-- scripts
   |   `-- R
@@ -222,7 +138,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 186 files
+  18 directories, 102 files
 
 
   $ rm -fr coverage-titration

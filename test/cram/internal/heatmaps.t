@@ -68,7 +68,9 @@ Generate heatmaps workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       `-- input.subreadset.xml
+  |   |       |-- input.subreadset.xml
+  |   |       |-- ppa_burst_metrics.csv
+  |   |       `-- read_metrics.csv
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- chunks
@@ -119,7 +121,9 @@ Generate heatmaps workflow, starting from subreads.
   |           |   |-- input.chunk5.subreadset.xml
   |           |   |-- input.chunk6.subreadset.xml
   |           |   `-- input.chunk7.subreadset.xml
-  |           `-- input.subreadset.xml
+  |           |-- input.subreadset.xml
+  |           |-- ppa_burst_metrics.csv
+  |           `-- read_metrics.csv
   |-- config.json
   |-- log
   |-- prefix.sh
@@ -202,6 +206,7 @@ Generate heatmaps workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
+  |   |   |-- CollectPpaBurstMetrics.py
   |   |   `-- GetZiaTags.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
@@ -211,4 +216,4 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 175 files
+  19 directories, 180 files

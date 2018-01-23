@@ -29,8 +29,7 @@ def parseArgs():
 
 def main():
     args = parseArgs()
-    ppa_bursts = bm.PpaBurstMetrics(args.subreadset,
-                                    subsampleto=10000000)
+    ppa_bursts = bm.PpaBurstMetrics(args.subreadset)
 
     # load the reads info into pandas dataframe and save to csv
     if hasattr(ppa_bursts, 'reads'):

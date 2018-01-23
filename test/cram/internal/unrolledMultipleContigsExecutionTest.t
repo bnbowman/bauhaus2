@@ -79,7 +79,9 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       `-- input.subreadset.xml
+  |   |       |-- input.subreadset.xml
+  |   |       |-- ppa_burst_metrics.csv
+  |   |       `-- read_metrics.csv
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- chunks
@@ -139,7 +141,9 @@ Generate mapping reports workflow, starting from subreads.
   |           |   |-- input.chunk5.subreadset.xml
   |           |   |-- input.chunk6.subreadset.xml
   |           |   `-- input.chunk7.subreadset.xml
-  |           `-- input.subreadset.xml
+  |           |-- input.subreadset.xml
+  |           |-- ppa_burst_metrics.csv
+  |           `-- read_metrics.csv
   |-- config.json
   |-- contig-chunked-condition-table.csv
   |-- log
@@ -198,6 +202,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tEnd_MovieB.png
   |   |   |-- tStart_MovieA.png
   |   |   `-- tStart_MovieB.png
+  |   |-- BurstPlots
+  |   |   `-- report.json
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode-simple.csv
@@ -394,6 +400,7 @@ Generate mapping reports workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
+  |   |   |-- CollectPpaBurstMetrics.py
   |   |   |-- ConsolidateArrowConditions.py
   |   |   |-- GetZiaTags.py
   |   |   |-- MakeChunkedConditionTable.py
@@ -413,5 +420,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 368 files
+  29 directories, 374 files
 
