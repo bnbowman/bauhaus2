@@ -13,6 +13,6 @@ rule collect_ppa_bursts:
 	shell:
 		"""
 		export MODULEPATH=/pbi/dept/itg/modulefiles:$MODULEPATH
-		module add biochemistry-toolkit/0.5
+		module add biochemistry-toolkit/zia
 		python scripts/Python/CollectPpaBurstMetrics.py {input} {output.bursts} {output.reads}
 		"""
