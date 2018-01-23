@@ -125,7 +125,7 @@ rule run_basecaller_console_app:
         module=lambda wc: ct.basecallerModule(wc.condition),
         exe=lambda wc: ct.basecallerExe(wc.condition)
     benchmark: "benchmarks/{condition}_primary.tsv"
-    threads: 16
+    threads: 18
     shell:
         """
         module purge
