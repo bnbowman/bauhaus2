@@ -1,2 +1,2 @@
-Condition,AlignmentSet,Genome,p_Foo
-Bar,/pbi/dept/secondary/siv/testdata/itg/all4mer/out.aligned_subreads.bam,All4mer.V2.01_Insert,Bar
+Condition,SubreadSet,Genome,p_Foo
+Movie,/pbi/dept/secondary/siv/testdata/itg/internal-bam/m54004_180118_215533-50zmws.subreadset.xml,All4mer_V2_001_unrolled_circular_216x_l150768,
