@@ -12,5 +12,7 @@ rule collect_ppa_bursts:
 			reads="conditions/{condition}/subreads/read_metrics.csv"
 	shell:
 		"""
+		export MODULEPATH=/pbi/dept/itg/modulefiles:$MODULEPATH
+		module add biochemistry-toolkit/0.5
 		python scripts/Python/CollectPpaBurstMetrics.py {input} {output.bursts} {output.reads}
 		"""
