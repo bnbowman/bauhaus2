@@ -11,6 +11,7 @@
   Heatmaps
   IsoSeqRC0
   MappingReports
+  MaskedArrowTraining
   PrimaryRefarm
   SV-FY1679
   SV-HG00733

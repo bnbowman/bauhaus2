@@ -3,6 +3,7 @@ from builtins import object
 __all__ = [ "InputType",
             "ConditionTable",
             "ResequencingConditionTable",
+            "MaskedResequencingConditionTable",
             "PrimaryResequencingConditionTable",
             "CoverageTitrationConditionTable",
             "UnrolledMappingConditionTable",
@@ -308,6 +309,53 @@ class ResequencingConditionTable(ConditionTable):
         _, spec = self._trainingsByCondition[condition]
         if spec is None: return ""
         return "%s %s" % (arg, spec)
+
+
+class MaskedResequencingConditionTable(ResequencingConditionTable):
+    """
+    Base class for representing Milhouse-style condition tables for
+    resequencing-bases analyses (require a reference, use mapping)
+    with masking of certain regions
+    """
+    def _validateMaskfileColumnPresent(self):
+        if "Maskfile" not in self.tbl.column_names:
+            raise TableValidationError("'Maskfile' column must be present")
+
+    def _validateTable(self):
+        """
+        Additional validation: "Maskfile" column required
+        """
+        super(MaskedResequencingConditionTable, self)._validateTable()
+        self._validateMaskfileColumnPresent()
+
+    def _resolveInputs(self, resolver):
+        super(MaskedResequencingConditionTable, self)._resolveInputs(resolver)
+        self._referenceMaskByCondition = {}
+        for condition in self.conditions:
+            genome = self.genome(condition)
+            # TODO: is there a better way to extract the Maskfile
+            # from the table than using .variable()?
+            maskfile = self.variable(condition, "Maskfile")
+
+            if maskfile.lower() in ("y", "yes", "t", "true", "1"):
+                # try to locate mask using the resolver
+                try:
+                    maskfile = resolver.resolveReferenceMask(genome)
+                except DataNotFound as e:
+                    raise InputResolutionError(str(e))
+            elif maskfile.lower() in ("n", "no", "f", "false", "0", ""):
+                # we clearly don't want a mask for this condition
+                maskfile = None
+            else:
+                # no binary answer, hence a full path has been given
+                if not op.exists(maskfile):
+                    raise DataNotFound("Reference mask '{}' does not exist".format(maskfile))
+
+            self._referenceMaskByCondition[condition] = maskfile
+
+    def maskfile(self, condition):
+        return self._referenceMaskByCondition[condition]
+
 
 class PrimaryResequencingConditionTable(ResequencingConditionTable):
 
