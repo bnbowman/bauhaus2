@@ -19,160 +19,443 @@ myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
 
 # Define a basic addition to all plots
-midTitle <- theme(plot.title = element_text(hjust = 0.5))
+midTitle <- theme(plot.title = element_text(hjust = 0.5, size = 8))
 plTheme <-
-  theme_bw(base_size = 14) + theme(plot.title = element_text(hjust = 0.5))
+  theme_bw(base_size = 14) + theme(legend.text = element_text(size=8), legend.title = element_text(size=8), plot.title = element_text(hjust = 0.5, size = 8), 
+                                   axis.title=element_text(size=8), axis.text=element_text(size=8))
 clScale <- scale_colour_brewer(palette = "Set1")
 clFillScale <- scale_fill_brewer(palette = "Set1")
-themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1))
-plotwidth = 7.2
-plotheight = 4.2
+themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1,size = 8))
+plotwidth = 4.2
+plotheight = 7.2
 
-makeBurstLengthPlots <- function(report, cd) {
-  loginfo("Log of Burst Length Histogram Plots")
-  tp = ggplot(cd, aes(x = burstLength, colour = Condition)) + geom_freqpoly(data=subset(cd,Condition=='5k_tetraloop'),aes(y=..count../sum(..count..)), binwidth=0.14, fill = 'white')  +
-    geom_freqpoly(data=subset(cd,Condition=='6k_tetraloop'),aes(y=..count../sum(..count..)),binwidth=0.14, fill = 'white') +
-    plTheme + clScale + themeTilt +
-    labs(y = "Burst Length Histogram", title = "Burst Length Histogram", x = "Burst Length") + scale_x_log10(breaks = 10 ^
-                                                                                                               (0:5))
+labels <- function (cd){
+  labels=""
+  if (comment(cd)=="cd") {return (labels="all bursts")}
+  if (comment(cd) == "cd_H") {return (labels = "HQ")}
+  if (comment(cd) == "cd_noH") {return (labels = "LQ")}
+}
+
+#working 
+makeBurstLengthPlots <- function(report,cd,cd_H, cd_noH) {
+  loginfo("Log of Burst Length Plots")
+  label = labels(cd)
+  label = paste("Burst_Length_CDF", label, sep = "_")
+  tp2 = ggplot(cd, aes(x = burstLength, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ 
+    labs(y = "Burst Length CDF", title = label, x = "Burst Length (pulses)")
+  label2 = labels(cd_H)
+  label2 = paste("Burst_Length_CDF", label2, sep = "_")
+  tp3 = ggplot(cd_H, aes(x = burstLength, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ 
+    labs(y = "Burst Length CDF", title = label2, x = "Burst Length (pulses)")
+  label3 = labels(cd_noH)
+  label3 = paste("Burst_Length_CDF", label3, sep = "_")
+  tp4 = ggplot(cd_noH, aes(x = burstLength, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ 
+    labs(y = "Burst Length CDF", title = label3, x = "Burst Length (pulses)")
+  tp5 = grid.arrange(tp2, tp3, tp4, ncol=1)
   report$ggsave(
-    "logburstlength.png",
-    tp,
+    "BurstLength_CDF",
+    tp5,
     width = plotwidth,
     height = plotheight,
-    id = "burst_length",
-    title = "Burst Length",
-    caption = "Burst Length",
+    id = "BurstLength_CDF",
+    title = "BurstLength_CDF",
+    caption = "BurstLength_CDF",
     tags = c("basic", "burst", "length"),
     uid = "6000000"
   )
-  cd_H = cd %>% filter(seqType == 'H')
-  tp = ggplot(cd_H, aes(x = burstLength, colour = Condition)) + geom_freqpoly(data=subset(cd_H,Condition=='5k_tetraloop'),aes(y=..count../sum(..count..)), binwidth=0.14, fill = 'white')  +
-    geom_freqpoly(data=subset(cd_H,Condition=='6k_tetraloop'),aes(y=..count../sum(..count..)),binwidth=0.14, fill = 'white') +
-    plTheme + clScale + themeTilt +
-    labs(y = "Burst Length Histogram with H", title = "Burst Length Histogram with H", x = "Burst Length with H") + scale_x_log10(breaks = 10^(0:5))
+}
+
+makeBurstDurationPlots <- function(report,cd,cd_H, cd_noH) {
+  loginfo("Log of Burst Duration Plots")
+  label = labels(cd)
+  label = paste("Burst_Duration_CDF", label, sep = "_")
+  cd$burstDuration = cd$burstEndTime - cd$burstStartTime
+  tp1 = ggplot(cd, aes(x = burstDuration, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ labs(y = "Burst Duration CDF", title = label, x = "Burst Duration (minutes)")
+  label2 = labels(cd_H)
+  label2 = paste("Burst_Duration_CDF", label2, sep = "_")
+  cd_H$burstDuration = cd_H$burstEndTime - cd_H$burstStartTime
+  tp2 = ggplot(cd_H, aes(x = burstDuration, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ 
+    labs(y = "Burst Duration CDF", title = label2, x = "Burst Duration (minutes)")
+  label3 = labels(cd_noH)
+  label3 = paste("Burst_Duration_CDF", label3, sep = "_")
+  cd_noH$burstDuration = cd_noH$burstEndTime - cd_noH$burstStartTime
+  tp3 = ggplot(cd_noH, aes(x = burstLength, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ 
+    labs(y = "Burst Duration CDF", title = label3, x = "Burst Duration (minutes)")
+  tp4 = grid.arrange(tp1, tp2, tp3, ncol=1)
   report$ggsave(
-    "logburstlength_H.png",
-    tp,
+    "Burst_Duration_CDF.png",
+    tp4,
     width = plotwidth,
     height = plotheight,
-    id = "burst_length_H",
-    title = "Burst Length H",
-    caption = "Burst Length H",
-    tags = c("basic", "burst", "length_h"),
+    id = "Burst_Duration_CDF",
+    title = "Burst_Duration_CDF",
+    caption = "Burst_Duration_CDF",
+    tags = c("basic", "burst", "duration"),
     uid = "6000001"
   )
-  
-  cd_noH = cd %>% filter(seqType != 'H')
-  tp = ggplot(cd_noH, aes(x = burstLength, colour = Condition)) + geom_freqpoly(data=subset(cd_H,Condition=='5k_tetraloop'),aes(y=..count../sum(..count..)), binwidth=0.14, fill = 'white')  +
-    geom_freqpoly(data=subset(cd_H,Condition=='6k_tetraloop'),aes(y=..count../sum(..count..)),binwidth=0.14, fill = 'white') +
-    plTheme + clScale + themeTilt +
-    labs(y = "Burst Length Histogram with no H", title = "Burst Length Histogram with no H", x = "Burst Length with no H") + scale_x_log10(breaks = 10^(0:5))
+}
+
+makeCumSumBurstLength <- function(report,cd_H) {
+  loginfo("Making Bases Data Distribution")
+  #cd_H = cd %>% filter(seqType == 'H')
+  res = cd_H %>% group_by(Condition, zmw, qStart) %>% summarise(cumlen = sum(burstLength))
+  tp = ggplot(res, aes(x = cumlen, colour = Condition)) + stat_ecdf() +
+    plTheme + clScale + themeTilt + scale_x_log10(breaks = 10 ^ (0:8)) + labs(y = "CDF", title = "Cumulative burst length per subread CDF (pulses)", x = "Cumulative burst length per subread")
   report$ggsave(
-    "logburstlength_noH.png",
+    "cumsum_burst_length.png",
     tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "burst_length_noH",
-    title = "Burst Length No H",
-    caption = "Burst Length No H",
-    tags = c("basic", "burst", "length_noh"),
+    width = plotheight,
+    height = plotwidth,
+    id = "cumsum_burst_length",
+    title = "Cumulative burst length per subread CDF",
+    caption = "Cumulative burst length per subread CDF",
+    tags = c("basic", "burstplots", "cdf", "cumsum"),
     uid = "6000002"
   )
 }
-
-makeBurstDurationPlots <- function(report, cd) {
-  loginfo("Log of Burst Duration Histogram Plots")
-  cd$burstDuration = cd$burstEndTime - cd$burstStartTime
- # tp = ggplot(cd, aes(x = burstDuration, colour = Condition)) + geom_freqpoly(data=subset(cd,Condition=='5k_tetraloop'),aes(y=..count../sum(..count..)), binwidth=0.14, fill = 'white')  +
-  #  geom_freqpoly(data=subset(cd,Condition=='6k_tetraloop'),aes(y=..count../sum(..count..)),binwidth=0.14, fill = 'white') +
-   # plTheme + clScale + themeTilt +
-    #labs(y = "Burst Duration CDF", title = "Burst Duration CDF", x = "Burst Duration") + scale_x_log10(breaks = 10 ^
-  tp = ggplot(cd, aes(x = burstDuration, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ labs(y = "Burst Duration CDF", title = "Burst Duration CDF", x = "Burst Duration")
+makeCumSumBurstDuration <- function(report,cd_H) {
+  loginfo("Making Burst Duration Sum Plots")
+  #cd_H = cd %>% filter(seqType == 'H')
+  cd_H$burstDuration = cd_H$burstEndTime - cd_H$burstStartTime
+  res = cd_H %>% group_by(Condition, zmw, qStart) %>% summarise(cumlen = sum(burstDuration))
+  tp = ggplot(res, aes(x = cumlen, colour = Condition)) + stat_ecdf() +
+    plTheme + clScale + themeTilt + scale_x_log10(breaks = 10 ^ (0:8)) + labs(y = "CDF", title = "Cumulative burst Duration per subread CDF (pulses)", x = "Cumulative burst duration per subread")
   report$ggsave(
-    "logburstduration.png",
+    "cumsum_burst_duration.png",
     tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "burst_duration",
-    title = "Burst Duration",
-    caption = "Burst Duration",
-    tags = c("basic", "burst", "duration"),
+    width = plotheight,
+    height = plotwidth,
+    id = "cumsum_burst_duration",
+    title = "Cumulative burst duration per subread CDF",
+    caption = "Cumulative burst duration per subread CDF",
+    tags = c("basic", "burstplots", "cdf", "cumsum"),
     uid = "6000003"
   )
-  cd_H = cd %>% filter(seqType == 'H')
-  tp = ggplot(cd_H, aes(x = burstDuration, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ labs(y = "Burst Duration with H CDF", title = "Burst Duration with H CDF", x = "Burst Duration")
+}
+
+makeBurstStartPlots <- function(report,cd,cd_H, cd_noH) {
+  loginfo("Log of Burst Starttime CDF Plots")  
+  label = labels(cd)
+  label = paste("Burst_Starttime_CDF", label, sep = "_")
+  tp1 = ggplot(cd, aes(x = burstStartTime, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ labs(y = "Burst Start Time CDF", title = label, x = "Burst Start Time (minutes)")
+  label2 = labels(cd_H)
+  label2 = paste("Burst_Starttime_CDF", label2, sep = "_")
+  tp2 = ggplot(cd_H, aes(x = burstStartTime, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ 
+    labs(y = "Burst Start Time CDF", title = label2, x = "Burst Start Time (minutes)")
+  label3 = labels(cd_noH)
+  label3 = paste("Burst_Duration_CDF", label3, sep = "_")
+  tp3 = ggplot(cd_noH, aes(x = burstStartTime, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ 
+    labs(y = "Burst Start Time CDF", title = label3, x = "Burst Start Time (minutes)")
+  tp4 = grid.arrange(tp1, tp2, tp3, ncol=1)
   report$ggsave(
-    "logburstduration_H.png",
-    tp,
+    "log_burst_starttime.png",
+    tp4,
     width = plotwidth,
     height = plotheight,
-    id = "burst_duration_H",
-    title = "Burst Duration H",
-    caption = "Burst Duration H",
-    tags = c("basic", "burst", "length_h"),
-    uid = "6000004"
+    id = "burst_start_time",
+    title = "Burst Start Time CDF",
+    caption = "Burst Start Time",
+    tags = c("basic", "burst", "starttime"),
+    uid = "6000007"
   )
+}
+
+makePreviousBaseCount <- function(cd){
+  loginfo("Making Preivous Base Bar Charts")
+  levels(cd$previousBasecall) = c("A", "G", "C", "T", "Z", "None")
+  cd$previousBasecall[cd$previousBasecall == 'Z'] = 'None'
+  label = labels(cd)
+  label = paste("Previous_Base_Count", label, sep = "_")
+  tp = ggplot(cd, aes(previousBasecall, fill = Condition)) + geom_bar(position = "dodge") + plTheme + themeTilt  + clFillScale +
+    labs(x = "Bases", y = "Count", title = label)
+  return(tp)
+}
+makePreviousBaseCountAll <- function(report,cd,cd_H, cd_noH){
+  tp1 = makePreviousBaseCount(cd)
+  tp2 = makePreviousBaseCount(cd_H)
+  tp3 = makePreviousBaseCount(cd_noH)
+  tp4 = grid.arrange(tp1, tp2, tp3, ncol=1)
+  report$ggsave(
+    "previous_basecall_count.png",
+    tp4,
+    width = plotwidth,
+    height = plotheight,
+    id = "PreviousBaseCall_by_Condition",
+    title = "PreviousBaseCall by Condition",
+    caption = "PreviousBaseCall by Condition",
+    tags = c("basic", "burstplots", "barplot", "previousbase"),
+    uid = "6000008"
+  )
+}
+
+makePreviousBaseFreq <- function(cd){
+  loginfo("Making Preivous Base Bar Charts")
+  levels(cd$previousBasecall) = c("A", "G", "C", "T", "Z", "None")
+  cd$previousBasecall[cd$previousBasecall == 'Z'] = 'None'
+  label = labels(cd)
+  label = paste("Previous_Base_Count", label, sep = "_")
+  transcd2 = cd %>% group_by(Condition, previousBasecall)%>%summarise (n = n()) %>% mutate(freq = n / sum(n))
+  tp2 = ggplot(transcd2, aes(x = previousBasecall, y = freq, fill = Condition)) + geom_bar(stat =
+                                                                                             "identity", position = "dodge") +
+    clFillScale + plTheme + labs(x = "Previous Basecall", y = "Relative Frequency (Sum = 1)",
+                                 title = label)
+  return(tp2)
+}
+
+makePreviousBaseFreqAll <- function(report,cd,cd_H, cd_noH){
+  tp1 = makePreviousBaseFreq(cd)
+  tp2 = makePreviousBaseFreq(cd_H)
+  tp3 = makePreviousBaseFreq(cd_noH)
+  tp4 = grid.arrange(tp1, tp2, tp3, ncol=1)
+  report$ggsave(
+    "previousbasecallfreq.png",
+    tp4,
+    width = plotwidth,
+    height = plotheight,
+    id = "PreviousBaseCall_freq_by_Condition",
+    title = "Previous Basecall Frequencies",
+    caption = "Previous Basecall Frequencies",
+    tags = c("basic", "burstplots", "barplot", "freq"),
+    uid = "6000009"
+  )
+}
+
+makefractionBaseType <- function(cd) {
+  loginfo("Making Fraction Base Bar Charts")
+  label = labels(cd)
+  label1 = paste("Type Burst", label, sep = "_")
+  cd$typeBurst = 'Other'
+  cd$typeBurst[cd$fractionC > .5] = 'C'
+  cd$typeBurst[cd$fractionA > .5] = 'A'
+  cd$typeBurst[cd$fractionG > .5] = 'G'
+  cd$typeBurst[cd$fractionT > .5] = 'T'
+  levels(cd$typeBurst) = c("A", "G", "C", "T", "Other")
+  transcd = cd %>% group_by(Condition, typeBurst)%>%summarise (n = n()) %>% mutate(freq = n / sum(n))
+  transcd = subset(transcd, typeBurst != 'Other')
+  tp1 = ggplot(transcd, aes(x = typeBurst, y = freq, fill = Condition)) + geom_bar(stat =
+                                                                                     "identity", position = "dodge") +
+    clFillScale + plTheme + labs(x = "Type Burst", y = "Relative Frequency (Sum = 1)",
+                                 title = label1)
+  return(tp1)
+}
+
+makefractionBaseforAll <- function(report,cd,cd_H, cd_noH){
+ tp1 = makefractionBaseType(cd)
+ tp2 =  makefractionBaseType(cd_H)
+ tp3 =  makefractionBaseType(cd_noH)
+ tp4 = grid.arrange(tp1, tp2, tp3, ncol=1)
+ report$ggsave(
+   "typeofburst.png",
+   tp4,
+   width = plotwidth,
+   height = plotheight,
+   id = "Base Fraction Frequencies",
+   title = "Base Fraction Frequencies",
+   caption = "Base Fraction Frequencies",
+   tags = c("basic", "burstplots", "barplot", "typeofburst"),
+   uid = "800010"
+ )
+}
+
+makefractionBaseRorG <- function(cd) {
+  loginfo("Making Fraction Base Bar Charts")
+  label = labels(cd)
+  label2 = paste("Type Burst (R or G)", label, sep = "_")
+  cd$RorG = 'Other'
+  cd$RorG[cd$fractionC + cd$fractionA > .8] = 'Red'
+  cd$RorG[cd$fractionG + cd$fractionT > .8] = 'Green'
+  cd$RorG = as.factor(cd$RorG)
+  rorgcd = cd %>% group_by(Condition, RorG)%>%summarise (n = n()) %>% mutate(freq = n / sum(n))
+  rorgcd = subset(rorgcd, RorG != 'Other')
+  tp2 = ggplot(rorgcd, aes(x = RorG, y = freq, fill = Condition)) + geom_bar(stat =
+                                                                               "identity", position = "dodge") +
+    clFillScale + plTheme + labs(x = "Type Burst (R or G)", y = "Relative Frequency (Sum = 1)",
+                                 title = label2)
+  return(tp2)
+}
+
+makefractionBaseRorGforAll <- function(report,cd,cd_H, cd_noH){
+  tp1 = makefractionBaseRorG(cd)
+  tp2 =  makefractionBaseRorG(cd_H)
+  tp3 =  makefractionBaseRorG(cd_noH)
+  tp4 = grid.arrange(tp1, tp2, tp3, ncol=1)
+  report$ggsave(
+    "typeofburstRorG.png",
+    tp4,
+    width = plotwidth,
+    height = plotheight,
+    id = "Burst Type Frequencies (R or G)",
+    title = "Burst Type Frequencies (Red or Green)",
+    caption = "Burst Type Frequencies (R or G)",
+    tags = c("basic", "burstplots", "barplot", "rogburst"),
+    uid = "800011"
+  )
+}
+
+DensityforEachCondition<- function(cd, cd10,condition) {
+    cd10$readlength = cd10$qEnd - cd10$qStart
+    cd11 = cd10 %>% group_by (Condition) %>% summarise(yield = as.numeric((sum(as.numeric(readlength)))))
+    densities = rep(0,20)
+    yield = cd11[Condition == condition]$yield
+    cdsubset = subset(cd, Condition == condition)
+    for (i in 1:20) {
+      densities[i] = nrow(subset(cdsubset, burstLength > (i*50)))/yield
+    }
+    condition_vector = rep(condition, 20)
+    minburstlength = seq(50,1000,50)
+    def_den = data.frame(condition_vector,densities,minburstlength)
+    return (def_den)
+}
+
+makeburstDensityvsRL_Iv <- function(cd, cd10) {
+  loginfo("Making inverse burst density vs RL plots")
+  cd10$qEnd = as.numeric(cd10$qEnd)
+  cd10$qStart = as.numeric(cd10$qStart)
+  cd10$readlength = as.numeric(cd10$qEnd - cd10$qStart)
+  label = labels(cd)
+  label2 = paste("Inverse_Burst_Density_vs_Min_Burst_Length", label, sep = "_")
+  if( nrow(cd) == 0 || nrow(cd10) == 0){ 
+    tp2 = ggplot(cd, aes(x = 0, y = 0, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "1/Burst Density", title = label2, x = "Minimum Burst Length (pulses)")
+  }else{
+  cd11 = cd10 %>% group_by (Condition) %>% summarise(yield = as.numeric((sum(as.numeric(readlength)))))
+  df = list()
+  for (i in 1:nrow(cd11)){
+    df[[i]]= DensityforEachCondition(cd, cd10,cd11[i,]$Condition)
+  }
+  #changing another way 
+  #for (i in 1:(nrow(cd11)-1)){
+    #df[[i+1]] = rbind(df[[i]], df[[i+1]])
+  #}
+  if (nrow(cd11) ==1){
+    df[[1]] = df[[1]]
+  } else{
+  for (i in 2:(nrow(cd11))){
+    df[[1]]=rbind(df[[1]], df[[i]])}
+  }
   
-  cd_noH = cd %>% filter(seqType != 'H')
-  tp = ggplot(cd_noH, aes(x = burstDuration, colour = Condition)) + stat_ecdf()+plTheme + clScale + themeTilt+ scale_x_log10(breaks = 10^(0:8))+ labs(y = "Burst Duration with no H CDF", title = "Burst Duration with no H CDF", x = "Burst Duration")
+  #tp = ggplot(df[[nrow(cd11)]], aes(x = minburstlength, y = densities, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Burst Density", title = "Burst Density vs Burst Length", x = "Minimum Burst Length")
+  tp2 = ggplot(df[[1]], aes(x = minburstlength, y = 1/densities, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "1/Burst Density", title = label2, x = "Minimum Burst Length (pulses)")
+  }
+  return(tp2)
+}
+
+makeburstDensityvsRL <- function(cd, cd10) {
+  loginfo("Making burst density plots")
+  cd10$qEnd = as.numeric(cd10$qEnd)
+  cd10$qStart = as.numeric(cd10$qStart)
+  cd10$readlength = as.numeric(cd10$qEnd - cd10$qStart)
+  label = labels(cd)
+  label2 = paste("Burst_Density_vs_Min_Burst_Length", label, sep = "_")
+  if( nrow(cd) == 0 || nrow(cd10) == 0){ 
+    tp = ggplot(cd, aes(x = 0, y = 0, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Burst Density", title = label2, x = "Minimum Burst Length (pulses)")
+  }else{
+    cd11 = cd10 %>% group_by (Condition) %>% summarise(yield = as.numeric((sum(as.numeric(readlength)))))
+    df = list()
+    for (i in 1:nrow(cd11)){
+      df[[i]]= DensityforEachCondition(cd, cd10, cd11[i,]$Condition)
+    }
+    #for (i in 1:(nrow(cd11)-1)){
+      #df[[i+1]] = rbind(df[[i]], df[[i+1]])
+    #}
+    if (nrow(cd11) ==1){
+      df[[1]] = df[[1]]
+    } else{
+      for (i in 2:(nrow(cd11))){
+        df[[1]]=rbind(df[[1]], df[[i]])}
+    }
+    tp = ggplot(df[[1]], aes(x = minburstlength, y = densities, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Burst Density", title = label2, x = "Minimum Burst Length")
+    #tp2 = ggplot(df[[nrow(cd11)]], aes(x = minburstlength, y = 1/densities, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "1/Burst Density", title = label2, x = "Minimum Burst Length")
+  }
+  return(tp)
+}
+
+makeburstDensityvsRLAll <- function(report,cd,cd_H, cd_noH,cd10,cd10_H,cd10_noH){
+  tp1 = makeburstDensityvsRL(cd, cd10)
+  tp2 = makeburstDensityvsRL(cd_H, cd10_H)
+  tp3 = makeburstDensityvsRL(cd_noH, cd10_noH)
+  tp4 = grid.arrange(tp1, tp2, tp3, ncol=1)
+  
+  tp1v = makeburstDensityvsRL_Iv(cd, cd10)
+  tp2v = makeburstDensityvsRL_Iv(cd_H, cd10_H)
+  tp3v = makeburstDensityvsRL_Iv(cd_noH, cd10_noH)
+  tp4v = grid.arrange(tp1v, tp2v, tp3v, ncol=1)
   report$ggsave(
-    "logburstduration_noH.png",
-    tp,
+    "burstdenvsRL.png",
+    tp4,
     width = plotwidth,
     height = plotheight,
-    id = "burst_duration_noH",
-    title = "Burst Duration No H",
-    caption = "Burst Duration No H",
-    tags = c("basic", "burst", "length_noh"),
-    uid = "6000005"
+    id = "Burst_Density_vs_Min_Burst_Length",
+    title = "Burst_Density_vs_Min_Burst_Length",
+    caption = "Burst_Density_vs_Min_Burst_Length",
+    tags = c("basic", "burstplots", "barplot", "burstlength"),
+    uid = "6000013"
+  )
+  report$ggsave(
+    "inverse_burstdenvsRL.png",
+    tp4v,
+    width = plotwidth,
+    height = plotheight,
+    id = "Inverse_Burst_Density_vs_Min_Burst_Length",
+    title = "Inverse_Burst_Density_vs_Min_Burst_Length",
+    caption = "Inverse_Burst_Density_vs_Min_Burst_Length",
+    tags = c("basic", "burstplots", "barplot", "inverseburstlength"),
+    uid = "6000014"
   )
 }
 
-makeCumSumBurstLength <- function(report, cd) {
-  loginfo("Making Bases Data Distribution")
-  cd_H = cd %>% filter(seqType == 'H')
-  res = cd_H %>% group_by(Condition, zmw, qStart) %>% summarise(cumlen = sum(burstLength))
-  tp = ggplot(cd,
-              aes(
-                x = BaseType,
-                y = Bases,
-                fill = Condition,
-                group = Condition
-              )) + geom_bar(stat = "identity", position = "dodge") +
-    plTheme + clFillScale +
-    labs(y = "Total Bases\nsum(end - start)", title = "Total Bases by Condition", x = "Base Type")
-  report$ggsave(
-    "base_count_bar.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "base_count_bar",
-    title = "Total Bases",
-    caption = "Total Bases",
-    tags = c("basic", "pbiplots", "bar", "base"),
-    uid = "0030015"
-  )
+makePairWisedOneCon <- function(cd_H,condition){
+  cdsubset = subset(cd_H, Condition == condition)
+  cdsubset$zmw = as.character(cdsubset$zmw)
+  subsetsummary = cdsubset%>% group_by(zmw) %>% summarise(count = n())
+  vNew=list()
+  for (i in 1:nrow(subsetsummary)){
+    perzmw = subset(cdsubset, zmw == subsetsummary[i,]$zmw)
+    if (nrow(perzmw)>1){
+    vNew[[i]] <- as.matrix(as.vector(dist(perzmw[, "previousBaseIndex"])), ncol=1)}
+    else
+    {vNew[[i]]= as.matrix(0, ncol=1)}
+  }
+  vNew_combo = as.vector(unlist(vNew))
+  vNew_combo = vNew_combo[vNew_combo!=0]
+  condition_vector = rep(condition, length(vNew_combo))
+  def_den = data.frame(condition_vector,vNew_combo)
+  return (def_den)
 }
 
-makeYieldHistogram <- function(report, cd) {
-  loginfo("Making Yield Histogram")
-  tp = ggplot(cd, aes(Condition, fill = Condition)) + geom_bar() +
-    geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
-    plTheme + themeTilt  + clFillScale +
-    labs(x = "Condition", y = "nReads", title = "nReads by Condition")
+makePairWised <- function(report,cd_H){
+  summary_t = cd_H %>% group_by(Condition) %>% summarise(count = n())
+  df = list()
+  for (i in 1:nrow(summary_t)){
+    df[[i]] = makePairWisedOneCon(cd_H,as.character(summary_t[i,]$Condition))
+  }
+  #for (i in 1:(nrow(summary_t)-1)){
+    #df[[i+1]] = rbind(df[[i]], df[[i+1]])
+  #}
+  if (nrow(cd11) ==1){
+    df[[1]] = df[[1]]
+  } else{
+    for (i in 2:(nrow(cd11))){
+      df[[1]]=rbind(df[[1]], df[[i]])}
+  }
+  tp2 = ggplot(df[[nrow(summary_t)]], aes(x = vNew_combo, colour = condition_vector)) + geom_density()+plTheme + clScale + themeTilt+ labs(y = "Density", title = "Pairwise Distance Density", x = "Pairwise Distance (bases)")
+  #tp3 = ggplot(df[[nrow(summary_t)]], aes(x = vNew_combo, colour = condition_vector)) + geom_density()+plTheme + clScale + themeTilt+ labs(y = "Density", title = "Pairwise Distance Density", x = "Pairwise Distance") + scale_y_log10()
+  
   report$ggsave(
-    "nreads_hist.png",
-    tp,
-    width = plotwidth,
-    height = plotheight,
-    id = "nreads_histogram",
-    title = "nReads Histogram",
-    caption = "nReads Histogram",
-    tags = c("basic", "pbiplots", "histogram", "nreads"),
-    uid = "0030016"
+    "PairwiseDDensity.png",
+    tp2,
+    width = plotheight,
+    height = plotwidth,
+    id = "Pairwise_Distance_Density",
+    title = "Pairwise_Distance_Density",
+    caption = "Pairwise_Distance_Density",
+    tags = c("basic", "burstplots", "barplot", "pairwise"),
+    uid = "6000014"
   )
 }
+  
+  
+  
+
 
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
@@ -188,31 +471,63 @@ makeReport <- function(report) {
     # Now combine into one large data frame
     cd = combineConditions(dfs, as.character(conditions$Condition))
     #for testing purposes
-    cd2 = cd[1:1000,]
-    cd3 = cd[1001:1600,]
-    cd3$Condition = NULL
-    cd3$Condition = "6k_tetraloop"
-    cd = rbind(cd2, cd3)
+    #cd2 = cd[1:1000,]
+    #cd3 = cd[1001:1600,]
+    #cd3$Condition = NULL
+    #cd3$Condition = "6k_tetraloop"
+    #cd = rbind(cd2, cd3)
     cd$Condition = as.factor(cd$Condition)
+    cd$burstDuration = cd$burstEndTime - cd$burstStartTime
+    cd_H = cd %>% filter(seqType == 'H')
+    cd_noH = cd %>% filter(seqType != 'H')
+    comment(cd) <- "cd"
+    comment(cd_H) <- "cd_H"
+    comment(cd_noH)<- "cd_noH"
     
+    dfs2 = lapply(as.character(conditions$Condition), function(s) {
+      string0 = paste("conditions/",s,"/subreads/read_metrics.csv", sep ="")
+      read.csv(string0)
+    })
+
+    
+    # Now combine into one large data frame
+    cd10 = combineConditions(dfs2, as.character(conditions$Condition))
+    #for testing purposes
+    #cd12 = cd10[1:1000,]
+    #cd13 = cd10[1001:1600,]
+    #cd13$Condition = NULL
+    #cd13$Condition = "6k_tetraloop"
+    #cd10 = rbind(cd12, cd13)
+    #real transform
+    cd10$Condition = as.factor(cd10$Condition)
+    cd10$readlength = cd10$qEnd - cd10$qStart
+    cd10_H = cd10 %>% filter(seqType == 'H')
+    cd10_noH = cd %>% filter(seqType != 'H')
+    
+  
     ## Let's set the graphic defaults
     n = length(levels(conditions$Condition))
     clFillScale <<- getPBFillScale(n)
     clScale <<- getPBColorScale(n)
-    
-    cd$logburstlength = log(cd$burstLength)
-    
    
     # Make Plots
-    try(makeReadLengthSurvivalPlots(report, cd), silent = TRUE)
+    makeBurstLengthPlots(report,cd,cd_H, cd_noH)
+    makeBurstDurationPlots(report,cd,cd_H, cd_noH)
+    makeCumSumBurstLength(report,cd_H)
+    makeCumSumBurstDuration(report,cd_H)
+    makeBurstStartPlots(report,cd,cd_H, cd_noH)
+    makePreviousBaseCountAll(report,cd,cd_H, cd_noH)
+    makePreviousBaseFreqAll(report,cd,cd_H, cd_noH)
+    makefractionBaseforAll(report,cd,cd_H, cd_noH)
+    makefractionBaseRorGforAll(report,cd,cd_H, cd_noH)
+    makeburstDensityvsRLAll(report,cd,cd_H, cd_noH,cd10,cd10_H,cd10_noH)
+    makePairWised(report,cd_H)
+    # Save the report object for later debugging
+    save(report, file = file.path(report$outputDir, "report.Rd"))
     
+    # At the end of this function we need to call this last, it outputs the report
+    report$write.report()
   }
-  
-  # Save the report object for later debugging
-  save(report, file = file.path(report$outputDir, "report.Rd"))
-  
-  # At the end of this function we need to call this last, it outputs the report
-  report$write.report()
 
 
 main <- function()
