@@ -38,7 +38,7 @@ def main():
     else:
         with open(args.output_reads, 'wb') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writeheader([label[0] for label in ppa_bursts.reads_dtypes])
+            writer.writerow([label[0] for label in ppa_bursts.reads_dtypes])
             writer.writerow(["'SubreadSet does not contain PPA burst info'"])
 
     # load the bursts info into pandas dataframe and save to csv
@@ -48,7 +48,7 @@ def main():
     else:
         with open(args.output_bursts, 'wb') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writeheader([label[0] for label in ppa_bursts.ppa_burst_dtypes])
+            writer.writerow([label[0] for label in ppa_bursts.ppa_burst_dtypes])
             writer.writerow(["'SubreadSet does not contain PPA burst info'"])
 
 if __name__ == '__main__':
