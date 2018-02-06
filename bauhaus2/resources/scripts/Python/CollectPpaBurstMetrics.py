@@ -39,7 +39,7 @@ def main():
         with open(args.output_reads, 'wb') as csvfile:
             writer = csv.writer(csvfile)
             writer.writerow([label[0] for label in ppa_bursts.reads_dtypes])
-            writer.writerow(["'SubreadSet does not contain PPA burst info'"])
+            writer.writerow(["'SubreadSet does not contain PPA burst info'"]) # quote for R processing
 
     # load the bursts info into pandas dataframe and save to csv
     if hasattr(ppa_bursts, 'ppa_bursts'):
