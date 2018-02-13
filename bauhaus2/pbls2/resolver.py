@@ -44,14 +44,15 @@ class Resolver(object):
     ZIA_PROJECTS_ROOT = "/pbi/dept/itg/zia/projects"                    # This is where Zia stores its projects
 
     SMRTLINK_SERVER_TO_JOBS_ROOT = \
-        { serverName : ("/pbi/" + smrtLinkJobPath + "/smrtlink/" + smrtLinkId + "/smrtsuite/userdata/jobs_root")
-          for (serverName, smrtLinkJobPath, smrtLinkId) in [ ("smrtlink-beta", "dept/secondary/siv", "smrtlink-beta"), 
-                                                             ("smrtlink-alpha", "dept/secondary/siv", "smrtlink-alpha"), 
-                                                             ("smrtlink-siv", "dept/secondary/siv", "smrtlink-siv"), 
-                                                             ("smrtlink-internal", "dept/secondary/siv", "smrtlink-internal"),
-                                                             ("smrtlink-siv-alpha", "dept/secondary/siv", "smrtlink-siv-alpha"),
-                                                             ("smrtlink-sms", "dept/secondary/siv", "smrtlink-sms"),
-                                                             ("smrtlink-release", "analysis", "release") ] }
+        { serverName : ("/pbi/" + smrtLinkJobPath + "/smrtlink/" + smrtLinkId + smrtLinkFolder + "/userdata/jobs_root")
+          for (serverName, smrtLinkJobPath, smrtLinkId, smrtLinkFolder) in [ ("smrtlink-beta", "dept/secondary/siv", "smrtlink-beta", "/smrtsuite"), 
+                                                             ("smrtlink-alpha", "dept/secondary/siv", "smrtlink-alpha", "/smrtsuite"), 
+                                                             ("smrtlink-siv", "dept/secondary/siv", "smrtlink-siv", "/smrtsuite"), 
+                                                             ("smrtlink-internal", "dept/secondary/siv", "smrtlink-internal", "/smrtsuite"),
+                                                             ("smrtlink-siv-alpha", "dept/secondary/siv", "smrtlink-siv-alpha", "/smrtsuite"),
+                                                             ("smrtlink-sms", "dept/secondary/siv", "smrtlink-sms", "/smrtsuite"),
+                                                             ("smrtlink-release", "analysis", "release", "/smrtsuite"),
+                                                             ("smrtlink-mfg", "analysis", "mfg", "/smrtlink")] }
 
     def __init__(self):
         self._selfCheck()
