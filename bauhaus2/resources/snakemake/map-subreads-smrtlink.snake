@@ -51,6 +51,7 @@ rule map_subreads_smrtlink_launch:
         module add parallel
 
         # Call pbservice; bail out on failure
+        pbservice import-dataset {input.referenceSet} || true
         pbservice run-pipeline pbsmrtpipe.pipelines.sa3_ds_align \
           --host {sl_host} --port {sl_port} \
           -e $(readlink -f {input.subreadSet}) \
