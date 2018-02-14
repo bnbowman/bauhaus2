@@ -94,7 +94,7 @@ countHPbursts = function( loadAlnsRow, cd, minlen = 5 )
 
 for_hp_burst_counts = function( report, r, colname, uid )
 {
-  loginfo( cat( "Draw homopolymer plots:", colname ) )
+  loginfo( paste( "Draw homopolymer plots:", colname ) )
   tp = ( ggplot( r, aes_string( x = "Condition", y = colname, fill = "Condition" ) ) +
            geom_boxplot( outlier.shape = NA ) +
            scale_y_continuous( limits = boxplot( r[,colname], plot = FALSE )$stat[c(1,5)] ) +
@@ -130,7 +130,7 @@ homopolymerCountSingleRef = function( report, cd, cd2 )
 {
   plotnames = c("Prob_Ins_Burst", "Prob_HP_Burst", "Prob_Pause_Burst", "Prob_From_Ins_Burst_to_Normal", "Prob_HP_Burst_to_Normal", "Prob_Pause_Burst_to_Normal")
   uids = c( "0041001", "0041002", "0041003", "0041004", "0041005", "0041006" )
-  loginfo( cat( "Draw homopolymer plots for reference:", cd2$refName[1] ) )
+  loginfo( paste( "Draw homopolymer plots for reference:", cd2$refName[1] ) )
   r = lapply( split( 1:nrow( cd2 ), cd2$Condition ),
               function( x )
               {
@@ -342,7 +342,7 @@ makeSamplingPlots <-
     cd2 = cd %>% group_by(Condition, framePerSecond) %>% sample_nigel(size = sampleSize) %>% do(load_alns(.)) %>% ungroup()
     
     loginfo( "Draw plots to track the fraction of insertion bursts that are homopolymer insertions" )
-    lapply( split( 1:nrow( cd2 ), cd2$refName ), function( x ) homopolymerCountSingleRef( report, cd, cd2[ x, ] ) )
+    lapply( split( 1:nrow( cd2 ), cd2$refName ), function( x ) try( homopolymerCountSingleRef( report, cd, cd2[ x, ] ), silent = FALSE ) )
     
     if ((("ipd" %in% colnames(cd2)) & ("pw" %in% colnames(cd2)))) {
       cd2$ipd = cd2$ipd / cd2$framePerSecond
