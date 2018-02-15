@@ -320,6 +320,12 @@ Generate mapping reports workflow, starting from subreads.
   |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
   |   |   |-- PolRate_by_time.png
+  |   |   |-- Prob_From_Ins_Burst_to_Normal.png
+  |   |   |-- Prob_HP_Burst.png
+  |   |   |-- Prob_HP_Burst_to_Normal.png
+  |   |   |-- Prob_Ins_Burst.png
+  |   |   |-- Prob_Pause_Burst.png
+  |   |   |-- Prob_Pause_Burst_to_Normal.png
   |   |   |-- active_zmw_normalized.png
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
@@ -413,5 +419,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 368 files
+  28 directories, 374 files
 

@@ -509,6 +509,12 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tlen_box.png
   |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
+  |   |   |-- Prob_From_Ins_Burst_to_Normal.png
+  |   |   |-- Prob_HP_Burst.png
+  |   |   |-- Prob_HP_Burst_to_Normal.png
+  |   |   |-- Prob_Ins_Burst.png
+  |   |   |-- Prob_Pause_Burst.png
+  |   |   |-- Prob_Pause_Burst_to_Normal.png
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
@@ -583,7 +589,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 530 files
+  36 directories, 536 files
 
 
 
@@ -800,6 +806,54 @@ Generate mapping reports workflow, starting from subreads.
         "title": "Median of snrC vs p_Enz grouped by p_LP",
         "caption": "Median Template Length vs p_Enz grouped by p_LP",
         "tags": ["sampled", "p_", "titration", "median", "snrC"]
+      },
+      {
+        "uid": "0041001",
+        "id": "Prob_Ins_Burst",
+        "image": "Prob_Ins_Burst.png",
+        "title": "Prob_Ins_Burst",
+        "caption": "Distribution ofProb_Ins_Burst (Boxplot)",
+        "tags": [null]
+      },
+      {
+        "uid": "0041002",
+        "id": "Prob_HP_Burst",
+        "image": "Prob_HP_Burst.png",
+        "title": "Prob_HP_Burst",
+        "caption": "Distribution ofProb_HP_Burst (Boxplot)",
+        "tags": [null]
+      },
+      {
+        "uid": "0041003",
+        "id": "Prob_Pause_Burst",
+        "image": "Prob_Pause_Burst.png",
+        "title": "Prob_Pause_Burst",
+        "caption": "Distribution ofProb_Pause_Burst (Boxplot)",
+        "tags": [null]
+      },
+      {
+        "uid": "0041004",
+        "id": "Prob_From_Ins_Burst_to_Normal",
+        "image": "Prob_From_Ins_Burst_to_Normal.png",
+        "title": "Prob_From_Ins_Burst_to_Normal",
+        "caption": "Distribution ofProb_From_Ins_Burst_to_Normal (Boxplot)",
+        "tags": [null]
+      },
+      {
+        "uid": "0041005",
+        "id": "Prob_HP_Burst_to_Normal",
+        "image": "Prob_HP_Burst_to_Normal.png",
+        "title": "Prob_HP_Burst_to_Normal",
+        "caption": "Distribution ofProb_HP_Burst_to_Normal (Boxplot)",
+        "tags": [null]
+      },
+      {
+        "uid": "0041006",
+        "id": "Prob_Pause_Burst_to_Normal",
+        "image": "Prob_Pause_Burst_to_Normal.png",
+        "title": "Prob_Pause_Burst_to_Normal",
+        "caption": "Distribution ofProb_Pause_Burst_to_Normal (Boxplot)",
+        "tags": [null]
       }
     ],
     "tables": [
