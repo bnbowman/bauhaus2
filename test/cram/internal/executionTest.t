@@ -509,12 +509,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tlen_box.png
   |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
-  |   |   |-- Prob_From_Ins_Burst_to_Normal.png
-  |   |   |-- Prob_HP_Burst.png
-  |   |   |-- Prob_HP_Burst_to_Normal.png
-  |   |   |-- Prob_Ins_Burst.png
-  |   |   |-- Prob_Pause_Burst.png
-  |   |   |-- Prob_Pause_Burst_to_Normal.png
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
@@ -533,6 +527,12 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- mediansnrCvsp_Enzbyp_LP.png
   |   |   |-- mediantlenvsp_Enzbyp_LP.png
   |   |   |-- noninternalBAM.csv
+  |   |   |-- pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal.png
+  |   |   |-- pBR322_EcoRV_Prob_HP_Burst.png
+  |   |   |-- pBR322_EcoRV_Prob_HP_Burst_to_Normal.png
+  |   |   |-- pBR322_EcoRV_Prob_Ins_Burst.png
+  |   |   |-- pBR322_EcoRV_Prob_Pause_Burst.png
+  |   |   |-- pBR322_EcoRV_Prob_Pause_Burst_to_Normal.png
   |   |   |-- polrate_ref_box.png
   |   |   |-- polrate_template_per_second.png
   |   |   |-- pw_boxplot.png
@@ -808,52 +808,52 @@ Generate mapping reports workflow, starting from subreads.
         "tags": ["sampled", "p_", "titration", "median", "snrC"]
       },
       {
-        "uid": "0041001",
-        "id": "Prob_Ins_Burst",
-        "image": "Prob_Ins_Burst.png",
-        "title": "Prob_Ins_Burst",
-        "caption": "Distribution ofProb_Ins_Burst (Boxplot)",
-        "tags": [null]
+        "uid": "0041010",
+        "id": "pBR322_EcoRV_Prob_Ins_Burst",
+        "image": "pBR322_EcoRV_Prob_Ins_Burst.png",
+        "title": "pBR322_EcoRV_Prob_Ins_Burst",
+        "caption": "Distribution ofpBR322_EcoRV_Prob_Ins_Burst (Boxplot)",
+        "tags": ["sampled", "homopolymer"]
       },
       {
-        "uid": "0041002",
-        "id": "Prob_HP_Burst",
-        "image": "Prob_HP_Burst.png",
-        "title": "Prob_HP_Burst",
-        "caption": "Distribution ofProb_HP_Burst (Boxplot)",
-        "tags": [null]
+        "uid": "0041020",
+        "id": "pBR322_EcoRV_Prob_HP_Burst",
+        "image": "pBR322_EcoRV_Prob_HP_Burst.png",
+        "title": "pBR322_EcoRV_Prob_HP_Burst",
+        "caption": "Distribution ofpBR322_EcoRV_Prob_HP_Burst (Boxplot)",
+        "tags": ["sampled", "homopolymer"]
       },
       {
-        "uid": "0041003",
-        "id": "Prob_Pause_Burst",
-        "image": "Prob_Pause_Burst.png",
-        "title": "Prob_Pause_Burst",
-        "caption": "Distribution ofProb_Pause_Burst (Boxplot)",
-        "tags": [null]
+        "uid": "0041030",
+        "id": "pBR322_EcoRV_Prob_Pause_Burst",
+        "image": "pBR322_EcoRV_Prob_Pause_Burst.png",
+        "title": "pBR322_EcoRV_Prob_Pause_Burst",
+        "caption": "Distribution ofpBR322_EcoRV_Prob_Pause_Burst (Boxplot)",
+        "tags": ["sampled", "homopolymer"]
       },
       {
-        "uid": "0041004",
-        "id": "Prob_From_Ins_Burst_to_Normal",
-        "image": "Prob_From_Ins_Burst_to_Normal.png",
-        "title": "Prob_From_Ins_Burst_to_Normal",
-        "caption": "Distribution ofProb_From_Ins_Burst_to_Normal (Boxplot)",
-        "tags": [null]
+        "uid": "0041040",
+        "id": "pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal",
+        "image": "pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal.png",
+        "title": "pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal",
+        "caption": "Distribution ofpBR322_EcoRV_Prob_From_Ins_Burst_to_Normal (Boxplot)",
+        "tags": ["sampled", "homopolymer"]
       },
       {
-        "uid": "0041005",
-        "id": "Prob_HP_Burst_to_Normal",
-        "image": "Prob_HP_Burst_to_Normal.png",
-        "title": "Prob_HP_Burst_to_Normal",
-        "caption": "Distribution ofProb_HP_Burst_to_Normal (Boxplot)",
-        "tags": [null]
+        "uid": "0041050",
+        "id": "pBR322_EcoRV_Prob_HP_Burst_to_Normal",
+        "image": "pBR322_EcoRV_Prob_HP_Burst_to_Normal.png",
+        "title": "pBR322_EcoRV_Prob_HP_Burst_to_Normal",
+        "caption": "Distribution ofpBR322_EcoRV_Prob_HP_Burst_to_Normal (Boxplot)",
+        "tags": ["sampled", "homopolymer"]
       },
       {
-        "uid": "0041006",
-        "id": "Prob_Pause_Burst_to_Normal",
-        "image": "Prob_Pause_Burst_to_Normal.png",
-        "title": "Prob_Pause_Burst_to_Normal",
-        "caption": "Distribution ofProb_Pause_Burst_to_Normal (Boxplot)",
-        "tags": [null]
+        "uid": "0041060",
+        "id": "pBR322_EcoRV_Prob_Pause_Burst_to_Normal",
+        "image": "pBR322_EcoRV_Prob_Pause_Burst_to_Normal.png",
+        "title": "pBR322_EcoRV_Prob_Pause_Burst_to_Normal",
+        "caption": "Distribution ofpBR322_EcoRV_Prob_Pause_Burst_to_Normal (Boxplot)",
+        "tags": ["sampled", "homopolymer"]
       }
     ],
     "tables": [
