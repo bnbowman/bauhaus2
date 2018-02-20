@@ -457,10 +457,7 @@ makePairWisedOneCon <- function(cd_H,condition){
   def_den = data.frame(condition_vector,vNew_combo)
   return (def_den)
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> f750119d5c71b817c75ddff52de9379e823ac6f5
 getFFTFreqs <- function(Nyq.Freq, data)
 {
   if ((length(data) %% 2) == 1) # Odd number of samples
@@ -476,10 +473,7 @@ getFFTFreqs <- function(Nyq.Freq, data)
   
   return (FFTFreqs)
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> f750119d5c71b817c75ddff52de9379e823ac6f5
 makePairWised <- function(report,cd_H){
   summary_t = cd_H %>% group_by(Condition) %>% summarise(count = n())
   df = list()
@@ -526,13 +520,7 @@ makePairWised <- function(report,cd_H){
   }
   
   
-tp1 = ggplot(fourier[[1]], aes(x= x, y = fourier..i.., colour = condition)) + geom_line()+plTheme + clScale + themeTilt + labs(x = "Component (inverse bases)", y = "Density", title = "Density over Component (inverse bases)") + coord_cartesian(xlim = c(0, 0.005)) 
-<<<<<<< HEAD
-=======
-  
-  tp2 = ggplot(df[[1]], aes(x = vNew_combo, colour = condition_vector)) + geom_density()+plTheme + clScale + themeTilt+ labs(y = "Density", title = "Pairwise Distance Density", x = "Pairwise Distance (bases)")+ coord_cartesian(xlim = c(0, 50000), ylim = c(0,50*10^-6)) 
->>>>>>> f750119d5c71b817c75ddff52de9379e823ac6f5
-  
+  tp1 = ggplot(fourier[[1]], aes(x= x, y = fourier..i.., colour = condition)) + geom_line()+plTheme + clScale + themeTilt + labs(x = "Component (inverse bases)", y = "Density", title = "Density over Component (inverse bases)") + coord_cartesian(xlim = c(0, 0.005)) 
   tp2 = ggplot(df[[1]], aes(x = vNew_combo, colour = condition_vector)) + geom_density()+plTheme + clScale + themeTilt+ labs(y = "Density", title = "Pairwise Distance Density", x = "Pairwise Distance (bases)")
   
   report$ggsave(
@@ -588,13 +576,8 @@ makeReport <- function(report) {
     # Now combine into one large data frame
     cd = combineConditions(dfs, as.character(conditions$Condition))
     #for testing purposes
-<<<<<<< HEAD
     cd2 = cd[1:2000,]
     cd3 = cd[2001:2600,]
-=======
-    cd2 = cd[1:1000,]
-    cd3 = cd[1001:1600,]
->>>>>>> f750119d5c71b817c75ddff52de9379e823ac6f5
     cd3$Condition = NULL
     cd3$Condition = "6k_tetraloop"
     cd = rbind(cd2, cd3)
@@ -616,13 +599,8 @@ makeReport <- function(report) {
     # Now combine into one large data frame
     cd10 = combineConditions(dfs2, as.character(conditions$Condition))
     #for testing purposes
-<<<<<<< HEAD
     cd12 = cd10[1:2000,]
     cd13 = cd10[2001:2600,]
-=======
-    cd12 = cd10[1:1000,]
-    cd13 = cd10[1001:1600,]
->>>>>>> f750119d5c71b817c75ddff52de9379e823ac6f5
     cd13$Condition = NULL
     cd13$Condition = "6k_tetraloop"
     cd10 = rbind(cd12, cd13)
