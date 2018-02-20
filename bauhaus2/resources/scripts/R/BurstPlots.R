@@ -591,7 +591,7 @@ makeReport <- function(report) {
     
     dfs2 = lapply(as.character(conditions$Condition), function(s) {
       string0 = paste("conditions/",s,"/subreads/read_metrics.csv", sep ="")
-      read.csv(string0)
+      table = read.csv(string0)
       if (!is.numeric(table[1,1])){
         warning(paste("Warning: No bursts data available for",s, sep=" "))
         table = table[-1,]
