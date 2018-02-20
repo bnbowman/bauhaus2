@@ -237,11 +237,16 @@ makefractionBaseType <- function(cd, freq) {
     clFillScale + plTheme + labs(x = "Type Burst", y = "Count",
                                  title = label1)
   if (freq == "freq"){
-  return(tp1)
-  }else {
-    return (tp2)}
+     return(tp1)
+  } else{
+    return(tp1)}
 }
 makefractionBaseforAll <- function(report,cd,cd_H, cd_noH){
+ if( nrow(cd) == 0 || nrow(cd10) == 0){ 
+   tp4 = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
+   tp4c = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
+ } else{ 
+
  tp1 = makefractionBaseType(cd, 'freq')
  tp2 =  makefractionBaseType(cd_H, 'freq')
  tp3 =  makefractionBaseType(cd_noH, 'freq')
@@ -249,7 +254,7 @@ makefractionBaseforAll <- function(report,cd,cd_H, cd_noH){
  tp1c = makefractionBaseType(cd, 'c')
  tp2c =  makefractionBaseType(cd_H, 'c')
  tp3c =  makefractionBaseType(cd_noH, 'c')
- tp4c = grid.arrange(tp1c, tp2c, tp3c, ncol=1)
+ tp4c = grid.arrange(tp1c, tp2c, tp3c, ncol=1)}
  report$ggsave(
    "typeofburst.png",
    tp4,
@@ -298,6 +303,10 @@ makefractionBaseRorG <- function(cd, freq) {
     return (tp3)}
 }
 makefractionBaseRorGforAll <- function(report,cd,cd_H, cd_noH){
+ if( nrow(cd) == 0 || nrow(cd10) == 0){
+   tp4 = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
+   tp4c = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
+ } else{
   tp1 = makefractionBaseRorG(cd, 'freq')
   tp2 =  makefractionBaseRorG(cd_H, 'freq')
   tp3 =  makefractionBaseRorG(cd_noH, 'freq')
@@ -305,7 +314,7 @@ makefractionBaseRorGforAll <- function(report,cd,cd_H, cd_noH){
   tp1c = makefractionBaseRorG(cd, 'c')
   tp2c =  makefractionBaseRorG(cd_H, 'c')
   tp3c =  makefractionBaseRorG(cd_noH, 'c')
-  tp4c = grid.arrange(tp1c, tp2c, tp3c, ncol=1)
+  tp4c = grid.arrange(tp1c, tp2c, tp3c, ncol=1)}
   report$ggsave(
     "typeofburstRorG.png",
     tp4,
@@ -352,7 +361,7 @@ makeburstDensityvsRL_Iv <- function(cd, cd10) {
   label = labels(cd)
   label2 = paste("Inverse_Burst_Density_vs_Min_Burst_Length", label, sep = "_")
   if( nrow(cd) == 0 || nrow(cd10) == 0){ 
-    tp2 = ggplot(cd, aes(x = 0, y = 0, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "1/Burst Density", title = label2, x = "Minimum Burst Length (pulses)")
+    tp2 = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "1/Burst Density", title = label2, x = "Minimum Burst Length (pulses)")
   }else{
   cd11 = cd10 %>% group_by (Condition) %>% summarise(yield = as.numeric((sum(as.numeric(readlength)))))
   df = list()
@@ -383,7 +392,7 @@ makeburstDensityvsRL <- function(cd, cd10) {
   label = labels(cd)
   label2 = paste("Burst_Density_vs_Min_Burst_Length", label, sep = "_")
   if( nrow(cd) == 0 || nrow(cd10) == 0){ 
-    tp = ggplot(cd, aes(x = 0, y = 0, colour = condition_vector)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Burst Density", title = label2, x = "Minimum Burst Length (pulses)")
+    tp = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Burst Density", title = label2, x = "Minimum Burst Length (pulses)")
   }else{
     cd11 = cd10 %>% group_by (Condition) %>% summarise(yield = as.numeric((sum(as.numeric(readlength)))))
     df = list()
@@ -475,6 +484,10 @@ getFFTFreqs <- function(Nyq.Freq, data)
 
 makePairWised <- function(report,cd_H){
   summary_t = cd_H %>% group_by(Condition) %>% summarise(count = n())
+  if(nrow(cd_H) == 0){
+    tp1 = ggplot(cd_H, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "No data")
+    tp2 = ggplot(cd_H, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "No data")
+  } else{
   df = list()
   for (i in 1:nrow(summary_t)){
     df[[i]] = makePairWisedOneCon(cd_H,as.character(summary_t[i,]$Condition))
@@ -520,7 +533,7 @@ makePairWised <- function(report,cd_H){
   
   
   tp1 = ggplot(fourier[[1]], aes(x= x, y = fourier..i.., colour = condition)) + geom_line()+plTheme + clScale + themeTilt + labs(x = "Component (inverse bases)", y = "Density", title = "Density over Component (inverse bases)") + coord_cartesian(xlim = c(0, 0.005)) 
-  tp2 = ggplot(df[[1]], aes(x = vNew_combo, colour = condition_vector)) + geom_density()+plTheme + clScale + themeTilt+ labs(y = "Density", title = "Pairwise Distance Density", x = "Pairwise Distance (bases)")
+  tp2 = ggplot(df[[1]], aes(x = vNew_combo, colour = condition_vector)) + geom_density()+plTheme + clScale + themeTilt+ labs(y = "Density", title = "Pairwise Distance Density", x = "Pairwise Distance (bases)")}
   
   report$ggsave(
     "Density_over_component.png",
