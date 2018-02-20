@@ -81,5 +81,5 @@ rule BurstPlots:
     output: "reports/BurstPlots/report.json"
     shell:
         """
-        touch {output}
+        Rscript --vanilla scripts/R/BurstPlots.R
         """

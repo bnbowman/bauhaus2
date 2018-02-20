@@ -216,7 +216,6 @@ makePreviousBaseFreqAll <- function(report,cd,cd_H, cd_noH){
     uid = "00800011"
   )
 }
-
 makefractionBaseType <- function(cd, freq) {
   loginfo("Making Fraction Base Bar Charts")
   label = labels(cd)
@@ -576,11 +575,11 @@ makeReport <- function(report) {
     # Now combine into one large data frame
     cd = combineConditions(dfs, as.character(conditions$Condition))
     #for testing purposes
-    cd2 = cd[1:2000,]
-    cd3 = cd[2001:2600,]
-    cd3$Condition = NULL
-    cd3$Condition = "6k_tetraloop"
-    cd = rbind(cd2, cd3)
+    #cd2 = cd[1:1000,]
+    #cd3 = cd[1001:1600,]
+    #cd3$Condition = NULL
+    #cd3$Condition = "6k_tetraloop"
+    #cd = rbind(cd2, cd3)
     #real
     cd$Condition = as.factor(cd$Condition)
     cd$burstDuration = cd$burstEndTime - cd$burstStartTime
@@ -593,17 +592,22 @@ makeReport <- function(report) {
     dfs2 = lapply(as.character(conditions$Condition), function(s) {
       string0 = paste("conditions/",s,"/subreads/read_metrics.csv", sep ="")
       read.csv(string0)
+      if (!is.numeric(table[1,1])){
+        warning(paste("Warning: No bursts data available for",s, sep=" "))
+        table = table[-1,]
+      }
+      return(table)
     })
 
     
     # Now combine into one large data frame
     cd10 = combineConditions(dfs2, as.character(conditions$Condition))
     #for testing purposes
-    cd12 = cd10[1:2000,]
-    cd13 = cd10[2001:2600,]
-    cd13$Condition = NULL
-    cd13$Condition = "6k_tetraloop"
-    cd10 = rbind(cd12, cd13)
+    #cd12 = cd10[1:1000,]
+    #cd13 = cd10[1001:1600,]
+    #cd13$Condition = NULL
+    #cd13$Condition = "6k_tetraloop"
+    #cd10 = rbind(cd12, cd13)
     #real transform
     cd10$Condition = as.factor(cd10$Condition)
     cd10$readlength = cd10$qEnd - cd10$qStart

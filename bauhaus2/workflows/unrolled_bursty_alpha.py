@@ -43,7 +43,8 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/FishbonePlots.R",
                              "R/ZMWstsPlots.R",
                              "R/AlignmentBasedHeatmaps.R",
-                             "R/Bauhaus2.R" )
+                             "R/Bauhaus2.R",
+                             "R/BurstPlots.R" )
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
                              "Python/CollectPpaBurstMetrics.py",
                              "Python/GetZiaTags.py")
