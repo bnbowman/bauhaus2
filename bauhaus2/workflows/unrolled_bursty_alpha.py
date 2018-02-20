@@ -32,7 +32,7 @@ class UnrolledNoHQMappingWorkflow(Workflow):
     mapping query.  (We will add an unrolled mapping workflow which
     maps just the HQ region, as soon as BLASR supports it directly).
     """
-    WORKFLOW_NAME        = "UnrolledNoHQMapping"
+    WORKFLOW_NAME        = "UnrolledNoHQMappingBurstyAlpha"
     CONDITION_TABLE_TYPE = UnrolledMappingConditionTable
     SMRTPIPE_PRESETS     = ( "extras/pbsmrtpipe-unrolled-nohq-mappings-preset.xml", )
     R_SCRIPTS            = ( "R/PbiSampledPlots.R",
@@ -45,13 +45,15 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
+                             "Python/CollectPpaBurstMetrics.py",
                              "Python/GetZiaTags.py")
 
     def plan(self):
-        return ["summarize-mappings.snake",
+        return ["summarize-mappings-alpha.snake",
                 "constant-arrow.snake",
                 "constant-arrow-regular.snake",
                 "heatmaps.snake",
                 "locacc.snake",
-                "uid-tag.snake"] + \
+                "uid-tag.snake",
+                "collect-ppa-burst-metrics.snake"] + \
             UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)

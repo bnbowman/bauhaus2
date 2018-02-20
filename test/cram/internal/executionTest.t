@@ -70,9 +70,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       |-- input.subreadset.xml
-  |   |       |-- ppa_burst_metrics.csv
-  |   |       `-- read_metrics.csv
+  |   |       `-- input.subreadset.xml
   |   |-- MovieB
   |   |   |-- mapped
   |   |   |   |-- chunks
@@ -123,9 +121,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       |-- input.subreadset.xml
-  |   |       |-- ppa_burst_metrics.csv
-  |   |       `-- read_metrics.csv
+  |   |       `-- input.subreadset.xml
   |   |-- MovieC
   |   |   |-- mapped
   |   |   |   |-- chunks
@@ -176,9 +172,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       |-- input.subreadset.xml
-  |   |       |-- ppa_burst_metrics.csv
-  |   |       `-- read_metrics.csv
+  |   |       `-- input.subreadset.xml
   |   `-- MovieD
   |       |-- mapped
   |       |   |-- chunks
@@ -229,9 +223,7 @@ Generate mapping reports workflow, starting from subreads.
   |           |   |-- input.chunk5.subreadset.xml
   |           |   |-- input.chunk6.subreadset.xml
   |           |   `-- input.chunk7.subreadset.xml
-  |           |-- input.subreadset.xml
-  |           |-- ppa_burst_metrics.csv
-  |           `-- read_metrics.csv
+  |           `-- input.subreadset.xml
   |-- config.json
   |-- log
   |-- prefix.sh
@@ -357,8 +349,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tStart_MovieB.png
   |   |   |-- tStart_MovieC.png
   |   |   `-- tStart_MovieD.png
-  |   |-- BurstPlots
-  |   |   `-- report.json
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
@@ -577,7 +567,6 @@ Generate mapping reports workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
-  |   |   |-- CollectPpaBurstMetrics.py
   |   |   |-- GetZiaTags.py
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
@@ -594,7 +583,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  37 directories, 540 files
+  36 directories, 530 files
 
 
 

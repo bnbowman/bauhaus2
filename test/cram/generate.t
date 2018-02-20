@@ -15,7 +15,6 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   |-- run.sh
   |-- scripts
   |   |-- Python
-  |   |   |-- CollectPpaBurstMetrics.py
   |   |   |-- GetZiaTags.py
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
@@ -31,7 +30,7 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   `-- workflow
       `-- Snakefile
   
-  4 directories, 17 files
+  4 directories, 16 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 
@@ -44,7 +43,6 @@ Let's look at the "plan" that got assembled in the Snakemake file.
   # heatmaps.snake: Generate alignment based heatmaps.
   # locacc.snake: Generate locacc plots (tool from Martin).
   # uid-tag.snake: Generate a csv file that matches the uid and tags.
-  # collect-ppa-burst-metrics.snake: collect ppa-classified bursts, if available.
   # map-subreads.snake: map (scattered) subreads and merge the resulting alignmentsets into one.
   # scatter-subreads.snake: split subreadsets into smaller chunks for analysis
   # collect-references.snake: hotlink "remote" reference FASTAs into our workflow directory
@@ -65,7 +63,6 @@ Now let's use SMRTLink for mapping.  The plan looks different.
   # heatmaps.snake: Generate alignment based heatmaps.
   # locacc.snake: Generate locacc plots (tool from Martin).
   # uid-tag.snake: Generate a csv file that matches the uid and tags.
-  # collect-ppa-burst-metrics.snake: collect ppa-classified bursts, if available.
   # map-subreads-smrtlink.snake: map subreads using a SMRTLink server, via pbservice call
   # There was an design problem in peservice to output json files
   # The log of the job is incorrectly saved in the json output before the "real" json output
@@ -92,7 +89,6 @@ of a mapping:
   # heatmaps.snake: Generate alignment based heatmaps.
   # locacc.snake: Generate locacc plots (tool from Martin).
   # uid-tag.snake: Generate a csv file that matches the uid and tags.
-  # collect-ppa-burst-metrics.snake: collect ppa-classified bursts, if available.
   # collect-smrtlink-subreads.snake: hotlink "remote" smrtlink subreadsets into our workflow directory for re-mapping
   # When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
   # So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset

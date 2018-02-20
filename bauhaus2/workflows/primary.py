@@ -52,8 +52,7 @@ class PrimaryRefarmWorkflow(Workflow):
                              "R/ZMWstsPlots.R",
                              "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
-    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
-                             "Python/CollectPpaBurstMetrics.py", 
+    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py", 
                              "Python/GetZiaTags.py")
 
     def plan(self):
@@ -63,6 +62,5 @@ class PrimaryRefarmWorkflow(Workflow):
                  "constant-arrow-regular.snake",
                  "heatmaps.snake",
                  "locacc.snake",
-                 "uid-tag.snake",
-                 "collect-ppa-burst-metrics.snake"]
+                 "uid-tag.snake"]
                 + subreadsMappingPlan(self.conditionTable, self.cliArgs))

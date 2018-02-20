@@ -45,7 +45,6 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
-                             "Python/CollectPpaBurstMetrics.py",
                              "Python/MakeChunkedConditionTable.py",
                              "Python/RefilterMappedReadsByReference.py",
                              "Python/ConsolidateArrowConditions.py",
@@ -56,6 +55,5 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                 "scatter-constant-arrow-by-reference.snake",
                 "heatmaps.snake",
                 "locacc.snake",
-                "uid-tag.snake",
-                "collect-ppa-burst-metrics.snake"] + \
+                "uid-tag.snake"] + \
             UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)

@@ -15,12 +15,10 @@ class ConstantArrowForShortMovieWorkflow(Workflow):
                              "R/FishbonePlots.R",
                              "R/Bauhaus2.R" )
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
-                             "Python/CollectPpaBurstMetrics.py",
                              "Python/GetZiaTags.py")
 
     def plan(self):
         return ["constant-arrow.snake",
                 "constant-arrow-short-movie.snake",
-                "uid-tag.snake",
-                "collect-ppa-burst-metrics.snake"] + \
+                "uid-tag.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)

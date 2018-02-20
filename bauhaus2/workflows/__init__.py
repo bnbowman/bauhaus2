@@ -6,6 +6,7 @@ from .hmmshort       import *
 from .mapping   import *
 from .subreads  import *
 from .unrolled  import *
+from .unrolled_bursty_alpha import *
 from .unrolledArrowByReference import *
 from .hqrf      import *
 from .primary      import *

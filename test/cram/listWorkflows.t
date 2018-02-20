@@ -16,3 +16,4 @@
   SV-HG00733
   UnrolledNoHQMapping
   UnrolledNoHQMappingArrowByReference
+  UnrolledNoHQMappingBurstyAlpha
