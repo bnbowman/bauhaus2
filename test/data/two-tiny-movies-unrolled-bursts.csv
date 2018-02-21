@@ -1,0 +1,3 @@
+Condition,SubreadSet,Genome
+MovieA,/pbi/dept/secondary/siv/testdata/itg/internal-bam/with-bursts/m54004_180104_222640-50zmws.subreadset.xml,All4mer_V2_001_unrolled_circular_216x_l150768
+MovieB,/pbi/dept/secondary/siv/testdata/itg/internal-bam/with-bursts/m54004_180104_222640-50zmws-2.subreadset.xml,All4mer_V2_003_unrolled_circular_216x_l150768

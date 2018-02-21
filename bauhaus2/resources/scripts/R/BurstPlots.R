@@ -242,7 +242,7 @@ makefractionBaseType <- function(cd, freq) {
     return(tp1)}
 }
 makefractionBaseforAll <- function(report,cd,cd_H, cd_noH){
- if( nrow(cd) == 0 || nrow(cd10) == 0){ 
+ if( nrow(cd) == 0 ){ 
    tp4 = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
    tp4c = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
  } else{ 
@@ -303,7 +303,7 @@ makefractionBaseRorG <- function(cd, freq) {
     return (tp3)}
 }
 makefractionBaseRorGforAll <- function(report,cd,cd_H, cd_noH){
- if( nrow(cd) == 0 || nrow(cd10) == 0){
+ if( nrow(cd) == 0 ){
    tp4 = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
    tp4c = ggplot(cd, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "Base Fraction Frequencies")
  } else{
