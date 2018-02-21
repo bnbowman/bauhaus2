@@ -16,6 +16,7 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ unrolled-mapping
   unrolled-mapping
+  |-- Rplots.pdf
   |-- benchmarks
   |   `-- locacc.tsv
   |-- condition-table.csv
@@ -70,7 +71,9 @@ Generate mapping reports workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       `-- input.subreadset.xml
+  |   |       |-- input.subreadset.xml
+  |   |       |-- ppa_burst_metrics.csv
+  |   |       `-- read_metrics.csv
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- chunks
@@ -121,7 +124,9 @@ Generate mapping reports workflow, starting from subreads.
   |           |   |-- input.chunk5.subreadset.xml
   |           |   |-- input.chunk6.subreadset.xml
   |           |   `-- input.chunk7.subreadset.xml
-  |           `-- input.subreadset.xml
+  |           |-- input.subreadset.xml
+  |           |-- ppa_burst_metrics.csv
+  |           `-- read_metrics.csv
   |-- config.json
   |-- log
   |-- prefix.sh
@@ -179,6 +184,24 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tEnd_MovieB.png
   |   |   |-- tStart_MovieA.png
   |   |   `-- tStart_MovieB.png
+  |   |-- BurstPlots
+  |   |   |-- BurstLength_CDF.png
+  |   |   |-- Burst_Duration_CDF.png
+  |   |   |-- Density_over_component.png
+  |   |   |-- PairwiseDDensity.png
+  |   |   |-- burstdenvsRL.png
+  |   |   |-- cumsum_burst_duration.png
+  |   |   |-- cumsum_burst_length.png
+  |   |   |-- inverse_burstdenvsRL.png
+  |   |   |-- log_burst_starttime.png
+  |   |   |-- previous_basecall_count.png
+  |   |   |-- previousbasecallfreq.png
+  |   |   |-- report.Rd
+  |   |   |-- report.json
+  |   |   |-- typeofburst.png
+  |   |   |-- typeofburstRorG.png
+  |   |   |-- typeofburstRorGcount.png
+  |   |   `-- typeofburstcount.png
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
@@ -374,11 +397,13 @@ Generate mapping reports workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
+  |   |   |-- CollectPpaBurstMetrics.py
   |   |   |-- GetZiaTags.py
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
+  |       |-- BurstPlots.R
   |       |-- FishbonePlots.R
   |       |-- LibDiagnosticPlots.R
   |       |-- PbiPlots.R
@@ -390,5 +415,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  26 directories, 347 files
+  27 directories, 371 files
 
