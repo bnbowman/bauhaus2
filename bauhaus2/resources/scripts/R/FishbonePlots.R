@@ -740,7 +740,8 @@ makeReport <- function(report) {
     warning("The Errormode CSV file is empty!")
   } else {
     # Make Fishbone Plots
-    makeFishbonePlots(errormodeMerge, report)
+    try(makeFishbonePlots(errormodeMerge, report), silent = TRUE)
+    0
   }
   
   # Save the report object for later debugging
