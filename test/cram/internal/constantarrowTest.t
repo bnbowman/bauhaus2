@@ -68,9 +68,7 @@ Generate constant arrow workflow, starting from subreads.
   |   |       |   |-- input.chunk5.subreadset.xml
   |   |       |   |-- input.chunk6.subreadset.xml
   |   |       |   `-- input.chunk7.subreadset.xml
-  |   |       |-- input.subreadset.xml
-  |   |       |-- ppa_burst_metrics.csv
-  |   |       `-- read_metrics.csv
+  |   |       `-- input.subreadset.xml
   |   `-- MovieB
   |       |-- mapped
   |       |   |-- chunks
@@ -121,9 +119,7 @@ Generate constant arrow workflow, starting from subreads.
   |           |   |-- input.chunk5.subreadset.xml
   |           |   |-- input.chunk6.subreadset.xml
   |           |   `-- input.chunk7.subreadset.xml
-  |           |-- input.subreadset.xml
-  |           |-- ppa_burst_metrics.csv
-  |           `-- read_metrics.csv
+  |           `-- input.subreadset.xml
   |-- config.json
   |-- log
   |-- prefix.sh
@@ -146,7 +142,6 @@ Generate constant arrow workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
-  |   |   |-- CollectPpaBurstMetrics.py
   |   |   |-- GetZiaTags.py
   |   |   `-- MakeMappingMetricsCsv.py
   |   `-- R
@@ -157,4 +152,4 @@ Generate constant arrow workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  18 directories, 122 files
+  18 directories, 117 files
