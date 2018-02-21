@@ -211,6 +211,11 @@ gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
   fastaname = getReferencePath( reference )
   refs = readDNAStringSet( fastaname )
   data = loadPBI( alnxml )
+  if ( nrow( data ) < 5 )
+  {
+    loginfo( "[ERROR]: Too few reads for gcVcoverage" )
+    return( 0 )
+  }
   s = split( 1:nrow( data ), as.character( data$ref ) )
   
   for ( refName in names( s ) )
@@ -219,11 +224,10 @@ gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
     tmp = subset( data, ref == refName )
     if ( nrow( tmp ) < 100 ) { return( 0 ) }
     ref = refs[[ which( grepl( pattern = refName, x = names( refs ) ) )[1] ]]
-    singleRef( report, tmp, ref, paste( label, refName, sep = "_" ), winsize ) 
+    singleRef( report, tmp, ref, paste( label, refName, sep = "_" ), winsize )
   }
   1
 }
-
 
 #---------------------------------------------------------------
 # End of functions for GC content plots
