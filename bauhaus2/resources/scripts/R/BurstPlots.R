@@ -482,58 +482,88 @@ getFFTFreqs <- function(Nyq.Freq, data)
   return (FFTFreqs)
 }
 
-makePairWised <- function(report,cd_H){
+makePairWised <- function(report, cd_H) {
   summary_t = cd_H %>% group_by(Condition) %>% summarise(count = n())
-  if(nrow(cd_H) == 0){
-    tp1 = ggplot(cd_H, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "No data")
-    tp2 = ggplot(cd_H, aes(x = 0, y = 0)) + geom_line()+plTheme + clScale + themeTilt+ labs(y = "No data")
+  if (nrow(cd_H) == 0) {
+    tp1 = ggplot(cd_H, aes(x = 0, y = 0)) + geom_line() + plTheme + clScale + themeTilt + labs(y = "No data")
+    tp2 = ggplot(cd_H, aes(x = 0, y = 0)) + geom_line() + plTheme + clScale + themeTilt + labs(y = "No data")
   } else{
-  df = list()
-  for (i in 1:nrow(summary_t)){
-    df[[i]] = makePairWisedOneCon(cd_H,as.character(summary_t[i,]$Condition))
-  }
-  #for (i in 1:(nrow(summary_t)-1)){
+    df = list()
+    for (i in 1:nrow(summary_t)) {
+      df[[i]] = makePairWisedOneCon(cd_H, as.character(summary_t[i, ]$Condition))
+    }
+    #for (i in 1:(nrow(summary_t)-1)){
     #df[[i+1]] = rbind(df[[i]], df[[i+1]])
-  #}
-  if (nrow(summary_t) ==1){
-    df[[1]] = df[[1]]
-  } else{
-    for (i in 2:(nrow(summary_t))){
-      df[[1]]=rbind(df[[1]], df[[i]])}
-  }
-  dflist = list()
-  fourier = list()
-  tp = list()
-  cl = colors()
-  for (i in 1:nrow(summary_t)){
-  subsetdf = subset(df[[1]], condition_vector == as.character(summary_t[i,]$Condition)) 
-  df1 <-  transform(subsetdf, group=cut(vNew_combo, 
-                                  breaks=c(seq(min(subsetdf$vNew_combo)-1, max(subsetdf$vNew_combo)+1,50))))
-  res <- do.call(data.frame,aggregate(vNew_combo~group, df1, 
-                                      FUN=function(x) c(Count=length(x))))
-  dNew <- data.frame(group=levels(df1$group))
-  dflist[[i]] = merge(res, dNew, all=TRUE)
-  dflist[[i]]$vNew_combo[is.na(dflist[[i]]$vNew_combo)]=0
-  dflist[[i]]$density = dflist[[i]]$vNew_combo/(sum(dflist[[i]]$vNew_combo))
-  dflist[[i]]$density_final = dflist[[i]]$density/50
-  fft = fft(dflist[[i]]$density_final)
-  fourier[[i]] = (abs(fft))^2
-  fourier[[i]]=data.frame(fourier[[i]])
-  fourier[[i]]$condition = as.character(summary_t[i,]$Condition)
-  fourier[[i]]$x = getFFTFreqs(1/50,dflist[[i]]$density_final)
-  fourier[[i]]$y = fourier[[i]]$fourier..i..
- # tp[[i]] = ggplot(fourier[[i]], aes(x= x, y = y)) + geom_line(colour = cl[20+i])+plTheme + clScale + themeTilt + labs(x = "Component (inverse bases)", y = "Density", title = "Density over Component (inverse bases)") + coord_cartesian(xlim = c(0, 0.005)) 
-  }
-  if (nrow(summary_t) ==1){
-    fourier[[1]] = fourier[[1]]
-  } else{
-    for (i in 2:nrow(summary_t)){
-      fourier[[1]]=rbind(fourier[[1]], fourier[[i]])}
-  }
-  
-  
-  tp1 = ggplot(fourier[[1]], aes(x= x, y = fourier..i.., colour = condition)) + geom_line()+plTheme + clScale + themeTilt + labs(x = "Component (inverse bases)", y = "Density", title = "Density over Component (inverse bases)") + coord_cartesian(xlim = c(0, 0.005)) 
-  tp2 = ggplot(df[[1]], aes(x = vNew_combo, colour = condition_vector)) + geom_density()+plTheme + clScale + themeTilt+ labs(y = "Density", title = "Pairwise Distance Density", x = "Pairwise Distance (bases)")}
+    #}
+    if (nrow(summary_t) == 1) {
+      df[[1]] = df[[1]]
+    } else{
+      for (i in 2:(nrow(summary_t))) {
+        df[[1]] = rbind(df[[1]], df[[i]])
+      }
+    }
+    dflist = list()
+    fourier = list()
+    tp = list()
+    #cl = colors()
+    for (i in 1:nrow(summary_t)) {
+      subsetdf = subset(df[[1]],
+                        condition_vector == as.character(summary_t[i, ]$Condition))
+      if(nrow(subsetdf)>0){
+        df1 <-  transform(subsetdf, group = cut(vNew_combo,
+                                                breaks = c(seq(
+                                                  min(subsetdf$vNew_combo)-1, max(subsetdf$vNew_combo)+1,50
+                                                ))))
+        res <- do.call(data.frame,
+                       aggregate(
+                         vNew_combo ~ group,
+                         df1,
+                         FUN = function(x)
+                           c(Count = length(x))
+                       ))
+        dNew <- data.frame(group = levels(df1$group))
+        dflist[[i]] = merge(res, dNew, all = TRUE)
+        dflist[[i]]$vNew_combo[is.na(dflist[[i]]$vNew_combo)] = 0
+        dflist[[i]]$density = dflist[[i]]$vNew_combo / (sum(dflist[[i]]$vNew_combo))
+        dflist[[i]]$density_final = dflist[[i]]$density / 50
+        fft = fft(dflist[[i]]$density_final)
+        fourier[[i]] = (abs(fft)) ^ 2
+        fourier[[i]] = data.frame(fourier[[i]])
+        fourier[[i]]$condition = as.character(summary_t[i, ]$Condition)
+        fourier[[i]]$x = getFFTFreqs(1 / 50, dflist[[i]]$density_final)
+        fourier[[i]]$y = fourier[[i]]$fourier..i..
+        # tp[[i]] = ggplot(fourier[[i]], aes(x= x, y = y)) + geom_line(colour = cl[20+i])+plTheme + clScale + themeTilt + labs(x = "Component (inverse bases)", y = "Density", title = "Density over Component (inverse bases)") + coord_cartesian(xlim = c(0, 0.005))
+      }else{
+        warning("No pairwise distance available!")
+        fourier[[i]] = 0
+        fourier[[i]] = data.frame(fourier[[i]])
+        fourier[[i]]$condition = as.character(summary_t[i, ]$Condition)
+        fourier[[i]]$x = 0
+        fourier[[i]]$y = 0
+      }
+    }
+        
+        if (nrow(summary_t) == 1) {
+          fourier[[1]] = fourier[[1]]
+        } else{
+          for (i in 2:nrow(summary_t)) {
+            fourier[[1]] = rbind(fourier[[1]], fourier[[i]])
+          }
+        }
+      
+        
+        tp1 = ggplot(fourier[[1]], aes(
+          x = x,
+          y = fourier..i..,
+          colour = condition
+        )) + geom_line() + plTheme + clScale + themeTilt + labs(x = "Component (inverse bases)",
+                                                                y = "Density",
+                                                                title = "Density over Component (inverse bases)") + coord_cartesian(xlim = c(0, 0.005))
+        tp2 = ggplot(df[[1]], aes(x = vNew_combo, colour = condition_vector)) + geom_density() +
+          plTheme + clScale + themeTilt + labs(y = "Density",
+                                               title = "Pairwise Distance Density",
+                                               x = "Pairwise Distance (bases)")
+      } 
   
   report$ggsave(
     "Density_over_component.png",
@@ -577,12 +607,12 @@ makeReport <- function(report) {
   #cd = read.csv("conditions/5k_tetraloop/subreads/ppa_burst_metrics.csv")
   dfs = lapply(as.character(conditions$Condition), function(s) {
     string0 = paste("conditions/",s,"/subreads/ppa_burst_metrics.csv", sep ="")
-    table = read.csv(string0)
-    if (!is.numeric(table[1,1])){
+    table0 = read.csv(string0)
+    if (!is.numeric(table0[1,1])){
       warning(paste("Warning: No bursts data available for",s, sep=" "))
-      table = table[-1,]
+      table0 = table0[-1,]
     }
-    return(table)
+    return(table0)
   })
   
     # Now combine into one large data frame
@@ -604,12 +634,12 @@ makeReport <- function(report) {
     
     dfs2 = lapply(as.character(conditions$Condition), function(s) {
       string0 = paste("conditions/",s,"/subreads/read_metrics.csv", sep ="")
-      table = read.csv(string0)
-      if (!is.numeric(table[1,1])){
+      table0 = read.csv(string0)
+      if (!is.numeric(table0[1,1])){
         warning(paste("Warning: No bursts data available for",s, sep=" "))
-        table = table[-1,]
+        table0 = table0[-1,]
       }
-      return(table)
+      return(table0)
     })
 
     
