@@ -59,7 +59,7 @@ makeFishbonePlots <-
       as.name(concat(...))
     
     # functions to add SNR density plots to Insert/Mismatch hmm plots
-    generateFixAxisPlot <- function(df, dfSNR_) {
+    generateFixAxisPlot <- function(df, dfSNR_, dfSNRall_) {
       tp = ggplot(df,
                   aes(
                     x = as.numeric(as.character(snr)),
@@ -102,7 +102,7 @@ makeFishbonePlots <-
       tp1 = tp + xlim(xlimits) +
         scale_y_continuous(limits = ylimits, breaks = breaks) + facet_grid(exp_ ~ obs_)
       
-      tpdensity = ggplot(df, aes(x = as.numeric(as.character(snr)), colour = Condition)) +
+      tpdensity = ggplot(dfSNRall_, aes(x = as.numeric(as.character(snr)), colour = Condition)) +
         geom_density(alpha = .5) + plTheme + clScale + themeTilt +
         labs(x = "SNR", y = "SNR Density") +
         annotate(
@@ -132,7 +132,7 @@ makeFishbonePlots <-
       gfix
     }
     
-    generateFreeAxisPlot <- function(df, dfSNR_, type) {
+    generateFreeAxisPlot <- function(df, dfSNR_, type, dfSNRall_) {
       tmp = data.frame(matrix(rep(NA, 88), nrow = 8, ncol = 11))
       names(tmp) = names(df)
       tmp$exp_ = c(rep("A", 2), rep("C", 2), rep("G", 2), rep("T", 2))
@@ -238,7 +238,7 @@ makeFishbonePlots <-
       g2free <- cbind(g2A, g2C, g2G, g2T, size = "first")
       
       tpdensityBase <- function(Base) {
-        tpdensityA = ggplot(df[df$obs == Base, ], aes(x = as.numeric(as.character(snr)), colour = Condition)) +
+        tpdensityA = ggplot(dfSNRall_[dfSNRall_$obs == Base, ], aes(x = as.numeric(as.character(snr)), colour = Condition)) +
           geom_density(alpha = .5) + plTheme + clScale + themeTilt +
           labs(x = "SNR", y = "SNR Density") +
           annotate(
@@ -456,11 +456,12 @@ makeFishbonePlots <-
       }
       
       df = errormodeMerge
-      dfSNR <- df %>%
+      dfSNRall <- df %>%
         select(Condition, starts_with("SNR.")) %>%
         dplyr::rename_(.dots = setNames(names(.), gsub("SNR.", "", names(.)))) %>%
         melt(id.vars = c("Condition"),
-             variable.name = "obs_") %>%
+             variable.name = "obs_") 
+      dfSNR <- dfSNRall %>%
         group_by(Condition, obs_) %>%
         summarise(value = mean(value))
       
@@ -476,8 +477,11 @@ makeFishbonePlots <-
       breaks <- breaksFn(ylimits)
       
       dfSNR_ = dfSNR %>% addMove("Insert")
-      gInsFix = generateFixAxisPlot(dfIns, dfSNR_)
-      gInsFree = generateFreeAxisPlot(dfIns, dfSNR_, "Insert")
+      dfSNRall$SNRlabel = ""
+      dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
+      dfSNRall_$obs_ = paste("Insert", dfSNRall_$obs)
+      gInsFix = generateFixAxisPlot(dfIns, dfSNR_, dfSNRall_)
+      gInsFree = generateFreeAxisPlot(dfIns, dfSNR_, "Insert", dfSNRall_)
       
       report$ggsave(
         "fishboneplot_insertion.png",
@@ -513,8 +517,10 @@ makeFishbonePlots <-
       
       dfMM <- dfErr_ %>% filter(move == "Match" & obs != exp)
       breaks <- breaksFn(ylimits)
-      gMMFix = generateFixAxisPlot(dfMM, dfSNR_)
-      gMMFree = generateFreeAxisPlot(dfMM, dfSNR_, "Mismatch")
+      dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
+      dfSNRall_$obs_ = paste("Mismatch", dfSNRall_$obs)
+      gMMFix = generateFixAxisPlot(dfMM, dfSNR_, dfSNRall_)
+      gMMFree = generateFreeAxisPlot(dfMM, dfSNR_, "Mismatch", dfSNRall_)
       report$ggsave(
         "fishboneplot_mismatch.png",
         gMMFix,
