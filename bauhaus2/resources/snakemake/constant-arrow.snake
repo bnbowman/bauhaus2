@@ -7,18 +7,9 @@ mapped_subreads = \
     { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
       for c in ct.conditions }
 
-burst_metrics_csv_files = \
-    { c : "conditions/{condition}/subreads/ppa_burst_metrics.csv".format(condition=c)
-      for c in ct.conditions }
-
 uid_tag_csv_file = "reports/uidTag.csv"
 
 # -- Target rules --
-
-rule constant_arrow_plots:
-    input:
-        constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json",
-        PpaBurstMetrics=burst_metrics_csv_files.values()
 
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode.csv",
