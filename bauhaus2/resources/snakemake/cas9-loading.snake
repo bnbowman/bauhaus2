@@ -1,0 +1,28 @@
+
+# ---------------------------------------------------------------------------------------------------
+# cas9-loading.snake
+
+# -- Target --
+
+rule collect_loading_report:
+    input: loading_report_json.values()
+
+# -- Worker rules ---
+
+rule cas9_loading_report_one_condition:
+    input: 
+        indexedbam="conditions/{condition}/mapped/OUTPUT_BAM.pbi",
+        local_subreadset="conditions/{condition}/subreads/input.subreadset.xml"
+    output:
+        reportjson="reports/Cas9SequelLoadingPlots_{condition}/report.json",
+        reportdir="reports/Cas9SequelLoadingPlots_{condition}"
+    params:
+        conditionname="{condition}"
+    shell:
+        """
+        module load gcc/6.4.0
+        module load smstools
+        cd {output.reportdir}
+        NoAmpSequelLoadingDiagnostic {params.conditionname} {cas19reference} ../../{input.indexedbam} ../../{input.local_subreadset}
+        cd ../..
+        """

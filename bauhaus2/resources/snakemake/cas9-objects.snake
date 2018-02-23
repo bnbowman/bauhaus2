@@ -1,0 +1,17 @@
+
+# ---------------------------------------------------------------------------------------------------
+# cas9-objects.snake
+
+from bauhaus2.runtime import ct
+
+loading_report_json = \
+    { c : "reports/Cas9SequelLoadingPlots_{condition}/report.json".format(condition=c)
+      for c in ct.conditions }
+
+restriction_sites_report_json = \
+    { c : "reports/Cas9RestrictionSitePlots_{condition}/report.json".format(condition=c)
+      for c in ct.conditions }
+
+yield_report_json = \
+    { c : "reports/Cas9YieldDiagnosticPlots_{condition}/report.json".format(condition=c)
+      for c in ct.conditions }
