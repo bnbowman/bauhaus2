@@ -3,6 +3,7 @@
   ArrowTraining
   BarcodingQC
   CCSMappingReports
+  Cas9Diagnostics
   Cas9Yield
   ConstantArrow
   ConstantArrowForShortMovie
