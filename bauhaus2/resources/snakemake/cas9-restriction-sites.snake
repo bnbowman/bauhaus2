@@ -1,0 +1,28 @@
+
+# ---------------------------------------------------------------------------------------------------
+# cas9-restriction-sites.snake
+
+# -- Target --
+
+rule collect_restriction_sites:
+    input: restriction_sites_report_json.values()
+
+# -- Worker rules ---
+        
+rule cas9_restriction_sites_report_one_condition:
+    input: 
+        indexedbam="conditions/{condition}/mapped/OUTPUT_BAM.pbi",
+        local_subreadset="conditions/{condition}/subreads/input.subreadset.xml"
+    output:
+        reportjson="reports/Cas9RestrictionSitePlots_{condition}/report.json",
+        reportdir="reports/Cas9RestrictionSitePlots_{condition}"
+    params:
+        conditionname="{condition}"
+    shell:
+        """
+        module load gcc/6.4.0
+        module load smstools
+        cd {output.reportdir}
+        NoAmpRestrictionDiagnostic {params.conditionname} {cas19reference} ../../{input.indexedbam} ../../{input.local_subreadset}
+        cd ../..
+        """
