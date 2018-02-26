@@ -480,8 +480,12 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- tlen_box.png
   |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
-  |   |   |-- PolRate_by_time.png
-  |   |   |-- active_zmw_normalized.png
+  |   |   |-- Prob_From_Ins_Burst_to_Normal.png
+  |   |   |-- Prob_HP_Burst.png
+  |   |   |-- Prob_HP_Burst_to_Normal.png
+  |   |   |-- Prob_Ins_Burst.png
+  |   |   |-- Prob_Pause_Burst.png
+  |   |   |-- Prob_Pause_Burst_to_Normal.png
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
