@@ -89,10 +89,6 @@ of a mapping:
   # heatmaps.snake: Generate alignment based heatmaps.
   # locacc.snake: Generate locacc plots (tool from Martin).
   # uid-tag.snake: Generate a csv file that matches the uid and tags.
-  # collect-smrtlink-subreads.snake: hotlink "remote" smrtlink subreadsets into our workflow directory for re-mapping
-  # When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
-  # So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset
-  # Later in this workflow, only the subreadset (remote_alignmentsets[wc.condition][1]) is used
   # collect-smrtlink-references.snake: hotlink "remote" smrtlink reference FASTAs into our workflow directory
   # Here the sts.h5 file is fetched at the same time as the reference, just to simplify the process 
   # When more sts or other data files are collected, they should be separated to a new snakemake file
