@@ -11,9 +11,9 @@
   Heatmaps
   IsoSeqRC0
   MappingReports
+  PpaBurstMetrics
   PrimaryRefarm
   SV-FY1679
   SV-HG00733
   UnrolledNoHQMapping
   UnrolledNoHQMappingArrowByReference
-  UnrolledNoHQMappingBurstyAlpha

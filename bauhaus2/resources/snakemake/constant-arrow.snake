@@ -11,6 +11,10 @@ uid_tag_csv_file = "reports/uidTag.csv"
 
 # -- Target rules --
 
+rule constant_arrow_plots:
+    input:
+        constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
+
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode.csv",
            uid_tag_csv_file

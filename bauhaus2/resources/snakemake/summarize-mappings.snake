@@ -9,10 +9,6 @@ mapped_subreads = \
 local_fasta_files = \
     { c : expand("conditions/{condition}/reference.fasta", condition=c)
       for c in ct.conditions }
-      
-subreadsets = \
-    { c : "conditions/{condition}/subreads/input.subreadset.xml".format(condition=c)
-      for c in ct.conditions }
 
 uid_tag_csv_file = "reports/uidTag.csv"
 

@@ -1,60 +1,20 @@
-from bauhaus2.experiment import UnrolledMappingConditionTable
+from bauhaus2.experiment import ResequencingConditionTable
 from bauhaus2 import Workflow
 
 from .subreads import subreadsPlan
 
-def UnrolledNoHQMappingPlan(ct, args):
-    if ct.inputsAreMapped:
-        # Mapping already happened, link it.
-        return [ "collect-smrtlink-references.snake",
-                 "collect-mappings.snake",
-                 "scatter-subreads.snake" ]
-    elif not args.no_smrtlink:
-        # Use SMRTLink for mapping
-        return [ "map-unrolledNoHQ-smrtlink.snake",
-                 "smrtlink-job-status.snake",
-                 "collect-references.snake",
-                 "scatter-subreads.snake" ] + \
-                 subreadsPlan(ct, args)
-    else:
-        # Do our own unrolledNoHQ mapping
-        return [ "map-unrolledNoHQ.snake",
-                 "collect-references.snake",
-                 "scatter-subreads.snake" ] + \
-                 subreadsPlan(ct, args)
-
 class UnrolledNoHQMappingWorkflow(Workflow):
     """
-    Map "unrolled" ZMW reads to an unrolled reference.
+    Grab PPA-classified burst information from subreadset.
 
-    Note that this implies that the HQ region designation is
-    *ignored*, and the entire read sequence from the ZMW is used as a
-    mapping query.  (We will add an unrolled mapping workflow which
-    maps just the HQ region, as soon as BLASR supports it directly).
+    Save summary metrics to file and generate plots
     """
-    WORKFLOW_NAME        = "UnrolledNoHQMappingBurstyAlpha"
-    CONDITION_TABLE_TYPE = UnrolledMappingConditionTable
-    SMRTPIPE_PRESETS     = ( "extras/pbsmrtpipe-unrolled-nohq-mappings-preset.xml", )
-    R_SCRIPTS            = ( "R/PbiSampledPlots.R",
-                             "R/PbiPlots.R",
-                             "R/LibDiagnosticPlots.R",
-                             "R/ReadPlots.R",
-                             "R/constant_arrow.R",
-                             "R/FishbonePlots.R",
-                             "R/ZMWstsPlots.R",
-                             "R/AlignmentBasedHeatmaps.R",
-                             "R/Bauhaus2.R",
-                             "R/BurstPlots.R" )
-    PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
-                             "Python/CollectPpaBurstMetrics.py",
-                             "Python/GetZiaTags.py")
+    WORKFLOW_NAME        = "PpaBurstMetrics"
+    CONDITION_TABLE_TYPE = ResequencingConditionTable
+    R_SCRIPTS            = ("R/BurstPlots.R",
+                            "R/Bauhaus2.R")
+    PYTHON_SCRIPTS       = ("Python/CollectPpaBurstMetrics.py", )
 
     def plan(self):
-        return ["summarize-mappings-alpha.snake",
-                "constant-arrow.snake",
-                "constant-arrow-regular.snake",
-                "heatmaps.snake",
-                "locacc.snake",
-                "uid-tag.snake",
-                "collect-ppa-burst-metrics.snake"] + \
-            UnrolledNoHQMappingPlan(self.conditionTable, self.cliArgs)
+        return ["collect-ppa-burst-metrics.snake"] + \
+            subreadsPlan(self.conditionTable, self.cliArgs)
