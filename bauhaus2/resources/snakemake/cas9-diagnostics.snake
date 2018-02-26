@@ -1,0 +1,13 @@
+
+# ---------------------------------------------------------------------------------------------------
+# cas9-diagnostics.snake
+
+from bauhaus2.runtime import ct
+      
+# -- Target --
+
+rule collect_cas9_reports:
+    input: 
+        yield_reports=yield_report_json.values(),
+        loading_reports=loading_report_json.values(),
+        restriction_sites=restriction_sites_report_json.values()

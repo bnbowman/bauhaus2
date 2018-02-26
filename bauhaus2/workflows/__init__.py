@@ -4,6 +4,7 @@ from .consensus import *
 from .hmm       import *
 from .hmmshort       import *
 from .mapping   import *
+from .maskedArrow   import *
 from .subreads  import *
 from .unrolled  import *
 from .unrolled_bursty_alpha import *

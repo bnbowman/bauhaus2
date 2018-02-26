@@ -18,6 +18,8 @@ library(unitem)
 library(nnet)
 library(reshape2)
 library(lazyeval)
+library(gtable)
+require(grid)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
@@ -32,10 +34,19 @@ themeTilt = theme(
   panel.grid.minor = element_blank(),
   panel.spacing = unit(4 / 3, "lines"),
   strip.background = element_blank(),
-  strip.text.y = element_text(angle = 0)
+  strip.text.y = element_text(angle = 0),
+  plot.title = element_text(hjust = 0.5)
 )
 pd <- position_dodge(0.2)
 dpi <- 160
+
+set_panel_heights <- function(g, heights) {
+  g$heights <- grid:::unit.list(g$heights)
+  id_panels <-
+    unique(c(g$layout[g$layout$name == "panel-1-1", "t"], g$layout[g$layout$name == "panel-2-1", "t"], g$layout[g$layout$name == "panel-3-1", "t"], g$layout[g$layout$name == "panel-4-1", "t"]))
+  g$heights[id_panels] <- heights
+  g
+}
 
 makeFishbonePlots <-
   function(errormodeMerge, report, minSample = 20) {
@@ -46,6 +57,255 @@ makeFishbonePlots <-
       paste(..., sep = "")
     nam <- function(...)
       as.name(concat(...))
+    
+    # functions to add SNR density plots to Insert/Mismatch hmm plots
+    generateFixAxisPlot <- function(df, dfSNR_, dfSNRall_) {
+      tp = ggplot(df,
+                  aes(
+                    x = as.numeric(as.character(snr)),
+                    y = mu,
+                    group = Condition,
+                    colour = Condition
+                  )) +
+        geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
+        geom_errorbar(
+          aes(
+            ymin = mu - ci,
+            ymax = mu + ci,
+            colour = Condition
+          ),
+          width = 0.1,
+          position = pd
+        ) +
+        geom_vline(aes(xintercept = value, colour = Condition),
+                   dfSNR_) +
+        labs(y = "Error Rate") +
+        coord_fixed(ratio = ratio) +
+        plTheme + clScale + themeTilt + theme(axis.title.x = element_blank()) +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = Inf,
+          y = -Inf,
+          yend = -Inf,
+          size = 1
+        ) +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = -Inf,
+          y = -Inf,
+          yend = Inf,
+          size = 1
+        )
+      
+      tp1 = tp + xlim(xlimits) +
+        scale_y_continuous(limits = ylimits, breaks = breaks) + facet_grid(exp_ ~ obs_)
+      
+      tpdensity = ggplot(dfSNRall_, aes(x = as.numeric(as.character(snr)), colour = Condition)) +
+        geom_density(alpha = .5) + plTheme + clScale + themeTilt +
+        labs(x = "SNR", y = "SNR Density") +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = Inf,
+          y = -Inf,
+          yend = -Inf,
+          size = 1
+        ) +
+        annotate(
+          "segment",
+          x = -Inf,
+          xend = -Inf,
+          y = -Inf,
+          yend = Inf,
+          size = 1
+        )
+      tpdensityfix = tpdensity + facet_grid(SNRlabel ~ obs_) + xlim(0, 20) + theme(strip.text.x = element_blank(), axis.title.x = element_blank())
+      pdf(NULL)
+      g1 <- ggplotGrob(tp1)
+      g3 <- ggplotGrob(tpdensityfix)
+      gfix <- rbind(g1, g3, size = "first")
+      gfix$widths <- unit.pmax(g1$widths, g3$widths)
+      gfix <-
+        set_panel_heights(gfix, lapply(rep(0.6, 5), grid::unit, "null"))
+      gfix
+    }
+    
+    generateFreeAxisPlot <- function(df, dfSNR_, type, dfSNRall_) {
+      tmp = data.frame(matrix(rep(NA, 88), nrow = 8, ncol = 11))
+      names(tmp) = names(df)
+      tmp$exp_ = c(rep("A", 2), rep("C", 2), rep("G", 2), rep("T", 2))
+      tmp$obs_ = tmp$exp
+      tmp$mu = 0
+      
+      ylimitsBase <- function(Base) {
+        range(c(df[df$exp == Base, ]$mu - df[df$exp == Base, ]$ci, df[df$exp == Base, ]$mu + df[df$exp == Base, ]$ci))
+      }
+      
+      tmp$mu = c(ylimitsBase("A"),
+                 ylimitsBase("C"),
+                 ylimitsBase("G"),
+                 ylimitsBase("T"))
+      tmp$ci = 0
+      tmp$Condition = df$Condition[1]
+      
+      tpBase <- function(Base) {
+        tp = ggplot(rbind(tmp, df[df$obs == Base, ]),
+                    aes(
+                      x = as.numeric(as.character(snr)),
+                      y = mu,
+                      group = Condition,
+                      colour = Condition
+                    )) +
+          geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
+          geom_errorbar(
+            aes(
+              ymin = mu - ci,
+              ymax = mu + ci,
+              colour = Condition
+            ),
+            width = 0.1,
+            position = pd
+          ) +
+          geom_vline(aes(xintercept = value, colour = Condition),
+                     dfSNR_[dfSNR_$obs_ == paste(type, Base, sep = " "), ]) +
+          labs(y = "Error Rate", title = paste(type, Base, sep = " ")) +
+          coord_fixed(ratio = ratio) +
+          plTheme + clScale + themeTilt + theme(axis.title.x = element_blank()) +
+          annotate(
+            "segment",
+            x = -Inf,
+            xend = Inf,
+            y = -Inf,
+            yend = -Inf,
+            size = 1
+          ) +
+          annotate(
+            "segment",
+            x = -Inf,
+            xend = -Inf,
+            y = -Inf,
+            yend = Inf,
+            size = 1
+          )
+        tp
+      }
+      
+      tp2A = tpBase("A") + facet_grid(exp_ ~ ., scales = "free") + theme(
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        strip.text.y = element_blank(),
+        plot.title = element_text(size = 14)
+      )
+      tp2C = tpBase("C") + facet_grid(exp_ ~ ., scales = "free") + theme(
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        strip.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.title = element_text(size = 14)
+      )
+      tp2G = tpBase("G") + facet_grid(exp_ ~ ., scales = "free") + theme(
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        strip.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.title = element_text(size = 14)
+      )
+      tp2T = tpBase("T") + facet_grid(exp_ ~ ., scales = "free") + theme(
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        plot.title = element_text(size = 14)
+      )
+      
+      tp2Alimit = tp2A + xlim(ggplot_build(tp2A)$layout$panel_ranges[[1]]$x.range)
+      tp2Climit = tp2C + xlim(ggplot_build(tp2C)$layout$panel_ranges[[1]]$x.range)
+      tp2Glimit = tp2G + xlim(ggplot_build(tp2G)$layout$panel_ranges[[1]]$x.range)
+      tp2Tlimit = tp2T + xlim(ggplot_build(tp2T)$layout$panel_ranges[[1]]$x.range)
+      
+      pdf(NULL)
+      g2A <- ggplotGrob(tp2Alimit)
+      g2C <- ggplotGrob(tp2Climit)
+      g2G <- ggplotGrob(tp2Glimit)
+      g2T <- ggplotGrob(tp2Tlimit)
+      
+      g2free <- cbind(g2A, g2C, g2G, g2T, size = "first")
+      
+      tpdensityBase <- function(Base) {
+        tpdensityA = ggplot(dfSNRall_[dfSNRall_$obs == Base, ], aes(x = as.numeric(as.character(snr)), colour = Condition)) +
+          geom_density(alpha = .5) + plTheme + clScale + themeTilt +
+          labs(x = "SNR", y = "SNR Density") +
+          annotate(
+            "segment",
+            x = -Inf,
+            xend = Inf,
+            y = -Inf,
+            yend = -Inf,
+            size = 1
+          ) +
+          annotate(
+            "segment",
+            x = -Inf,
+            xend = -Inf,
+            y = -Inf,
+            yend = Inf,
+            size = 1
+          )
+      }
+      
+      tpdensityfreeA = tpdensityBase("A") + facet_grid(SNRlabel ~ obs_) + xlim(ggplot_build(tp2A)$layout$panel_ranges[[1]]$x.range) + theme(
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        strip.text.x = element_blank()
+      )
+      tpdensityfreeC = tpdensityBase("C") + facet_grid(SNRlabel ~ obs_) + xlim(ggplot_build(tp2C)$layout$panel_ranges[[1]]$x.range) + theme(
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        strip.text.x = element_blank()
+      )
+      tpdensityfreeG = tpdensityBase("G") + facet_grid(SNRlabel ~ obs_) + xlim(ggplot_build(tp2G)$layout$panel_ranges[[1]]$x.range) + theme(
+        legend.position = "none",
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        strip.text.x = element_blank()
+      )
+      tpdensityfreeT = tpdensityBase("T") + facet_grid(SNRlabel ~ obs_) + xlim(ggplot_build(tp2T)$layout$panel_ranges[[1]]$x.range) + theme(
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks.y = element_blank(),
+        strip.text.x = element_blank()
+      )
+      
+      tpDensityYlimits = range(
+        ggplot_build(tpdensityfreeA)$layout$panel_ranges[[1]]$y.range,
+        ggplot_build(tpdensityfreeC)$layout$panel_ranges[[1]]$y.range,
+        ggplot_build(tpdensityfreeG)$layout$panel_ranges[[1]]$y.range,
+        ggplot_build(tpdensityfreeT)$layout$panel_ranges[[1]]$y.range
+      )
+      
+      pdf(NULL)
+      gA <- ggplotGrob(tpdensityfreeA + ylim(tpDensityYlimits))
+      gC <- ggplotGrob(tpdensityfreeC + ylim(tpDensityYlimits))
+      gG <- ggplotGrob(tpdensityfreeG + ylim(tpDensityYlimits))
+      gT <- ggplotGrob(tpdensityfreeT + ylim(tpDensityYlimits))
+      
+      g4free <- cbind(gA, gC, gG, gT, size = "first")
+      
+      gfree <- rbind(g2free, g4free, size = "first")
+      gfree
+    }
     
     # Filter the ZMWs with SNR = 0 and NAs
     errormodeMerge <- errormodeMerge %>% na.omit()
@@ -66,7 +326,7 @@ makeFishbonePlots <-
       
       ci95 <-
         function(var)
-          interp( ~ sd(x) / sqrt(n()) * qt(0.975, n() - 1), x = lazy(var))
+          interp(~ sd(x) / sqrt(n()) * qt(0.975, n() - 1), x = lazy(var))
       mvNams <-
         function(b, moves)
           unlist(lapply(c(moves), function(x)
@@ -83,7 +343,7 @@ makeFishbonePlots <-
         # get the transition moves under the regime of expectedBase:observedBase
         moves <-
           gsub(".[ACGT]$", "", colnames(dplyr::select(
-            df, ends_with(concat(".", b)),-starts_with("SNR")
+            df, ends_with(concat(".", b)), -starts_with("SNR")
           )))
         
         # get the raw move names
@@ -92,7 +352,7 @@ makeFishbonePlots <-
         # prepare the mean- and 95%ci-accumulating functions
         mus <-
           lapply(nms, function(x)
-            interp( ~ mean(y), y = as.name(x)))
+            interp(~ mean(y), y = as.name(x)))
         cis <-
           lapply(nms, function(x)
             eval(interp(ci95(y), y = as.name(x))))
@@ -111,7 +371,7 @@ makeFishbonePlots <-
         suppressWarnings({
           dfStats <- df %>%
             dplyr::select(ZMW, ends_with(concat(".", b))) %>%
-            dplyr::mutate_(snr = interp( ~ cut(x, breaks), x = nam("SNR.", b))) %>%
+            dplyr::mutate_(snr = interp(~ cut(x, breaks), x = nam("SNR.", b))) %>%
             dplyr::select(-starts_with("SNR.")) %>%
             dplyr::group_by(snr) %>%
             dplyr::summarize_(.dots = setNames(obj, nms)) %>%
@@ -147,8 +407,8 @@ makeFishbonePlots <-
       dfErr[[i]] = NA
       for (b in bases) {
         dfErr[[i]] <-
-          rbind(dfErr[[i]], massage(errormodeMerge[errormodeMerge$Condition == readcondition[i], ], b))
-        dfErr[[i]] = dfErr[[i]][c(2:nrow(dfErr[[i]])), ]
+          rbind(dfErr[[i]], massage(errormodeMerge[errormodeMerge$Condition == readcondition[i],], b))
+        dfErr[[i]] = dfErr[[i]][c(2:nrow(dfErr[[i]])),]
       }
       # make sure things are factors and the appropriate levels
       levels(dfErr[[i]]$snr) <-
@@ -186,6 +446,7 @@ makeFishbonePlots <-
         dplyr::mutate(exp_ = exp, obs_ = concat(t(move), " ", obs))
       dfErr_$exp_ <- as.factor(dfErr_$exp_)
       dfErr_$obs_ <- as.factor(dfErr_$obs_)
+      dfErr_$SNRlabel = ""
       
       labelFn <- function(x) {
         sprintf("%0.2f", x)
@@ -195,11 +456,12 @@ makeFishbonePlots <-
       }
       
       df = errormodeMerge
-      dfSNR <- df %>%
+      dfSNRall <- df %>%
         select(Condition, starts_with("SNR.")) %>%
         dplyr::rename_(.dots = setNames(names(.), gsub("SNR.", "", names(.)))) %>%
         melt(id.vars = c("Condition"),
-             variable.name = "obs_") %>%
+             variable.name = "obs_") 
+      dfSNR <- dfSNRall %>%
         group_by(Condition, obs_) %>%
         summarise(value = mean(value))
       
@@ -213,51 +475,19 @@ makeFishbonePlots <-
       ratio <- xlimits[[2]] / ylimits[[2]] / golden_ratio
       dfIns <- dfErr_ %>% filter(move == "Insert")
       breaks <- breaksFn(ylimits)
-      tp = ggplot(dfIns,
-                  aes(
-                    x = as.numeric(as.character(snr)),
-                    y = mu,
-                    group = Condition,
-                    colour = Condition
-                  )) +
-        geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
-        geom_errorbar(
-          aes(
-            ymin = mu - ci,
-            ymax = mu + ci,
-            colour = Condition
-          ),
-          width = 0.1,
-          position = pd
-        ) +
-        geom_vline(aes(xintercept = value, colour = Condition),
-                   dfSNR %>% addMove("Insert")) +
-        labs(x = "SNR", y = "Error Rate") +
-        coord_fixed(ratio = ratio) +
-        plTheme + clScale + themeTilt +
-        annotate(
-          "segment",
-          x = -Inf,
-          xend = Inf,
-          y = -Inf,
-          yend = -Inf,
-          size = 1
-        ) +
-        annotate(
-          "segment",
-          x = -Inf,
-          xend = -Inf,
-          y = -Inf,
-          yend = Inf,
-          size = 1
-        )
-      tp1 = tp + xlim(xlimits) +
-        scale_y_continuous(limits = ylimits, breaks = breaks) + facet_grid(exp_ ~ obs_)
+      
+      dfSNR_ = dfSNR %>% addMove("Insert")
+      dfSNRall$SNRlabel = ""
+      dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
+      dfSNRall_$obs_ = paste("Insert", dfSNRall_$obs)
+      gInsFix = generateFixAxisPlot(dfIns, dfSNR_, dfSNRall_)
+      gInsFree = generateFreeAxisPlot(dfIns, dfSNR_, "Insert", dfSNRall_)
+      
       report$ggsave(
         "fishboneplot_insertion.png",
-        tp1,
+        gInsFix,
         width = 2000 / dpi,
-        height = 1200 / dpi,
+        height = 1600 / dpi,
         units = "in",
         id = "fishboneplot_insertion",
         title = "FishbonePlot - Insertion",
@@ -265,12 +495,11 @@ makeFishbonePlots <-
         tags = c("fishbone", "hmm", "errormode", "insertion"),
         uid = "0010001"
       )
-      tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
       report$ggsave(
         "fishboneplot_insertion_enlarged.png",
-        tp2,
+        gInsFree,
         width = 2000 / dpi,
-        height = 1200 / dpi,
+        height = 1600 / dpi,
         units = "in",
         id = "fishboneplot_insertion_enlarged",
         title = "FishbonePlot - Insertion (Enlarged)",
@@ -288,50 +517,15 @@ makeFishbonePlots <-
       
       dfMM <- dfErr_ %>% filter(move == "Match" & obs != exp)
       breaks <- breaksFn(ylimits)
-      tp = ggplot(dfMM,
-                  aes(
-                    x = as.numeric(as.character(snr)),
-                    y = mu,
-                    group = Condition,
-                    colour = Condition
-                  )) +
-        geom_point(aes(colour = Condition)) + geom_line(aes(colour = Condition)) +
-        geom_errorbar(
-          aes(
-            ymin = mu - ci,
-            ymax = mu + ci,
-            colour = Condition
-          ),
-          width = 0.1,
-          position = pd
-        ) +
-        geom_vline(aes(xintercept = value, colour = Condition), dfSNR_) +
-        labs(x = "SNR", y = "Error Rate") +
-        coord_fixed(ratio = ratio) +
-        plTheme + clScale + themeTilt +
-        annotate(
-          "segment",
-          x = -Inf,
-          xend = Inf,
-          y = -Inf,
-          yend = -Inf,
-          size = 1
-        ) +
-        annotate(
-          "segment",
-          x = -Inf,
-          xend = -Inf,
-          y = -Inf,
-          yend = Inf,
-          size = 1
-        )
-      tp1 = tp + facet_grid(exp_ ~ obs_) +
-        scale_y_continuous(limits = ylimits, breaks = breaks) + xlim(xlimits)
+      dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
+      dfSNRall_$obs_ = paste("Mismatch", dfSNRall_$obs)
+      gMMFix = generateFixAxisPlot(dfMM, dfSNR_, dfSNRall_)
+      gMMFree = generateFreeAxisPlot(dfMM, dfSNR_, "Mismatch", dfSNRall_)
       report$ggsave(
         "fishboneplot_mismatch.png",
-        tp1,
+        gMMFix,
         width = 2000 / dpi,
-        height = 1200 / dpi,
+        height = 1600 / dpi,
         units = "in",
         id = "fishboneplot_mismatch",
         title = "FishbonePlot - MisMatch",
@@ -339,12 +533,11 @@ makeFishbonePlots <-
         tags = c("fishbone", "hmm", "errormode", "mismatch"),
         uid = "0010003"
       )
-      tp2 = tp + facet_grid(exp_ ~ obs_, scales = "free")
       report$ggsave(
         "fishboneplot_mismatch_enlarged.png",
-        tp2,
+        gMMFree,
         width = 2000 / dpi,
-        height = 1200 / dpi,
+        height = 1600 / dpi,
         units = "in",
         id = "fishboneplot_mismatch_enlarged",
         title = "FishbonePlot - MisMatch (Enlarged)",
@@ -446,7 +639,8 @@ makeFishbonePlots <-
       dfMerge <-
         dfErr_ %>% filter(move == "Dark" |
                             move == "Merge" |
-                            move == "Insert" | (move == "Match" & obs != exp))
+                            move == "Insert" |
+                            (move == "Match" & obs != exp))
       dfMerge$obs_ = as.vector(dfMerge$obs_)
       dfMerge$obs_[dfMerge$move == "Dark"] = "Dark"
       dfMerge$obs_[dfMerge$move == "Merge"] = "Merge"
@@ -546,7 +740,8 @@ makeReport <- function(report) {
     warning("The Errormode CSV file is empty!")
   } else {
     # Make Fishbone Plots
-    makeFishbonePlots(errormodeMerge, report)
+    try(makeFishbonePlots(errormodeMerge, report), silent = TRUE)
+    0
   }
   
   # Save the report object for later debugging

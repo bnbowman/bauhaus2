@@ -19,6 +19,7 @@ suppressPackageStartupMessages({
   library(logging)
   library(jsonlite)
   library(nnet)  ## Need this in order for coef(...$cfit) to work, should be fixed by moving into unitem
+  library(GenomicRanges)  ## Required for masking
 })
 
 ## FIXME: make a real package
@@ -29,6 +30,7 @@ source(file.path(myDir, "Bauhaus2.R"))
 use8Contexts = F
 predictPw = T
 nOutcome = 12
+maskMargin = 1000
 
 
 ## Encode an outcome variable for the 'Emmission' in the HMM model
@@ -218,6 +220,47 @@ plotTransitions <- function(fit, report) {
   }
 }
 
+masker <- function(maskfile) {
+  loginfo("loading masked regions from %s", maskfile)
+
+  df.mask <- read.csv(
+    file=maskfile,
+    header=FALSE,
+    sep="\t",
+    col.names=c("seqname", "source", "feature", "start", "end", "score", "strand", "frame", "attributes"),
+    colClasses=c("character", "character", "character", "integer", "integer", "character", "character", "character", "character"))
+
+  # add left and right padding to increase safety margin
+  createStartMargin <- function(x) {
+    sapply(x, function(y) max(y - maskMargin, 1))
+  }
+  createEndMargin <- function(x) {
+    x + maskMargin
+  }
+
+  df.mask["start"] <- lapply(df.mask["start"], createStartMargin)
+  df.mask["end"] <- lapply(df.mask["end"], createEndMargin)
+
+  maskedRegions <- makeGRangesFromDataFrame(df.mask)
+
+  maskOutData <- function(x) {
+    maskWrapper <- function(y) {
+      read <- GRanges(
+        y["ref"],
+        IRanges(start = as.numeric(y["tstart"]), end = as.numeric(y["tend"])),
+        strand="*")
+
+      # if there is an overlap with a masked region, discard the read
+      results <- findOverlaps(maskedRegions, read, type="any", select="all", ignore.strand=TRUE)
+      hits <- queryHits(results)
+
+      return (length(hits) == 0)
+    }
+    result <- apply(x, 1, maskWrapper)
+    return(result)
+  }
+}
+
 
 ## Do the training, hooking everything up
 doTrain <- function(args) {
@@ -233,7 +276,23 @@ doTrain <- function(args) {
     alnFile = alnFiles[[i]]
     loginfo("Loading samples from %s", alnFile)
     pbi = indexes[[i]]
-    sampled_data = pbi[sample(nrow(pbi), min(nrow(pbi), args$zmwsPerBam)), ]
+
+    maskfile <- paste(alnFile, ".mask.gff", sep = "")
+    if (file.exists(maskfile)) {
+      loginfo("Filtering masked data from %s", alnFile)
+      maskfilter <- masker(maskfile)
+      valid_idx <- which(maskfilter(pbi))
+
+      loginfo("Input reads for %s: %d", alnFile, nrow(pbi))
+      loginfo("Number of reads after filtering for %s: %d (%.1f%%)", alnFile, length(valid_idx), length(valid_idx) / nrow(pbi) * 100)
+    }
+    else {
+      loginfo("Sampling from complete dataset")
+      valid_idx <- 1:nrow(pbi)
+    }
+
+    sampled_idx <- sample(valid_idx, min(length(valid_idx), args$zmwsPerBam))
+    sampled_data <- pbi[sampled_idx,]
     large_alns = loadAlnsFromIndex(sampled_data, paste(alnFile, ".ref.fa", sep = ""))
     f_large_alns = Filter(function(x) nrow(x) > args$targetAlnLength, large_alns)
     small_alns = lapply(f_large_alns, function(x) trimAlignment(x, trimToLength = args$targetAlnLength))

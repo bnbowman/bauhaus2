@@ -3,6 +3,7 @@
   ArrowTraining
   BarcodingQC
   CCSMappingReports
+  Cas9Diagnostics
   Cas9Yield
   ConstantArrow
   ConstantArrowForShortMovie
@@ -11,6 +12,7 @@
   Heatmaps
   IsoSeqRC0
   MappingReports
+  MaskedArrowTraining
   PpaBurstMetrics
   PrimaryRefarm
   SV-FY1679
