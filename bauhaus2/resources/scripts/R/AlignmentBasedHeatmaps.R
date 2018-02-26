@@ -211,11 +211,10 @@ gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
   fastaname = getReferencePath( reference )
   refs = readDNAStringSet( fastaname )
   data = loadPBI( alnxml )
-  if ( nrow( data ) < 5 )
-  {
+  if ( nrow( data ) < 5 ) {
     loginfo( "[ERROR]: Too few reads for gcVcoverage" )
-    return( 0 )
-  }
+    #return( 0 )
+  }else{
   s = split( 1:nrow( data ), as.character( data$ref ) )
   
   for ( refName in names( s ) )
@@ -227,6 +226,7 @@ gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
     singleRef( report, tmp, ref, paste( label, refName, sep = "_" ), winsize )
   }
   1
+  }
 }
 
 #---------------------------------------------------------------
