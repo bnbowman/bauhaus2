@@ -1,4 +1,4 @@
-from bauhaus2.experiment import Cas9ConditionTable
+from bauhaus2.experiment import ResequencingConditionTable, Cas9ConditionTable
 from bauhaus2 import Workflow
 
 from .subreads import subreadsPlan
@@ -30,4 +30,17 @@ class Cas9DiagnosticWorkflow(Workflow):
                  "cas9-restriction-sites.snake",
                  "cas9-loading.snake",
                  "cas9-mapping.snake"] + \
+                subreadsPlan(self.conditionTable, self.cliArgs)
+
+class Cas9RepeatAnalysisWorkflow(Workflow):
+    """
+    Input subreads.bam file, analyze with Repeat-Analysis and visualize results
+    """
+    WORKFLOW_NAME        = "Cas9RepeatAnalysis"
+    CONDITION_TABLE_TYPE = ResequencingConditionTable
+
+    def plan(self):
+        return [ "cas9-repeat-analysis-plots.snake",
+                 "cas9-repeat-analysis.snake",
+                 "collect-references.snake"] + \
                 subreadsPlan(self.conditionTable, self.cliArgs)
