@@ -18,5 +18,7 @@ class ConstantArrowForShortMovieWorkflow(Workflow):
                              "Python/GetZiaTags.py")
 
     def plan(self):
-        return ["constant-arrow.snake", "constant-arrow-short-movie.snake", "uid-tag.snake"] + \
+        return ["constant-arrow.snake",
+                "constant-arrow-short-movie.snake",
+                "uid-tag.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)

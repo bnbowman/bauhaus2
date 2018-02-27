@@ -4,7 +4,7 @@
 
 mapped_chunks = \
     { c : expand("conditions/{condition}/mapped/chunks/mapped.chunk{chunkNo}.alignmentset.xml",
-                 condition =c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
+                 condition=c, chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
       for c in ct.conditions }
 
 gathered_mapped_chunks = \

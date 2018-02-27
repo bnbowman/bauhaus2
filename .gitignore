@@ -1,9 +1,0 @@
-*~
-*#
-.snakemake
-conditions
-__pycache__
-dist
-*.egg-info
-*.pyc
-.DS_Store

@@ -13,6 +13,7 @@
   IsoSeqRC0
   MappingReports
   MaskedArrowTraining
+  PpaBurstMetrics
   PrimaryRefarm
   SV-FY1679
   SV-HG00733
