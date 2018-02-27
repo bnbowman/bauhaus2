@@ -279,7 +279,7 @@ main <- function()
     "reports/ReadPlots/report.json",
     "All ZMW Cauculated Matrices"
   )
-  makeReport(report)
+  try(makeReport(report), silent = TRUE)
   jsonFile = "reports/ReadPlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
   rewriteJSON(jsonFile, uidTagCSV)
