@@ -10,17 +10,17 @@ rule collect_yield_report:
 # -- Worker rules ---
         
 rule cas9_yield_diagnostic_report_one_condition:
-    input: indexedbam="conditions/{condition}/mapped/OUTPUT_BAM.pbi",
+    input: indexed_bam="conditions/{condition}/mapped/OUTPUT_BAM.pbi",
     output:
-        reportjson="reports/Cas9YieldDiagnosticPlots_{condition}/report.json",
-        reportdir="reports/Cas9YieldDiagnosticPlots_{condition}"
+        report_json="reports/Cas9YieldDiagnosticPlots_{condition}/report.json",
+        report_dir="reports/Cas9YieldDiagnosticPlots_{condition}"
     params:
-        conditionname="{condition}"
+        condition_name="{condition}"
     shell:
         """
         module load gcc/6.4.0
         module load smstools
-        cd {output.reportdir}
-        NoAmpYieldDiagnostic {params.conditionname} ../../{input.indexedbam}
+        cd {output.report_dir}
+        NoAmpYieldDiagnostic {params.condition_name} ../../{input.indexed_bam}
         cd ../..
         """

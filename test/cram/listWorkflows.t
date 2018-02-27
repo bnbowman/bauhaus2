@@ -4,6 +4,7 @@
   BarcodingQC
   CCSMappingReports
   Cas9Diagnostics
+  Cas9RepeatAnalysis
   Cas9Yield
   ConstantArrow
   ConstantArrowForShortMovie

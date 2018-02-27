@@ -1,0 +1,34 @@
+
+# ---------------------------------------------------------------------------------------------------
+# cas9-repeat-analysis-plots.snake
+
+from bauhaus2.runtime import ct
+
+repeat_analysis_plots = \
+    { c : "reports/Cas9RepeatAnalysisPlots_{condition}/report.json".format(condition=c)
+      for c in ct.conditions }
+
+# -- Target --
+
+rule collect_repeat_analysis_plots:
+    input: repeat_analysis_plots.values()
+
+# -- Worker rules ---
+
+rule cas9_repeat_analysis_plots_one_condition:
+    input:
+        ra_fastq="conditions/{condition}/repeat_analysis/repeat_analysis.fastq"
+    output:
+        report_dir="reports/Cas9RepeatAnalysisPlots_{condition}",
+        report_json="reports/Cas9RepeatAnalysisPlots_{condition}/report.json"
+    params:
+        condition="{condition}"
+    shell:
+        """
+        module load gcc/6.4.0
+        module load smstools/mainline
+        cd {output.report_dir}
+        RepeatAnalysisPlots ../../{input.ra_fastq} ../../conditions/{params.condition}/repeat_analysis/repeat_analysis_zmws*csv
+        cd ../..
+        """
+

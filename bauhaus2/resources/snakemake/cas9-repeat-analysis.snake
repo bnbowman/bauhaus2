@@ -1,0 +1,39 @@
+
+# ---------------------------------------------------------------------------------------------------
+# cas9-repeat-analysis.snake
+
+from bauhaus2.runtime import ct
+
+repeat_analysis_results = \
+    { c : "conditions/{condition}/repeat_analysis/repeat_analysis.fastq".format(condition=c)
+      for c in ct.conditions }
+
+repeat_analysis_logs = \
+    { c : "conditions/{condition}/repeat_analysis/repeat_analysis.log".format(condition=c)
+      for c in ct.conditions }
+
+# -- Target --
+
+rule collect_repeat_analysis_results:
+    input: repeat_analysis_results.values()
+
+# -- Worker rules ---
+        
+rule cas9_repeat_analysis_one_condition:
+    input: 
+        local_subreadset="conditions/{condition}/subreads/input.subreadset.xml",
+        reference="conditions/{condition}/reference.fasta"
+    output:
+        log="conditions/{condition}/repeat_analysis/repeat_analysis.log",
+        fastq="conditions/{condition}/repeat_analysis/repeat_analysis.fastq"
+    params:
+        subreads="conditions/{condition}/repeat_analysis/repeat_analysis_subreads",
+        zmws="conditions/{condition}/repeat_analysis/repeat_analysis_zmws",
+        mapping="conditions/{condition}/repeat_analysis/repeat_analysis_mapping",
+        threads=8
+    shell:
+        """
+        module load gcc/6.4.0
+        module load repeat-analysis/0.10.0
+        ra {input.reference} {input.local_subreadset} -n {params.threads} -vv --logFile {output.log} --sequenceFile {output.fastq} --subreadScorePrefix {params.subreads} --zmwScorePrefix {params.zmws} --subreadMappingPrefix {params.mapping}
+        """
