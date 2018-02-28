@@ -7,7 +7,7 @@ until we have a better plan.
 
 Generate heatmaps workflow, starting from subreads.
 
-  $ bauhaus2 --no-smrtlink --noGrid generate -w Cas9Yield -t ${BH_ROOT}test/data/two-tiny-movies-cas9.csv -o cas9
+  $ bauhaus2 --no-smrtlink --noGrid generate -w Cas9Diagnostics -t ${BH_ROOT}test/data/two-tiny-movies-cas9.csv -o cas9
   Validation and input resolution succeeded.
   Generated runnable workflow to "cas9"
 
@@ -33,6 +33,30 @@ Generate heatmaps workflow, starting from subreads.
   |-- log
   |-- prefix.sh
   |-- reports
+  |   |-- Cas9RestrictionSitePlots_MovieA
+  |   |   |-- moviea.cut_sites.csv
+  |   |   |-- moviea_re_counts.png
+  |   |   |-- moviea_re_fractions.png
+  |   |   `-- report.json
+  |   |-- Cas9RestrictionSitePlots_MovieB
+  |   |   |-- movieb.cut_sites.csv
+  |   |   |-- movieb_re_counts.png
+  |   |   |-- movieb_re_fractions.png
+  |   |   `-- report.json
+  |   |-- Cas9SequelLoadingPlots_MovieA
+  |   |   |-- moviea.loading.csv
+  |   |   |-- moviea_adapter_ontarget.png
+  |   |   |-- moviea_adapter_pairs.png
+  |   |   |-- moviea_insert_sizes.png
+  |   |   |-- moviea_internal_ecoR1.png
+  |   |   `-- report.json
+  |   |-- Cas9SequelLoadingPlots_MovieB
+  |   |   |-- movieb.loading.csv
+  |   |   |-- movieb_adapter_ontarget.png
+  |   |   |-- movieb_adapter_pairs.png
+  |   |   |-- movieb_insert_sizes.png
+  |   |   |-- movieb_internal_ecoR1.png
+  |   |   `-- report.json
   |   |-- Cas9YieldDiagnosticPlots_MovieA
   |   |   |-- moviea_subread_coverage.png
   |   |   |-- moviea_target_table.png
@@ -49,5 +73,5 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  13 directories, 20 files
+  17 directories, 40 files
  
