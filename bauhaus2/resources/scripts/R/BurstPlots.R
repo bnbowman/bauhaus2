@@ -577,17 +577,6 @@ makePairWised <- function(report, cd_H) {
     uid = "0080010"
   )
   report$ggsave(
-    "Density_over_component.png",
-    tp1,
-    width = plotheight,
-    height = plotwidth,
-    id = "Density over Component (inverse bases)",
-    title = "Density over Component (inverse bases)",
-    caption = "Density over Component (inverse bases)",
-    tags = c("basic", "burstplots", "barplot", "density"),
-    uid = "0080010"
-  )
-  report$ggsave(
     "PairwiseDDensity.png",
     tp2,
     width = plotheight,
