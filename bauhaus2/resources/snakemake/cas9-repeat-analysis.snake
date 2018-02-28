@@ -34,6 +34,6 @@ rule cas9_repeat_analysis_one_condition:
     shell:
         """
         module load gcc/6.4.0
-        module load repeat-analysis/0.10.0
+        module load repeat-analysis/0.11.0
         ra {input.reference} {input.local_subreadset} -n {params.threads} -vv --logFile {output.log} --sequenceFile {output.fastq} --subreadScorePrefix {params.subreads} --zmwScorePrefix {params.zmws} --subreadMappingPrefix {params.mapping}
         """
