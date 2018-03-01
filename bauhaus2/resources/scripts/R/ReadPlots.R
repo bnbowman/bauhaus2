@@ -233,36 +233,55 @@ makeReport <- function(report) {
   clScale <<- getPBColorScale(n)
   
   # Load the read error rates for each dataset
-  dfs = lapply(1:nrow(conditions), function(i) {
-    alnFile = as.character(conditions$MappedSubreads[i])
-    fasta = as.character(conditions$Reference[i])
-    loginfo(paste("Loading alignment set:", alnFile))
-    pbbamr::getReadReport(datasetname = alnFile, indexedFastaName = fasta)
-  })
-  
+  dfs = list()
+  generateData <- function(conditions) {
+    lapply(1:nrow(conditions), function(i) {
+      alnFile = as.character(conditions$MappedSubreads[i])
+      fasta = as.character(conditions$Reference[i])
+      loginfo(paste("Loading alignment set:", alnFile))
+      try(pbbamr::getReadReport(datasetname = alnFile, indexedFastaName = fasta), silent = TRUE)
+    }
+    )
+  }
+  dfs = try(generateData(conditions), silent = TRUE)
+  for (i in 1:length(dfs)) {
+    if (class(dfs[[i]]) == "try-error") {
+      warning(dfs[[i]])
+    }
+  }
   loginfo("Finished loading aligned read data.")
+
   # Now combine into one large data frame
   # TODO: I hate using indexing here, perhaps another solution?
-  cd = lapply(1:length(dfs[[1]]), function(i) {
-    mats = lapply(dfs, function(d)
-      d[[i]])
-    combineConditions(mats, as.character(conditions$Condition))
-  })
-  names(cd) <- names(dfs[[1]])
+  combineData <- function(dfs) {
+    cd = lapply(1:length(dfs[[1]]), function(i) {
+      mats = lapply(dfs, function(d)
+        d[[i]])
+      combineConditions(mats, as.character(conditions$Condition))
+    })
+    names(cd) <- names(dfs[[1]])
+    cd
+  }
+  cd = try(combineData(dfs), silent = TRUE)
   
-  # Convert the integers in cd to numeric values to get rid of "integer overflow" caused by the integer maximum limit in R
-  cd$mismatches$cnts = as.numeric(cd$mismatches$cnts)
-  cd$gapSizes$refCnts = as.numeric(cd$gapSizes$refCnts)
-  cd$gapSizes$readCnts = as.numeric(cd$gapSizes$readCnts)
-  cd$indelCnts$delFromRefCnt = as.numeric(cd$indelCnts$delFromRefCnt)
-  cd$indelCnts$insertIntoReadCnt = as.numeric(cd$indelCnts$insertIntoReadCnt)
-  cd$clipping$cnts = as.numeric(cd$clipping$cnts)
-  
-  # Make Plots
-  makeMismatchPlots(report, cd)
-  makeGapSizePlots(report, cd)
-  makeIndelPlots(report, cd)
-  makeClippingPlot(report, cd)
+  # If the data is corrupted, cd will not be data frame
+  if (!class(cd) == "try-error") {
+    # Convert the integers in cd to numeric values to get rid of "integer overflow" caused by the integer maximum limit in R
+    cd$mismatches$cnts = as.numeric(cd$mismatches$cnts)
+    cd$gapSizes$refCnts = as.numeric(cd$gapSizes$refCnts)
+    cd$gapSizes$readCnts = as.numeric(cd$gapSizes$readCnts)
+    cd$indelCnts$delFromRefCnt = as.numeric(cd$indelCnts$delFromRefCnt)
+    cd$indelCnts$insertIntoReadCnt = as.numeric(cd$indelCnts$insertIntoReadCnt)
+    cd$clipping$cnts = as.numeric(cd$clipping$cnts)  
+    
+    # Make Plots
+    makeMismatchPlots(report, cd)
+    makeGapSizePlots(report, cd)
+    makeIndelPlots(report, cd)
+    makeClippingPlot(report, cd)
+  } else {
+    warning("The input data is corrupted.")
+  }
   
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
@@ -279,7 +298,7 @@ main <- function()
     "reports/ReadPlots/report.json",
     "All ZMW Cauculated Matrices"
   )
-  try(makeReport(report), silent = TRUE)
+  makeReport(report)
   jsonFile = "reports/ReadPlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
   rewriteJSON(jsonFile, uidTagCSV)
