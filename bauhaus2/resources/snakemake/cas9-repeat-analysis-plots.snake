@@ -28,7 +28,7 @@ rule cas9_repeat_analysis_plots_one_condition:
         module load gcc/6.4.0
         module load smstools/mainline
         cd {output.report_dir}
-        RepeatAnalysisPlots ../../{input.ra_fastq} ../../conditions/{params.condition}/repeat_analysis/repeat_analysis_zmws*csv
+        RepeatAnalysisPlots {params.condition} ../../{input.ra_fastq} ../../conditions/{params.condition}/repeat_analysis/repeat_analysis_zmws*csv
         cd ../..
         """
 
