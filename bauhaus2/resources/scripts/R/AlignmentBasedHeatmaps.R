@@ -9,7 +9,6 @@ require(pbbamr)
 require(pbcommandR)
 require(Biostrings)
 
-
 source("./scripts/R/Bauhaus2.R")
 
 #' Use the following aspect ratio, width, and height for all heatmaps
@@ -17,8 +16,6 @@ source("./scripts/R/Bauhaus2.R")
 ASP_RATIO = 0.5
 plotwidth = 7.2
 plotheight = 4.2
-
-
 
 #---------------------------------------------------------------
 # Functions for plotting coverage and subread length vs. GC content
@@ -31,30 +28,34 @@ plotheight = 4.2
 #' @export
 #' @examples
 
-fillInMissingPositions = function( k, N )
+fillInMissingPositions = function(k, N)
 {
   # n = complete vector of coverages:
-  n = rep( NA, N )
-  n[ as.numeric( names( k ) ) ] <- k
+  n = rep(NA, N)
+  n[as.numeric(names(k))] <- k
   
   # Fill in any missing reference positions with last non-missing value:
-  w = !is.na( n )
-  if ( sum( w ) > 0 )
+  w = !is.na(n)
+  if (sum(w) > 0)
   {
-    w = which( w )[1]
+    w = which(w)[1]
     prev = n[w]
-    if ( w > 1 ) { n[1:(w-1)] <- prev }
-    bool = is.na( n )
-    for ( i in (w+1):N ) 
-    {  
-      if ( bool[i] ) { n[i] <- prev }
-      else { prev <- n[i] } 
+    if (w > 1) {
+      n[1:(w - 1)] <- prev
+    }
+    bool = is.na(n)
+    for (i in (w + 1):N)
+    {
+      if (bool[i]) {
+        n[i] <- prev
+      }
+      else {
+        prev <- n[i]
+      }
     }
   }
   n
 }
-
-
 
 #' Return a vector the length of the reference genome with the mean unaligned subread length at each position
 #'
@@ -63,25 +64,22 @@ fillInMissingPositions = function( k, N )
 #' @export
 #' @examples
 
-getCovAndReadLen = function( data, N )
-{ 
+getCovAndReadLen = function(data, N)
+{
   data$len = data$qend - data$qstart
   data$tstart = data$tstart + 1
-  data$tend = data$tend + 1 
-  n = nrow( data )
-  z = c( data$tstart, data$tend )
-  label1 = c( data$len, -data$len )
-  label0 = c( rep( 1, n ), rep( -1, n ) )
-  o = order( z )
-  k1 = cumsum( vapply( split( label1[o], z[o] ), sum, 0 ) )
-  k0 = cumsum( vapply( split( label0[o], z[o] ), sum, 0 ) )
-  coverage = fillInMissingPositions( k0, N )
-  readlen  = fillInMissingPositions( k1 / k0, N )
-  cbind( coverage, readlen )
+  data$tend = data$tend + 1
+  n = nrow(data)
+  z = c(data$tstart, data$tend)
+  label1 = c(data$len,-data$len)
+  label0 = c(rep(1, n), rep(-1, n))
+  o = order(z)
+  k1 = cumsum(vapply(split(label1[o], z[o]), sum, 0))
+  k0 = cumsum(vapply(split(label0[o], z[o]), sum, 0))
+  coverage = fillInMissingPositions(k0, N)
+  readlen  = fillInMissingPositions(k1 / k0, N)
+  cbind(coverage, readlen)
 }
-
-
-
 
 #' Return data frame with coverage vs. gc content at each template position in reference
 #'
@@ -91,45 +89,54 @@ getCovAndReadLen = function( data, N )
 #' @export
 #' @examples
 
-getGCandCov = function( covreadlen, ref, winsize, half = floor( winsize / 2.0 ), N = length( ref ) )
+getGCandCov = function(covreadlen,
+                       ref,
+                       winsize,
+                       half = floor(winsize / 2.0),
+                       N = length(ref))
 {
-  y = strsplit( as.character( ref ), "" )[[1]]
-  d = diff( cumsum( y %in% c("G", "C") ), winsize ) / winsize
-  res = data.frame( pos = (half + 1):(N - half), GC_Content = d )
-  res$Coverage = covreadlen[ res$pos, 1 ]
-  res$Subread_Length = covreadlen[ res$pos, 2 ]
-  subset( res, !is.na( Coverage ) & !is.na( GC_Content ) )
+  y = strsplit(as.character(ref), "")[[1]]
+  d = diff(cumsum(y %in% c("G", "C")), winsize) / winsize
+  res = data.frame(pos = (half + 1):(N - half), GC_Content = d)
+  res$Coverage = covreadlen[res$pos, 1]
+  res$Subread_Length = covreadlen[res$pos, 2]
+  subset(res,!is.na(Coverage) & !is.na(GC_Content))
 }
 
-
-
-
-#' Plot normalized coverage or normalized readlength vs. GC-content 
+#' Plot normalized coverage or normalized readlength vs. GC-content
 #'
 #' @param p = data frame output of \code{\link{{getGCandCov}}
 #' @param stat = string, either "Coverage", or "SubreadLength" -- columns of p
 #' @param label = string title for plots
 #' @export
 
-boxplotVsGC = function( report, p, name, label, uid )
+boxplotVsGC = function(report, p, name, label, uid)
 {
-  r = range( p$GC_Content, na.rm = TRUE )
-  p$nSites = cut( p$GC_Content, breaks = seq( r[1], r[2], 0.05 ) )
-  p = subset( p, !is.na( nSites ) )
-  s = split( 1:nrow( p ), p$nSites )
-  n = vapply( s, length, 0 )
-  p$nSites = factor( n[ match( p$nSites, names( s ) ) ], levels = n )
+  r = range(p$GC_Content, na.rm = TRUE)
+  p$nSites = cut(p$GC_Content, breaks = seq(r[1], r[2], 0.05))
+  p = subset(p,!is.na(nSites))
+  s = split(1:nrow(p), p$nSites)
+  n = vapply(s, length, 0)
+  p$nSites = factor(n[match(p$nSites, names(s))], levels = n)
   
-  m = median( p[,name], na.rm = TRUE )
-  p[,name] = p[,name] / m
-  loginfo( paste( "m = ", m ) )
-  myplot = ( ggplot( p, aes( x = p[,"GC_Content"], y = p[,name], fill = p[,"nSites"] ) ) +
-               geom_boxplot() +
-               geom_hline( yintercept = 1.0 ) + 
-               labs( x = "GC Content", y = paste( name, "/ Median" ), title = paste( label, "\n Median", name, ":", format( m, digits = 4 ) ) ) )
+  m = median(p[, name], na.rm = TRUE)
+  p[, name] = p[, name] / m
+  loginfo(paste("m = ", m))
+  myplot = (
+    ggplot(p, aes(
+      x = p[, "GC_Content"], y = p[, name], fill = p[, "nSites"]
+    )) +
+      geom_boxplot() +
+      geom_hline(yintercept = 1.0) +
+      labs(
+        x = "GC Content",
+        y = paste(name, "/ Median"),
+        title = paste(label, "\n Median", name, ":", format(m, digits = 4))
+      )
+  )
   
-  tag = paste(label,name, "vs_GC_Content", sep = "_" )
-  pngfile = paste(tag, "png", sep = "." )
+  tag = paste(label, name, "vs_GC_Content", sep = "_")
+  pngfile = paste(tag, "png", sep = ".")
   report$ggsave(
     pngfile,
     myplot,
@@ -138,11 +145,10 @@ boxplotVsGC = function( report, p, name, label, uid )
     id = tag,
     title = tag,
     caption = tag,
-    tags = c("gc", "content", name, label ),
+    tags = c("gc", "content", name, label),
     uid = uid
   )
 }
-
 
 #' Generate line plot with reference position on the x-axis
 #'
@@ -151,13 +157,13 @@ boxplotVsGC = function( report, p, name, label, uid )
 #' @param name = string name of p column: "GC_Content", "Coverage", or "Subread_Length"
 #' @export
 
-plotVrefPosition = function( report, p, label, name, uid )
+plotVrefPosition = function(report, p, label, name, uid)
 {
-  myplot = ( ggplot( data = p, aes( x = pos, y = p[,name] ) ) +
-               geom_line( ) +
-               labs( x = "Ref. Position", y = name, title = label ) )
-  tag = paste(label,name, "vs_tpl_position", sep = "_" )
-  pngfile = paste( tag, "png", sep = "." )
+  myplot = (ggplot(data = p, aes(x = pos, y = p[, name])) +
+              geom_line() +
+              labs(x = "Ref. Position", y = name, title = label))
+  tag = paste(label, name, "vs_tpl_position", sep = "_")
+  pngfile = paste(tag, "png", sep = ".")
   report$ggsave(
     pngfile,
     myplot,
@@ -166,12 +172,10 @@ plotVrefPosition = function( report, p, label, name, uid )
     id = tag,
     title = tag,
     caption = tag,
-    tags = c( "position", "gc", "coverage", "content", name, label, tag ),
+    tags = c("position", "gc", "coverage", "content", name, label, tag),
     uid = uid
   )
 }
-
-
 
 #' Plot coverage vs. gc content for a single reference
 #'
@@ -180,20 +184,16 @@ plotVrefPosition = function( report, p, label, name, uid )
 #' @param label = string title for plots
 #' @param winsize = window size for computing GC content
 
-singleRef = function( report, data, ref, label, winsize )
+singleRef = function(report, data, ref, label, winsize)
 {
-  coverage = getCovAndReadLen( data, length( ref ) )
-  p = getGCandCov( coverage, ref, winsize )
-  plotVrefPosition( report, p, label, "GC_Content", uid = "0075000" )
-  plotVrefPosition( report, p, label, "Coverage", uid = "0075001" )
-  plotVrefPosition( report, p, label, "Subread_Length", uid = "0075002" )
-  boxplotVsGC( report, p, "Coverage", label, uid = "0075003" )
-  boxplotVsGC( report, p, "Subread_Length", label, uid = "0075004" )
+  coverage = getCovAndReadLen(data, length(ref))
+  p = getGCandCov(coverage, ref, winsize)
+  plotVrefPosition(report, p, label, "GC_Content", uid = "0075000")
+  plotVrefPosition(report, p, label, "Coverage", uid = "0075001")
+  plotVrefPosition(report, p, label, "Subread_Length", uid = "0075002")
+  boxplotVsGC(report, p, "Coverage", label, uid = "0075003")
+  boxplotVsGC(report, p, "Subread_Length", label, uid = "0075004")
 }
-
-
-
-
 
 #' Main function called by makeReport
 #' Load aligned bam pbi files.
@@ -201,40 +201,39 @@ singleRef = function( report, data, ref, label, winsize )
 #' For each reference in fasta, call \link{singleRef} above
 #'
 #' @param alndir = smrtlink alignment directory
-#' @param reffasta = path to reference fasta file 
+#' @param reffasta = path to reference fasta file
 #' @param label = string title for plots
 #' @param winsize = window size for computing GC content
 #' @export
 
-gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
+gcVcoverage = function(report, alnxml, reference, label, winsize = 100)
 {
-  fastaname = getReferencePath( reference )
-  refs = readDNAStringSet( fastaname )
-  data = loadPBI( alnxml )
-  if ( nrow( data ) < 5 ) {
-    loginfo( "[ERROR]: Too few reads for gcVcoverage" )
+  fastaname = getReferencePath(reference)
+  refs = readDNAStringSet(fastaname)
+  data = loadPBI(alnxml)
+  if (nrow(data) < 5) {
+    loginfo("[ERROR]: Too few reads for gcVcoverage")
     #return( 0 )
-  }else{
-  s = split( 1:nrow( data ), as.character( data$ref ) )
-  
-  for ( refName in names( s ) )
-  {
-    loginfo( paste( "Draw plots for reference:", refName ) )
-    tmp = subset( data, ref == refName )
-    if ( nrow( tmp ) < 100 ) { return( 0 ) }
-    ref = refs[[ which( grepl( pattern = refName, x = names( refs ) ) )[1] ]]
-    singleRef( report, tmp, ref, paste( label, refName, sep = "_" ), winsize )
-  }
-  1
+  } else{
+    s = split(1:nrow(data), as.character(data$ref))
+    
+    for (refName in names(s))
+    {
+      loginfo(paste("Draw plots for reference:", refName))
+      tmp = subset(data, ref == refName)
+      if (nrow(tmp) < 100) {
+        return(0)
+      }
+      ref = refs[[which(grepl(pattern = refName, x = names(refs)))[1]]]
+      singleRef(report, tmp, ref, paste(label, refName, sep = "_"), winsize)
+    }
+    1
   }
 }
 
 #---------------------------------------------------------------
 # End of functions for GC content plots
 #---------------------------------------------------------------
-
-
-
 
 #----------------------------------------------------------------
 # Convenience functions for extracting specific metrics from bam file using pbbamr
@@ -726,7 +725,6 @@ writeSummaryTable = function(bamFile, fastaname, blockSize = 5e3)
     loginfo("[WARNING] - # rows in bam file == 0")
     return(NULL)
   }
-  
   getBasicInformation(bam)
 }
 
@@ -814,7 +812,15 @@ getColumnsForSummarization = function(names.res, dna)
     ),
     nMax = c("MaxSubreadLen", "rEnd", "tEnd"),
     nMin = c("rStart", "tStart"),
-    nSum = c("Matches", "Mismatches", "Inserts", "Dels", "AlnReadLen", "centerP1", "edgeP1")
+    nSum = c(
+      "Matches",
+      "Mismatches",
+      "Inserts",
+      "Dels",
+      "AlnReadLen",
+      "centerP1",
+      "edgeP1"
+    )
   )
 }
 
@@ -863,10 +869,11 @@ applySummarization = function(res)
   res$MaxSubreadLen = res$AlnReadLen
   # Chip hole: x: (64,1143) y: (64,1023)
   # Center load: x: (222,985) y: (205,882). center percent: 49.96%
-  res$center = ifelse(res$X > 221 & res$X < 986 & res$Y > 206 & res$X < 883,1,0)
-  res$edge = ifelse(res$center == 0,1,0)
-  res$centerP1 = ifelse(duplicated(res[,c("X","Y")]),0,res$center)
-  res$edgeP1 = ifelse(duplicated(res[,c("X","Y")]),0,res$edge)
+  res$center = ifelse(res$X > 221 &
+                        res$X < 986 & res$Y > 206 & res$X < 883, 1, 0)
+  res$edge = ifelse(res$center == 0, 1, 0)
+  res$centerP1 = ifelse(duplicated(res[, c("X", "Y")]), 0, res$center)
+  res$edgeP1 = ifelse(duplicated(res[, c("X", "Y")]), 0, res$edge)
   colList = getColumnsForSummarization(names(res), dna)
   res = sumUpByMolecule(res, colList)
   postSummation(res, refTable)
@@ -914,10 +921,14 @@ convenientSummarizerbam = function(res,
       "Reference",
       "SMRTlinkID"
     )
-    u = data.table(res[, -which(names(res) %in% excl)])
+    u = data.table(res[,-which(names(res) %in% excl)])
     u$X = X
     u$Y = Y
-    v = u[, c("X", "Y", "centerP1", "edgeP1")] %>% group_by(X, Y) %>% summarise(sumcenterP1 = sum(centerP1), sumedgeP1 = sum(edgeP1), N = n())
+    v = u[, c("X", "Y", "centerP1", "edgeP1")] %>% group_by(X, Y) %>% summarise(
+      sumcenterP1 = sum(centerP1),
+      sumedgeP1 = sum(edgeP1),
+      N = n()
+    )
     # v$N contains the number of alignments per N[1] x N[2] block
     FUN = function(x, na.rm = TRUE)
       as.double(median(x, na.rm))
@@ -973,7 +984,7 @@ plotReferenceHeatmap = function(report, res, label)
       color = Reference
     ) +
       labs(title = title) +
-      scale_y_reverse() + 
+      scale_y_reverse() +
       scale_x_continuous(position = "top") +
       theme(aspect.ratio = ASP_RATIO)
   )
@@ -1024,32 +1035,77 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   df$rStartExtRange = df$rStart
   df$MaxSubreadLenExtRange = df$MaxSubreadLen
   df$AccuracyExtRange = df$Accuracy
-  addLoadingUniformityPlots(report, df, N, label, dist)
+  try(addLoadingUniformityPlots(report, df, N, label, dist),
+      silent = TRUE)
   
   loginfo(paste("Plot individual heatmaps for condition:", label))
   plotReferenceHeatmap(report, res, label)
-  try(plotSingleSummarizedHeatmap(report, df, "Count", label, N, limits = c(0, 60), uid = "0070002"),
-      silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "Accuracy", label, N, limits = c(0.70, 0.85), uid = "0070003"),
-      silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "AccuracyExtRange", label, N, limits = c(0.70, 0.91), uid = "0070022"),
-      silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "AlnReadLen", label, N, limits = c(500, 9000), uid = "0070004"),
+  try(plotSingleSummarizedHeatmap(report,
+                                  df,
+                                  "Count",
+                                  label,
+                                  N,
+                                  limits = c(0, 60),
+                                  uid = "0070002"),
       silent = FALSE)
   try(plotSingleSummarizedHeatmap(report,
                                   df,
-                                  "AlnReadLenExtRange",
+                                  "Accuracy",
                                   label,
                                   N,
-                                  limits = c(500, 30000), uid = "0070005"),
+                                  limits = c(0.70, 0.85),
+                                  uid = "0070003"),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "rStart", label, N, limits = c(0, 9000), uid = "0070009"),
+  try(plotSingleSummarizedHeatmap(
+    report,
+    df,
+    "AccuracyExtRange",
+    label,
+    N,
+    limits = c(0.70, 0.91),
+    uid = "0070022"
+  ),
+  silent = FALSE)
+  try(plotSingleSummarizedHeatmap(report,
+                                  df,
+                                  "AlnReadLen",
+                                  label,
+                                  N,
+                                  limits = c(500, 9000),
+                                  uid = "0070004"),
       silent = FALSE)
-  try(plotSingleSummarizedHeatmap(report, df, "rStartExtRange", label, N, limits = c(0, 25000), uid = "0070011"),
+  try(plotSingleSummarizedHeatmap(
+    report,
+    df,
+    "AlnReadLenExtRange",
+    label,
+    N,
+    limits = c(500, 30000),
+    uid = "0070005"
+  ),
+  silent = FALSE)
+  try(plotSingleSummarizedHeatmap(report,
+                                  df,
+                                  "rStart",
+                                  label,
+                                  N,
+                                  limits = c(0, 9000),
+                                  uid = "0070009"),
+      silent = FALSE)
+  try(plotSingleSummarizedHeatmap(report,
+                                  df,
+                                  "rStartExtRange",
+                                  label,
+                                  N,
+                                  limits = c(0, 25000),
+                                  uid = "0070011"),
       silent = FALSE)
   
   # Target SNR: SNR_A="5.438" SNR_C="10.406" SNR_G="4.875" SNR_T="7.969"
-  targetSNR = data.frame(base = c("A", "G", "C", "T"), targetSNRvalue = c(5.438, 4.875, 10.406, 7.969))
+  targetSNR = data.frame(
+    base = c("A", "G", "C", "T"),
+    targetSNRvalue = c(5.438, 4.875, 10.406, 7.969)
+  )
   targetSNR$range = 0.5
   targetSNR$LowerLimit = targetSNR$targetSNRvalue * (1 - targetSNR$range)
   targetSNR$UpperLimit = targetSNR$targetSNRvalue * (1 + targetSNR$range)
@@ -1057,16 +1113,28 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   targetSNR$uidcol = c("0070014", "0070015", "0070016", "0070017")
   
   for (k in targetSNR$base) {
-    try(plotSingleSummarizedHeatmap(report, df, paste("SNR_", k, sep = ""), label, N, limits = c(targetSNR$LowerLimit[targetSNR$base == k], targetSNR$UpperLimit[targetSNR$base == k]), uid = as.vector(targetSNR$uidcol[targetSNR$base==k])), silent = FALSE)
+    try(plotSingleSummarizedHeatmap(
+      report,
+      df,
+      paste("SNR_", k, sep = ""),
+      label,
+      N,
+      limits = c(targetSNR$LowerLimit[targetSNR$base == k], targetSNR$UpperLimit[targetSNR$base == k]),
+      uid = as.vector(targetSNR$uidcol[targetSNR$base == k])
+    ),
+    silent = FALSE)
   }
   
-  try(plotSingleSummarizedHeatmap(report,
-                                  df,
-                                  "MaxSubreadLenExtRange",
-                                  label,
-                                  N,
-                                  limits = c(0, 15000), uid = "0070007"),
-      silent = FALSE)
+  try(plotSingleSummarizedHeatmap(
+    report,
+    df,
+    "MaxSubreadLenExtRange",
+    label,
+    N,
+    limits = c(0, 15000),
+    uid = "0070007"
+  ),
+  silent = FALSE)
   
   excludeColumns = c(
     "X",
@@ -1097,16 +1165,40 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   )
   
   #create a dataframe 'Non_excl_uid' that has column names of the non-excluded columns and corresponding uid's
-  Non_excl_columns = c ("MaxSubreadLen", "MaxSubreadLenToAlnReadLenRatio", "rEnd", "tStart", "tEnd", "MismatchRate", 
-                        "InsertionRate", "DeletionRate", "AvgPolsPerZMW")
-  uidcolumn = c ("0070006", "0070008", "0070010", "0070012", "0070013", "0070018","0070019","0070020", "0070021")
+  Non_excl_columns = c(
+    "MaxSubreadLen",
+    "MaxSubreadLenToAlnReadLenRatio",
+    "rEnd",
+    "tStart",
+    "tEnd",
+    "MismatchRate",
+    "InsertionRate",
+    "DeletionRate",
+    "AvgPolsPerZMW"
+  )
+  uidcolumn = c(
+    "0070006",
+    "0070008",
+    "0070010",
+    "0070012",
+    "0070013",
+    "0070018",
+    "0070019",
+    "0070020",
+    "0070021"
+  )
   Non_excl_uid = data.frame(Non_excl_columns, uidcolumn)
   lapply(setdiff(names(df), excludeColumns), function(n)
-  { if (is.null(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n]))
-  {warning("Columns non-excluded different from set list")}
+  {
+    if (is.null(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns == n]))
+    {
+      warning("Columns non-excluded different from set list")
+    }
     else {
-      try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = as.vector(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns==n])),
-          silent = FALSE)}
+      try(plotSingleSummarizedHeatmap(report, df, n, label, N, uid = as.vector(Non_excl_uid$uidcolumn[Non_excl_uid$Non_excl_columns ==
+                                                                                                        n])),
+          silent = FALSE)
+    }
   })
 }
 
@@ -1276,7 +1368,7 @@ getKVossMetric = function(res, qnt = 0.95, nZMWs = 1032000)
 #' @param SNR vector of length four containing mean SNR for A, C, G, and T.
 #'
 #' @seealso \code{\link{addLoadingUniformityPlots}} which calls this function.
-#' @examples
+#'  @examples
 #' getUniformityMetricsTable( "Condition_A", counts, c( 10, 8 ), nrow( res ), nrow( res ), com, SNR )
 #'
 #' @export
@@ -1301,11 +1393,11 @@ getUniformityMetricsTable = function(res, label, N, com, SNR, dist, cutoff = 2)
   kv = getKVossMetric(res)
   
   # Compute "center to edge" metric
-  # "center to edge" metric is a ratio of the loading (P1) of 
+  # "center to edge" metric is a ratio of the loading (P1) of
   # the 50% of the inside zmws divided by the loading of the 50% outside zmws
   centerLoad = sum(res$centerP1, na.rm = T)
   edgeLoad = sum(res$edgeP1, na.rm = T)
-  centertoedge = centerLoad/edgeLoad
+  centertoedge = centerLoad / edgeLoad
   
   # Compute Moran's I statistics and corresponding p-values
   mi = unlist(lapply(1:dist$nMatrices,
@@ -1386,8 +1478,6 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
     uid = "0073000"
   )
 }
-
-
 
 #' Main function called by makeReport
 #'
@@ -1471,65 +1561,70 @@ makeReport = function(report)
     loginfo("[WARNING] - All conditions are empty!")
     0
   } else {
-    Uniformity = rbindlist(lapply(csvfile, function(i) {
-      read.csv(i)
-    }))[, c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.N", "CenterToEdge")]
-    Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
-    Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
-    UniformityMerge = Uniformity[, c("ID",
-                                     "LambdaUniformity",
-                                     "MoransI.Inv_percentage",
-                                     "MoransI.N_percentage")]
-    UniformityLong = melt(UniformityMerge, id.vars = "ID")
-    tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) +
-      geom_bar(stat = "identity", position = "dodge") +
-      scale_fill_brewer(palette = "Set1") +
-      labs(x = "Variables", y = "Score", title = "Barchart of Uniformity")
-    report$ggsave(
-      "barchart_of_uniformity.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "barchart_of_uniformity",
-      title = "Barchart of Uniformity",
-      caption = "barchart_of_uniformity",
-      tags = c(
-        "bar",
-        "barchart",
-        "uniformity",
-        "Lambda",
-        "MoransI",
-        "Morans"
-      ),
-      uid="0072000"
-    )
-    
-    # Center to edge histogram
-    UniformityCTE = Uniformity[, c("ID",
-                                   "CenterToEdge")]
-    UniformityLong2 = melt(UniformityCTE, id.vars = "ID")
-    tp = ggplot(UniformityLong2, aes(factor(variable), value, fill = ID)) +
-      geom_bar(stat = "identity", position = "dodge") +
-      scale_fill_brewer(palette = "Set1") +
-      labs(x = "Variables", y = "Score", title = "Center to Edge P1 Ratio")
-    report$ggsave(
-      "barchart_of_center_to_edge_p1.png",
-      tp,
-      width = plotwidth,
-      height = plotheight,
-      id = "barchart_of_center_to_edge_p1",
-      title = "Center to Edge P1 Ratio",
-      caption = "barchart_of_center_to_edge_p1",
-      tags = c(
-        "bar",
-        "barchart",
-        "uniformity",
-        "center",
-        "edge",
-        "P1"
-      ),
-      uid="0074000"
-    )
+    generateUniformityPlots <- function(csvfile) {
+      Uniformity = rbindlist(lapply(csvfile, function(i) {
+        read.csv(i)
+      }))[, c("ID",
+              "LambdaUniformity",
+              "MoransI.Inv",
+              "MoransI.N",
+              "CenterToEdge")]
+      Uniformity$MoransI.Inv_percentage = 100 * Uniformity$MoransI.Inv
+      Uniformity$MoransI.N_percentage = 100 * Uniformity$MoransI.N
+      UniformityMerge = Uniformity[, c("ID",
+                                       "LambdaUniformity",
+                                       "MoransI.Inv_percentage",
+                                       "MoransI.N_percentage")]
+      UniformityLong = melt(UniformityMerge, id.vars = "ID")
+      tp = ggplot(UniformityLong, aes(factor(variable), value, fill = ID)) +
+        geom_bar(stat = "identity", position = "dodge") +
+        scale_fill_brewer(palette = "Set1") +
+        labs(x = "Variables", y = "Score", title = "Barchart of Uniformity")
+      report$ggsave(
+        "barchart_of_uniformity.png",
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = "barchart_of_uniformity",
+        title = "Barchart of Uniformity",
+        caption = "barchart_of_uniformity",
+        tags = c(
+          "bar",
+          "barchart",
+          "uniformity",
+          "Lambda",
+          "MoransI",
+          "Morans"
+        ),
+        uid = "0072000"
+      )
+      
+      # Center to edge histogram
+      UniformityCTE = Uniformity[, c("ID",
+                                     "CenterToEdge")]
+      UniformityLong2 = melt(UniformityCTE, id.vars = "ID")
+      tp = ggplot(UniformityLong2, aes(factor(variable), value, fill = ID)) +
+        geom_bar(stat = "identity", position = "dodge") +
+        scale_fill_brewer(palette = "Set1") +
+        labs(x = "Variables", y = "Score", title = "Center to Edge P1 Ratio")
+      report$ggsave(
+        "barchart_of_center_to_edge_p1.png",
+        tp,
+        width = plotwidth,
+        height = plotheight,
+        id = "barchart_of_center_to_edge_p1",
+        title = "Center to Edge P1 Ratio",
+        caption = "barchart_of_center_to_edge_p1",
+        tags = c("bar",
+                 "barchart",
+                 "uniformity",
+                 "center",
+                 "edge",
+                 "P1"),
+        uid = "0074000"
+      ) 
+    }
+    try(generateUniformityPlots(csvfile), silent = FALSE)
   }
   # Uniformity = rbindlist(lapply(csvfile, function(i){read.csv(i)}))[,c("ID", "LambdaUniformity", "MoransI.Inv", "MoransI.Inv.sd", "MoransI.N", "MoransI.N.sd")]
   # Save the report object for later debugging
