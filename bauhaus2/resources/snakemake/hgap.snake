@@ -12,10 +12,14 @@ local_references = \
     { c : expand("training/{condition}.alignmentset.xml.ref.fa", condition=c)
       for c in ct.conditions }
 
+polished_references = \
+    { c : expand("conditions/{condition}/polished.fasta", condition=c)
+      for c in ct.conditions }
+
 # -- Target --
 
 rule collect_htag_results:
-    input: "conditions/{condition}/polished.fasta"
+    input: polished_references.values()
 
 # -- Worker rules ---
         
@@ -40,7 +44,7 @@ rule variantCaller:
         
 rule run_mummer:
     input: 
-        reference="conditions/{condition}/reference.fasta"
+        reference="conditions/{condition}/reference.fasta",
         polished_fasta="conditions/{condition}/polished.fasta"
     output:
         csvfile = "conditions/{condition}/snps.csv"

@@ -12,8 +12,7 @@ class HGAPWorkflow(Workflow):
     R_SCRIPTS            = ( )
     PYTHON_SCRIPTS       = ( )
     def plan(self):
-        return ["collect-mappings.snake",
+        return ["hgap.snake",
+                "collect-mappings.snake",
                 "collect-references.snake",
-                "collect-smrtlink-references-hgap.snake",
-                "hgap.snake"] + \
-            subreadsMappingPlan(self.conditionTable, self.cliArgs)
+                "collect-smrtlink-references-hgap.snake"]

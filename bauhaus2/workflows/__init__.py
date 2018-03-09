@@ -16,6 +16,7 @@ from .heatmaps       import *
 from .barcodingQC       import *
 from .cas9Yield       import *
 from .sv       import *
+from .hgap       import *
 from bauhaus2 import Workflow
 
 availableWorkflows = \
