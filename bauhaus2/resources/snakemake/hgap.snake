@@ -15,11 +15,15 @@ local_references = \
 polished_references = \
     { c : expand("conditions/{condition}/polished.fasta", condition=c)
       for c in ct.conditions }
+      
+csv_results = \
+    { c : expand("conditions/{condition}/snps.csv", condition=c)
+      for c in ct.conditions }
 
 # -- Target --
 
-rule collect_htag_results:
-    input: polished_references.values()
+rule collect_csv:
+    input: csv_results.values()
 
 # -- Worker rules ---
         
