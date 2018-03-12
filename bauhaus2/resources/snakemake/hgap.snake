@@ -56,6 +56,6 @@ rule run_mummer:
         """
         module load mummer
         nucmer -mum {input.reference} {input.polished_fasta}
-        show-snps -x10 -C out.delta > snps.csv
+        show-snps -x10 -C out.delta > {output.csvfile}
         """
     
