@@ -13,8 +13,11 @@ def stripOutJunk(pbJson):
     import re
     with open(pbJson, 'r') as data_file:   
         data_lines = data_file.readlines()
-        while data_lines[0] is not '{':
-            data_lines = ''.join(data_lines[1:])
+        if data_lines[0] == '{\n':
+            data_lines = ''.join(data_lines[0:])
+        else:
+            while data_lines[0] is not '{':
+                data_lines = ''.join(data_lines[1:])
         data = json.loads(data_lines)
         return data
     
