@@ -67,7 +67,9 @@ rule AccDeltaPlots:
 """make sure we're done with everything, we'll glob up the log files in
 the script:"""
 rule Runtimes:
-    input: "reports/AccDeltaPlots/report.json"
+    input:
+        "reports/AccDeltaPlots/report.json",
+        "reports/LocAccPlots/report.json"
     output: "reports/PrimaryRuntime/report.json"
     shell:
         """
