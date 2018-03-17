@@ -59,7 +59,7 @@ makeFishbonePlots <-
       as.name(concat(...))
     
     # functions to add SNR density plots to Insert/Mismatch hmm plots
-    generateFixAxisPlot <- function(df, dfSNR_, dfSNRall_) {
+    generateFixAxisPlot <- function(df, dfSNR_, dfSNRall_, maxSNR) {
       tp = ggplot(df,
                   aes(
                     x = as.numeric(as.character(snr)),
@@ -121,7 +121,7 @@ makeFishbonePlots <-
           yend = Inf,
           size = 1
         )
-      tpdensityfix = tpdensity + facet_grid(SNRlabel ~ obs_) + xlim(0, 20) + theme(strip.text.x = element_blank(), axis.title.x = element_blank())
+      tpdensityfix = tpdensity + facet_grid(SNRlabel ~ obs_) + xlim(0, maxSNR) + theme(strip.text.x = element_blank(), axis.title.x = element_blank())
       pdf(NULL)
       g1 <- ggplotGrob(tp1)
       g3 <- ggplotGrob(tpdensityfix)
@@ -312,8 +312,8 @@ makeFishbonePlots <-
     errormodeMerge <-
       dplyr::filter(errormodeMerge, SNR.A > 0 &
                       SNR.C > 0 & SNR.G > 0 & SNR.T > 0)
-    
-    breaks = c(0, 1:30) / 1.5
+    maxSNR = (round(max(errormodeMerge$SNR.C)) + 1)
+    breaks = c(0, 1:(1.5*maxSNR))/1.5
     bases <- c("A", "C", "G", "T")
     
     massage <- function(df, channel) {
@@ -470,7 +470,7 @@ makeFishbonePlots <-
           df %>% dplyr::mutate(obs_ = concat(mv, " ", obs_))
       
       golden_ratio <- 1.618
-      xlimits <- c(0, 20)
+      xlimits <- c(0, maxSNR)
       ylimits <- c(0, 0.15)
       ratio <- xlimits[[2]] / ylimits[[2]] / golden_ratio
       dfIns <- dfErr_ %>% filter(move == "Insert")
@@ -480,7 +480,7 @@ makeFishbonePlots <-
       dfSNRall$SNRlabel = ""
       dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
       dfSNRall_$obs_ = paste("Insert", dfSNRall_$obs)
-      gInsFix = generateFixAxisPlot(dfIns, dfSNR_, dfSNRall_)
+      gInsFix = generateFixAxisPlot(dfIns, dfSNR_, dfSNRall_, maxSNR)
       gInsFree = generateFreeAxisPlot(dfIns, dfSNR_, "Insert", dfSNRall_)
       
       report$ggsave(
@@ -519,7 +519,7 @@ makeFishbonePlots <-
       breaks <- breaksFn(ylimits)
       dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
       dfSNRall_$obs_ = paste("Mismatch", dfSNRall_$obs)
-      gMMFix = generateFixAxisPlot(dfMM, dfSNR_, dfSNRall_)
+      gMMFix = generateFixAxisPlot(dfMM, dfSNR_, dfSNRall_, maxSNR)
       gMMFree = generateFreeAxisPlot(dfMM, dfSNR_, "Mismatch", dfSNRall_)
       report$ggsave(
         "fishboneplot_mismatch.png",
