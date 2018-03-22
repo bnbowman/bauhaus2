@@ -51,12 +51,14 @@ rule run_mummer:
         reference="conditions/{condition}/reference.fasta",
         polished_fasta="conditions/{condition}/polished.fasta"
     output:
-        csvfile = "conditions/{condition}/snps.csv"
+        csvfile = "conditions/{condition}/snps.csv",
+        outputdir = "conditions/{condition}/outputs"
     shell:
         """
         module load mummer
-        dnadiff -p dnadiff {input.reference} {input.polished_fasta}
-        nucmer -mum -p nucmer {input.reference} {input.polished_fasta}
-        show-snps -x10 -C out.delta > {output.csvfile}
+        cd {output.outputdir}
+        dnadiff -p dnadiff ../../../{input.reference} ../../../{input.polished_fasta}
+        nucmer -mum -p nucmer ../../../{input.reference} ../../../{input.polished_fasta}
+        show-snps -x10 -C nucmer.delta > ../../../{output.csvfile}
         """
     
