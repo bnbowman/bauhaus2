@@ -1,0 +1,26 @@
+
+# ---------------------------------------------------------------------------------------------------
+# collect-references-hgap.snake: hotlink "remote" reference FASTAs into our workflow directory, for htag workflows 
+
+local_hgap_smrtlink_fasta_files = \
+    { c : expand("conditions/{condition}/smrtlink-reference.fasta", condition=c)
+      for c in ct.conditions }
+ 
+rule collect_hgap_references:
+    input: local_hgap_smrtlink_fasta_files.values()
+
+rule collect_hgap_reference_one_condition:
+    input:
+        alignment=lambda wc: local_alignmentset[wc.condition]
+    output:
+        fasta="conditions/{condition}/smrtlink-reference.fasta",
+        fai="conditions/{condition}/smrtlink-reference.fasta.fai"
+    shell:
+        """
+        module load xpath
+        alignment={input.alignment}
+        ref="$(xpath -q -e '(//pbbase:ExternalResource[@MetaType="PacBio.ReferenceFile.ReferenceFastaFile"]/@ResourceId)[1]' $alignment | awk -F '[""]' '{{print $2}}')"
+        ln -s $ref {output.fasta}
+        ref+=".fai"
+        ln -s $ref {output.fai}
+        """

@@ -1,0 +1,62 @@
+
+# ---------------------------------------------------------------------------------------------------
+# HGAP.snake
+
+from bauhaus2.runtime import ct
+
+local_alignmentset = \
+    { c : expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=c)
+      for c in ct.conditions }
+
+local_references = \
+    { c : expand("training/{condition}.alignmentset.xml.ref.fa", condition=c)
+      for c in ct.conditions }
+
+polished_references = \
+    { c : expand("conditions/{condition}/polished.fasta", condition=c)
+      for c in ct.conditions }
+      
+csv_results = \
+    { c : expand("conditions/{condition}/snps.csv", condition=c)
+      for c in ct.conditions }
+
+# -- Target --
+
+rule collect_csv:
+    input: csv_results.values()
+
+# -- Worker rules ---
+        
+rule variantCaller:
+    input: 
+        alignment_set="conditions/{condition}/mapped/mapped.alignmentset.xml",
+        reference="conditions/{condition}/smrtlink-reference.fasta"
+    output:
+        polished_fasta="conditions/{condition}/polished.fasta",
+        fastq="conditions/{condition}/polished.fastq",
+        gff = "conditions/{condition}/polished.polished.gff",
+        vcf = "conditions/{condition}/polished.vcf"
+    params:
+        modelPath=lambda wc: ct.modelPathArg(wc.condition, "-P")
+    shell:
+        """
+        . /etc/profile.d/modules.sh
+        module add smrtlink/internal
+        exec variantCaller --algorithm=arrow -j24 -x0 -q0 {params.modelPath} -p trained_condition -o {output.polished_fasta} -o {output.fastq} -o {output.gff} -o {output.vcf} -r {input.reference} {input.alignment_set}
+        """
+        
+        
+rule run_mummer:
+    input: 
+        reference="conditions/{condition}/reference.fasta",
+        polished_fasta="conditions/{condition}/polished.fasta"
+    output:
+        csvfile = "conditions/{condition}/snps.csv"
+    shell:
+        """
+        module load mummer
+        dnadiff -p dnadiff {input.reference} {input.polished_fasta}
+        nucmer -mum -p nucmer {input.reference} {input.polished_fasta}
+        show-snps -x10 -C out.delta > {output.csvfile}
+        """
+    
