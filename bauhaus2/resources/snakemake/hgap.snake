@@ -42,7 +42,7 @@ rule variantCaller:
         """
         . /etc/profile.d/modules.sh
         module add smrtlink/internal
-        exec variantCaller -j24 -x0 -q0 {params.modelPath} -p trained_condition -o {output.polished_fasta} -o {output.fastq} -o {output.gff} -o {output.vcf} -r {input.reference} {input.alignment_set}
+        exec variantCaller --algorithm=arrow -j24 -x0 -q0 {params.modelPath} -p trained_condition -o {output.polished_fasta} -o {output.fastq} -o {output.gff} -o {output.vcf} -r {input.reference} {input.alignment_set}
         """
         
         
@@ -55,7 +55,8 @@ rule run_mummer:
     shell:
         """
         module load mummer
-        nucmer -mum {input.reference} {input.polished_fasta}
+        dnadiff -p dnadiff {input.reference} {input.polished_fasta}
+        nucmer -mum -p nucmer {input.reference} {input.polished_fasta}
         show-snps -x10 -C out.delta > {output.csvfile}
         """
     
