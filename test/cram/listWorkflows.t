@@ -1,5 +1,6 @@
 
   $ bauhaus2 list-workflows
+  AdapterEvaluation
   ArrowTraining
   BarcodingQC
   CCSMappingReports
