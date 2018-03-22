@@ -1,0 +1,122 @@
+
+# ---------------------------------------------------------------------------------------------------
+# adapterEvaluation.snake
+
+local_subreadset = {
+    c: expand("conditions/{condition}/subreads/input.subreadset.xml",
+              condition=c)
+    for c in ct.conditions}
+    
+local_referenceset = {
+    c: expand("conditions/{condition}/reference.fasta",
+              condition=c)
+    for c in ct.conditions}
+    
+local_adapterreport = {
+    c: expand("conditions/{condition}/results.csv",
+              condition=c)
+    for c in ct.conditions}
+    
+local_adapter = \
+    { c : expand("conditions/{condition}/adapter.fasta", condition=c)
+      for c in ct.conditions }
+      
+remote_adapter = \
+    { c : ct.adapter(c)
+      for c in ct.conditions }
+      
+ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
+
+# -- Target rules --
+
+rule adapterEvaluation:
+    input:
+        adapterEvaluationreport = local_adapterreport.values()
+
+# -- Worker rules -- 
+
+rule collect_adapter_one_condition:
+    input:
+        adapter=lambda wc: ct.reference(wc.condition)
+    output:
+        adapter="conditions/{condition}/adapter.fasta",
+    shell:
+        """
+        ln -s {input.adapter} {output.adapter}
+        """
+
+rule unrolled_reference_one_condition:
+    input:  referenceset = "conditions/{condition}/reference.fasta",
+            adapter = "conditions/{condition}/adapter.fasta"
+    output:
+        unrolledfasta= "conditions/{condition}/unrolled.fasta",  
+        unrolledcsv="conditions/{condition}/unrolled_pos.csv"       
+    threads: 24
+    shell:
+        """
+        module purge
+        module load smstools
+        python scripts/Python/WriteUnrolledReference.py {input.referenceset} {input.adapter} unrolled
+        """
+
+rule hqregion_bam_one_condition:
+    input:  subreadset = "conditions/{condition}/subreads/input.subreadset.xml"
+    output:
+        hqregionsbam= "conditions/{condition}/unrolled.hqregions.bam"       
+    threads: 24
+    shell:
+        """
+        module purge
+        module add ppa/mainline
+        bam2bam {input.subreadset} --hqregion -o unrolled -j 12 -b 4
+        """
+
+rule blasr_alignment_one_condition:
+    input:  hqregionsbam= "conditions/{condition}/unrolled.hqregions.bam",
+            unrolledfasta= "conditions/{condition}/unrolled.fasta"
+    output:
+        alignbam= "conditions/{condition}/unrolled.hqregions.align.bam"       
+    threads: 24
+    shell:
+        """
+        module purge
+        module load smrtanalysis/mainline
+        blasr --nproc 16 --bestn 1 --forwardOnly --hitPolicy leftmost --minAlnLength 4000 --minPctAccuracy 70  --fastSDP --fastMaxInterval --bam --out {output.alignbam} {input.hqregionsbam} {input.unrolledfasta} 
+        pbindex {output.alignbam}
+        """
+        
+rule adapter_labeled_one_condition:
+    input:  subreadset = "conditions/{condition}/subreads/input.subreadset.xml",
+            adapter = "conditions/{condition}/adapter.fasta"
+    output:
+        adapterdata= "conditions/{condition}/adapter_data.csv"       
+    threads: 24
+    shell:
+        """
+        module load smstools
+        adapterlabeler {input.adapter} {input.subreadset} > {output.adapterdata}
+        """
+
+rule adapter_summary_one_condition:
+    input:  unrolledcsv="conditions/{condition}/unrolled_pos.csv",
+            alignbam= "conditions/{condition}/unrolled.hqregions.align.bam",
+            adapterdata= "conditions/{condition}/adapter_data.csv"
+    output:
+        finalcsv= "conditions/{condition}/final.csv"       
+    threads: 24
+    shell:
+        """
+        module load smstools
+        python scripts/Python/AdpFromAlignments.py  {input.unrolledcsv} {input.alignbam} {input.adapterdata} > {output.finalcsv}
+        """
+   
+rule result_summary_one_condition:
+    input:  finalcsv= "conditions/{condition}/final.csv"
+    output:
+        resultscsv= "conditions/{condition}/results.csv"       
+    threads: 24
+    shell:
+        """
+        python scripts/Python/est_rates2.py {input.finalcsv} > {output.resultscsv}
+        """   
+     

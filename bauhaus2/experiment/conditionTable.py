@@ -9,6 +9,7 @@ __all__ = [ "InputType",
             "UnrolledMappingConditionTable",
             "IsoSeqConditionTable",
             "LimaConditionTable",
+            "AdapterConditionTable",
             "Cas9ConditionTable",
             "TableValidationError",
             "InputResolutionError" ]
@@ -147,6 +148,10 @@ class ConditionTable(object):
             return resolver.ensureBarcodeSet(rowRecord.SymmetricBarcodeSet)
         elif {"AsymmetricBarcodeSet"}.issubset(cols):
             return resolver.ensureBarcodeSet(rowRecord.AsymmetricBarcodeSet)
+        elif {"SymmetricAdapterSet"}.issubset(cols):
+            return resolver.ensureAdapterSet(rowRecord.SymmetricAdapterSet)
+        elif {"AsymmetricAdapterSet"}.issubset(cols):
+            return resolver.ensureAdapterSet(rowRecord.AsymmetricAdapterSet)
 
     def _resolveInputs(self, resolver):
         self._inputsByCondition = {}
@@ -546,6 +551,53 @@ class LimaConditionTable(ConditionTable):
                 barcodeSet = self.barcodeSet(condition)
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
+
+class AdapterConditionTable(ResequencingConditionTable):
+    """
+    This workflow is for adapter evaluation jobs
+    """
+
+    def _validateAdapter(self):
+        exclusive = ['AsymmetricAdapterSet', 'SymmetricAdapterSet']
+        if exclusive[0] in self.tbl.column_names and exclusive[1] in self.tbl.column_names:
+            raise TableValidationError(
+                    "AdapterConditionTable should only contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+        elif exclusive[0] not in self.tbl.column_names and exclusive[1] not in self.tbl.column_names:
+            raise TableValidationError(
+                    "AdapterConditionTable should contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+        
+    def prefix(self, condition):
+        prefixlist = ['--same', '--min-passes 1']
+        try:
+            if bool(self.condition(condition).SymmetricAdapterSet):
+                return prefixlist[0]
+        except:
+            try:
+                if bool(self.condition(condition).AsymmetricAdapterSet):
+                    return prefixlist[1]
+            except:
+                return TableValidationError("AdapterConditionTable should contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+
+    def adapter(self, condition):
+        try:
+            return self.condition(condition).SymmetricAdapterSet
+        except:  ## TODO(lhepler): use proper exception here for SymmetricAdapterSet lookup failure
+            try:
+                return self.condition(condition).AsymmetricAdapterSet
+            except:
+                return TableValidationError("AdapterConditionTable should contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+
+    def _resolveInputs(self, resolver):
+        super(AdapterConditionTable, self)._resolveInputs(resolver)
+        for condition in self.conditions:
+            try:
+                adapter = self.adapter(condition)
+            except DataNotFound as e:
+                raise InputResolutionError(str(e)) 
+    
+    def _validateTable(self):
+        super(AdapterConditionTable, self)._validateTable()
+        self._validateAdapter()
 
 class Cas9ConditionTable(ConditionTable):
     """Override validate table for Cas9Yield"""
