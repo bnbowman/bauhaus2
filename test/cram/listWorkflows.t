@@ -10,6 +10,7 @@
   ConstantArrowForShortMovie
   CoverageTitration
   EvaluateHQRF
+  HGAP
   Heatmaps
   IsoSeqRC0
   MappingReports
