@@ -13,7 +13,7 @@ local_referenceset = {
     for c in ct.conditions}
     
 local_adapterreport = {
-    c: expand("conditions/{condition}/results.csv",
+    c: expand("conditions/{condition}/results/results.csv",
               condition=c)
     for c in ct.conditions}
     
@@ -39,7 +39,7 @@ rule collect_adapter_one_condition:
     input:
         adapter=lambda wc: ct.reference(wc.condition)
     output:
-        adapter="conditions/{condition}/adapter.fasta",
+        adapter="conditions/{condition}/adapter/adapter.fasta",
     shell:
         """
         ln -s {input.adapter} {output.adapter}
@@ -47,35 +47,41 @@ rule collect_adapter_one_condition:
 
 rule unrolled_reference_one_condition:
     input:  referenceset = "conditions/{condition}/reference.fasta",
-            adapter = "conditions/{condition}/adapter.fasta"
+            adapter = "conditions/{condition}/adapter/adapter.fasta"
     output:
-        unrolledfasta= "conditions/{condition}/unrolled.fasta",  
-        unrolledcsv="conditions/{condition}/unrolled_pos.csv"       
+        unrolledfasta= "conditions/{condition}/unrolled_reference/unrolled.fasta",  
+        unrolledcsv="conditions/{condition}/unrolled_reference/unrolled_pos.csv",
+        outputdir="conditions/{condition}/unrolled_reference"
     threads: 24
     shell:
         """
         module purge
         module load smstools
-        python scripts/Python/WriteUnrolledReference.py {input.referenceset} {input.adapter} unrolled
+        cd {output.outputdir}
+        python ../../../scripts/Python/WriteUnrolledReference.py ../../../{input.referenceset} ../../../{input.adapter} unrolled
+        cd ../../..
         """
 
 rule hqregion_bam_one_condition:
     input:  subreadset = "conditions/{condition}/subreads/input.subreadset.xml"
     output:
-        hqregionsbam= "conditions/{condition}/unrolled.hqregions.bam"       
+        hqregionsbam= "conditions/{condition}/unrolled_bam/unrolled.hqregions.bam",
+        outputdir="conditions/{condition}/unrolled_bam"
     threads: 24
     shell:
         """
         module purge
         module add ppa/mainline
-        bam2bam {input.subreadset} --hqregion -o unrolled -j 12 -b 4
+        cd {output.outputdir}
+        bam2bam ../../../{input.subreadset} --hqregion -o unrolled -j 12 -b 4
+        cd ../../..
         """
 
 rule blasr_alignment_one_condition:
-    input:  hqregionsbam= "conditions/{condition}/unrolled.hqregions.bam",
-            unrolledfasta= "conditions/{condition}/unrolled.fasta"
+    input:  hqregionsbam= "conditions/{condition}/unrolled_bam/unrolled.hqregions.bam",
+            unrolledfasta= "conditions/{condition}/unrolled_reference/unrolled.fasta"
     output:
-        alignbam= "conditions/{condition}/unrolled.hqregions.align.bam"       
+        alignbam= "conditions/{condition}/mapped/unrolled.hqregions.align.bam"       
     threads: 24
     shell:
         """
@@ -87,22 +93,22 @@ rule blasr_alignment_one_condition:
         
 rule adapter_labeled_one_condition:
     input:  subreadset = "conditions/{condition}/subreads/input.subreadset.xml",
-            adapter = "conditions/{condition}/adapter.fasta"
+            adapter = "conditions/{condition}/adapter/adapter.fasta"
     output:
-        adapterdata= "conditions/{condition}/adapter_data.csv"       
+        adapterdata= "conditions/{condition}/adapter/adapter_data.csv"       
     threads: 24
     shell:
         """
         module load smstools
-        adapterlabeler {input.adapter} {input.subreadset} > {output.adapterdata}
+        /pbi/dept/secondary/siv/bbowman/Rpt_Cas9_Data/TetraLoop/adapterlabeler {input.adapter} {input.subreadset} > {output.adapterdata}
         """
 
 rule adapter_summary_one_condition:
-    input:  unrolledcsv="conditions/{condition}/unrolled_pos.csv",
-            alignbam= "conditions/{condition}/unrolled.hqregions.align.bam",
-            adapterdata= "conditions/{condition}/adapter_data.csv"
+    input:  unrolledcsv="conditions/{condition}/unrolled_reference/unrolled_pos.csv",
+            alignbam= "conditions/{condition}/mapped/unrolled.hqregions.align.bam",
+            adapterdata= "conditions/{condition}/adapter/adapter_data.csv"
     output:
-        finalcsv= "conditions/{condition}/final.csv"       
+        finalcsv= "conditions/{condition}/results/final.csv"       
     threads: 24
     shell:
         """
@@ -111,9 +117,9 @@ rule adapter_summary_one_condition:
         """
    
 rule result_summary_one_condition:
-    input:  finalcsv= "conditions/{condition}/final.csv"
+    input:  finalcsv= "conditions/{condition}/results/final.csv"
     output:
-        resultscsv= "conditions/{condition}/results.csv"       
+        resultscsv= "conditions/{condition}/results/results.csv"       
     threads: 24
     shell:
         """

@@ -13,8 +13,9 @@ class AdapterEvaluationWorkflow(Workflow):
     """
     WORKFLOW_NAME = "AdapterEvaluation"
     CONDITION_TABLE_TYPE = AdapterConditionTable
-    R_SCRIPTS = ("Python/WriteUnrolledReference.py",
-                 "Python/AdpFromAlignments.py")
+    PYTHON_SCRIPTS = ("Python/WriteUnrolledReference.py",
+                      "Python/AdpFromAlignments.py",
+                      "Python/est_rates2.py")
 
     def plan(self):
         return ["adapterEvaluation.snake"] + \
