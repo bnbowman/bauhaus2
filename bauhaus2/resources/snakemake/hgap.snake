@@ -17,7 +17,7 @@ polished_references = \
       for c in ct.conditions }
       
 csv_results = \
-    { c : expand("conditions/{condition}/snps.csv", condition=c)
+    { c : expand("conditions/{condition}/outputs_{condition}/snps.csv", condition=c)
       for c in ct.conditions }
 
 # -- Target --
@@ -51,8 +51,8 @@ rule run_mummer:
         reference="conditions/{condition}/reference.fasta",
         polished_fasta="conditions/{condition}/polished.fasta"
     output:
-        csvfile = "conditions/{condition}/snps.csv",
-        outputdir = "conditions/{condition}/outputs"
+        csvfile = "conditions/{condition}/outputs_{condition}/snps.csv",
+        outputdir = "conditions/{condition}/outputs_{condition}"
     shell:
         """
         module load mummer
