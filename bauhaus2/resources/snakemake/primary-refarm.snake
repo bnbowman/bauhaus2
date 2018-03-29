@@ -160,7 +160,7 @@ rule run_baz2bam:
         module purge
         module load {params.module}
         {params.exe} -o {params.prefix} -m {input.meta} \
-        -j {threads} -b {threads} --adapters={input.adapters} \
+        -j {threads} --adapters={input.adapters} \
         {input.baz}
         ln -sf `pwd`/{params.prefix}.sts.h5 `pwd`/{output.stsh5}
         ln -sf `pwd`/{params.prefix}.sts.xml `pwd`/{output.stsxml}
