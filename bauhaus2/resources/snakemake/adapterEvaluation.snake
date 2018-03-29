@@ -19,11 +19,11 @@ local_adapterreport = {
     
 local_adapter = \
     { c : expand("conditions/{condition}/adapter.fasta", condition=c)
-      for c in ct.conditions }
+      for c in ct.conditions}
       
 remote_adapter = \
     { c : ct.adapter(c)
-      for c in ct.conditions }
+      for c in ct.conditions}
       
 ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
 
@@ -37,7 +37,7 @@ rule adapterEvaluation:
 
 rule collect_adapter_one_condition:
     input:
-        adapter=lambda wc: ct.reference(wc.condition)
+        adapter=lambda wc: remote_adapter[wc.condition],
     output:
         adapter="conditions/{condition}/adapter/adapter.fasta",
     shell:
@@ -100,7 +100,7 @@ rule adapter_labeled_one_condition:
     shell:
         """
         module load smstools
-        /pbi/dept/secondary/siv/bbowman/Rpt_Cas9_Data/TetraLoop/adapterlabeler {input.adapter} {input.subreadset} > {output.adapterdata}
+        adapterlabeler {input.adapter} {input.subreadset} > {output.adapterdata}
         """
 
 rule adapter_summary_one_condition:
