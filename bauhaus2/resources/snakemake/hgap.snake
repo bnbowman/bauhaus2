@@ -89,11 +89,16 @@ rule generate_mummer_plot:
 rule generate_mummer_table:
     input: 
         polished_fasta="conditions/{condition}/polished.fasta",
+        inputdir = "conditions/{condition}"
     output:
         txtfile = "conditions/{condition}/fastalengthfile.txt",
+        rplot = "conditions/{condition}/myoutput.png"
     shell:
         """
         module load mummer
         module load exonerate
         fastalength {input.polished_fasta} > {output.txtfile}
+        cd {input.inputdir}
+        Rscript --vanilla scripts/R/mummerOneCondition.R 
+        cd ../..
         """    
