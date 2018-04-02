@@ -19,11 +19,20 @@ polished_references = \
 csv_results = \
     { c : expand("conditions/{condition}/outputs_{condition}/snps.csv", condition=c)
       for c in ct.conditions }
+      
+plot_results = \
+    { c : expand("conditions/{condition}/outputs_{condition}/output.png", condition=c)
+      for c in ct.conditions }
+      
+txt_results = \
+    { c : expand("conditions/{condition}/fastalengthfile.txt", condition=c)
+      for c in ct.conditions }
 
 # -- Target --
 
 rule collect_csv:
-    input: csv_results.values()
+    input: plot_results.values(),txt_results.values()
+    
 
 # -- Worker rules ---
         
@@ -52,6 +61,7 @@ rule run_mummer:
         polished_fasta="conditions/{condition}/polished.fasta"
     output:
         csvfile = "conditions/{condition}/outputs_{condition}/snps.csv",
+        deltafile="conditions/{condition}/outputs_{condition}/dnadiff.delta",
         outputdir = "conditions/{condition}/outputs_{condition}"
     shell:
         """
@@ -60,5 +70,30 @@ rule run_mummer:
         dnadiff -p dnadiff ../../../{input.reference} ../../../{input.polished_fasta}
         nucmer -mum -p nucmer ../../../{input.reference} ../../../{input.polished_fasta}
         show-snps -x10 -C nucmer.delta > ../../../{output.csvfile}
+        cd ../../../
         """
     
+rule generate_mummer_plot:
+    input: 
+        deltafile="conditions/{condition}/outputs_{condition}/dnadiff.delta",
+        outputdir = "conditions/{condition}/outputs_{condition}"
+    output:
+        out_plot = "conditions/{condition}/outputs_{condition}/output.png"
+    shell:
+        """
+        module load mummer
+        cd {input.outputdir}
+        mummerplot -f -l -t png ../../../{input.deltafile} > ../../../{output.out_plot}
+        cd ../../../
+        """
+rule generate_mummer_table:
+    input: 
+        polished_fasta="conditions/{condition}/polished.fasta",
+    output:
+        txtfile = "conditions/{condition}/fastalengthfile.txt",
+    shell:
+        """
+        module load mummer
+        module load exonerate
+        fastalength {input.polished_fasta} > {output.txtfile}
+        """    
