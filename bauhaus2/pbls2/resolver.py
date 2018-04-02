@@ -213,6 +213,12 @@ class Resolver(object):
         else:
             raise DataNotFound(barcodeSet)
             
+    def resolveAdapter(self, adapter):
+        if op.isfile(adapter):
+            return adapter
+        else:
+            raise DataNotFound(adapter)
+            
     def ensureSubreadSet(self, subreadSet):
         if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".subreads.bam")):
             raise InvalidDataset("%s not a subreadset" % subreadSet)
