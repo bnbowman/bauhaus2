@@ -312,7 +312,7 @@ makeFishbonePlots <-
     errormodeMerge <-
       dplyr::filter(errormodeMerge, SNR.A > 0 &
                       SNR.C > 0 & SNR.G > 0 & SNR.T > 0)
-    maxSNR = (round(max(errormodeMerge$SNR.C)) + 1)
+    maxSNR = (round(max(errormodeMerge$SNR.A, errormodeMerge$SNR.C, errormodeMerge$SNR.G, errormodeMerge$SNR.T)) + 1)
     breaks = c(0, 1:(1.5*maxSNR))/1.5
     bases <- c("A", "C", "G", "T")
     
