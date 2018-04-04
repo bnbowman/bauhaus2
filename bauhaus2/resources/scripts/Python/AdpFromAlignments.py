@@ -201,7 +201,7 @@ def combine_records( adapters, scraps ):
             yield (-1, -1, -1, "N/A", "F", "T", "F", hit.qStart, hit.qEnd, hit.adapter, hit.sequence, hit.accuracy, hit.flankingScore, hit.passRSIIStr, hit.passSequelStr)
 
 def compareAdpCalls( alnData, alnAdps, calledAdps ):
-    print "Zmw,ZmwAccuracy,MaximumAlignGap,SnrT,isReal,isHit,isMissing,AdpStart,AdpEnd,AdpType,AdpSequence,CallStart,CallEnd,CallType,CallSequence,CallAccuracy,CallFlankingScore,CallPassRSII,CallPassSequel"
+    print ("Zmw,ZmwAccuracy,MaximumAlignGap,SnrT,isReal,isHit,isMissing,AdpStart,AdpEnd,AdpType,AdpSequence,CallStart,CallEnd,CallType,CallSequence,CallAccuracy,CallFlankingScore,CallPassRSII,CallPassSequel")
     for zmw, adps in alnAdps.iteritems():
         calls = calledAdps[zmw]
         try:
