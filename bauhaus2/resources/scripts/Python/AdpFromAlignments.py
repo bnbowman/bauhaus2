@@ -213,11 +213,11 @@ def compareAdpCalls( alnData, alnAdps, calledAdps ):
         #print [(a.qStart, a.qEnd) for a in adps]
         #print [(c.qStart, c.qEnd) for c in calls]
         for aStart, aEnd, aType, aSeq, isReal, isHit, isMissing, cStart, cEnd, cType, cSeq, acc, flank, pRSII, pSeq  in combine_records( adps, calls ):
-            print "{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18}".format(zmw, data.accuracy, data.maxGap, data.SnrT,
+            print ("{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15},{16},{17},{18}".format(zmw, data.accuracy, data.maxGap, data.SnrT,
                                                                                                                 isReal, isHit, isMissing,
                                                                                                                 aStart, aEnd, aType, aSeq, 
                                                                                                                 cStart, cEnd, cType, cSeq, 
-                                                                                                                acc, flank, pRSII, pSeq)
+                                                                                                                acc, flank, pRSII, pSeq))
 
 adps             = readAdpCsv( adpCsvFile )
 alnData, alnAdps = readAlignments( alignFile, adps )
