@@ -26,6 +26,5 @@ rule validation:
         mkdir -p {output.plt_dir}
         validate-sv-plots {output.report_csv} {output.plt_dir} {output.plt_csv} 2>&1 | tee {output.dir}/log
 
-        module load R/3.2.3-internal
         Rscript --vanilla scripts/R/SV.R -i {output.plt_csv} -o {output.zia_report_json} 2>&1 | tee {output.dir}/log
         """
