@@ -41,6 +41,10 @@ def trc2adapters(wildcards, input):
 def trc2mov(trc):
     return os.path.basename(trc)[:-1 * len('.trc.h5')]
 
+igv_bams = [expand("conditions/{condition}/mapped/mapped.bam",
+                   condition=c)
+            for c in ct.conditions]
+
 # -- Target rules --
 
 # copied from summarize_mappings. Needs to be kept up to date, because rule
@@ -57,7 +61,8 @@ rule primary_summarize_mappings:
         AlignmentBasedHeatmaps="reports/AlignmentBasedHeatmaps/report.json",
         LocAccPlots="reports/LocAccPlots/report.json",
         AccDeltaPlots="reports/AccDeltaPlots/report.json",
-        RuntimePlots="reports/PrimaryRuntime/report.json"
+        RuntimePlots="reports/PrimaryRuntime/report.json",
+        IGVbam=igv_bams
 
 # -- Target --
 
@@ -179,7 +184,8 @@ rule run_baz2bam:
         """
 
 def lookupInput(wc):
-    # XXX nohq library mappings aren't possible with blasr >:[
+    # nohq library mappings aren't possible with blasr alone (we don't call
+    # adapters outside the HQ region), we must use bam2bam:
     if (hasattr(ct, 'callAdapters') and hasattr(ct, 'HQRF')
             and ct.callAdapters(wc.condition) and not ct.HQRF(wc.condition)):
         tbr = 'conditions/{condition}/nohq/input.subreadset.xml'
@@ -207,17 +213,23 @@ rule noop:
 
 rule nohq:
     input: 'conditions/{condition}/primary/input.subreadset.xml'
-    output: 'conditions/{condition}/nohq/input.subreadset.xml'
+    output:
+        subreadset='conditions/{condition}/nohq/input.subreadset.xml',
+        adapters='conditions/{condition}/nohq/input.adapters.fasta'
     params:
         module=lambda wc: ct.ppaModule(wc.condition),
         prefix="conditions/{condition}/nohq/input",
         subreads='conditions/{condition}/primary/input.subreads.bam',
-        scraps='conditions/{condition}/primary/input.scraps.bam'
+        scraps='conditions/{condition}/primary/input.scraps.bam',
+        adapters=lambda wc, input: (input[0][:-1 * len('subreadset.xml')]
+                                    + 'adapters.fasta')
     shell:
         """
         module purge
         module load {params.module}
-        bam2bam -o {params.prefix} --fullHQ {params.subreads} {params.scraps}
+        cp {params.adapters} {output.adapters}
+        bam2bam -o {params.prefix} --fullHQ {params.subreads} {params.scraps} \
+        --adapters={params.adapters}
         """
 
 rule run_poc_basecaller:
