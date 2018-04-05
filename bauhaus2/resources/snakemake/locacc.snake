@@ -64,6 +64,25 @@ rule AccDeltaPlots:
         accdelta {params.trcs} {params.ssets} {params.asets} {params.names} --nreads 5000 -o reports/AccDeltaPlots/AccDelta --warnonly --linkfn reports/AccDeltaPlots/traceviewer_links.txt
         """
 
+"""We want to whitelist these tags: AS,NM,RG,ip,np,pw,qe,qs,rq,sn,sz,zm,
+but blacklisting the others is just easier"""
+rule IGVbam:
+    input:
+        "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    output:
+        "conditions/{condition}/mapped/mapped.bam"
+    params:
+        ziadir="conditions/{condition}"
+    benchmark:
+        "benchmarks/{condition}_igvbam.tsv"
+    shell:
+        """
+        LTMPDIR=$(mktemp -d)
+        dataset consolidate {input} $LTMPDIR/consolidated.bam $LTMPDIR/consolidated.alignmentset.xml
+        cat <(samtools view -H $LTMPDIR/consolidated.bam | awk -v ziadir=`realpath {params.ziadir}` '{{ OFS="\t"; if($1=="@RG") {{ for(i=2;i<=NF;i++) {{ if(substr($i,1,3)=="DS:") $i=$i";ZIADIR=" ziadir; }} }} print $0; }}') <(samtools view -x dq -x dt -x iq -x mq -x pa -x pc -x pd -x pe -x pg -x pm -x pq -x pt -x pv -x px -x sf -x sq -x st $LTMPDIR/consolidated.bam) | samtools view -S -b > {output}
+        samtools index {output}
+        """
+
 """make sure we're done with everything, we'll glob up the log files in
 the script:"""
 rule Runtimes:
