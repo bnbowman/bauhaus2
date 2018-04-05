@@ -27,11 +27,15 @@ plot_results = \
 txt_results = \
     { c : expand("conditions/{condition}/fastalengthfile.txt", condition=c)
       for c in ct.conditions }
+      
+json_results = \
+    { c : expand("reports/{condition}/report.json", condition=c)
+      for c in ct.conditions }
 
 # -- Target --
 
 rule collect_csv:
-    input: plot_results.values(),txt_results.values()
+    input: json_results.values()
     
 
 # -- Worker rules ---
@@ -105,17 +109,20 @@ rule generate_mummer_table:
         """    
         
 rule generate_json:
-    input: 
+   input: 
         output1 ="reports/{condition}/myoutput.png",
-        output2 = "reports/{condition}/output.png"
+        output2 = "reports/{condition}/output.png",
+        outdir = "reports/{condition}/"
     output:
-        json = "reports/report.json"
+        json = "reports/{condition}/report.json"
+    
     shell:
         """
         module use /pbi/dept/primary/modulefiles
         module use /mnt/software/modulefiles
         module load primary-toolkit
-        cd reports/{condition}
+        cd {input.outdir}
         Python ../../scripts/Python/generateJsonReport.py {input.output1} {input.output2}
         cd ../..  
         """    
+   
