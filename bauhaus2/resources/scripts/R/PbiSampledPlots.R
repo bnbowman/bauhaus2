@@ -345,9 +345,11 @@ makeSamplingPlots <-
     }
     cd2 = cd %>% group_by(Condition, framePerSecond) %>% sample_nigel(size = sampleSize) %>% do(load_alns(.)) %>% ungroup()
 
-    loginfo( "Draw plots to track the fraction of insertion bursts that are homopolymer insertions" )
-    s1 = split( 1:nrow( cd2 ), cd2$refName )
-    lapply( 1:length( s1 ), function( i ) try( homopolymerCountSingleRef( report, cd, cd2[ s1[[i]], ], as.character( cd2$refName[ s1[[i]][1] ] ), i ) ) )
+    loginfo("Draw plots to track the fraction of insertion bursts that are homopolymer insertions")
+    s1 = split(1:nrow(cd2), cd2$refName)
+    lapply(1:length(s1), function(i)
+      try(homopolymerCountSingleRef(report, cd, cd2[s1[[i]],], as.character(cd2$refName[s1[[i]][1]]), i),
+          silent = TRUE))
 
     if ((("ipd" %in% colnames(cd2)) & ("pw" %in% colnames(cd2)))) {
       cd2$ipd = cd2$ipd / cd2$framePerSecond
