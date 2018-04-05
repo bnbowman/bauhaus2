@@ -9,7 +9,7 @@ class HGAPWorkflow(Workflow):
     """
     WORKFLOW_NAME        = "HGAP"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
-    R_SCRIPTS            = ( )
+    R_SCRIPTS            = ("R/mummerOneCondition.R", "R/Bauhaus2.R" )
     PYTHON_SCRIPTS       = ( )
     def plan(self):
         return ["hgap.snake",
