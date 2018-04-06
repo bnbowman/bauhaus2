@@ -121,7 +121,7 @@ rule generate_json:
         module use /mnt/software/modulefiles
         module load primary-toolkit
         cd {input.outdir}
-        python ../../scripts/Python/generateJsonReport.py myoutput output
+        python ../../scripts/Python/generateJsonReport.py -p myoutput output
         cd ../..  
         """    
    
