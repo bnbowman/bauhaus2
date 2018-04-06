@@ -15,9 +15,13 @@ class generateJsonReport:
             plot_list = plots
             for plot in plot_list:
                 if op.isfile(plot + ".png"):
-                    zia_plots.append(Plot(plot, plot + ".png",
+                    zia_plots.append(Plot(plot + "_png", plot + ".png",
                                   plot.replace("_", " "), plot.replace("_", " "),
                                   [plot, 'json', 'report', 'png']))
+                if op.isfile(plot + ".svg"):
+                    zia_plots.append(Plot(plot + "_svg", plot + ".svg",
+                                  plot.replace("_", " "), plot.replace("_", " "),
+                                  [plot, 'json', 'report', 'svg']))
         if tables is not None:
             table_list = tables
             for table in table_list:
@@ -33,4 +37,5 @@ parser.add_argument('-t','--table', nargs='+', help='Input Table Names', require
 args = parser.parse_args()
 
 gjr = generateJsonReport()
-gjr.generate_json_report(args.plot, args.table)
+if __name__ == "__main__":
+    gjr.generate_json_report(args.plot, args.table)
