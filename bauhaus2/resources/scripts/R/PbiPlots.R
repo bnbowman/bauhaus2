@@ -181,8 +181,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
             tbl = tbl,
             size = sizes[i],
             replace = replace,
-            weight = weight,
-            .env = .env
+            weight = weight
           ))
       idx <- unlist(sampled) + 1
       grouped_df(tbl[idx, , drop = FALSE], vars = groups(tbl))
