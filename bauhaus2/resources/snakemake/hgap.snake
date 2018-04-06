@@ -21,17 +21,21 @@ csv_results = \
       for c in ct.conditions }
       
 plot_results = \
-    { c : expand("conditions/{condition}/outputs_{condition}/output.png", condition=c)
+    { c : expand("reports/{condition}/output.png", condition=c)
       for c in ct.conditions }
       
 txt_results = \
     { c : expand("conditions/{condition}/fastalengthfile.txt", condition=c)
       for c in ct.conditions }
+      
+json_results = \
+    { c : expand("reports/{condition}/report.json", condition=c)
+      for c in ct.conditions }
 
 # -- Target --
 
 rule collect_csv:
-    input: plot_results.values(),txt_results.values()
+    input: json_results.values()
     
 
 # -- Worker rules ---
@@ -78,22 +82,46 @@ rule generate_mummer_plot:
         deltafile="conditions/{condition}/outputs_{condition}/dnadiff.delta",
         outputdir = "conditions/{condition}/outputs_{condition}"
     output:
-        out_plot = "conditions/{condition}/outputs_{condition}/output.png"
+        indir = "conditions/{condition}/",
+        outdir = "reports/{condition}/",
+        out_plot = "reports/{condition}/output.png"
     shell:
         """
         module load mummer
-        cd {input.outputdir}
-        mummerplot -f -l -t png ../../../{input.deltafile} > ../../../{output.out_plot}
-        cd ../../../
+        mummerplot -f -l -t png {input.deltafile} > {output.out_plot}
         """
+
 rule generate_mummer_table:
     input: 
-        polished_fasta="conditions/{condition}/polished.fasta",
+        indir = "conditions/{condition}/",
+        outdir = "reports/{condition}/",
+        polished_fasta= "conditions/{condition}/polished.fasta",
+        csvfile = "conditions/{condition}/outputs_{condition}/snps.csv"
     output:
         txtfile = "conditions/{condition}/fastalengthfile.txt",
+        rplot = "reports/{condition}/myoutput.png"
     shell:
         """
         module load mummer
         module load exonerate
         fastalength {input.polished_fasta} > {output.txtfile}
+        Rscript --vanilla scripts/R/mummerOneCondition.R --inDir {input.indir} --outDir {input.outdir}
         """    
+        
+rule generate_json:
+    input: 
+        outdir = "reports/{condition}/",
+        rplot = "reports/{condition}/myoutput.png"
+    output:
+        json = "reports/{condition}/report.json"
+    
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module use /mnt/software/modulefiles
+        module load primary-toolkit
+        cd {input.outdir}
+        python ../../scripts/Python/generateJsonReport.py myoutput output
+        cd ../..  
+        """    
+   
