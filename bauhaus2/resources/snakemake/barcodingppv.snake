@@ -23,6 +23,10 @@ remote_barcodeset = \
 local_limaaligned = {
     c: expand("conditions/{condition}/align/align.bam", condition=c)
     for c in ct.conditions}
+    
+local_mapping = {
+    c: expand("conditions/{condition}/mapping.dat", condition=c)
+    for c in ct.conditions}
       
 ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
 
@@ -30,7 +34,8 @@ ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the 
 
 rule lima:
     input:
-        limareport = local_limaaligned.values()
+        limareport = local_limaaligned.values(), 
+        mappingreport = local_mapping.values()
 
 # -- Worker rules --
 
@@ -63,13 +68,13 @@ rule zulu:
     input:  bam = "conditions/{condition}/align/align.bam",
             mappingfile = "conditions/{condition}/mapping.dat"
     output:
-            prefix = "conditions/{condition}/zulu/test.zulu" 
+            zuluoutput = "conditions/{condition}/output.zulu.report" 
     threads: 24
     shell:
         """
         module purge
         module load smrttools/incremental
-        zulu {input.bam} {output.prefix} -l 600 -m $(cat {input.mappingfile}
+        zulu {input.bam} {output.zuluoutput} -l 600 $(cat {input.mappingfile})
         """
        
 rule collect_barcodeset_one_condition:

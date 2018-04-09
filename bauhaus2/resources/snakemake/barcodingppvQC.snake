@@ -7,13 +7,21 @@ from bauhaus2.runtime import ct
 lima_reports = \
     { c : expand("conditions/{condition}/lima/barcoded.lima.report", condition=c)
       for c in ct.conditions }
+local_limaaligned = {
+    c: expand("conditions/{condition}/align/align.bam", condition=c)
+    for c in ct.conditions}
+zulu_report =  \
+    { c : expand("conditions/{condition}/output.zulu.report", condition=c)
+      for c in ct.conditions }
 
 # -- Target rules --
 
 rule barcode_and_qc_report:
     output: "reports/BarcodingQC/report.json"
-    input: lima_reports.values()
+    input: limareport = lima_reports.values(), 
+           localaligned = local_limaaligned.values(),
+           zulureport = zulu_report.values()
     shell:
         """
-        Rscript --vanilla scripts/R/limaReport.R {input}
+        Rscript --vanilla scripts/R/limaReport.R {input.limareport}
         """
