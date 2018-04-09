@@ -18,6 +18,7 @@ from .adapterEvaluation     import *
 from .cas9Yield       import *
 from .sv       import *
 from .hgap       import *
+from .missingadapter        import *
 from bauhaus2 import Workflow
 
 availableWorkflows = \
