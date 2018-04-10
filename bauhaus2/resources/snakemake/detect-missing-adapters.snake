@@ -11,7 +11,7 @@ local_fasta_files = \
       for c in ct.conditions }
       
 missing_adapter_reports = \
-    { c : expand("reports/MissingAdapter/{condition}/missing_adapter.csv", condition=c)
+    { c : expand("reports/MissingAdapter/{condition}/report.json", condition=c)
       for c in ct.conditions }
 
 # -- Target rules --
@@ -37,11 +37,43 @@ rule collect_bam_file:
         """
 
 rule missing_adapter_reports_one_condition:
-    input: subreadset="conditions/{condition}/subreads/input.bam",
+    input: subreadset="conditions/{condition}/subreads/input.subreadset.xml",
            reference="conditions/{condition}/reference.fasta"
-    output: "reports/MissingAdapter/{condition}/missing_adapter.csv"
+    output: "reports/MissingAdapter/{condition}/missing_adapter.csv",
+            "reports/MissingAdapter/{condition}/missing_adapter.txt"
+    params: outdir="reports/MissingAdapter/{condition}"
     shell:
         """
         module load pbqctools
-        pbQcAdapters --zia=missing_adapter.csv --adapterReport=missing_adapter.txt --sampleSize="all" {input.reference} {input.subreadset}
+        cd {params.outdir}
+        pbQcAdapters --zia=missing_adapter.csv --adapterReport=missing_adapter.txt --sampleSize="all" ../../../{input.reference} ../../../{input.subreadset}
+        cd ../../..
+        """
+        
+rule missing_adapter_plots_one_condition:
+    input: subreadset="conditions/{condition}/subreads/input.subreadset.xml",
+           data="reports/MissingAdapter/{condition}/missing_adapter.txt"
+    output: plot="reports/MissingAdapter/{condition}/sop.png"
+    params: tag="{condition}"
+    shell:
+        """
+        Rscript --vanilla scripts/R/missingAdapter.R --subreadset {input.subreadset} --txtReport {input.data} --tag {params.tag} --output {output.plot}
+        """
+        
+rule missing_adapter_json_one_condition:
+    input: 
+        rplot="reports/MissingAdapter/{condition}/sop.png"
+    output:
+        json="reports/MissingAdapter/{condition}/report.json"
+    params:
+        outdir="reports/MissingAdapter/{condition}"
+    
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module use /mnt/software/modulefiles
+        module load primary-toolkit
+        cd {params.outdir}
+        python ../../../scripts/Python/generateJsonReport.py -p sop
+        cd ../../..  
         """

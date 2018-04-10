@@ -10,7 +10,10 @@ class MissingAdapterWorkflow(Workflow):
     WORKFLOW_NAME        = "MissingAdapter"
     CONDITION_TABLE_TYPE = ResequencingConditionTable
     SMRTPIPE_PRESETS     = ("extras/pbsmrtpipe-mappings-preset.xml",)
-    R_SCRIPTS            = ("R/Bauhaus2.R", )
+    R_SCRIPTS            = ("R/Bauhaus2.R", 
+                            "R/missingAdapter.R")
+    PYTHON_SCRIPTS       = ("Python/generateJsonReport.py",)
+                            
     def plan(self):
         return ["detect-missing-adapters.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)
