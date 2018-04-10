@@ -44,7 +44,7 @@ rule lima_one_condition:
             barcodeset = "conditions/{condition}/barcodeset.fasta"
     output:
         bam= "conditions/{condition}/lima/barcoded.bam",  
-        limaReport="conditions/{condition}/lima/barcoded.lima.report"       
+        limaReport="conditions/{condition}/lima/barcoded.lima.report"
     threads: 24
     shell:
         """
@@ -57,7 +57,8 @@ rule lima_align:
     input:  bam= "conditions/{condition}/lima/barcoded.bam",
             reference = "conditions/{condition}/reference.fasta"
     output:
-        bam = "conditions/{condition}/align/align.bam"  
+        bam = "conditions/{condition}/align/align.bam",
+        outdir = "conditions/{condition}/"
     threads: 24
     shell:
         """
@@ -66,15 +67,18 @@ rule lima_align:
         """
 rule zulu:
     input:  bam = "conditions/{condition}/align/align.bam",
-            mappingfile = "conditions/{condition}/mapping.dat"
+            mappingfile = "conditions/{condition}/mapping.dat",
+            outdir = "conditions/{condition}/"
     output:
-            zuluoutput = "conditions/{condition}/output.zulu.report" 
+            zuluoutput = "conditions/{condition}/zulu.report"
     threads: 24
     shell:
         """
         module purge
         module load smrttools/incremental
-        zulu {input.bam} {output.zuluoutput} -l 600 $(cat {input.mappingfile})
+        cd {input.outdir}
+        zulu ../../{input.bam} ../../{output.zuluoutput} -l 600 $(cat ../../{input.mappingfile})
+        cd ../.. 
         """
        
 rule collect_barcodeset_one_condition:
