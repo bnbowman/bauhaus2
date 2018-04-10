@@ -20,21 +20,22 @@ rule missing_adapter_reports:
     input:
         MissingAdapterReports=missing_adapter_reports.values(),
 
-rule collect_bam_file:
-    input:
-        xml="conditions/{condition}/subreads/input.subreadset.xml"
-    output:
-        bam="conditions/{condition}/subreads/input.bam",
-        pbi="conditions/{condition}/subreads/input.bam.pbi",
-    shell:
-        """
-        module load xpath
-        xml={input.xml}
-        bam="$(xpath -q -e '(//pbbase:ExternalResource[@MetaType="PacBio.SubreadFile.SubreadBamFile"]/@ResourceId)[1]' $xml | awk -F '[""]' '{{print $2}}')"
-        ln -s $bam {output.bam}
-        bam+=".pbi"
-        ln -s $bam {output.pbi}
-        """
+# This is not necessary after pbQcAdapters was updated to accept both xml and bam files
+# rule collect_bam_file:
+#    input:
+#        xml="conditions/{condition}/subreads/input.subreadset.xml"
+#    output:
+#        bam="conditions/{condition}/subreads/input.bam",
+#        pbi="conditions/{condition}/subreads/input.bam.pbi",
+#    shell:
+#        """
+#        module load xpath
+#        xml={input.xml}
+#        bam="$(xpath -q -e '(//pbbase:ExternalResource[@MetaType="PacBio.SubreadFile.SubreadBamFile"]/@ResourceId)[1]' $xml | awk -F '[""]' '{{print $2}}')"
+#        ln -s $bam {output.bam}
+#        bam+=".pbi"
+#        ln -s $bam {output.pbi}
+#        """
 
 rule missing_adapter_reports_one_condition:
     input: subreadset="conditions/{condition}/subreads/input.subreadset.xml",
