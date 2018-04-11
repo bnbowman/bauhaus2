@@ -81,6 +81,7 @@ rule IGVbam:
         dataset consolidate {input} $LTMPDIR/consolidated.bam $LTMPDIR/consolidated.alignmentset.xml
         cat <(samtools view -H $LTMPDIR/consolidated.bam | awk -v ziadir=`realpath {params.ziadir}` '{{ OFS="\t"; if($1=="@RG") {{ for(i=2;i<=NF;i++) {{ if(substr($i,1,3)=="DS:") $i=$i";ZIADIR=" ziadir; }} }} print $0; }}') <(samtools view -x dq -x dt -x iq -x mq -x pa -x pc -x pd -x pe -x pg -x pm -x pq -x pt -x pv -x px -x sf -x sq -x st $LTMPDIR/consolidated.bam) | samtools view -S -b > {output}
         samtools index {output}
+        rm -rf $LTMPDIR
         """
 
 """make sure we're done with everything, we'll glob up the log files in
