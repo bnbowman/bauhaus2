@@ -2,7 +2,7 @@ library(argparse)
 library(ggplot2)
 library(pbbamr)
 library(gridExtra)
-library(reshape)
+library(reshape2)
 
 parser <- ArgumentParser()
 parser$add_argument("--subreadset",
