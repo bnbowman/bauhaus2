@@ -170,6 +170,7 @@ rule run_baz2bam:
         ln -sf `pwd`/{params.prefix}.sts.h5 `pwd`/{output.stsh5}
         ln -sf `pwd`/{params.prefix}.sts.xml `pwd`/{output.stsxml}
         module load smrtlink/siv
+        echo "note: not to panic if conditional below is empty; it is a noop."
         if [ {params.toCopy} ] ;
         then mkdir -p {params.toCopy} ;
         dataset copyto {output.sset} \
