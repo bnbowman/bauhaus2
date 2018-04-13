@@ -3,7 +3,7 @@ set -euo pipefail
 
 source /mnt/software/Modules/current/init/bash
 module load python/3.5.1
-module load virtualenv/13.0.1
+module load virtualenv/15.1.0
 
 virtualenv -p python3.5 ./VE
 source ./VE/bin/activate
