@@ -131,17 +131,39 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
 makeAccuracyDensityPlots <- function(report, cd) {
   loginfo("Making Accuracy Density Plots")
   tp = ggplot(cd, aes(x = Accuracy, colour = Condition)) + geom_density(alpha = .5) + plTheme + clScale +
-    labs(x = "Accuracy (1 - Mean Errors Per Template Position)", title = "Accuracy by Condition")
+    labs(x = "Accuracy (1 - Mean Errors Per Template Position)", title = "Accuracy by Condition (all ZMWs included)")
   report$ggsave(
     "acc_density.png",
     tp,
     width = plotwidth,
     height = plotheight,
     id = "acc_density",
-    title = "Accuracy Distribution",
-    caption = "Accuracy Distribution",
+    title = "Accuracy Distribution (all ZMWs included)",
+    caption = "Accuracy Distribution (all ZMWs included)",
     tags = c("basic", "pbiplots", "density", "accuracy"),
     uid = "0030005"
+  )
+  
+  loginfo("Making Accuracy Box Plots")
+  tp = ggplot(cd, aes(x = Condition, y = Accuracy, colour = Condition)) + geom_boxplot() + stat_summary(
+    fun.y = median,
+    colour = "black",
+    geom = "text",
+    show.legend = FALSE,
+    vjust = -0.6,
+    aes(label = round(..y.., digits = 4))
+  ) + plTheme + clScale +
+    labs(x = "Accuracy (1 - Mean Errors Per Template Position)", title = "Accuracy by Condition (all ZMWs included)")
+  report$ggsave(
+    "acc_boxplot.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "acc_boxplot",
+    title = "Accuracy Boxplot (all ZMWs included)",
+    caption = "Accuracy Boxplot (all ZMWs included)",
+    tags = c("basic", "pbiplots", "boxplot", "accuracy"),
+    uid = "0030019"
   )
   
   # loginfo("Making Accuracy Violin Plots")

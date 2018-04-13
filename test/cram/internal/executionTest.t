@@ -489,6 +489,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- PbiPlots
   |   |   |-- acc_accvrl.png
   |   |   |-- acc_accvtl.png
+  |   |   |-- acc_boxplot.png
   |   |   |-- acc_density.png
   |   |   |-- alen_pol_density.png
   |   |   |-- alen_subread_density.png
@@ -589,7 +590,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 536 files
+  36 directories, 537 files
 
 
 
