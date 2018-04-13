@@ -4,7 +4,11 @@ set -euo pipefail
 source /mnt/software/Modules/current/init/bash
 module load python/3.5.1
 module load virtualenv/15.1.0
-rm -rf VE
+if [[ -v PS1 ]]; then
+  : # noop
+else
+  PS1='> '
+fi
 
 virtualenv -p python3.5 ./VE
 source ./VE/bin/activate
