@@ -23,4 +23,4 @@ python setup.py install
 echo "#################"
 echo "# Running tests #"
 echo "#################"
-make -j8 all-tests
+make -j2 all-tests
