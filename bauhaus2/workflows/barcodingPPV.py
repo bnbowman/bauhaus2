@@ -19,7 +19,9 @@ class BarcodingPPVWorkflow(Workflow):
     WORKFLOW_NAME = "BarcodingPPV"
     CONDITION_TABLE_TYPE = LimaConditionTable2
     R_SCRIPTS = ("R/limaReport.R",
+                 "R/ppv_zmw.R",
                  "R/Bauhaus2.R")
+    PYTHON_SCRIPTS       = ("Python/generateJsonReport.py",)
 
     def plan(self):
         return ["barcodingppvQC.snake"] + \

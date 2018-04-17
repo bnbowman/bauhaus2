@@ -7,8 +7,8 @@ local_subreadset = {
               condition=c)
     for c in ct.conditions}
     
-local_limareport = {
-    c: expand("conditions/{condition}/lima/lima.report",
+local_limasummary = {
+    c: expand("conditions/{condition}/lima/barcoded.lima.summary",
               condition=c)
     for c in ct.conditions}
     
@@ -27,8 +27,9 @@ local_limaaligned = {
 local_mapping = {
     c: expand("conditions/{condition}/mapping.dat", condition=c)
     for c in ct.conditions}
-      
-ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
+    
+ct_prefix = ct.prefix(ct.conditions[0])
+ct_prefix2 = ct.prefix2(ct.conditions[0])
 
 # -- Target rules --
 
@@ -44,7 +45,8 @@ rule lima_one_condition:
             barcodeset = "conditions/{condition}/barcodeset.fasta"
     output:
         bam= "conditions/{condition}/lima/barcoded.bam",  
-        limaReport="conditions/{condition}/lima/barcoded.lima.report"
+        limaReport="conditions/{condition}/lima/barcoded.lima.report",
+        limasummary = "conditions/{condition}/lima/barcoded.lima.summary"
     threads: 24
     shell:
         """
@@ -70,7 +72,8 @@ rule zulu:
             mappingfile = "conditions/{condition}/mapping.dat",
             outdir = "conditions/{condition}/"
     output:
-            zuluoutput = "conditions/{condition}/zulu.report"
+            zuluoutput = "conditions/{condition}/zulu.report",
+            zuluoutput2 = "conditions/{condition}/zulu.bq_ppv"
     threads: 24
     shell:
         """
@@ -91,3 +94,39 @@ rule collect_barcodeset_one_condition:
         ln -s {input.barcode} {output.barcode}
         """
         
+rule barcode_and_qc_report:
+    input:  zulu_output = "conditions/{condition}/zulu.bq_ppv",
+            limareport = "conditions/{condition}/lima/barcoded.lima.summary",
+            dir = "conditions/{condition}/"
+    output: limaplot = "conditions/{condition}/{condition}.yield_vs_ppv.png",
+            outdir = "reports/{condition}/"
+    params:
+        tag = "{condition}"
+    shell:
+        """
+        cd {input.dir}
+        Rscript --vanilla ../../scripts/R/ppv_zmw.R {ct_prefix2} ../../{input.zulu_output} {params.tag} ../../{input.limareport}
+        cd ../..
+        """
+        
+rule generate_json:
+    input: 
+        outdir1 = "reports/{condition}/",
+        outdir2 = "conditions/{condition}/",
+        rplot = "conditions/{condition}/{condition}.yield_vs_ppv.png"
+    output:
+        json = "reports/{condition}/report.json"
+    params:
+        tag1 = "{condition}.yield_vs_ppv",
+        tag2 = "{condition}.yield_vs_ppv.png"
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module use /mnt/software/modulefiles
+        module load primary-toolkit
+        cd {input.outdir2}
+        python ../../scripts/Python/generateJsonReport.py -p {params.tag1}
+        cp report.json ../../{input.outdir1}
+        cp {params.tag2} ../../{input.outdir1}
+        cd ../..  
+        """    
