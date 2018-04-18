@@ -300,36 +300,54 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- tlen_box.png
   |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
+  |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_DelRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_InsRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_MisRateInHomopolymerRegions.png
   |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_Prob_From_Ins_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_Prob_HP_Burst.png
   |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_Prob_HP_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_Prob_Ins_Burst.png
   |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_Prob_Pause_Burst.png
   |   |   |-- All5Mer.V2.01.bc_01_circular_22x_l50600_Prob_Pause_Burst_to_Normal.png
+  |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_DelRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_InsRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_MisRateInHomopolymerRegions.png
   |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_Prob_From_Ins_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_Prob_HP_Burst.png
   |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_Prob_HP_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_Prob_Ins_Burst.png
   |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_Prob_Pause_Burst.png
   |   |   |-- All5Mer.V2.02.bc_02_circular_22x_l50600_Prob_Pause_Burst_to_Normal.png
+  |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_DelRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_InsRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_MisRateInHomopolymerRegions.png
   |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_Prob_From_Ins_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_Prob_HP_Burst.png
   |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_Prob_HP_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_Prob_Ins_Burst.png
   |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_Prob_Pause_Burst.png
   |   |   |-- All5Mer.V2.03.bc_03_circular_22x_l50600_Prob_Pause_Burst_to_Normal.png
+  |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_DelRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_InsRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_MisRateInHomopolymerRegions.png
   |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_Prob_From_Ins_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_Prob_HP_Burst.png
   |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_Prob_HP_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_Prob_Ins_Burst.png
   |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_Prob_Pause_Burst.png
   |   |   |-- All5Mer.V2.05.bc_05_circular_22x_l50600_Prob_Pause_Burst_to_Normal.png
+  |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_DelRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_InsRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_MisRateInHomopolymerRegions.png
   |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_Prob_From_Ins_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_Prob_HP_Burst.png
   |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_Prob_HP_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_Prob_Ins_Burst.png
   |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_Prob_Pause_Burst.png
   |   |   |-- All5Mer.V2.06.bc_06_circular_22x_l50600_Prob_Pause_Burst_to_Normal.png
+  |   |   |-- All5Mer.V2.07.bc_07_circular_22x_l50600_DelRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.07.bc_07_circular_22x_l50600_InsRateInHomopolymerRegions.png
+  |   |   |-- All5Mer.V2.07.bc_07_circular_22x_l50600_MisRateInHomopolymerRegions.png
   |   |   |-- All5Mer.V2.07.bc_07_circular_22x_l50600_Prob_From_Ins_Burst_to_Normal.png
   |   |   |-- All5Mer.V2.07.bc_07_circular_22x_l50600_Prob_HP_Burst.png
   |   |   |-- All5Mer.V2.07.bc_07_circular_22x_l50600_Prob_HP_Burst_to_Normal.png
@@ -427,5 +445,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  26 directories, 384 files
+  26 directories, 402 files
 

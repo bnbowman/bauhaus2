@@ -12,13 +12,16 @@ Generate mapping reports workflow, starting from trace files and basecallers
   Generated runnable workflow to "primary-refarm"
 
   $ (cd primary-refarm && ./run.sh >/dev/null 2>&1)
+  [1]
 
 
   $ tree -I __pycache__ primary-refarm
   primary-refarm
   |-- benchmarks
+  |   |-- HQLib_igvbam.tsv
   |   |-- HQLib_postprimary.tsv
   |   |-- HQLib_primary.tsv
+  |   |-- HQunrolled_igvbam.tsv
   |   |-- HQunrolled_postprimary.tsv
   |   |-- HQunrolled_primary.tsv
   |   |-- accdelta.tsv
@@ -62,7 +65,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped.chunk7.alignmentset.xml
-  |   |   |   `-- mapped.alignmentset.xml
+  |   |   |   |-- mapped.alignmentset.xml
+  |   |   |   |-- mapped.bam
+  |   |   |   `-- mapped.bam.bai
   |   |   |-- primary
   |   |   |   |-- input.adapters.fasta -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.adapters.fasta
   |   |   |   |-- input.baz
@@ -132,7 +137,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped.chunk7.alignmentset.xml
-  |   |   |   `-- mapped.alignmentset.xml
+  |   |   |   |-- mapped.alignmentset.xml
+  |   |   |   |-- mapped.bam
+  |   |   |   `-- mapped.bam.bai
   |   |   |-- primary
   |   |   |   |-- input.adapters.fasta -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.adapters.fasta
   |   |   |   |-- input.baz
@@ -242,6 +249,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |-- prefix.sh
   |-- reports
   |   |-- AccDeltaPlots
+  |   |   |-- AccDelta.average_accuracy.png
+  |   |   |-- AccDelta.per_read.csv
+  |   |   |-- AccDelta.read_accuracies.png
   |   |   |-- report.json
   |   |   `-- traceviewer_links.txt
   |   |-- AlignmentBasedHeatmaps
@@ -337,20 +347,9 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- tStart_HQunrolled.png
   |   |   `-- tStart_noHQunrolled.png
   |   |-- ConstantArrowFishbonePlots
-  |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
-  |   |   |-- fishboneplot_deletion.png
-  |   |   |-- fishboneplot_deletion_enlarged.png
-  |   |   |-- fishboneplot_insertion.png
-  |   |   |-- fishboneplot_insertion_enlarged.png
-  |   |   |-- fishboneplot_merge.png
-  |   |   |-- fishboneplot_merge_enlarged.png
-  |   |   |-- fishboneplot_mismatch.png
-  |   |   |-- fishboneplot_mismatch_enlarged.png
-  |   |   |-- mapped-metrics.csv
   |   |   |-- modelReport.json
-  |   |   |-- report.Rd
-  |   |   `-- report.json
+  |   |   `-- report.Rd
   |   |-- LibDiagnosticPlots
   |   |   |-- HQLib_Tau_Estimates.csv
   |   |   |-- HQunrolled_Tau_Estimates.csv
@@ -460,6 +459,7 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |-- PbiPlots
   |   |   |-- acc_accvrl.png
   |   |   |-- acc_accvtl.png
+  |   |   |-- acc_boxplot.png
   |   |   |-- acc_density.png
   |   |   |-- alen_pol_density.png
   |   |   |-- alen_subread_density.png
@@ -480,12 +480,11 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- tlen_box.png
   |   |   `-- tlen_density.png
   |   |-- PbiSampledPlots
-  |   |   |-- Prob_From_Ins_Burst_to_Normal.png
-  |   |   |-- Prob_HP_Burst.png
-  |   |   |-- Prob_HP_Burst_to_Normal.png
-  |   |   |-- Prob_Ins_Burst.png
-  |   |   |-- Prob_Pause_Burst.png
-  |   |   |-- Prob_Pause_Burst_to_Normal.png
+  |   |   |-- 11k_pbell_H1-6_ScaI_DelRateInHomopolymerRegions.png
+  |   |   |-- 11k_pbell_H1-6_ScaI_InsRateInHomopolymerRegions.png
+  |   |   |-- 11k_pbell_H1-6_ScaI_MisRateInHomopolymerRegions.png
+  |   |   |-- PolRate_by_time.png
+  |   |   |-- active_zmw_normalized.png
   |   |   |-- bperr_rate_by_snr.png
   |   |   |-- bpmm_rate_by_snr.png
   |   |   |-- dutycycle_boxplot.png
@@ -533,9 +532,6 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- snrvsmismatch.png
   |   |   |-- tlenvsendtime.png
   |   |   `-- tlenvsstarttime.png
-  |   |-- PrimaryRuntime
-  |   |   |-- report.json
-  |   |   `-- runtimes.total_times.png
   |   |-- ReadPlots
   |   |   |-- clip_rate.png
   |   |   |-- deletion_norm.png
@@ -548,340 +544,15 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   |-- ZMWstsPlots
-  |   |   |-- BaseFraction_A_HQLib_P1.png
-  |   |   |-- BaseFraction_A_HQunrolled_P1.png
-  |   |   |-- BaseFraction_A_noHQunrolled_P1.png
-  |   |   |-- BaseFraction_C_HQLib_P1.png
-  |   |   |-- BaseFraction_C_HQunrolled_P1.png
-  |   |   |-- BaseFraction_C_noHQunrolled_P1.png
-  |   |   |-- BaseFraction_G_HQLib_P1.png
-  |   |   |-- BaseFraction_G_HQunrolled_P1.png
-  |   |   |-- BaseFraction_G_noHQunrolled_P1.png
-  |   |   |-- BaseFraction_T_HQLib_P1.png
-  |   |   |-- BaseFraction_T_HQunrolled_P1.png
-  |   |   |-- BaseFraction_T_noHQunrolled_P1.png
-  |   |   |-- BaseIpd_HQLib_P1.png
-  |   |   |-- BaseIpd_HQunrolled_P1.png
-  |   |   |-- BaseIpd_noHQunrolled_P1.png
-  |   |   |-- BaseRate_HQLib_P1.png
-  |   |   |-- BaseRate_HQunrolled_P1.png
-  |   |   |-- BaseRate_noHQunrolled_P1.png
-  |   |   |-- BaseWidth_HQLib_P1.png
-  |   |   |-- BaseWidth_HQunrolled_P1.png
-  |   |   |-- BaseWidth_noHQunrolled_P1.png
   |   |   |-- BaselineLevelBoxNoViolin.png
   |   |   |-- BaselineLevelCDF.png
   |   |   |-- BaselineLevelCDFlog.png
   |   |   |-- BaselineLevelDensity.png
-  |   |   |-- BaselineLevel_Green_HQLib_P0.png
-  |   |   |-- BaselineLevel_Green_HQLib_P1.png
-  |   |   |-- BaselineLevel_Green_HQLib_P2.png
-  |   |   |-- BaselineLevel_Green_HQunrolled_P0.png
-  |   |   |-- BaselineLevel_Green_HQunrolled_P1.png
-  |   |   |-- BaselineLevel_Green_HQunrolled_P2.png
-  |   |   |-- BaselineLevel_Green_noHQunrolled_P0.png
-  |   |   |-- BaselineLevel_Green_noHQunrolled_P1.png
-  |   |   |-- BaselineLevel_Green_noHQunrolled_P2.png
-  |   |   |-- BaselineLevel_Red_HQLib_P0.png
-  |   |   |-- BaselineLevel_Red_HQLib_P1.png
-  |   |   |-- BaselineLevel_Red_HQLib_P2.png
-  |   |   |-- BaselineLevel_Red_HQunrolled_P0.png
-  |   |   |-- BaselineLevel_Red_HQunrolled_P1.png
-  |   |   |-- BaselineLevel_Red_HQunrolled_P2.png
-  |   |   |-- BaselineLevel_Red_noHQunrolled_P0.png
-  |   |   |-- BaselineLevel_Red_noHQunrolled_P1.png
-  |   |   |-- BaselineLevel_Red_noHQunrolled_P2.png
-  |   |   |-- BaselineStd_Green_HQLib_P0.png
-  |   |   |-- BaselineStd_Green_HQLib_P1.png
-  |   |   |-- BaselineStd_Green_HQLib_P2.png
-  |   |   |-- BaselineStd_Green_HQunrolled_P0.png
-  |   |   |-- BaselineStd_Green_HQunrolled_P1.png
-  |   |   |-- BaselineStd_Green_HQunrolled_P2.png
-  |   |   |-- BaselineStd_Green_noHQunrolled_P0.png
-  |   |   |-- BaselineStd_Green_noHQunrolled_P1.png
-  |   |   |-- BaselineStd_Green_noHQunrolled_P2.png
-  |   |   |-- BaselineStd_Red_HQLib_P0.png
-  |   |   |-- BaselineStd_Red_HQLib_P1.png
-  |   |   |-- BaselineStd_Red_HQLib_P2.png
-  |   |   |-- BaselineStd_Red_HQunrolled_P0.png
-  |   |   |-- BaselineStd_Red_HQunrolled_P1.png
-  |   |   |-- BaselineStd_Red_HQunrolled_P2.png
-  |   |   |-- BaselineStd_Red_noHQunrolled_P0.png
-  |   |   |-- BaselineStd_Red_noHQunrolled_P1.png
-  |   |   |-- BaselineStd_Red_noHQunrolled_P2.png
-  |   |   |-- Count_HQLib_P0.png
-  |   |   |-- Count_HQLib_P1.png
-  |   |   |-- Count_HQLib_P2.png
-  |   |   |-- Count_HQunrolled_P0.png
-  |   |   |-- Count_HQunrolled_P1.png
-  |   |   |-- Count_HQunrolled_P2.png
-  |   |   |-- Count_noHQunrolled_P0.png
-  |   |   |-- Count_noHQunrolled_P1.png
-  |   |   |-- Count_noHQunrolled_P2.png
-  |   |   |-- DyeAngle_A_HQLib_P1.png
-  |   |   |-- DyeAngle_A_HQunrolled_P1.png
-  |   |   |-- DyeAngle_A_noHQunrolled_P1.png
-  |   |   |-- DyeAngle_C_HQLib_P1.png
-  |   |   |-- DyeAngle_C_HQunrolled_P1.png
-  |   |   |-- DyeAngle_C_noHQunrolled_P1.png
-  |   |   |-- DyeAngle_G_HQLib_P1.png
-  |   |   |-- DyeAngle_G_HQunrolled_P1.png
-  |   |   |-- DyeAngle_G_noHQunrolled_P1.png
-  |   |   |-- DyeAngle_T_HQLib_P1.png
-  |   |   |-- DyeAngle_T_HQunrolled_P1.png
-  |   |   |-- DyeAngle_T_noHQunrolled_P1.png
-  |   |   |-- HQBaselineLevel_Green_HQLib_P0.png
-  |   |   |-- HQBaselineLevel_Green_HQLib_P1.png
-  |   |   |-- HQBaselineLevel_Green_HQLib_P2.png
-  |   |   |-- HQBaselineLevel_Green_HQunrolled_P0.png
-  |   |   |-- HQBaselineLevel_Green_HQunrolled_P1.png
-  |   |   |-- HQBaselineLevel_Green_HQunrolled_P2.png
-  |   |   |-- HQBaselineLevel_Green_noHQunrolled_P0.png
-  |   |   |-- HQBaselineLevel_Green_noHQunrolled_P1.png
-  |   |   |-- HQBaselineLevel_Green_noHQunrolled_P2.png
-  |   |   |-- HQBaselineLevel_Red_HQLib_P0.png
-  |   |   |-- HQBaselineLevel_Red_HQLib_P1.png
-  |   |   |-- HQBaselineLevel_Red_HQLib_P2.png
-  |   |   |-- HQBaselineLevel_Red_HQunrolled_P0.png
-  |   |   |-- HQBaselineLevel_Red_HQunrolled_P1.png
-  |   |   |-- HQBaselineLevel_Red_HQunrolled_P2.png
-  |   |   |-- HQBaselineLevel_Red_noHQunrolled_P0.png
-  |   |   |-- HQBaselineLevel_Red_noHQunrolled_P1.png
-  |   |   |-- HQBaselineLevel_Red_noHQunrolled_P2.png
-  |   |   |-- HQBaselineStd_Green_HQLib_P0.png
-  |   |   |-- HQBaselineStd_Green_HQLib_P1.png
-  |   |   |-- HQBaselineStd_Green_HQLib_P2.png
-  |   |   |-- HQBaselineStd_Green_HQunrolled_P0.png
-  |   |   |-- HQBaselineStd_Green_HQunrolled_P1.png
-  |   |   |-- HQBaselineStd_Green_HQunrolled_P2.png
-  |   |   |-- HQBaselineStd_Green_noHQunrolled_P0.png
-  |   |   |-- HQBaselineStd_Green_noHQunrolled_P1.png
-  |   |   |-- HQBaselineStd_Green_noHQunrolled_P2.png
-  |   |   |-- HQBaselineStd_Red_HQLib_P0.png
-  |   |   |-- HQBaselineStd_Red_HQLib_P1.png
-  |   |   |-- HQBaselineStd_Red_HQLib_P2.png
-  |   |   |-- HQBaselineStd_Red_HQunrolled_P0.png
-  |   |   |-- HQBaselineStd_Red_HQunrolled_P1.png
-  |   |   |-- HQBaselineStd_Red_HQunrolled_P2.png
-  |   |   |-- HQBaselineStd_Red_noHQunrolled_P0.png
-  |   |   |-- HQBaselineStd_Red_noHQunrolled_P1.png
-  |   |   |-- HQBaselineStd_Red_noHQunrolled_P2.png
-  |   |   |-- HQPkmid_A_HQLib_P0.png
-  |   |   |-- HQPkmid_A_HQLib_P1.png
-  |   |   |-- HQPkmid_A_HQLib_P2.png
-  |   |   |-- HQPkmid_A_HQunrolled_P0.png
-  |   |   |-- HQPkmid_A_HQunrolled_P1.png
-  |   |   |-- HQPkmid_A_HQunrolled_P2.png
-  |   |   |-- HQPkmid_A_noHQunrolled_P0.png
-  |   |   |-- HQPkmid_A_noHQunrolled_P1.png
-  |   |   |-- HQPkmid_A_noHQunrolled_P2.png
-  |   |   |-- HQPkmid_C_HQLib_P0.png
-  |   |   |-- HQPkmid_C_HQLib_P1.png
-  |   |   |-- HQPkmid_C_HQLib_P2.png
-  |   |   |-- HQPkmid_C_HQunrolled_P0.png
-  |   |   |-- HQPkmid_C_HQunrolled_P1.png
-  |   |   |-- HQPkmid_C_HQunrolled_P2.png
-  |   |   |-- HQPkmid_C_noHQunrolled_P0.png
-  |   |   |-- HQPkmid_C_noHQunrolled_P1.png
-  |   |   |-- HQPkmid_C_noHQunrolled_P2.png
-  |   |   |-- HQPkmid_G_HQLib_P0.png
-  |   |   |-- HQPkmid_G_HQLib_P1.png
-  |   |   |-- HQPkmid_G_HQLib_P2.png
-  |   |   |-- HQPkmid_G_HQunrolled_P0.png
-  |   |   |-- HQPkmid_G_HQunrolled_P1.png
-  |   |   |-- HQPkmid_G_HQunrolled_P2.png
-  |   |   |-- HQPkmid_G_noHQunrolled_P0.png
-  |   |   |-- HQPkmid_G_noHQunrolled_P1.png
-  |   |   |-- HQPkmid_G_noHQunrolled_P2.png
-  |   |   |-- HQPkmid_T_HQLib_P0.png
-  |   |   |-- HQPkmid_T_HQLib_P1.png
-  |   |   |-- HQPkmid_T_HQLib_P2.png
-  |   |   |-- HQPkmid_T_HQunrolled_P0.png
-  |   |   |-- HQPkmid_T_HQunrolled_P1.png
-  |   |   |-- HQPkmid_T_HQunrolled_P2.png
-  |   |   |-- HQPkmid_T_noHQunrolled_P0.png
-  |   |   |-- HQPkmid_T_noHQunrolled_P1.png
-  |   |   |-- HQPkmid_T_noHQunrolled_P2.png
-  |   |   |-- HQRegionEndTime_HQLib_P1.png
-  |   |   |-- HQRegionEndTime_HQunrolled_P1.png
-  |   |   |-- HQRegionEndTime_noHQunrolled_P1.png
-  |   |   |-- HQRegionEnd_HQLib_P1.png
-  |   |   |-- HQRegionEnd_HQunrolled_P1.png
-  |   |   |-- HQRegionEnd_noHQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_A_HQLib_P0.png
-  |   |   |-- HQRegionSnrMean_A_HQLib_P1.png
-  |   |   |-- HQRegionSnrMean_A_HQLib_P2.png
-  |   |   |-- HQRegionSnrMean_A_HQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_A_HQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_A_HQunrolled_P2.png
-  |   |   |-- HQRegionSnrMean_A_noHQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_A_noHQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_A_noHQunrolled_P2.png
-  |   |   |-- HQRegionSnrMean_C_HQLib_P0.png
-  |   |   |-- HQRegionSnrMean_C_HQLib_P1.png
-  |   |   |-- HQRegionSnrMean_C_HQLib_P2.png
-  |   |   |-- HQRegionSnrMean_C_HQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_C_HQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_C_HQunrolled_P2.png
-  |   |   |-- HQRegionSnrMean_C_noHQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_C_noHQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_C_noHQunrolled_P2.png
-  |   |   |-- HQRegionSnrMean_G_HQLib_P0.png
-  |   |   |-- HQRegionSnrMean_G_HQLib_P1.png
-  |   |   |-- HQRegionSnrMean_G_HQLib_P2.png
-  |   |   |-- HQRegionSnrMean_G_HQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_G_HQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_G_HQunrolled_P2.png
-  |   |   |-- HQRegionSnrMean_G_noHQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_G_noHQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_G_noHQunrolled_P2.png
-  |   |   |-- HQRegionSnrMean_T_HQLib_P0.png
-  |   |   |-- HQRegionSnrMean_T_HQLib_P1.png
-  |   |   |-- HQRegionSnrMean_T_HQLib_P2.png
-  |   |   |-- HQRegionSnrMean_T_HQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_T_HQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_T_HQunrolled_P2.png
-  |   |   |-- HQRegionSnrMean_T_noHQunrolled_P0.png
-  |   |   |-- HQRegionSnrMean_T_noHQunrolled_P1.png
-  |   |   |-- HQRegionSnrMean_T_noHQunrolled_P2.png
-  |   |   |-- HQRegionStartTime_HQLib_P1.png
-  |   |   |-- HQRegionStartTime_HQunrolled_P1.png
-  |   |   |-- HQRegionStartTime_noHQunrolled_P1.png
-  |   |   |-- HQRegionStart_HQLib_P1.png
-  |   |   |-- HQRegionStart_HQunrolled_P1.png
-  |   |   |-- HQRegionStart_noHQunrolled_P1.png
-  |   |   |-- InsertReadLength_HQLib_P1.png
-  |   |   |-- InsertReadLength_HQunrolled_P1.png
-  |   |   |-- InsertReadLength_noHQunrolled_P1.png
-  |   |   |-- Loading_HQLib_P0.png
-  |   |   |-- Loading_HQLib_P1.png
-  |   |   |-- Loading_HQLib_P2.png
-  |   |   |-- Loading_HQunrolled_P0.png
-  |   |   |-- Loading_HQunrolled_P1.png
-  |   |   |-- Loading_HQunrolled_P2.png
-  |   |   |-- Loading_noHQunrolled_P0.png
-  |   |   |-- Loading_noHQunrolled_P1.png
-  |   |   |-- Loading_noHQunrolled_P2.png
-  |   |   |-- LocalBaseRate_HQLib_P1.png
-  |   |   |-- LocalBaseRate_HQunrolled_P1.png
-  |   |   |-- LocalBaseRate_noHQunrolled_P1.png
-  |   |   |-- MedianInsertLength_HQLib_P1.png
-  |   |   |-- MedianInsertLength_HQunrolled_P1.png
-  |   |   |-- MedianInsertLength_noHQunrolled_P1.png
-  |   |   |-- NumBases_HQLib_P0.png
-  |   |   |-- NumBases_HQLib_P1.png
-  |   |   |-- NumBases_HQLib_P2.png
-  |   |   |-- NumBases_HQunrolled_P0.png
-  |   |   |-- NumBases_HQunrolled_P1.png
-  |   |   |-- NumBases_HQunrolled_P2.png
-  |   |   |-- NumBases_noHQunrolled_P0.png
-  |   |   |-- NumBases_noHQunrolled_P1.png
-  |   |   |-- NumBases_noHQunrolled_P2.png
-  |   |   |-- NumPulses_HQLib_P0.png
-  |   |   |-- NumPulses_HQLib_P1.png
-  |   |   |-- NumPulses_HQLib_P2.png
-  |   |   |-- NumPulses_HQunrolled_P0.png
-  |   |   |-- NumPulses_HQunrolled_P1.png
-  |   |   |-- NumPulses_HQunrolled_P2.png
-  |   |   |-- NumPulses_noHQunrolled_P0.png
-  |   |   |-- NumPulses_noHQunrolled_P1.png
-  |   |   |-- NumPulses_noHQunrolled_P2.png
-  |   |   |-- Pausiness_HQLib_P1.png
-  |   |   |-- Pausiness_HQunrolled_P1.png
-  |   |   |-- Pausiness_noHQunrolled_P1.png
-  |   |   |-- Productivity_HQLib_P1.png
-  |   |   |-- Productivity_HQunrolled_P1.png
-  |   |   |-- Productivity_noHQunrolled_P1.png
-  |   |   |-- PulseRate_HQLib_P0.png
-  |   |   |-- PulseRate_HQLib_P1.png
-  |   |   |-- PulseRate_HQLib_P2.png
-  |   |   |-- PulseRate_HQunrolled_P0.png
-  |   |   |-- PulseRate_HQunrolled_P1.png
-  |   |   |-- PulseRate_HQunrolled_P2.png
-  |   |   |-- PulseRate_noHQunrolled_P0.png
-  |   |   |-- PulseRate_noHQunrolled_P1.png
-  |   |   |-- PulseRate_noHQunrolled_P2.png
-  |   |   |-- PulseWidth_HQLib_P0.png
-  |   |   |-- PulseWidth_HQLib_P1.png
-  |   |   |-- PulseWidth_HQLib_P2.png
-  |   |   |-- PulseWidth_HQunrolled_P0.png
-  |   |   |-- PulseWidth_HQunrolled_P1.png
-  |   |   |-- PulseWidth_HQunrolled_P2.png
-  |   |   |-- PulseWidth_noHQunrolled_P0.png
-  |   |   |-- PulseWidth_noHQunrolled_P1.png
-  |   |   |-- PulseWidth_noHQunrolled_P2.png
-  |   |   |-- ReadLength_HQLib_P0.png
-  |   |   |-- ReadLength_HQLib_P1.png
-  |   |   |-- ReadLength_HQLib_P2.png
-  |   |   |-- ReadLength_HQunrolled_P0.png
-  |   |   |-- ReadLength_HQunrolled_P1.png
-  |   |   |-- ReadLength_HQunrolled_P2.png
-  |   |   |-- ReadLength_noHQunrolled_P0.png
-  |   |   |-- ReadLength_noHQunrolled_P1.png
-  |   |   |-- ReadLength_noHQunrolled_P2.png
-  |   |   |-- ReadScore_HQLib_P0.png
-  |   |   |-- ReadScore_HQLib_P1.png
-  |   |   |-- ReadScore_HQLib_P2.png
-  |   |   |-- ReadScore_HQunrolled_P0.png
-  |   |   |-- ReadScore_HQunrolled_P1.png
-  |   |   |-- ReadScore_HQunrolled_P2.png
-  |   |   |-- ReadScore_noHQunrolled_P0.png
-  |   |   |-- ReadScore_noHQunrolled_P1.png
-  |   |   |-- ReadScore_noHQunrolled_P2.png
-  |   |   |-- ReadType_HQLib_P0.png
-  |   |   |-- ReadType_HQLib_P1.png
-  |   |   |-- ReadType_HQLib_P2.png
-  |   |   |-- ReadType_HQunrolled_P0.png
-  |   |   |-- ReadType_HQunrolled_P1.png
-  |   |   |-- ReadType_HQunrolled_P2.png
-  |   |   |-- ReadType_noHQunrolled_P0.png
-  |   |   |-- ReadType_noHQunrolled_P1.png
-  |   |   |-- ReadType_noHQunrolled_P2.png
-  |   |   |-- SnrMean_A_HQLib_P0.png
-  |   |   |-- SnrMean_A_HQLib_P1.png
-  |   |   |-- SnrMean_A_HQLib_P2.png
-  |   |   |-- SnrMean_A_HQunrolled_P0.png
-  |   |   |-- SnrMean_A_HQunrolled_P1.png
-  |   |   |-- SnrMean_A_HQunrolled_P2.png
-  |   |   |-- SnrMean_A_noHQunrolled_P0.png
-  |   |   |-- SnrMean_A_noHQunrolled_P1.png
-  |   |   |-- SnrMean_A_noHQunrolled_P2.png
-  |   |   |-- SnrMean_C_HQLib_P0.png
-  |   |   |-- SnrMean_C_HQLib_P1.png
-  |   |   |-- SnrMean_C_HQLib_P2.png
-  |   |   |-- SnrMean_C_HQunrolled_P0.png
-  |   |   |-- SnrMean_C_HQunrolled_P1.png
-  |   |   |-- SnrMean_C_HQunrolled_P2.png
-  |   |   |-- SnrMean_C_noHQunrolled_P0.png
-  |   |   |-- SnrMean_C_noHQunrolled_P1.png
-  |   |   |-- SnrMean_C_noHQunrolled_P2.png
-  |   |   |-- SnrMean_G_HQLib_P0.png
-  |   |   |-- SnrMean_G_HQLib_P1.png
-  |   |   |-- SnrMean_G_HQLib_P2.png
-  |   |   |-- SnrMean_G_HQunrolled_P0.png
-  |   |   |-- SnrMean_G_HQunrolled_P1.png
-  |   |   |-- SnrMean_G_HQunrolled_P2.png
-  |   |   |-- SnrMean_G_noHQunrolled_P0.png
-  |   |   |-- SnrMean_G_noHQunrolled_P1.png
-  |   |   |-- SnrMean_G_noHQunrolled_P2.png
-  |   |   |-- SnrMean_T_HQLib_P0.png
-  |   |   |-- SnrMean_T_HQLib_P1.png
-  |   |   |-- SnrMean_T_HQLib_P2.png
-  |   |   |-- SnrMean_T_HQunrolled_P0.png
-  |   |   |-- SnrMean_T_HQunrolled_P1.png
-  |   |   |-- SnrMean_T_HQunrolled_P2.png
-  |   |   |-- SnrMean_T_noHQunrolled_P0.png
-  |   |   |-- SnrMean_T_noHQunrolled_P1.png
-  |   |   |-- SnrMean_T_noHQunrolled_P2.png
   |   |   |-- accuracy_by_readtype_boxplot.png
-  |   |   |-- adapter_dimer_fraction.png
   |   |   |-- nzmws_productivity_hist_percentage.png
   |   |   |-- nzmws_readtype_hist_percentage.png
   |   |   |-- readTypeAgg.1.png
   |   |   |-- readTypeAgg.2.png
-  |   |   |-- report.Rd
-  |   |   |-- report.json
-  |   |   |-- short_insert_fraction.png
   |   |   `-- unrolled_template_length_by_readtype_boxplot.png
   |   `-- uidTag.csv
   |-- run.sh
@@ -903,5 +574,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  36 directories, 846 files
+  35 directories, 521 files
 
