@@ -34,48 +34,65 @@ bam = args$subreadset
 tag = args$tag
 # path to text output of pbQcSubreads command line tool:
 rfile = args$txtReport
-x = loadPBI( bam )
+x = loadPBI(bam)
 s1 = split(1:nrow(x), x$hole)
 
-r = subset(read.table(rfile), V3 != "PhantomAdapter")
+r = subset(read.table(rfile), V3 != 'PhantomAdapter')
 s2 = split(1:nrow(r), r$V2)
 m = match(names(s1), names(s2))
 
-n2 = vapply(s2, length, 0)
 n1 = vapply(s1, length, 0)
-n12 = n2[m]
-n12[is.na(n12)] <- 0
+n2 = vapply(s2, length, 0)
+n2 = n2[m]
+n2[is.na(n2)] <- 0
+n2[n2 > n1] <- n1[n2 > n1]
 
 # data frame for plotting:n1 = number of detected adapters
 # n2 = number of missed adapters
-d = data.frame(zmw = names(s1), n1 = n1, n2 = n12)
-s0 = subset(d, n1 > 4)
-l1 = paste(nrow(s0), "ZMWs with > 4 identified subreads")
-l2 = paste(
-  sum(s0$n2 / s0$n1 > 0.25),
-  " ZMWs with > 0.25 of its subreads \n containing missing adapters (",
-  format(100 * mean(s0$n2 / s0$n1 > 0.25), digits = 4),
-  "%)",
-  sep = ""
+d = data.frame(zmw = names(s1), n1 = n1, n2 = n2)
+s0 = subset(d, n2 > 0)
+
+threshold = 0.35
+colchart = c('red', 'blue')
+s0$deg = atan(s0$n2 / s0$n1)
+inconsistent = s0$deg < threshold
+
+cols = colchart[as.numeric(inconsistent) + 1]
+pct = mean(inconsistent)
+num = sum(inconsistent)
+
+for.title = paste(
+  nrow(s0),
+  ' ZMWs with at least 1 missed adapter (',
+  format(100 * nrow(s0) / nrow(d), digits = 3),
+  '%)',
+  sep = ''
 )
-png(paste(args$output, "/", args$tag, "_sop.png", sep = ""))
-hist(
-  s0$n2 / s0$n1,
-  100,
-  col = 'cyan',
-  xlab = "Fraction of Missed Adapters",
-  ylab = "# of ZMWs",
-  main = tag
+l1 = paste('inconsistent: ', num, ' (', format(100 * pct, digits = 3), '%)', sep = '')
+l2 = paste('consistent: ',
+           nrow(s0) - num,
+           ' (',
+           format(100 - 100 * pct, digits = 3),
+           '%)',
+           sep = '')
+
+png(paste(args$output, '/', args$tag, '_sop.png', sep = ''))
+plot(
+  s0$n1,
+  s0$n2,
+  pch = 16,
+  col = cols,
+  xlab = '# subreads',
+  ylab = '# subreads with missed adapter(s)',
+  main = paste(tag, '\n', for.title)
 )
-abline(v = 0.25, col = 'red')
-legend("topright",
-       legend = c(l1, l2),
-       fill = c("cyan", "cyan"))
+grid(lty = 3, lwd = 2)
+legend('topleft', c(l1, l2), fill = colchart)
 dev.off()
 
-png(paste(args$output, "/", args$tag, "_table.png", sep = "")) 
+png(paste(args$output, '/', args$tag, '_table.png', sep = ''))
 csvtable = read.csv(args$csv, header = TRUE)
-g1 <- tableGrob(csvtable[,1:3])
-g2 <- tableGrob(csvtable[,4:ncol(csvtable)])
+g1 <- tableGrob(csvtable[, 1:3])
+g2 <- tableGrob(csvtable[, 4:ncol(csvtable)])
 grid.arrange(g1, g2, ncol = 1)
-dev.off() 
+dev.off()
