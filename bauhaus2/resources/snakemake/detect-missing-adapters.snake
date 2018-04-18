@@ -1,0 +1,83 @@
+
+# ---------------------------------------------------------------------------------------------------
+# detect-missing-adapters.snake: Detect missing adapters.
+
+mapped_subreads = \
+    { c : expand("conditions/{condition}/subreads/input.subreadset.xml", condition=c)
+      for c in ct.conditions }
+
+local_fasta_files = \
+    { c : expand("conditions/{condition}/reference.fasta", condition=c)
+      for c in ct.conditions }
+      
+missing_adapter_reports = \
+    { c : expand("reports/MissingAdapter_{condition}/report.json", condition=c)
+      for c in ct.conditions }
+
+# -- Target rules --
+
+rule missing_adapter_reports:
+    input:
+        MissingAdapterReports=missing_adapter_reports.values(),
+
+# This is not necessary after pbQcAdapters was updated to accept both xml and bam files
+# rule collect_bam_file:
+#    input:
+#        xml="conditions/{condition}/subreads/input.subreadset.xml"
+#    output:
+#        bam="conditions/{condition}/subreads/input.bam",
+#        pbi="conditions/{condition}/subreads/input.bam.pbi",
+#    shell:
+#        """
+#        module load xpath
+#        xml={input.xml}
+#        bam="$(xpath -q -e '(//pbbase:ExternalResource[@MetaType="PacBio.SubreadFile.SubreadBamFile"]/@ResourceId)[1]' $xml | awk -F '[""]' '{{print $2}}')"
+#        ln -s $bam {output.bam}
+#        bam+=".pbi"
+#        ln -s $bam {output.pbi}
+#        """
+
+rule missing_adapter_reports_one_condition:
+    input: subreadset="conditions/{condition}/subreads/input.subreadset.xml",
+           reference="conditions/{condition}/reference.fasta"
+    output: "reports/MissingAdapter_{condition}/missing_adapter.csv",
+            "reports/MissingAdapter_{condition}/missing_adapter.txt"
+    params: outdir="reports/MissingAdapter_{condition}"
+    shell:
+        """
+        module load pbqctools
+        cd {params.outdir}
+        pbQcAdapters --zia=missing_adapter.csv --adapterReport=missing_adapter.txt --sampleSize="all" ../../{input.reference} ../../{input.subreadset}
+        cd ../..
+        """
+        
+rule missing_adapter_plots_one_condition:
+    input: subreadset="conditions/{condition}/subreads/input.subreadset.xml",
+           data="reports/MissingAdapter_{condition}/missing_adapter.txt",
+           csv="reports/MissingAdapter_{condition}/missing_adapter.csv"
+    output: rplot="reports/MissingAdapter_{condition}/{condition}_sop.png"
+    params: tag="{condition}",
+            dir="reports/MissingAdapter_{condition}"
+    shell:
+        """
+        Rscript --vanilla scripts/R/missingAdapter.R --subreadset {input.subreadset} --txtReport {input.data} --csv {input.csv} --tag {params.tag} --output {params.dir}
+        """
+        
+rule missing_adapter_json_one_condition:
+    input: 
+        rplot="reports/MissingAdapter_{condition}/{condition}_sop.png"
+    output:
+        json="reports/MissingAdapter_{condition}/report.json"
+    params:
+        outdir="reports/MissingAdapter_{condition}",
+        tag = "{condition}"
+    
+    shell:
+        """
+        module use /pbi/dept/primary/modulefiles
+        module use /mnt/software/modulefiles
+        module load primary-toolkit
+        cd {params.outdir}
+        python ../../scripts/Python/generateJsonReport.py -p {params.tag}_sop {params.tag}_table
+        cd ../..  
+        """

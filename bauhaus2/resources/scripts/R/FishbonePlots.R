@@ -44,7 +44,7 @@ set_panel_heights <- function(g, heights) {
   g$heights <- grid:::unit.list(g$heights)
   id_panels <-
     unique(c(g$layout[g$layout$name == "panel-1-1", "t"], g$layout[g$layout$name == "panel-2-1", "t"], g$layout[g$layout$name == "panel-3-1", "t"], g$layout[g$layout$name == "panel-4-1", "t"]))
-  g$heights[id_panels] <- heights
+  g$heights[id_panels] <- unit(heights, "null")
   g
 }
 
@@ -128,7 +128,7 @@ makeFishbonePlots <-
       gfix <- rbind(g1, g3, size = "first")
       gfix$widths <- unit.pmax(g1$widths, g3$widths)
       gfix <-
-        set_panel_heights(gfix, lapply(rep(0.6, 5), grid::unit, "null"))
+        set_panel_heights(gfix, rep(0.6, 5))
       gfix
     }
     
@@ -478,7 +478,7 @@ makeFishbonePlots <-
       
       dfSNR_ = dfSNR %>% addMove("Insert")
       dfSNRall$SNRlabel = ""
-      dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
+      dfSNRall_ <- dplyr::rename(dfSNRall, snr = value, obs = obs_)
       dfSNRall_$obs_ = paste("Insert", dfSNRall_$obs)
       gInsFix = generateFixAxisPlot(dfIns, dfSNR_, dfSNRall_, maxSNR)
       gInsFree = generateFreeAxisPlot(dfIns, dfSNR_, "Insert", dfSNRall_)

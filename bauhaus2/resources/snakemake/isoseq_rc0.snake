@@ -27,8 +27,6 @@ rule isoseq_rc0_plot:
         report_json="reports/IsoSeqRC0Plots/report.json"
     shell:
         """
-        source /mnt/software/Modules/current/init/bash && module load R/3.2.3-internal
-        which Rscript
         Rscript --vanilla scripts/R/IsoSeqRC0Plots.R .
         """
  

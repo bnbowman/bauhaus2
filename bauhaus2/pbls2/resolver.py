@@ -220,7 +220,7 @@ class Resolver(object):
             raise DataNotFound(adapter)
             
     def ensureSubreadSet(self, subreadSet):
-        if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".subreads.bam")):
+        if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".bam")):
             raise InvalidDataset("%s not a subreadset" % subreadSet)
         elif not op.isfile(subreadSet):
             raise DataNotFound("SubreadSet %s not found" % subreadSet)
