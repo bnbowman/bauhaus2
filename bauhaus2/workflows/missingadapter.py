@@ -15,5 +15,5 @@ class MissingAdapterWorkflow(Workflow):
     PYTHON_SCRIPTS       = ("Python/generateJsonReport.py",)
                             
     def plan(self):
-        return ["detect-missing-adapters.snake"] + \
+        return ["detect-missing-adapters.snake", "collect-smrtlink-subreads.snake"] + \
             subreadsMappingPlan(self.conditionTable, self.cliArgs)
