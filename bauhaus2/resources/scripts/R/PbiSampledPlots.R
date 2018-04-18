@@ -15,6 +15,7 @@ library(stats)
 library(IRanges)
 library(stringr)
 library(lazyeval)
+library(Biostrings )
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
@@ -152,6 +153,189 @@ homopolymerCountSingleRef = function( report, cd, cd2, refname, refcount )
 
 #----------------------------------------------------------------------
 
+
+
+
+
+#----------------------------------------------------------------------
+# Functions for plotting error rates in homopolymer regions of reference (ITG-963)
+#----------------------------------------------------------------------
+
+
+#' Return list of template positions corresponding to rows of data frame output by pbbamr::loadAlnsFromIndex
+#'
+#' @param aln = output of pbbamr::loadAlnsFromIndex for one subread
+#' @param pbi.row = corresponding row in data frame output by pbbamr::loadPBI2
+#' @export
+
+
+addTplPosition = function( aln, pbi.row )
+{
+  ind = ( aln$ref != '-' )
+  n = c( NA, pbi.row$tstart:( pbi.row$tend - 1 ) )
+  n[ cumsum( ind ) + 1 ] + 1
+}
+
+
+
+#' Return template positions corresponding to homopolymers of lengths 1 through 5
+#'
+#' @param ref = output of Biostrings::readDNAStringSet( fasta file )
+#' @param base = either 'A', 'C', 'G', or 'T'
+
+getHomopolymerTplPositions = function( ref, base )
+{
+  pat = paste( '[^', base, ']', sep = '' )
+  # Positions that are not this base:
+  w = gregexpr( text = as.character( ref ), pattern = pat )[[1]]
+  d = diff( w )
+  lapply( 1:5, function(i) unlist( lapply( 1:i, function(k) w[which( d == i + 1 )] + k ) ) )
+}
+
+
+
+#' Return mean and standard error of rate of one specific error type, such as insertions.
+#'
+#' @param x = boolean vector obtained from data frame output by pbbamr::loadAlnsFromIndex
+#' @example
+#' getErrRateMeanAndSE( aln$read == '-' )
+
+getErrRateMeanAndSE = function( x )
+{
+  mu = mean( x, na.rm = TRUE )
+  se = sqrt( ( mu * ( 1 - mu ) ) / sum( !is.na( x ) ) )
+  c( mu, se )
+}
+
+
+
+#' Return mean and std error for deletion, insertion, and miscall rates in
+#' homopolymer regions of reference for one base.
+#'
+#' @param ref = output of Biostrings::readDNAStringSet( fasta file )
+#' @param ref.rc = reverse complement of ref, obtained using Biostrings::reverseComplement
+#' @param cd2 = data frame of sampled alignments
+#' @param base = either 'A', 'C', 'G', or 'T'
+
+getRatesPerBase = function( ref, ref.rc, cd2, base )
+{
+  fwd.idx = getHomopolymerTplPositions( ref, base )
+  rev.idx = getHomopolymerTplPositions( ref.rc, base )
+  sapply( 1:5, function( i )
+  {
+    fwd = subset( cd2, !rc & tpl %in% fwd.idx[[i]] )
+    rev = subset( cd2,  rc & tpl %in% rev.idx[[i]] )
+    tmp = rbind( fwd, rev )
+    c(  getErrRateMeanAndSE( tmp$read == '-' ),
+        getErrRateMeanAndSE( tmp$ref == '-' ),
+        getErrRateMeanAndSE( tmp$read != tmp$ref & tmp$ref != '-' & tmp$read != '-' ) )
+  } )
+}
+
+
+
+
+#' @param k = list where each element is an output of \link{\code{getRatesPerBase}} for one base
+#' @param idx = 1 for deletion rates, 3 for insertion rates, or 5 for miscall rates
+#' @param condition = string label for condition
+#' @export
+
+getDataFrameByErrType = function( k, idx, condition )
+{
+  dna = c("A", "C", "G", "T")
+  data.table::rbindlist( lapply( 1:4, function(i)
+  {
+    tmp = data.frame( cbind( k[[i]][idx,], k[[i]][idx + 1,], 1:5 ) );
+    names( tmp ) = c('Rate','SE','Length');
+    tmp$Base = dna[i];
+    tmp$Condition = condition
+    tmp
+  } ) )
+}
+
+
+
+
+#' @param cd2 = data frame generated using output of pbbamr::loadAlnsFromIndex in \code{\link{makeSamplingPlots}}
+#' @param conditions = conditions table data frame
+#' @export
+
+getDataByCondition = function( cd2, conditions )
+{
+  loginfo( paste( "Plot error rates in homopolymer regions for condition", cd2$Condition[1] ) )
+  dna = c('A', 'C', 'G', 'T')
+
+  rsfname = conditions$Reference[ as.character( conditions$Condition ) == as.character( cd2$Condition[1] ) ]
+  fasta = pbbamr::getReferencePath( rsfname )
+  ref = readDNAStringSet( fasta )[[1]]
+  ref.rc = reverseComplement( ref )
+
+  k = lapply( dna, function( base ) getRatesPerBase( ref, ref.rc, cd2, base ) )
+  label= cd2$Condition[1]
+  del = getDataFrameByErrType( k, 1, label )
+  ins = getDataFrameByErrType( k, 3, label )
+  mis = getDataFrameByErrType( k, 5, label )
+  list( del = del, ins = ins, mis = mis )
+}
+
+
+
+#' @param error.type = either 'Deletion', 'Insertion', or 'Miscall' - but can be any string
+#' @param data = data frame created by concatenating outputs of \link{\code{getDataByCondition}} for each condition
+#' @export
+
+getPlotByErrType = function( report, data, error.type, plotname, uid )
+{
+  myplot <- ( ggplot( data, aes( x = Length, y = Rate, color = Condition, ymin = Rate - SE, ymax = Rate + SE ) ) +
+        facet_wrap(~ Base) +
+        geom_point(size = 3, position = position_dodge( width = 0.2 ) ) +
+        geom_errorbar(width = .3, position = position_dodge( width = 0.2 ) ) +
+        labs( title = paste( "Mean", error.type, "Rate by Homopolymer Context" ),
+                x = 'Homopolymer Length',
+                y = paste( 'Mean', error.type, 'Rate' ) ) )
+
+  report$ggsave(
+    paste( plotname, "png", sep = "." ),
+    myplot,
+    width = plotwidth,
+    height = plotheight,
+    id = error.type,
+    title = error.type,
+    caption = paste( 'Mean', error.type, 'rate in homopolymer regions of reference' ),
+    tags = c( 'sampled', 'homopolymer', 'error', error.type, 'lengths', 'regions', 'reference' ),
+    uid = uid
+  )
+}
+
+
+
+
+#' @param cd2 = data frame generated using output of pbbamr::loadAlnsFromIndex in \code{\link{makeSamplingPlots}}
+#' @param conditions = conditions table data frame
+#' @export
+
+errorRatesInHomopolymerRegions = function( report, cd2, conditions, refname )
+{
+  plotnames = c("DelRateInHomopolymerRegions", "InsRateInHomopolymerRegions", "MisRateInHomopolymerRegions" )
+  plotnames = paste( refname, plotnames, sep = "_" )
+  uids = c( 5101:5103 ) * 10
+  uids = paste( "00", uids, sep = "" )
+
+  r = lapply( split( 1:nrow( cd2 ), cd2$Condition ), function( x ) getDataByCondition( cd2[x,], conditions ) )
+
+  del = data.table::rbindlist( lapply( r, function( x ) x$del ) )
+  getPlotByErrType( report, del, 'Deletion', plotnames[1], uids[1] )
+
+  ins = data.table::rbindlist( lapply( r, function( x ) x$ins ) )
+  getPlotByErrType( report, ins, 'Insertion', plotnames[2], uids[2] )
+
+  mis = data.table::rbindlist( lapply( r, function( x ) x$mis ) )
+  getPlotByErrType( report, mis, 'Miscall', plotnames[3], uids[3] )
+}
+
+
+
+#----------------------------------------------------------------------
 
 
 # Fuction to get p_variable names
@@ -336,8 +520,10 @@ makeSamplingPlots <-
       alns = loadAlnsFromIndex(tbl, fasta)
       sampleSize = min(nrow(tbl), sampleSize)
       for (i in (1:sampleSize)) {
-        alns[[i]]$hole = as.factor(as.character(tbl$hole))[i]
-        alns[[i]]$refName = as.factor(as.character(tbl$refName))[i]
+        alns[[i]]$hole = as.factor( as.character( tbl$hole ) )[i]
+        alns[[i]]$refName = as.factor( as.character( tbl$refName ) )[i]
+        alns[[i]]$tpl = addTplPosition( alns[[i]], tbl[i,] )
+        alns[[i]]$rc = tbl$rc[i]
       }
       alnsTotal = data.table::rbindlist(alns)
       alnsTotal$Condition = curCondition
@@ -345,8 +531,14 @@ makeSamplingPlots <-
     }
     cd2 = cd %>% group_by(Condition, framePerSecond) %>% sample_nigel(size = sampleSize) %>% do(load_alns(.)) %>% ungroup()
 
-    loginfo("Draw plots to track the fraction of insertion bursts that are homopolymer insertions")
     s1 = split(1:nrow(cd2), cd2$refName)
+
+    loginfo("Draw plots of error rates in homopolymer regions of the template")
+    lapply( 1:length(s1), function(i) 
+      try( errorRatesInHomopolymerRegions( report, cd2[s1[[i]],], conditions, as.character( cd2$refName[s1[[i]][1]] ) ), 
+      silent = FALSE ) )
+
+    loginfo("Draw plots to track the fraction of insertion bursts that are homopolymer insertions")
     lapply(1:length(s1), function(i)
       try(homopolymerCountSingleRef(report, cd, cd2[s1[[i]],], as.character(cd2$refName[s1[[i]][1]]), i),
           silent = TRUE))

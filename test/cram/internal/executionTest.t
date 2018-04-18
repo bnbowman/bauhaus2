@@ -528,6 +528,9 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- mediansnrCvsp_Enzbyp_LP.png
   |   |   |-- mediantlenvsp_Enzbyp_LP.png
   |   |   |-- noninternalBAM.csv
+  |   |   |-- pBR322_EcoRV_DelRateInHomopolymerRegions.png
+  |   |   |-- pBR322_EcoRV_InsRateInHomopolymerRegions.png
+  |   |   |-- pBR322_EcoRV_MisRateInHomopolymerRegions.png
   |   |   |-- pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal.png
   |   |   |-- pBR322_EcoRV_Prob_HP_Burst.png
   |   |   |-- pBR322_EcoRV_Prob_HP_Burst_to_Normal.png
@@ -590,7 +593,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 537 files
+  36 directories, 540 files
 
 
 
@@ -855,6 +858,30 @@ Generate mapping reports workflow, starting from subreads.
         "title": "pBR322_EcoRV_Prob_Pause_Burst_to_Normal",
         "caption": "Distribution ofpBR322_EcoRV_Prob_Pause_Burst_to_Normal (Boxplot)",
         "tags": ["sampled", "homopolymer"]
+      },
+      {
+        "uid": "0051010",
+        "id": "Deletion",
+        "image": "pBR322_EcoRV_DelRateInHomopolymerRegions.png",
+        "title": "Deletion",
+        "caption": "Mean Deletion rate in homopolymer regions of reference",
+        "tags": [null]
+      },
+      {
+        "uid": "0051020",
+        "id": "Insertion",
+        "image": "pBR322_EcoRV_InsRateInHomopolymerRegions.png",
+        "title": "Insertion",
+        "caption": "Mean Insertion rate in homopolymer regions of reference",
+        "tags": [null]
+      },
+      {
+        "uid": "0051030",
+        "id": "Miscall",
+        "image": "pBR322_EcoRV_MisRateInHomopolymerRegions.png",
+        "title": "Miscall",
+        "caption": "Mean Miscall rate in homopolymer regions of reference",
+        "tags": [null]
       }
     ],
     "tables": [
