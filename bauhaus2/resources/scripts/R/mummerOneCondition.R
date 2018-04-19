@@ -1,6 +1,7 @@
 library(gridExtra)
 library(ggplot2)
 library(argparse)
+library(dplyr)
 
 parser <- ArgumentParser()
 parser$add_argument("--outDir",
@@ -137,6 +138,7 @@ png(
 qplot(
   data = subset(errors, Homopolymer == "yes"),
   x = LenHP,
+  fill = Base,
   geom = "bar",
   xlim = c(0, 10)
 ) + facet_grid(. ~ Error.Type)
