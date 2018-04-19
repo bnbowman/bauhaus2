@@ -35,9 +35,10 @@ tag = args$tag
 # path to text output of pbQcSubreads command line tool:
 rfile = args$txtReport
 x = loadPBI(bam)
-s1 = split(1:nrow(x), x$hole)
+r = read.table(rfile)
+r = subset(r, V3 %in% c('AbsentAdapter', 'MissedAdapter'))
 
-r = subset(read.table(rfile), V3 != 'PhantomAdapter')
+s1 = split(1:nrow(x), x$hole)
 s2 = split(1:nrow(r), r$V2)
 m = match(names(s1), names(s2))
 
@@ -52,14 +53,14 @@ n2[n2 > n1] <- n1[n2 > n1]
 d = data.frame(zmw = names(s1), n1 = n1, n2 = n2)
 s0 = subset(d, n2 > 0)
 
-threshold = 0.35
-colchart = c('red', 'blue')
-s0$deg = atan(s0$n2 / s0$n1)
-inconsistent = s0$deg < threshold
+threshold = 22.5 * pi / 180
+colchart = c('blue', 'red')
+consistent = (atan(s0$n2 / s0$n1) > threshold)
 
-cols = colchart[as.numeric(inconsistent) + 1]
-pct = mean(inconsistent)
-num = sum(inconsistent)
+cols = colchart[as.numeric(consistent) + 1]
+pct = mean(consistent)
+num = sum(consistent)
+incons = nrow(s0) - num
 
 for.title = paste(
   nrow(s0),
@@ -68,9 +69,9 @@ for.title = paste(
   '%)',
   sep = ''
 )
-l1 = paste('inconsistent: ', num, ' (', format(100 * pct, digits = 3), '%)', sep = '')
-l2 = paste('consistent: ',
-           nrow(s0) - num,
+l2 = paste('consistent: ', num, ' (', format(100 * pct, digits = 3), '%)', sep = '')
+l1 = paste('inconsistent: ',
+           incons,
            ' (',
            format(100 - 100 * pct, digits = 3),
            '%)',
@@ -83,7 +84,7 @@ plot(
   pch = 16,
   col = cols,
   xlab = '# subreads',
-  ylab = '# subreads with missed adapter(s)',
+  ylab = '# of missed adapters',
   main = paste(tag, '\n', for.title)
 )
 grid(lty = 3, lwd = 2)
