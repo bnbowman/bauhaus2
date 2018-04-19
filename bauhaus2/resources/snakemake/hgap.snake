@@ -21,7 +21,7 @@ csv_results = \
       for c in ct.conditions }
       
 plot_results = \
-    { c : expand("reports/{condition}/output.png", condition=c)
+    { c : expand("reports/{condition}/{condition}_output.png", condition=c)
       for c in ct.conditions }
       
 txt_results = \
@@ -84,7 +84,7 @@ rule generate_mummer_plot:
     output:
         indir = "conditions/{condition}/",
         outdir = "reports/{condition}/",
-        out_plot = "reports/{condition}/output.png"
+        out_plot = "reports/{condition}/{condition}_output.png"
     shell:
         """
         module load mummer
@@ -99,29 +99,33 @@ rule generate_mummer_table:
         csvfile = "conditions/{condition}/outputs_{condition}/snps.csv"
     output:
         txtfile = "conditions/{condition}/fastalengthfile.txt",
-        rplot = "reports/{condition}/myoutput.png"
+        rplot = "reports/{condition}/{condition}_myoutput.png"
+    params:
+        tag = "{condition}"
     shell:
         """
         module load mummer
         module load exonerate
         fastalength {input.polished_fasta} > {output.txtfile}
-        Rscript --vanilla scripts/R/mummerOneCondition.R --inDir {input.indir} --outDir {input.outdir}
+        Rscript --vanilla scripts/R/mummerOneCondition.R --inDir {input.indir} --outDir {input.outdir} --conditionname {params.tag}
         """    
         
 rule generate_json:
     input: 
         outdir = "reports/{condition}/",
-        rplot = "reports/{condition}/myoutput.png"
+        rplot = "reports/{condition}/{condition}_myoutput.png"
     output:
         json = "reports/{condition}/report.json"
-    
+    params:
+        tag1 = "{condition}_myoutput",
+        tag2 = "{condition}_output"
     shell:
         """
         module use /pbi/dept/primary/modulefiles
         module use /mnt/software/modulefiles
         module load primary-toolkit
         cd {input.outdir}
-        python ../../scripts/Python/generateJsonReport.py -p myoutput output
+        python ../../scripts/Python/generateJsonReport.py {params.tag1} {params.tag2}
         cd ../..  
         """    
    
