@@ -118,14 +118,16 @@ rule generate_json:
         json = "reports/{condition}/report.json"
     params:
         tag1 = "{condition}_myoutput",
-        tag2 = "{condition}_output"
+        tag2 = "{condition}_output",
+        tag3 = "{condition}_residual_error_1",
+        tag4 = "{condition}_residual_error_2"
     shell:
         """
         module use /pbi/dept/primary/modulefiles
         module use /mnt/software/modulefiles
         module load primary-toolkit
         cd {input.outdir}
-        python ../../scripts/Python/generateJsonReport.py -p {params.tag1} {params.tag2}
+        python ../../scripts/Python/generateJsonReport.py -p {params.tag1} {params.tag2} {params.tag3} {params.tag4}
         cd ../..  
         """    
    
