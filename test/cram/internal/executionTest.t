@@ -865,7 +865,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pBR322_EcoRV_DelRateInHomopolymerRegions.png",
         "title": "Deletion",
         "caption": "Mean Deletion rate in homopolymer regions of reference",
-        "tags": [null]
+        "tags": ["sampled", "homopolymer", "''error''", "''lengths''", "''regions''", "''reference''"]
       },
       {
         "uid": "0051020",
@@ -873,7 +873,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pBR322_EcoRV_InsRateInHomopolymerRegions.png",
         "title": "Insertion",
         "caption": "Mean Insertion rate in homopolymer regions of reference",
-        "tags": [null]
+        "tags": ["sampled", "homopolymer", "''error''", "''lengths''", "''regions''", "''reference''"]
       },
       {
         "uid": "0051030",
@@ -881,7 +881,7 @@ Generate mapping reports workflow, starting from subreads.
         "image": "pBR322_EcoRV_MisRateInHomopolymerRegions.png",
         "title": "Miscall",
         "caption": "Mean Miscall rate in homopolymer regions of reference",
-        "tags": [null]
+        "tags": ["sampled", "homopolymer", "''error''", "''lengths''", "''regions''", "''reference''"]
       }
     ],
     "tables": [

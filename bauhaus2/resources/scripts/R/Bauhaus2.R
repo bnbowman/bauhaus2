@@ -14,7 +14,6 @@ rewriteJSON <- function(jsonFile, uidTagCSV) {
   if (file.exists(json)) {
     jsonReport = fromJSON(json)
     if (!length(jsonReport$plots) == 0) {
-      jsonReport$plots = jsonReport$plots[, !names(jsonReport$plots) %in% c("tags")]
       
       index = readLines(uidTagCSV)
       index = gsub("\"", "", index)
@@ -27,8 +26,14 @@ rewriteJSON <- function(jsonFile, uidTagCSV) {
         indexdf$uid[i - 1] = index[[i]][1]
         indexdf$tags[i - 1] = list(index[[i]][2:length(index[[i]])])
       }
-      
-      jsonReport$plots = merge(x = jsonReport$plots, y = indexdf, by = "uid", all.x = TRUE)
+      # Remove index with NA in its tags
+      indexdf = indexdf %>% drop_na()
+      row.has.na <- unlist(lapply(indexdf$tags, function(x){any(is.na(x))}))
+      indexdf.filtered <- indexdf[!row.has.na,]
+      jsonReport$plots = merge(x = jsonReport$plots, y = indexdf.filtered, by = "uid", all.x = TRUE)
+      jsonReport$plots$tags.y[is.na(jsonReport$plots$tags.y)] <- as.character(jsonReport$plots$tags.x[is.na(jsonReport$plots$tags.y)])
+      jsonReport$plots$tags = jsonReport$plots$tags.y
+      jsonReport$plots = jsonReport$plots[, !names(jsonReport$plots) %in% c("tags.x", "tags.y")]
       newjson = toJSON(jsonReport, pretty = TRUE)
       write(newjson, file = json)
     }
