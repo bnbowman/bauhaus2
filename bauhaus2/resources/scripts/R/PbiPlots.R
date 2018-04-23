@@ -578,7 +578,7 @@ main <- function()
   makeReport(report)
   jsonFile = "reports/PbiPlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
-  rewriteJSON(jsonFile, uidTagCSV)
+  try(rewriteJSON(jsonFile, uidTagCSV), silent = TRUE)
   0
 }
 
