@@ -762,7 +762,7 @@ main <- function()
   jsonFile = "reports/ConstantArrowFishbonePlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
   if (file.exists(jsonFile)) {
-    rewriteJSON(jsonFile, uidTagCSV)
+    try(rewriteJSON(jsonFile, uidTagCSV), silent = TRUE)
   }
   0
 }
