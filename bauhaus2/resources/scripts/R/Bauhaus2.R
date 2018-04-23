@@ -27,7 +27,6 @@ rewriteJSON <- function(jsonFile, uidTagCSV) {
         indexdf$tags[i - 1] = list(index[[i]][2:length(index[[i]])])
       }
       # Remove index with NA in its tags
-      indexdf = indexdf %>% drop_na()
       row.has.na <- unlist(lapply(indexdf$tags, function(x){any(is.na(x))}))
       indexdf.filtered <- indexdf[!row.has.na,]
       jsonReport$plots = merge(x = jsonReport$plots, y = indexdf.filtered, by = "uid", all.x = TRUE)
