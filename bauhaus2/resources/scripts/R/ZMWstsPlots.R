@@ -988,25 +988,28 @@ makeReport <- function(report) {
     })
     # Filter out empty data sets, throw a warning if any empty ones exist
     filteredData = filterEmptyDataset(dfs, conditions)
-    dfs  = filteredData[[1]]
-    conditions = filteredData[[2]]
-    
-    cd = combineConditions(dfs, as.character(conditions$Condition))
-    
-    # Now combine into one large data frame
-    cd2 = left_join(cd, cdH5, by = c("hole", "Condition"))
-    cd2$tlen = cd2$tend - cd2$tstart
-    
-    # Make Plots
-    makeReadTypePlots(report, cd2)
-    makeYieldPlots(report, cdH5)
-    
-    # Make sts.h5 heatmaps
-    makeSTSH5Heatmaps(report, conditions)
-    
+    if (length(filteredData) == 0) {
+      warning("All conditions are empty!")
+    } else {
+      dfs  = filteredData[[1]]
+      conditions = filteredData[[2]]
+      
+      cd = combineConditions(dfs, as.character(conditions$Condition))
+      
+      # Now combine into one large data frame
+      cd2 = left_join(cd, cdH5, by = c("hole", "Condition"))
+      cd2$tlen = cd2$tend - cd2$tstart
+      
+      # Make Plots
+      try(makeReadTypePlots(report, cd2), silent = TRUE)
+      try(makeYieldPlots(report, cdH5), silent = TRUE)
+      
+      # Make sts.h5 heatmaps
+      try(makeSTSH5Heatmaps(report, conditions), silent = TRUE)
+    }
   } else {
     warning("sts.h5 file does not exsit for at least one condition!")
-    makeEmptyPlots(report)
+    try(makeEmptyPlots(report), silent = TRUE)
   }
   
   if (stsXMLExist) {
@@ -1016,7 +1019,7 @@ makeReport <- function(report) {
       loadstsXML(s)
     })
     cdXML = combineConditions(dfsXML, as.character(conditions$Condition))
-    makestsXMLPlots(report, cdXML)
+    try(makestsXMLPlots(report, cdXML), silent = TRUE)
   } else {
     warning("sts.xml file does not exsit for at least one condition!")
     makeEmptyXMLPlots(report)
