@@ -32,17 +32,27 @@ json_results = \
     { c : expand("reports/{condition}/report.json", condition=c)
       for c in ct.conditions }
 
-local_polishedAssemblyStats = \
-    { c : "conditions/{condition}/assemblystats/polished_assembly_report.csv".format(condition=c)
+local_assemblyStats = \
+    { c : "reports/{condition}/assembly.csv".format(condition=c)
       for c in ct.conditions }
       
 # -- Target --
 
 rule collect_csv:
     input: json_results.values(),
-           local_polishedAssemblyStats.values()
+           local_assemblyStats.values(),
+           "reports/combinedAssembly.csv"
 
 # -- Worker rules ---
+
+rule combineCSV:
+    input: local_assemblyStats.values()
+    output: combinedcsv="reports/combinedAssembly.csv"
+    shell:
+        """
+        cat reports/*/assembly.csv > {output.combinedcsv}
+        sed -i.bak 1i",id,name,value,condition" {output.combinedcsv}
+        """
 
 rule convertJsonToCSV:
     input: 
@@ -50,12 +60,21 @@ rule convertJsonToCSV:
         prejson="conditions/{condition}/assemblystats/preassembly_yield.json"
     output:
         polishedcsv="conditions/{condition}/assemblystats/polished_assembly_report.csv",
-        precsv="conditions/{condition}/assemblystats/preassembly_yield.csv"
+        precsv="conditions/{condition}/assemblystats/preassembly_yield.csv",
+        mergecsv="reports/{condition}/assembly.csv",
+    params:
+        tag = "{condition}",
+        nhpolishedcsv="reports/{condition}/nhpolished.csv",
+        nhprecsv="reports/{condition}/nhpre.csv"
     shell:
         """
         module load anaconda
-        python scripts/Python/convertJsonToCSV.py {input.polishedjson} {output.polishedcsv}
-        python scripts/Python/convertJsonToCSV.py {input.prejson} {output.precsv}
+        python scripts/Python/convertJsonToCSV.py {input.polishedjson} {output.polishedcsv} {params.tag}
+        python scripts/Python/convertJsonToCSV.py {input.prejson} {output.precsv} {params.tag}
+        sed 1d {output.precsv} > {params.nhprecsv}
+        sed 1d {output.polishedcsv} > {params.nhpolishedcsv}
+        cat {params.nhpolishedcsv} {params.nhprecsv} > {output.mergecsv}
+        rm -f {params.nhpolishedcsv} {params.nhprecsv}
         """
         
 rule variantCaller:
@@ -76,7 +95,6 @@ rule variantCaller:
         module add smrtlink/internal
         exec variantCaller --algorithm=arrow -j{threads} -x0 -q0 {params.modelPath} -p trained_condition -o {output.polished_fasta} -o {output.fastq} -o {output.gff} -o {output.vcf} -r {input.reference} {input.alignment_set}
         """
-        
         
 rule run_mummer:
     input: 
