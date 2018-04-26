@@ -102,6 +102,6 @@ def test_param_range( data, minAcc, maxAcc, flankRange ):
 counts = parse_file( fn )
 flankRange = range(0, 101, MIN_FLANK_DIFF)
 results = test_param_range( counts, 0.55, 0.81, flankRange )
-print ("HardAcc,SoftAcc,MinFlank,TP,TN,FP,FN,Sensitivity,Specificity,Precision,FDR,FNR,Accuracy,F1Score")
+print("HardAcc,SoftAcc,MinFlank,TP,TN,FP,FN,Sensitivity,Specificity,Precision,FDR,FNR,Accuracy,F1Score")
 for res in results:
-    print (",".join(str(r) for r in res))
+    print(",".join(str(r) for r in res))
