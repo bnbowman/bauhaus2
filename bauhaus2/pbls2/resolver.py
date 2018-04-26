@@ -129,6 +129,32 @@ class Resolver(object):
                         if ('eid_subread' in string):
                             return string.rsplit(':')[1].rsplit('xml')[0]+'xml'
 
+    def findPolishedAssemblyStats(self, jobDir):
+        """
+        Given the secondary job path (SMRTlink), find the polished assembly stats within
+        """
+        candidates = (glob(op.join(jobDir,
+                                   "tasks/pbreports.tasks.polished_assembly-0/polished_assembly_report.json")))
+        if len(candidates) < 1:
+            raise DataNotFound("Polished Assembly Stats not found in job directory %s " % jobDir)
+        elif len(candidates) > 1:
+            raise DataNotFound("Multiple Polished Assembly Stats present in job directory %s" % jobDir)
+        else:
+            return candidates[0]
+            
+    def findPreassemblyStats(self, jobDir):
+        """
+        Given the secondary job path (SMRTlink), find the pre-assembly stats within
+        """
+        candidates = (glob(op.join(jobDir,
+                                   "tasks/falcon_ns.tasks.task_report_preassembly_yield-0/preassembly_yield.json")))
+        if len(candidates) < 1:
+            raise DataNotFound("Pre-assembly Stats not found in job directory %s " % jobDir)
+        elif len(candidates) > 1:
+            raise DataNotFound("Pre-assembly Stats present in job directory %s" % jobDir)
+        else:
+            return candidates[0]
+
     def resolveSubreadSet(self, runCode, reportsFolder=""):
         reportsPath = self.resolvePrimaryPath(runCode, reportsFolder)
         return self.findSubreadSet(reportsPath)
@@ -206,6 +232,14 @@ class Resolver(object):
     def resolveSmrtlinkSubreadSet(self, smrtLinkServer, jobId):
         jobDir = self.resolveJob(smrtLinkServer, jobId)
         return self.findSmrtlinkSubreadSet(jobDir)
+    
+    def resolvePolishedAssemblyStats(self, smrtLinkServer, jobId):
+        jobDir = self.resolveJob(smrtLinkServer, jobId)
+        return self.findPolishedAssemblyStats(jobDir)
+    
+    def resolvePreassemblyStats(self, smrtLinkServer, jobId):
+        jobDir = self.resolveJob(smrtLinkServer, jobId)
+        return self.findPreassemblyStats(jobDir)
         
     def resolveBarcodeSet(self, barcodeSet):
         if op.isfile(barcodeSet):

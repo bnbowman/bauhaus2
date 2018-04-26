@@ -32,13 +32,31 @@ json_results = \
     { c : expand("reports/{condition}/report.json", condition=c)
       for c in ct.conditions }
 
+local_polishedAssemblyStats = \
+    { c : "conditions/{condition}/assemblystats/polished_assembly_report.csv".format(condition=c)
+      for c in ct.conditions }
+      
 # -- Target --
 
 rule collect_csv:
-    input: json_results.values()
-    
+    input: json_results.values(),
+           local_polishedAssemblyStats.values()
 
 # -- Worker rules ---
+
+rule convertJsonToCSV:
+    input: 
+        polishedjson="conditions/{condition}/assemblystats/polished_assembly_report.json",
+        prejson="conditions/{condition}/assemblystats/preassembly_yield.json"
+    output:
+        polishedcsv="conditions/{condition}/assemblystats/polished_assembly_report.csv",
+        precsv="conditions/{condition}/assemblystats/preassembly_yield.csv"
+    shell:
+        """
+        module load anaconda
+        python scripts/Python/convertJsonToCSV.py {input.polishedjson} {output.polishedcsv}
+        python scripts/Python/convertJsonToCSV.py {input.prejson} {output.precsv}
+        """
         
 rule variantCaller:
     input: 
