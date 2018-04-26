@@ -101,7 +101,7 @@ def parseArgs():
 
 
 def _main(args):
-    #print args
+    #print(args)
 
     if args.subcommand == "describe-workflow":
         doWorkflowHelp(args)

@@ -96,7 +96,7 @@ def writeRecords( records, prefix ):
 def writePositions( positions, prefix ):
     with open( prefix + "_pos.csv", 'w' ) as handle:
         handle.write( "Reference,AdpStart,AdpEnd,AdpType\n" )
-        print (positions)
+        print(positions)
         for ref, s, e, idx in positions:
             handle.write( "{0},{1},{2},{3}\n".format(ref, s, e, aTypes[idx]) )
 
