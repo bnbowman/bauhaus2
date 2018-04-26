@@ -80,7 +80,7 @@ class Resolver(object):
         j = _nibble("collection?runcode=%s" % runCode)
         path = urlparse(j[0]["path"]).path
         if not path:
-            raise DataNotFound(runCode)
+            raise DataNotFound("Runcode path not found for %s" % runCode)
         else:
             return path
 
@@ -144,7 +144,7 @@ class Resolver(object):
         elif not op.exists(self.REFERENCES_ROOT):
             raise ResolverFailure("NFS unavailable?")
         else:
-            raise DataNotFound(referenceName)
+            raise DataNotFound("Reference not found for %s" % referenceName)
 
     def resolveReferenceSet(self, referenceName):
         # Here we serch two possible referencesets: referenceset.xml and referenceName.referenceset.xml
@@ -155,7 +155,7 @@ class Resolver(object):
             raise ResolverFailure("NFS unavailable?")
         else:
             if len(candidates) < 1:
-                raise DataNotFound(referenceSet)
+                raise DataNotFound("ReferenceSet not found for %s" % referenceSet)
             elif len(candidates) > 1:
                 raise DataNotFound("Multiple ReferenceSets xml files present")
             else:
@@ -165,7 +165,7 @@ class Resolver(object):
         if not trainingPath: return None, None
         if trainingPath.isdigit():
             trainingPath = op.join(self.ZIA_PROJECTS_ROOT, trainingPath, "fit.json")
-        if not op.exists(trainingPath): raise DataNotFound(trainingPath)
+        if not op.exists(trainingPath): raise DataNotFound("Training path not found in %s" % trainingPath)
         with open(trainingPath) as h:
             try:
                 d = json.load(h)
@@ -211,13 +211,13 @@ class Resolver(object):
         if op.isfile(barcodeSet):
             return barcodeSet
         else:
-            raise DataNotFound(barcodeSet)
+            raise DataNotFound("BarcodeSet not found for %s" % barcodeSet)
             
     def resolveAdapter(self, adapter):
         if op.isfile(adapter):
             return adapter
         else:
-            raise DataNotFound(adapter)
+            raise DataNotFound("Adapter not found for %s" % adapter)
             
     def ensureSubreadSet(self, subreadSet):
         if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".bam")):
