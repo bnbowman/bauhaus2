@@ -43,7 +43,6 @@ rule collect_csv:
            local_assemblyStats.values(),
            "reports/combinedAssembly.csv",
            "reports/report.json"
-          
 
 # -- Worker rules ---
 
@@ -55,6 +54,7 @@ rule combineCSV:
         cat reports/*/assembly.csv > {output.combinedcsv}
         sed -i.bak 1i",id,name,value,condition" {output.combinedcsv}
         """
+
 rule generatePlots:
     input: combinedcsv ="reports/combinedAssembly.csv"
     output: json ="reports/report.json"
