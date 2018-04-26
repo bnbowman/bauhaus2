@@ -136,9 +136,9 @@ class Resolver(object):
         candidates = (glob(op.join(jobDir,
                                    "tasks/pbreports.tasks.polished_assembly-0/polished_assembly_report.json")))
         if len(candidates) < 1:
-            raise DataNotFound("Polished Assembly Stats not found in job directory %s " % jobDir)
+            print("Polished Assembly Stats not found in job directory %s " % jobDir)
         elif len(candidates) > 1:
-            raise DataNotFound("Multiple Polished Assembly Stats present in job directory %s" % jobDir)
+            print("Multiple Polished Assembly Stats present in job directory %s" % jobDir)
         else:
             return candidates[0]
             
@@ -149,9 +149,9 @@ class Resolver(object):
         candidates = (glob(op.join(jobDir,
                                    "tasks/falcon_ns.tasks.task_report_preassembly_yield-0/preassembly_yield.json")))
         if len(candidates) < 1:
-            raise DataNotFound("Pre-assembly Stats not found in job directory %s " % jobDir)
+            print("Pre-assembly Stats not found in job directory %s " % jobDir)
         elif len(candidates) > 1:
-            raise DataNotFound("Pre-assembly Stats present in job directory %s" % jobDir)
+            print("Multiple Pre-assembly Stats present in job directory %s" % jobDir)
         else:
             return candidates[0]
 
