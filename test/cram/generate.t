@@ -77,6 +77,14 @@ different as it would include a "copy/symlink" (collect) step instead
 of a mapping:
 
   $ bauhaus2 -m generate -w MappingReports -t ${BH_ROOT}test/data/lambdaAndEcoliJobs.csv -o mapping-reports3
+  Polished Assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004183 
+  Pre-assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004183 
+  Polished Assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004206 
+  Pre-assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004206 
+  Polished Assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004110 
+  Pre-assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004110 
+  Polished Assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004111 
+  Pre-assembly Stats not found in job directory /pbi/dept/secondary/siv/smrtlink/smrtlink-beta/smrtsuite/userdata/jobs_root/004/004111 
   Validation and input resolution succeeded.
   Generated runnable workflow to "mapping-reports3"
 
