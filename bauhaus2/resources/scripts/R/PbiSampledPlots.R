@@ -1829,14 +1829,14 @@ makeReport <- function(report) {
     
     # Make p_variavle plots
     if (length(p_Var) > 0) {
-      makepColPlots(report, cd, p_Var, conditions)
+      try(makepColPlots(report, cd, p_Var, conditions), silent = TRUE)
       
       # When there are two p_columns and both of them are numerical or categorical
       # Switch the p_columns and generate the p_ variables plots again
       if (length(p_Var) == 2) {
         if (is.numeric(conditions[, match(p_Var[1], names(conditions))]) == is.numeric(conditions[, match(p_Var[2], names(conditions))])) {
           p_Var = c(p_Var[2], p_Var[1])
-          makepColPlots(report, cd, p_Var, conditions)
+          try(makepColPlots(report, cd, p_Var, conditions), silent = TRUE)
         }
       }
     }
