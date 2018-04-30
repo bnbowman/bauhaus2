@@ -38,22 +38,19 @@ local_assemblyStats = \
 
 local_snpsCSV = \
     { c : "reports/{condition}/polished_snps.csv".format(condition=c)
-      for c in ct.conditions }      
+      for c in ct.conditions }  
       
 # -- Target --
 
 rule collect_csv:
     input: json_results.values(),
-           local_assemblyStats.values(),
-           "reports/combinedAssembly.csv",
-           "reports/report.json",
-           "reports/merge_snps.csv"
+           "reports/Combined_Conditions"
 
 # -- Worker rules ---
 
 rule combineCSV:
     input: local_assemblyStats.values()
-    output: combinedcsv="reports/combinedAssembly.csv"
+    output: combinedcsv="reports/Combined_Conditions/combinedAssembly.csv"
     shell:
         """
         cat reports/*/assembly.csv > {output.combinedcsv}
@@ -61,8 +58,10 @@ rule combineCSV:
         """
 
 rule generatePlots:
-    input: combinedcsv ="reports/combinedAssembly.csv"
-    output: json ="reports/report.json"
+    input: "reports/Combined_Conditions/combinedAssembly.csv",
+           "reports/Combined_Conditions/merge_snps.csv"
+    output: "reports/Combined_Conditions/report.json",
+            "reports/Combined_Conditions"
     shell:
         """
         Rscript --vanilla scripts/R/combined_hgap.R
@@ -164,7 +163,7 @@ rule generate_mummer_table:
 
 rule mergeSnpsCSV:
     input: local_snpsCSV.values()
-    output: mergesnpscsv="reports/merge_snps.csv"
+    output: mergesnpscsv="reports/Combined_Conditions/merge_snps.csv"
     shell:
         """
         cat reports/*/polished_snps.csv > {output.mergesnpscsv}

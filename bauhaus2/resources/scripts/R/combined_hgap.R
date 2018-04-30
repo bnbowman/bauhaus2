@@ -189,14 +189,87 @@ makeTwelvePlots <- function(report, data){
   
 }
 
+makeResidualErrorPlots <- function(report, errors){
+  errors =
+    errors[, !(names(errors) %in% c('X1', 'X2', 'X3'))]
+  errors$CtxR = as.character(errors$CtxR)
+  errors$CtxQ = as.character(errors$CtxQ)
+  errors$Error.Type = ifelse(errors$Rb == '.', 'ins', ifelse(errors$Qb == '.', 'del', 'mis'))
+  
+  Rval = unlist(lapply(errors$CtxR, function(x) {
+    rle(unlist(strsplit(substr(
+      x, (nchar(x) - 1) / 2 + 1, nchar(x)
+    ), split = '')))[[1]][1] +    rle(rev(unlist(strsplit(
+      substr(x, 1, (nchar(x) - 1) / 2 + 1), split = ''
+    ))))[[1]][1] - 1
+  }))
+  Qval = unlist(lapply(errors$CtxQ, function(x) {
+    rle(unlist(strsplit(substr(
+      x, (nchar(x) - 1) / 2 + 1, nchar(x)
+    ), split = '')))[[1]][1] +    rle(rev(unlist(strsplit(
+      substr(x, 1, (nchar(x) - 1) / 2 + 1), split = ''
+    ))))[[1]][1] - 1
+  }))
+  errors$LenHP = ifelse(errors$Rb ==
+                          '.', Qval, Rval)
+  errors$Base = ifelse(errors$Rb ==
+                         '.',
+                       as.character(errors$Qb),
+                       as.character(errors$Rb))
+  errors$Homopolymer =
+    ifelse(errors$LenHP > 1, 'yes', 'no')
+  
+  numE <-
+    errors %>% dplyr::group_by(Error.Type, Base) %>% dplyr::count(Homopolymer)  ##Not sure what this does
+  ######## graph1
+  g <- ggplot(errors, aes(Homopolymer))
+  tp = g + geom_bar(aes(fill = Base)) + facet_grid(. ~ Error.Type) + ggtitle("Residual Errors by Error Type")
+  report$ggsave(
+    "combined_residual_error_1.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "combined_residual_error_1",
+    title = "Residual Error - 1 - all Conditions",
+    caption = "Residual Error - 1 - all Conditions",
+    tags = c("basic", "hgapplots", "residual", "error"),
+    uid = "0100020"
+  )
+  
+  ########### graph2
+  tp = qplot(
+    data = subset(errors, Homopolymer == "yes"),
+    x = LenHP,
+    fill = Base,
+    geom = "bar",
+    xlim = c(0, 10)
+  ) + facet_grid(. ~ Error.Type)
+  report$ggsave(
+    "combined_residual_error_2.png",
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = "combined_residual_error_2",
+    title = "Residual Error - 2 - all Conditions",
+    caption = "Residual Error - 2 - all Conditions",
+    tags = c("basic", "hgapplots", "residual", "error"),
+    uid = "0100021"
+  )
+}
+
 makeReport <- function(report) {
-  table1 = read.csv("reports/combinedAssembly.csv")
+  table1 = read.csv("reports/Combined_Conditions/combinedAssembly.csv")
   #Adding the condition name
   #data$Condition = c("A","B", "C")
   data = dcast(table1, condition~id, value.var = 'value')
   
+  # Make combined residual error plots from snps.csv
+  snps = read.csv("reports/Combined_Conditions/merge_snps.csv")
+  
   # Make Plots
+  makeResidualErrorPlots(report,snps)
   makeTwelvePlots(report,data)
+  
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
   # At the end of this function we need to call this last, it outputs the report
@@ -204,12 +277,13 @@ makeReport <- function(report) {
 }
 
 
+
 main <- function()
 {
   report <- bh2Reporter("condition-table.csv",
-                        "reports/report.json")
+                        "reports/Combined_Conditions/report.json")
   makeReport(report)
-  jsonFile = "reports/report.json"
+  jsonFile = "reports/Combined_Conditions/report.json"
   #uidTagCSV = "reports/uidTag.csv"
   #rewriteJSON(jsonFile, uidTagCSV)
   0
