@@ -14,11 +14,14 @@ set -x
 # Set up the virtualenv
 #
 BAUHAUS2_VE=${BAUHAUS2_VE:-/pbi/dept/itg/bauhaus2/python-ve}
-rm -rf $BAUHAUS2_VE
+BAUHAUS2_VELINK=$BAUHAUS2_VE
+BAUHAUS2_VE=${BAUHAUS2}_$(/usr/bin/date +%s)
+# crash if you have a collision from the future
+test -e $BAUHAUS2_VE && exit 1
 
 set +u
 /mnt/software/v/virtualenv/13.0.1/virtualenv.py -p python3 $BAUHAUS2_VE
-source $BAUHAUS2_VE/bin/activate
+source ${BAUHAUS2_VE}/bin/activate
 set -u
 
 pip install -r requirements.txt
@@ -28,5 +31,6 @@ python setup.py install
 #
 # Set up the wrapper scripts
 #
-ln -sf /pbi/dept/itg/bauhaus2/python-ve/bin/bauhaus2 /mnt/software/b/bauhaus2/bauhaus2
-ln -sf /pbi/dept/itg/bauhaus2/python-ve/bin/snakemake /mnt/software/b/bauhaus2/snakemake
+ln -sfn $BAUHAUS2_VE $BAUHAUS2_VELINK
+ln -sf ${BAUHAUS2_VELINK}/bin/bauhaus2 /mnt/software/b/bauhaus2/bauhaus2
+ln -sf ${BAUHAUS2_VELINK}/bin/snakemake /mnt/software/b/bauhaus2/snakemake
