@@ -16,7 +16,8 @@ set -x
 BAUHAUS2_VE=${BAUHAUS2_VE:-/pbi/dept/itg/bauhaus2/python-ve}
 BAUHAUS2_VELINK=$BAUHAUS2_VE
 BAUHAUS2_VE=${BAUHAUS2}_$(/usr/bin/date +%s)
-rm -rf $BAUHAUS2_VE
+# crash if you have a collision from the future
+test -e $BAUHAUS2_VE && exit 1
 
 set +u
 /mnt/software/v/virtualenv/13.0.1/virtualenv.py -p python3 $BAUHAUS2_VE
