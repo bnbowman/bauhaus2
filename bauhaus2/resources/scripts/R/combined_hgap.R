@@ -12,8 +12,8 @@ library(reshape2)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
-#source(file.path(myDir, "Bauhaus2.R"))
-source("/home/sxu/bitbucket/bauhaus2/bauhaus2/resources/scripts/R/Bauhaus2.R")
+source(file.path(myDir, "Bauhaus2.R"))
+#source("/home/sxu/bitbucket/bauhaus2/bauhaus2/resources/scripts/R/Bauhaus2.R")
 
 midTitle <- theme(plot.title = element_text(hjust = 0.5, size = 12))
 plTheme <-
@@ -190,7 +190,7 @@ makeTwelvePlots <- function(report, data){
 }
 
 makeReport <- function(report) {
-  table1 = read.csv("/home/sxu/practice/test998/test23/reports/combinedAssembly.csv")
+  table1 = read.csv("reports/combinedAssembly.csv")
   #Adding the condition name
   #data$Condition = c("A","B", "C")
   data = dcast(table1, condition~id, value.var = 'value')
