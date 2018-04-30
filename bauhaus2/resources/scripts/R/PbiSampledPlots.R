@@ -357,6 +357,7 @@ sample_nigel <-
     #assert_that(is.numeric(size), length(size) == 1, size >= 0)
     weight <- substitute(weight)
     index <- attr(tbl, "indices")
+    #index <- attr(tbl, "row.names")
     sizes = sapply(index, function(z)
       min(length(z), size)) # here's my contribution
     sampled <-
