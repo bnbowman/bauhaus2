@@ -15,7 +15,7 @@ set -x
 #
 BAUHAUS2_VE=${BAUHAUS2_VE:-/pbi/dept/itg/bauhaus2/python-ve}
 BAUHAUS2_VELINK=$BAUHAUS2_VE
-BAUHAUS2_VE=${BAUHAUS2}_$(/usr/bin/date +%s)
+BAUHAUS2_VE=${BAUHAUS2_VE}_$(/usr/bin/date +%s)
 # crash if you have a collision from the future
 test -e $BAUHAUS2_VE && exit 1
 
