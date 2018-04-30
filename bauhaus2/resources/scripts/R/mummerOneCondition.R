@@ -77,6 +77,10 @@ errors <-
     )
   )
 
+errors$Condition = args$conditionname
+
+write.table(errors, sep = ",", file = paste(args$outDir, "polished_snps.csv", sep = ""), row.names = FALSE, col.names = FALSE)
+
 errors =
   errors[, !(names(errors) %in% c('X1', 'X2', 'X3'))]
 errors$CtxR = as.character(errors$CtxR)
