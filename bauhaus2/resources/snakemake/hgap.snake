@@ -35,6 +35,10 @@ json_results = \
 local_assemblyStats = \
     { c : "reports/{condition}/assembly.csv".format(condition=c)
       for c in ct.conditions }
+
+local_snpsCSV = \
+    { c : "reports/{condition}/polished_snps.csv".format(condition=c)
+      for c in ct.conditions }      
       
 # -- Target --
 
@@ -42,7 +46,8 @@ rule collect_csv:
     input: json_results.values(),
            local_assemblyStats.values(),
            "reports/combinedAssembly.csv",
-           "reports/report.json"
+           "reports/report.json",
+           "reports/merge_snps.csv"
 
 # -- Worker rules ---
 
@@ -145,7 +150,8 @@ rule generate_mummer_table:
         csvfile = "conditions/{condition}/outputs_{condition}/snps.csv"
     output:
         txtfile = "conditions/{condition}/fastalengthfile.txt",
-        rplot = "reports/{condition}/{condition}_myoutput.png"
+        rplot = "reports/{condition}/{condition}_myoutput.png",
+        csv = "reports/{condition}/polished_snps.csv"
     params:
         tag = "{condition}"
     shell:
@@ -154,7 +160,16 @@ rule generate_mummer_table:
         module load exonerate
         fastalength {input.polished_fasta} > {output.txtfile}
         Rscript --vanilla scripts/R/mummerOneCondition.R --inDir {input.indir} --outDir {input.outdir} --conditionname {params.tag}
-        """    
+        """   
+
+rule mergeSnpsCSV:
+    input: local_snpsCSV.values()
+    output: mergesnpscsv="reports/merge_snps.csv"
+    shell:
+        """
+        cat reports/*/polished_snps.csv > {output.mergesnpscsv}
+        sed -i.bak 1i"PosR,Rb,Qb,PosQ,X1,Buff,Dist,X2,CtxR,CtxQ,X3,F1,F2,Ref,Unitig,Condition" {output.mergesnpscsv}
+        """
         
 rule generate_json:
     input: 
