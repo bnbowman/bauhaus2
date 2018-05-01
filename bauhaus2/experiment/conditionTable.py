@@ -135,7 +135,9 @@ class ConditionTable(object):
             return resolver.resolveSubreadSet(rowRecord.RunCode, rowRecord.ReportsFolder)
         elif {"SMRTLinkServer", "JobId"}.issubset(cols):
             return [resolver.resolveAlignmentSet(rowRecord.SMRTLinkServer, rowRecord.JobId),
-                   resolver.resolveSmrtlinkSubreadSet(rowRecord.SMRTLinkServer, rowRecord.JobId)]
+                   resolver.resolveSmrtlinkSubreadSet(rowRecord.SMRTLinkServer, rowRecord.JobId),
+                   resolver.resolvePolishedAssemblyStats(rowRecord.SMRTLinkServer, rowRecord.JobId),
+                   resolver.resolvePreassemblyStats(rowRecord.SMRTLinkServer, rowRecord.JobId)]
         elif {"JobPath"}.issubset(cols):
             return resolver.findAlignmentSet(rowRecord.JobPath)
         elif {"SubreadSet"}.issubset(cols):

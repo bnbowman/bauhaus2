@@ -4,6 +4,7 @@ __all__ = [ "MockResolver" ]
 import os.path as op
 from .resolver import _isRuncode
 from .exceptions import *
+from glob import glob
 
 class MockResolver(object):
     # For testing purposes
@@ -76,6 +77,40 @@ class MockResolver(object):
     def resolveSmrtlinkSubreadSet(self, smrtLinkServer, jobId):
         jobDir = self.resolveJob(smrtLinkServer, jobId)
         return self.findSmrtlinkSubreadSet(jobDir)
+    
+    def findPolishedAssemblyStats(self, jobDir):
+        """
+        Given the secondary job path (SMRTlink), find the polished assembly stats within
+        """
+        candidates = (glob(op.join(jobDir,
+                                   "tasks/pbreports.tasks.polished_assembly-0/polished_assembly_report.json")))
+        if len(candidates) < 1:
+            print("Polished Assembly Stats not found in job directory %s " % jobDir)
+        elif len(candidates) > 1:
+            print("Multiple Polished Assembly Stats present in job directory %s" % jobDir)
+        else:
+            return candidates[0]
+            
+    def findPreassemblyStats(self, jobDir):
+        """
+        Given the secondary job path (SMRTlink), find the pre-assembly stats within
+        """
+        candidates = (glob(op.join(jobDir,
+                                   "tasks/falcon_ns.tasks.task_report_preassembly_yield-0/preassembly_yield.json")))
+        if len(candidates) < 1:
+            print("Pre-assembly Stats not found in job directory %s " % jobDir)
+        elif len(candidates) > 1:
+            print("Multiple Pre-assembly Stats present in job directory %s" % jobDir)
+        else:
+            return candidates[0]
+        
+    def resolvePolishedAssemblyStats(self, smrtLinkServer, jobId):
+        jobDir = self.resolveJob(smrtLinkServer, jobId)
+        return self.findPolishedAssemblyStats(jobDir)
+    
+    def resolvePreassemblyStats(self, smrtLinkServer, jobId):
+        jobDir = self.resolveJob(smrtLinkServer, jobId)
+        return self.findPreassemblyStats(jobDir)
 
     def ensureSubreadSet(self, subreadSet):
         if not (subreadSet.endswith(".subreadset.xml") or subreadSet.endswith(".subreads.bam")):

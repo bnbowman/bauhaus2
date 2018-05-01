@@ -32,13 +32,63 @@ json_results = \
     { c : expand("reports/{condition}/report.json", condition=c)
       for c in ct.conditions }
 
+local_assemblyStats = \
+    { c : "reports/{condition}/assembly.csv".format(condition=c)
+      for c in ct.conditions }
+
+local_snpsCSV = \
+    { c : "reports/{condition}/polished_snps.csv".format(condition=c)
+      for c in ct.conditions }  
+      
 # -- Target --
 
 rule collect_csv:
-    input: json_results.values()
-    
+    input: json_results.values(),
+           "reports/Combined_Conditions"
 
 # -- Worker rules ---
+
+rule combineCSV:
+    input: local_assemblyStats.values()
+    output: combinedcsv="reports/Combined_Conditions/combinedAssembly.csv"
+    shell:
+        """
+        cat reports/*/assembly.csv > {output.combinedcsv}
+        sed -i.bak 1i",id,name,value,condition" {output.combinedcsv}
+        """
+
+rule generatePlots:
+    input: "reports/Combined_Conditions/combinedAssembly.csv",
+           "reports/Combined_Conditions/merge_snps.csv"
+    output: "reports/Combined_Conditions/report.json",
+            "reports/Combined_Conditions"
+    shell:
+        """
+        Rscript --vanilla scripts/R/combined_hgap.R
+        """
+
+rule convertJsonToCSV:
+    input: 
+        polishedjson="conditions/{condition}/assemblystats/polished_assembly_report.json",
+        prejson="conditions/{condition}/assemblystats/preassembly_yield.json"
+    output:
+        polishedcsv="conditions/{condition}/assemblystats/polished_assembly_report.csv",
+        precsv="conditions/{condition}/assemblystats/preassembly_yield.csv",
+        mergecsv="reports/{condition}/assembly.csv",
+    params:
+        tag = "{condition}",
+        nhpolishedcsv="reports/{condition}/nhpolished.csv",
+        nhprecsv="reports/{condition}/nhpre.csv"
+    shell:
+        """
+        module load anaconda
+        python scripts/Python/convertJsonToCSV.py {input.polishedjson} {output.polishedcsv} {params.tag}
+        python scripts/Python/convertJsonToCSV.py {input.prejson} {output.precsv} {params.tag}
+        sed 1d {output.precsv} > {params.nhprecsv}
+        sed 1d {output.polishedcsv} > {params.nhpolishedcsv}
+        cat {params.nhpolishedcsv} {params.nhprecsv} > {output.mergecsv}
+        rm -f {params.nhpolishedcsv} {params.nhprecsv}
+        """
         
 rule variantCaller:
     input: 
@@ -58,7 +108,6 @@ rule variantCaller:
         module add smrtlink/internal
         exec variantCaller --algorithm=arrow -j{threads} -x0 -q0 {params.modelPath} -p trained_condition -o {output.polished_fasta} -o {output.fastq} -o {output.gff} -o {output.vcf} -r {input.reference} {input.alignment_set}
         """
-        
         
 rule run_mummer:
     input: 
@@ -100,7 +149,8 @@ rule generate_mummer_table:
         csvfile = "conditions/{condition}/outputs_{condition}/snps.csv"
     output:
         txtfile = "conditions/{condition}/fastalengthfile.txt",
-        rplot = "reports/{condition}/{condition}_myoutput.png"
+        rplot = "reports/{condition}/{condition}_myoutput.png",
+        csv = "reports/{condition}/polished_snps.csv"
     params:
         tag = "{condition}"
     shell:
@@ -109,7 +159,16 @@ rule generate_mummer_table:
         module load exonerate
         fastalength {input.polished_fasta} > {output.txtfile}
         Rscript --vanilla scripts/R/mummerOneCondition.R --inDir {input.indir} --outDir {input.outdir} --conditionname {params.tag}
-        """    
+        """   
+
+rule mergeSnpsCSV:
+    input: local_snpsCSV.values()
+    output: mergesnpscsv="reports/Combined_Conditions/merge_snps.csv"
+    shell:
+        """
+        cat reports/*/polished_snps.csv > {output.mergesnpscsv}
+        sed -i.bak 1i"PosR,Rb,Qb,PosQ,X1,Buff,Dist,X2,CtxR,CtxQ,X3,F1,F2,Ref,Unitig,Condition" {output.mergesnpscsv}
+        """
         
 rule generate_json:
     input: 

@@ -1,0 +1,39 @@
+
+# ---------------------------------------------------------------------------------------------------
+# collect-assembly-stats.snake: hotlink "remote" smrtlink assembly stats into our workflow directory for HGAP analysis
+
+local_polishedAssemblyStats = \
+    { c : "conditions/{condition}/assemblystats/polished_assembly_report.json".format(condition=c)
+      for c in ct.conditions }
+      
+local_preAssemblyStats = \
+    { c : "conditions/{condition}/assemblystats/preassembly_yield.json".format(condition=c)
+      for c in ct.conditions }
+
+# When resolving the smrtlink job server and id, the mapped alignmentset and the subreadset are returned as a list
+# So here ct.inputs(c)[0] returns the list that contains the mapped alignmentset and the subreadset
+# Later in this workflow, the polishedAssemblyStats (remote_alignmentsets[wc.condition][2]) and
+# preAssemblyStats (remote_alignmentsets[wc.condition][3]) is used
+
+remote_assemblyStats = \
+    { c : ct.inputs(c)[0]
+      for c in ct.conditions }
+
+# -- Target --
+
+rule collect_assembly_stats:
+    input: local_polishedAssemblyStats.values(),
+           local_preAssemblyStats.values()
+
+# -- Worker rules ---
+
+rule collect_assembly_stats_one_condition:
+    input: remote_polished = lambda wc: remote_assemblyStats[wc.condition][2],
+           remote_pre = lambda wc: remote_assemblyStats[wc.condition][3]
+    output: polished = "conditions/{condition}/assemblystats/polished_assembly_report.json",
+            pre = "conditions/{condition}/assemblystats/preassembly_yield.json"
+    shell:
+        """
+        ln -s {input.remote_polished} {output.polished}
+        ln -s {input.remote_pre} {output.pre}
+        """
