@@ -223,7 +223,7 @@ makeResidualErrorPlots <- function(report, errors){
     errors %>% dplyr::group_by(Error.Type, Base) %>% dplyr::count(Homopolymer)  ##Not sure what this does
   ######## graph1
   g <- ggplot(errors, aes(Homopolymer))
-  tp = g + geom_bar(aes(fill = Base)) + facet_grid(. ~ Error.Type) + ggtitle("Residual Errors by Error Type")
+  tp = g + geom_bar(aes(fill = Base)) + facet_grid(Condition ~ Error.Type) + ggtitle("Residual Errors by Error Type")
   report$ggsave(
     "combined_residual_error_1.png",
     tp,
@@ -243,7 +243,7 @@ makeResidualErrorPlots <- function(report, errors){
     fill = Base,
     geom = "bar",
     xlim = c(0, 10)
-  ) + facet_grid(. ~ Error.Type)
+  ) + facet_grid(Condition ~ Error.Type)
   report$ggsave(
     "combined_residual_error_2.png",
     tp,
