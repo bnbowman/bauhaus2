@@ -108,12 +108,14 @@ rule adapter_summary_one_condition:
             alignbam= "conditions/{condition}/mapped/unrolled.hqregions.align.bam",
             adapterdata= "conditions/{condition}/adapter/adapter_data.csv"
     output:
-        finalcsv= "reports/{condition}/final.csv"       
+        finalcsv= "reports/{condition}/final.csv"
+    params:
+        tag = "{condition}"
     threads: 24
     shell:
         """
         module load smstools
-        python scripts/Python/AdpFromAlignments.py  {input.unrolledcsv} {input.alignbam} {input.adapterdata} > {output.finalcsv}
+        python scripts/Python/AdpFromAlignments.py  {input.unrolledcsv} {input.alignbam} {input.adapterdata} {params.tag} > {output.finalcsv}
         """
    
 rule result_summary_one_condition:
