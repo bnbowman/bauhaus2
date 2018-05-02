@@ -25,13 +25,18 @@ remote_adapter = \
     { c : ct.adapter(c)
       for c in ct.conditions}
       
+local_finalCSVNH = \
+    { c : "reports/{condition}/finalnoHeader.csv".format(condition=c)
+      for c in ct.conditions }
+      
 ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
 
 # -- Target rules --
 
 rule adapterEvaluation:
     input:
-        adapterEvaluationreport = local_adapterreport.values()
+        local_adapterreport.values(),
+        "reports/Combined_Conditions/combined_final.csv"
 
 # -- Worker rules -- 
 
@@ -108,7 +113,8 @@ rule adapter_summary_one_condition:
             alignbam= "conditions/{condition}/mapped/unrolled.hqregions.align.bam",
             adapterdata= "conditions/{condition}/adapter/adapter_data.csv"
     output:
-        finalcsv= "reports/{condition}/final.csv"
+        finalcsv= "reports/{condition}/final.csv",
+        finalcsvNH= "reports/{condition}/finalnoHeader.csv"
     params:
         tag = "{condition}"
     threads: 24
@@ -116,6 +122,7 @@ rule adapter_summary_one_condition:
         """
         module load smstools
         python scripts/Python/AdpFromAlignments.py  {input.unrolledcsv} {input.alignbam} {input.adapterdata} {params.tag} > {output.finalcsv}
+        sed 1d {output.finalcsv} > {output.finalcsvNH}
         """
    
 rule result_summary_one_condition:
@@ -144,3 +151,12 @@ rule result_plot_one_condition:
         AdapterAnalysisPlots {params.condition} ../../{input.finalcsv}
         cd ../..
         """ 
+        
+rule combineCSV:
+    input: local_finalCSVNH.values()
+    output: combinedcsv="reports/Combined_Conditions/combined_final.csv"
+    shell:
+        """
+        cat reports/*/finalnoHeader.csv > {output.combinedcsv}
+        sed -i.bak 1i"Zmw,ZmwAccuracy,MaximumAlignGap,SnrT,isReal,isHit,isMissing,AdpStart,AdpEnd,AdpType,AdpSequence,CallStart,CallEnd,CallType,CallSequence,CallAccuracy,CallFlankingScore,CallPassRSII,CallPassSequel,Condition" {output.combinedcsv}
+        """
