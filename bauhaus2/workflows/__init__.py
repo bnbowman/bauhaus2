@@ -15,6 +15,7 @@ from .isoseq_rc0      import *
 from .heatmaps       import *
 from .barcodingQC       import *
 from .adapterEvaluation     import *
+from .barcodingPPV       import *
 from .cas9Yield       import *
 from .sv       import *
 from .hgap       import *

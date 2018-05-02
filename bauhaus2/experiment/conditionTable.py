@@ -10,6 +10,7 @@ __all__ = [ "InputType",
             "IsoSeqConditionTable",
             "LimaConditionTable",
             "AdapterConditionTable",
+            "LimaConditionTable2",
             "Cas9ConditionTable",
             "TableValidationError",
             "InputResolutionError" ]
@@ -146,14 +147,18 @@ class ConditionTable(object):
             return resolver.ensureAlignmentSet(rowRecord.AlignmentSet)
         elif {"TraceH5File"}.issubset(cols):
             return resolver.ensureTraceH5File(rowRecord.TraceH5File)
-        elif {"SymmetricBarcodeSet"}.issubset(cols):
-            return resolver.ensureBarcodeSet(rowRecord.SymmetricBarcodeSet)
+        #for lima workflows
+        if {"SymmetricBarcodeSet"}.issubset(cols):
+            return resolver.resolveBarcodeSet(rowRecord.SymmetricBarcodeSet)
         elif {"AsymmetricBarcodeSet"}.issubset(cols):
             return resolver.ensureBarcodeSet(rowRecord.AsymmetricBarcodeSet)
         elif {"SymmetricAdapterSet"}.issubset(cols):
             return resolver.ensureAdapterSet(rowRecord.SymmetricAdapterSet)
         elif {"AsymmetricAdapterSet"}.issubset(cols):
             return resolver.ensureAdapterSet(rowRecord.AsymmetricAdapterSet)
+            return resolver.resolverBarcodeSet(rowRecord.AsymmetricBarcodeSet)
+        if {"Mapping"}.issubset(cols):
+            return resolver.ensureMapping(rowRecord.Mapping)
 
     def _resolveInputs(self, resolver):
         self._inputsByCondition = {}
@@ -553,7 +558,108 @@ class LimaConditionTable(ConditionTable):
                 barcodeSet = self.barcodeSet(condition)
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
+                
+class LimaConditionTable2(ConditionTable):
+    """
+    This workflow is for barcoding (lima) QC jobs
+    """
+    
+    """Override validate table for lima"""
+    def _validateBarcode(self):
+        required = ['Condition', 'SubreadSet']
+        exclusive = ['AsymmetricBarcodeSet', 'SymmetricBarcodeSet']
+        for rq in required:
+            if rq not in self.tbl.column_names:
+                raise TableValidationError(
+                    "'{}' column must be present".format(rq))
+        if exclusive[0] in self.tbl.column_names and exclusive[1] in self.tbl.column_names:
+            raise TableValidationError(
+                    "LimaConditionTable should only contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+        elif exclusive[0] not in self.tbl.column_names and exclusive[1] not in self.tbl.column_names:
+            raise TableValidationError(
+                    "LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+        
+    def _validateTable(self):
+        super(LimaConditionTable2, self)._validateTable()
+        self._validateBarcode()
+        
+    def prefix(self, condition):
+        prefixlist = ['--same', '--min-passes 1']
+        try:
+            if bool(self.condition(condition).SymmetricBarcodeSet):
+                return prefixlist[0]
+        except:
+            try:
+                if bool(self.condition(condition).AsymmetricBarcodeSet):
+                    return prefixlist[1]
+            except:
+                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+   
+    def prefix2(self, condition):
+        prefixlist2 = ['same', 'different']
+        try:
+            if bool(self.condition(condition).SymmetricBarcodeSet):
+                return prefixlist2[0]
+        except:
+            try:
+                if bool(self.condition(condition).AsymmetricBarcodeSet):
+                    return prefixlist2[1]
+            except:
+                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
 
+
+    def barcodeSet(self, condition):
+        try:
+            return self.condition(condition).SymmetricBarcodeSet
+        except:  ## TODO(lhepler): use proper exception here for SymmetricBarcodeSet lookup failure
+            try:
+                return self.condition(condition).AsymmetricBarcodeSet
+            except:
+                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+
+    def _resolveInputs(self, resolver):
+        super(LimaConditionTable2, self)._resolveInputs(resolver)
+        self._referenceByCondition = {}
+        self._referenceSetByCondition = {}
+        self._mappingByCondition = {}
+        for condition in self.conditions:
+            genome = self.genome(condition)
+            try:
+                self._referenceByCondition[condition] = resolver.resolveReference(genome)
+                self._referenceSetByCondition[condition] = resolver.resolveReferenceSet(genome)
+                self._mappingByCondition[condition] = resolver.ensureMapping(self.condition(condition).Mapping[0])
+            except DataNotFound as e:
+                raise InputResolutionError(str(e))
+        for condition in self.conditions:
+            try:
+                barcodeSet = self.barcodeSet(condition)
+            except DataNotFound as e:
+                raise InputResolutionError(str(e))
+        
+   # def variables(self):
+        """
+        In addition to the "p_" variables, "Genome" is considered an implicit
+        variable in resequencing experiments
+        """
+        #return [ "Genome" ] + self.pVariables
+
+    def genome(self, condition):
+        """
+        Use the condition table to look up the correct "Genome" based on
+        the condition name
+        """
+        genomes = _unique(self.condition(condition).Genome)
+        assert len(genomes) == 1
+        return genomes[0]
+        
+    def mapping(self, condition):
+        return self._mappingByCondition[condition]
+        
+    def reference(self, condition):
+        return self._referenceByCondition[condition]
+
+    def referenceSet(self, condition):
+        return self._referenceSetByCondition[condition]
 class AdapterConditionTable(ResequencingConditionTable):
     """
     This workflow is for adapter evaluation jobs

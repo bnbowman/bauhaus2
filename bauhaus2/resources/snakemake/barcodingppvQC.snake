@@ -1,0 +1,42 @@
+
+# ---------------------------------------------------------------------------------------------------
+# barcodingQC.snake : lima QC reports
+
+from bauhaus2.runtime import ct
+
+lima_reports = \
+    { c : expand("conditions/{condition}/lima/barcoded.lima.summary", condition=c)
+      for c in ct.conditions }
+local_limaaligned = {
+    c: expand("conditions/{condition}/align/align.bam", condition=c)
+    for c in ct.conditions}
+zulu_report =  \
+    { c : expand("conditions/{condition}/zulu.report", condition=c)
+      for c in ct.conditions }
+local_mapping = {
+    c: expand("conditions/{condition}/mapping.dat", condition=c)
+    for c in ct.conditions}
+    
+zulu_output = \
+    { c : expand("conditions/{condition}/zulu.bq_ppv", condition=c)
+      for c in ct.conditions }
+    
+ct_prefix2 = ct.prefix2(ct.conditions[0])
+
+zulu_plot = \
+    { c : expand("conditions/{condition}/zuluout.yield_vs_ppv.png", condition=c)
+      for c in ct.conditions }
+      
+zulu_json = \
+    { c : expand("reports/{condition}/report.json", condition=c)
+      for c in ct.conditions }
+      
+
+# -- Target rules --
+
+rule laststep:
+    input:
+        zulureport = zulu_json.values()
+
+
+
