@@ -15,6 +15,7 @@ N_READS        = None
 adpCsvFile = sys.argv[1]
 alignFile  = sys.argv[2]
 csvFile    = sys.argv[3]
+condition  = sys.argv[4]
 ADAPTER_TYPES = ["TC6", "SCR", "POLYA", "OTHER"]
 
 class AdapterCall(object):
@@ -201,7 +202,7 @@ def combine_records( adapters, scraps ):
             yield (-1, -1, -1, "N/A", "F", "T", "F", hit.qStart, hit.qEnd, hit.adapter, hit.sequence, hit.accuracy, hit.flankingScore, hit.passRSIIStr, hit.passSequelStr)
 
 def compareAdpCalls( alnData, alnAdps, calledAdps ):
-    print("Zmw,ZmwAccuracy,MaximumAlignGap,SnrT,isReal,isHit,isMissing,AdpStart,AdpEnd,AdpType,AdpSequence,CallStart,CallEnd,CallType,CallSequence,CallAccuracy,CallFlankingScore,CallPassRSII,CallPassSequel")
+    print("Zmw,ZmwAccuracy,MaximumAlignGap,SnrT,isReal,isHit,isMissing,AdpStart,AdpEnd,AdpType,AdpSequence,CallStart,CallEnd,CallType,CallSequence,CallAccuracy,CallFlankingScore,CallPassRSII,CallPassSequel,Condition")
     for zmw, adps in alnAdps.iteritems():
         calls = calledAdps[zmw]
         try:
@@ -217,7 +218,7 @@ def compareAdpCalls( alnData, alnAdps, calledAdps ):
                                                                                                                 isReal, isHit, isMissing,
                                                                                                                 aStart, aEnd, aType, aSeq, 
                                                                                                                 cStart, cEnd, cType, cSeq, 
-                                                                                                                acc, flank, pRSII, pSeq))
+                                                                                                                acc, flank, pRSII, pSeq)) + "," + condition
 
 adps             = readAdpCsv( adpCsvFile )
 alnData, alnAdps = readAlignments( alignFile, adps )

@@ -25,13 +25,22 @@ remote_adapter = \
     { c : ct.adapter(c)
       for c in ct.conditions}
       
+local_callCSVNH = \
+    { c : "reports/{condition}/callAccuracyNH.csv".format(condition=c)
+      for c in ct.conditions }
+      
+local_zmwCSVNH = \
+    { c : "reports/{condition}/zmwAccuracyNH.csv".format(condition=c)
+      for c in ct.conditions }
+      
 ct_prefix = ct.prefix(ct.conditions[0]) # Note that in one condition table, the prefix should always be consistent for all conditions
 
 # -- Target rules --
 
 rule adapterEvaluation:
     input:
-        adapterEvaluationreport = local_adapterreport.values()
+        local_adapterreport.values(),
+        "reports/Combined_Conditions"
 
 # -- Worker rules -- 
 
@@ -108,12 +117,14 @@ rule adapter_summary_one_condition:
             alignbam= "conditions/{condition}/mapped/unrolled.hqregions.align.bam",
             adapterdata= "conditions/{condition}/adapter/adapter_data.csv"
     output:
-        finalcsv= "reports/{condition}/final.csv"       
+        finalcsv= "reports/{condition}/final.csv"
+    params:
+        tag = "{condition}"
     threads: 24
     shell:
         """
         module load smstools
-        python scripts/Python/AdpFromAlignments.py  {input.unrolledcsv} {input.alignbam} {input.adapterdata} > {output.finalcsv}
+        python scripts/Python/AdpFromAlignments.py  {input.unrolledcsv} {input.alignbam} {input.adapterdata} {params.tag} > {output.finalcsv}
         """
    
 rule result_summary_one_condition:
@@ -130,7 +141,9 @@ rule result_plot_one_condition:
     input:  finalcsv= "reports/{condition}/final.csv",
             reportscsv= "reports/{condition}/results.csv"
     output:
-        reportsjson= "reports/{condition}/report.json"
+        reportsjson= "reports/{condition}/report.json",
+        callCSVNH = "reports/{condition}/callAccuracyNH.csv",
+        zmwCSVNH = "reports/{condition}/zmwAccuracyNH.csv"
     params:
         condition= "{condition}",
         reportsfolder= "reports/{condition}"
@@ -139,6 +152,37 @@ rule result_plot_one_condition:
         """
         module load smstools
         cd {params.reportsfolder}
-        AdapterAnalysisPlots {params.condition} ../../{input.finalcsv}
+        python ../../scripts/Python/AdapterAnalysisPlots.py {params.condition} ../../{input.finalcsv}
+        sed 1d callAccuracy.csv > callAccuracyNH.csv
+        sed 1d zmwAccuracy.csv > zmwAccuracyNH.csv
         cd ../..
         """ 
+        
+rule combineCSV:
+    input: local_callCSVNH.values(),
+           local_zmwCSVNH.values()
+    output: combinedCallcsv="reports/Combined_Conditions/combined_callAccuracy.csv",
+            combinedZMWcsv="reports/Combined_Conditions/combined_zmwAccuracy.csv"
+    shell:
+        """
+        
+        cat reports/*/callAccuracyNH.csv > {output.combinedCallcsv}
+        sed -i.bak 1i"AdapterClass,AdapterType,CallAccuracy,Condition" {output.combinedCallcsv}
+        cat reports/*/zmwAccuracyNH.csv > {output.combinedZMWcsv}
+        sed -i.bak 1i"AdapterClass,AdapterType,Condition,ZmwAccuracy" {output.combinedZMWcsv}
+        """
+        
+rule generateCombinedPlots:
+    input: combinedCallcsv="reports/Combined_Conditions/combined_callAccuracy.csv",
+           combinedZMWcsv="reports/Combined_Conditions/combined_zmwAccuracy.csv"
+    output: "reports/Combined_Conditions/report.json",
+            "reports/Combined_Conditions"
+    params:
+        reportsfolder= "reports/Combined_Conditions"
+    shell:
+        """
+        module load smstools
+        cd {params.reportsfolder}
+        python ../../scripts/Python/CombinedAdapterAnalysisPlots.py  ../../{input.combinedCallcsv} ../../{input.combinedZMWcsv}
+        cd ../..
+        """
