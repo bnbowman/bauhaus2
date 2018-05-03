@@ -22,7 +22,7 @@ baseAND_ <- function(amin,amax,bmin,bmax) {
 }
 
 baseAND <- function(amin,amax,bmin,bmax) {
-  ifelse ((!is.na(amin)) & (!is.na(bmin)) & (amin < bmax) & (amax > bmin), 
+  ifelse ((!is.na(amin)) & (!is.na(bmin)) & (amin < bmax) & (amax > bmin),
           baseAND_(amin,amax,bmin,bmax) ,0)
 }
 
@@ -42,17 +42,17 @@ if (F) {
   alignedbam  <- "m54003_161110_020238_nohq.aligned.bam"
   pdffile     <- "m54003_161110_020238.pdf"
   csvfile     <- "m54003_161110_020238_metrics.csv"
-} 
+}
 
 if (F)
 {
   setwd("/home/UNIXHOME/mlakata/hqrm/emilia_3150469_4.0_32K")
-  origbam     <- "/home/UNIXHOME/mlakata/hqrm/emilia_3150469_4.0_32K/m54003_161119_020419.subreads.bam" 
-  scrapsbam   <- "/home/UNIXHOME/mlakata/hqrm/emilia_3150469_4.0_32K/m54003_161119_020419.scraps.bam" 
+  origbam     <- "/home/UNIXHOME/mlakata/hqrm/emilia_3150469_4.0_32K/m54003_161119_020419.subreads.bam"
+  scrapsbam   <- "/home/UNIXHOME/mlakata/hqrm/emilia_3150469_4.0_32K/m54003_161119_020419.scraps.bam"
   polyzmqbam  <- ""# fixme
   polyscrapsbam   <- "" # fixme
   alignedbam <- "m54003_161119_020419_nohq.aligned.bam"
-  pdffile <- "m54003_161119_020419.pdf" 
+  pdffile <- "m54003_161119_020419.pdf"
   csvfile <- "m54003_161119_020419_metrics.csv"
 
 } else {
@@ -81,16 +81,16 @@ throwAwayNonoverlappingMappedReads = F
 if (throwAwayNonoverlappingMappedReads) {
   ind3 <- ind2[(ind2$astart < ind2$RegionEnd & ind2$aend > ind2$RegionStart) | is.na(ind2$RegionStart) | is.na(ind2$astart),]
 } else {
-  
+
   ind2$c0bases <- mapply(baseAND,ind2$astart,ind2$aend,ind2$RegionStart, ind2$RegionEnd)
-  
+
   ind3 <- ind2
 }
 
 # ind <- aggregate(subreads ~ hole, FUN = "sum", data = ind1)
-ind <- ddply(ind3, .(hole), summarize, 
-             subreads = length(hole), 
-             astart = min(astart), aend = max(aend), 
+ind <- ddply(ind3, .(hole), summarize,
+             subreads = length(hole),
+             astart = min(astart), aend = max(aend),
              aSize  = sum(asize),
              c0bases = sum(c0bases),
              snrA=mean(snrA),
@@ -109,11 +109,11 @@ qq <- merge(x=qq2,y=qq4, by="hole",all=TRUE)
 qq$qSize.x[is.na(qq$qSize.x)]=0
 qq$qSize.y[is.na(qq$qSize.y)]=0
 qq$qSize <- qq$qSize.x + qq$qSize.y
-             
 
 
 
-#hqr  <- mutate(hqr2, 
+
+#hqr  <- mutate(hqr2,
 #  RegionStart = ifelse(RegionStart==RegionEnd, NA , RegionStart),
 #  RegionEnd   = ifelse(RegionStart==RegionEnd, NA , RegionEnd)
 #)
@@ -136,7 +136,7 @@ d$class  = ifelse(is.na(d$astart),2,0) + ifelse(is.na(d$RegionStart),1,0)
 
 d$c1bases <- ifelse(is.na(d$astart)     ,0,d$aSize  - d$c0bases)
 d$c2bases <- ifelse(is.na(d$RegionStart),0,d$hqSize - d$c0bases)
-d$c3bases <- d$qSize - d$c0bases - d$c1bases - d$c2bases  
+d$c3bases <- d$qSize - d$c0bases - d$c1bases - d$c2bases
 
 
 # Calculate the sizes of the various "reads".
@@ -164,7 +164,7 @@ value <- c(alignedbam , Sys.getenv("HOSTNAME"), getwd(), Sys.getenv("rerundir"),
 summary <- data.frame(field,value)
 grid.table(summary)
 
-mtext(getwd(), side=1, line=3, outer=F, adj=0, cex=0.7) 
+mtext(getwd(), side=1, line=3, outer=F, adj=0, cex=0.7)
 
 
 #---------------------
@@ -195,7 +195,7 @@ mydf <- data.frame(labels,zmws,percents)
 
 # gp <- pie(slices,labels=labels, main = "ZMW classification", clockwise=T)
 # gp<- ggplot(data=mydf,aes(x=factor(1),y=slices,fill=factor(labels))) +  geom_bar(width=1, stat = "identity")
-gp<- ggplot(data=mydf,aes(x=factor(1),y=zmws,fill=factor(labels))) +  geom_bar(width=1, stat = "identity") + coord_polar(theta = "y") + 
+gp<- ggplot(data=mydf,aes(x=factor(1),y=zmws,fill=factor(labels))) +  geom_bar(width=1, stat = "identity") + coord_polar(theta = "y") +
   ylab('') + labs(fill='labels')
 
 
@@ -242,7 +242,7 @@ labels <- c(
 
 mydf <- data.frame(labels,bases,percents)
 
-gp<- ggplot(data=mydf,aes(x=factor(1),y=bases,fill=factor(labels))) +  geom_bar(width=1, stat = "identity") + coord_polar(theta = "y") + 
+gp<- ggplot(data=mydf,aes(x=factor(1),y=bases,fill=factor(labels))) +  geom_bar(width=1, stat = "identity") + coord_polar(theta = "y") +
   ylab('') + labs(fill='labels')
 
 
@@ -263,11 +263,11 @@ p2 <- ggplot(data=dhq,aes(x=factor(snrBin),fill=factor(class,levels = c(0,1,2,3)
                                                        labels = labels))) + geom_bar( )
 
 p3 <- ggplot(d,aes(identity,..density..,fill=factor(class,levels = c(0,1,2,3),
-                                                    labels = labels))) + 
-  geom_histogram(bins=50,pos="identity",alpha=0.5) 
+                                                    labels = labels))) +
+  geom_histogram(bins=50,pos="identity",alpha=0.5)
 
 p4 <- ggplot(d,aes(aSize,..density..,fill=factor(class,levels = c(0,1,2,3),
-                                                 labels = labels))) + 
+                                                 labels = labels))) +
   geom_histogram(bins=50,pos="identity",alpha=0.5)  + scale_x_log10()
 
 
@@ -353,7 +353,7 @@ ggplot(dd , aes(x=hqSize - aSize)) + geom_histogram(binwidth=100) +
 
 # meanBasesBadHQ = mean(d[d$subreads == 0,"hqSize"])
 
-ggplot(dd5, aes(hqSize)) + geom_histogram(binwidth=100) + 
+ggplot(dd5, aes(hqSize)) + geom_histogram(binwidth=100) +
   #  annotate("text",label=sprintf("%d reads\n%f mean bases",dim(d[d$subreads == 0,])[1],meanBasesBadHQ),x=Inf,y=Inf,vjust=1,hjust=1) +
   geom_text(data=eq5,aes(label=sprintf("%d reads\n%.1f mean HQ bases",V1,V2)),x=Inf,y=Inf,vjust=1,hjust=1) +
   facet_wrap( ~ subreads, scale="free_y", labeller = label_both) + scale_y_log10()
@@ -364,7 +364,7 @@ ggplot(dd5, aes(hqSize)) + geom_histogram(binwidth=100) +
 # page 11
 # num mapped subreads per ZMW
 
-ggplot(d,aes(subreads)) + geom_histogram(color="black",fill="white") + 
+ggplot(d,aes(subreads)) + geom_histogram(color="black",fill="white") +
   scale_y_log10() +
   ggtitle("Mapped subreads per ZMW")
 
@@ -372,10 +372,10 @@ ggplot(d,aes(subreads)) + geom_histogram(color="black",fill="white") +
 # page 12
 # number and size of mapped reads, with and without HQ
 
-p1 <- ggplot(d[ is.na(d$RegionStart),],aes(subreads)) + geom_histogram(color="black",fill="white") + 
+p1 <- ggplot(d[ is.na(d$RegionStart),],aes(subreads)) + geom_histogram(color="black",fill="white") +
   scale_y_log10() +
   ggtitle("Mapped subreads per ZMW\nwith no HQ")
-p2 <- ggplot(d[ is.na(d$RegionStart),],aes(aSize)) + geom_histogram(color="black",fill="white",binwidth=100) + 
+p2 <- ggplot(d[ is.na(d$RegionStart),],aes(aSize)) + geom_histogram(color="black",fill="white",binwidth=100) +
   ggtitle("subread length\nwith no HQ")
 
 d_nohq <- d[ is.na(d$RegionStart),]
@@ -385,10 +385,10 @@ mean_bases_mapped_nohq <- mean(d_nohq$aSize)
 # geom_text(data=eq5,aes(label=sprintf("%d reads\n%.1f mean HQ bases",V1,V2)),x=Inf,y=Inf,vjust=1,hjust=1) +
 
 
-p3 <- ggplot(d[ !is.na(d$RegionStart),],aes(subreads)) + geom_histogram(color="black",fill="white") + 
+p3 <- ggplot(d[ !is.na(d$RegionStart),],aes(subreads)) + geom_histogram(color="black",fill="white") +
   scale_y_log10() +
   ggtitle("Mapped subreads per ZMW\nwith HQ")
-p4 <- ggplot(d[ !is.na(d$RegionStart),],aes(aSize)) + geom_histogram(color="black",fill="white",binwidth=100) + 
+p4 <- ggplot(d[ !is.na(d$RegionStart),],aes(aSize)) + geom_histogram(color="black",fill="white",binwidth=100) +
   ggtitle("subread length\nwith HQ")
 
 d_whq <- d[! is.na(d$RegionStart) & !is.na(d$aSize),]
@@ -406,7 +406,7 @@ grid.arrange(p1,p2, p3,p4,ncol=2)
 # page 13
 # comparison of HQR size distribution, for 0,1 or 2 mapped subreads
 
-ggplot(d012,aes(hqSize, fill=factor(subreads))) + geom_histogram(alpha=0.5,binwidth=100,pos="identity") + 
+ggplot(d012,aes(hqSize, fill=factor(subreads))) + geom_histogram(alpha=0.5,binwidth=100,pos="identity") +
   xlim(0,25000)  +
   scale_fill_discrete(name="Mapped Subreads\nper ZMW") +
   theme(legend.position=c(.5, .5))
@@ -428,7 +428,7 @@ if (T) {
   p2 <- ggplot(d1234, aes(hqret)) + geom_histogram(binwidth=100) + xlim(-10000,10000) + scale_y_log10() + facet_wrap( ~ subreads, labeller = label_both)
   qadv <- quantile(d1234$hqadv,probs=c(0,0.1,0.5,0.9,1.0),na.rm=T)
   qret <- quantile(d1234$hqret,probs=c(0,0.1,0.5,0.9,1.0),na.rm=T)
-} else {  
+} else {
   d1$hqadv <- d1$RegionStart - d1$astart
   d1$hqret <- d1$RegionEnd - d1$aend
   p1 <- ggplot(d1, aes(hqadv)) + geom_histogram(binwidth=100) + xlim(-10000,10000) + scale_y_log10()
@@ -461,7 +461,7 @@ tt <- ttheme_default(colhead=list(fg_params = list(parse=TRUE)))
 tbl <- tableGrob(qqdf, rows=NULL, theme=tt)
 grid.arrange(p1,p2,tbl, as.table=T, ncol=2)
 
-  
+
 
 #----------------------------------------------------
 if(FALSE) {

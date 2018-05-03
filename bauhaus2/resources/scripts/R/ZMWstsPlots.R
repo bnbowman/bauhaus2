@@ -52,7 +52,7 @@ nonalnedZMWMetrics = c(
   paste("HQBaselineStd", channel, sep = "_"),
   paste("SnrMean", dna, sep = "_"))
 
-#create a dataframe with all column names that are NOT plotted separately for P0, P1 and P2 and the corresponding uid 
+#create a dataframe with all column names that are NOT plotted separately for P0, P1 and P2 and the corresponding uid
 plot_names = c (
   "Unrolled Alignments Length (Summation) by Read Type",
   "Accuracy (per ZMW) by Read Type",
@@ -100,7 +100,7 @@ pplot_uid_table = data.frame(plot_names2, uid_P0, uid_P1, uid_P2)
 generateStsH5Heatmaps = function(report, file, label, N, dist = NULL)
 {
   S = getStsH5Data(file, labelReadTypes = FALSE)
-  
+
   # Plots for P0 reads
   dna = c("A", "C", "G", "T")
   channel = c("Green", "Red")
@@ -121,15 +121,15 @@ generateStsH5Heatmaps = function(report, file, label, N, dist = NULL)
     paste("HQBaselineStd", channel, sep = "_"),
     paste("SnrMean", dna, sep = "_")
   )
-  
+
   P0 = subset(S, Productivity == 0)
   P0 = P0[, c(nonalnedZMWMetrics, "HoleNumber", "X", "Y")]
   plotProductivityCategories(report, P0, "P0", label, N, dist)
-  
+
   # Plots for P1 reads
   P1 = subset(S, Productivity == 1)
   plotProductivityCategories(report, P1, "P1", label, N, dist)
-  
+
   # Plots for P2 reads
   P2 = subset(S, Productivity == 2)
   P2 = P2[, c(nonalnedZMWMetrics, "HoleNumber", "X", "Y")]
@@ -166,7 +166,7 @@ plotAllFields = function(report,
     cat("[WARNING]: Too few elements.\n")
     return(0)
   }
-  
+
   exclude = identifyEmptyOrSingleValuedColumns(res, c("HoleNumber", "X", "Y"))
   colNames = setdiff(names(res), exclude)
   loadingUnif = NULL
@@ -181,7 +181,7 @@ plotAllFields = function(report,
   if (pvalue == "P2") {
     pvaluefind = 4
   }
-  
+
   lapply(c("Count", colNames), function(n) {
     if (is.null(pplot_uid_table[, pvaluefind][plot_names2 == n]))
     {
@@ -200,7 +200,7 @@ plotAllFields = function(report,
       silent = FALSE)
     }
   })
-  
+
   countUniqueZMWs(res)
 }
 
@@ -219,7 +219,7 @@ convenientSummarizersts = function(res,
   Y = (y %/% N[2]) + (y %% N[2] > 0)
   z = data.frame(data.table(X, Y)[, .N, by = .(X, Y)])
   # z$N contains the number of alignments per N[1] x N[2] block
-  
+
   if ("SNR_A" %in% names(res))
   {
     res$SNR_A[res$SNR_A == -1] <- NA
@@ -227,7 +227,7 @@ convenientSummarizersts = function(res,
     res$SNR_G[res$SNR_G == -1] <- NA
     res$SNR_T[res$SNR_T == -1] <- NA
   }
-  
+
   excl = c(
     "Matches",
     "Mismatches",
@@ -266,19 +266,19 @@ getStsH5Data = function(file, labelReadTypes = TRUE)
   h5 = new("H5File", fileName = file, mode = "r")
   ZMWMetrics = getH5Group(h5, "ZMWMetrics")
   ZMW = getH5Group(h5, "ZMW")
-  
+
   S = lapply(datasetsZMWMetrics(), function(name)
     opDS(ZMWMetrics, name))
   S = do.call(cbind, S)
-  
+
   K = lapply(c("HoleNumber", "UnitFeature"), function(name)
     opDS(ZMW, name))
   K = as.matrix(do.call(cbind, K))
-  
+
   S$HoleNumber = K[, 1]
   S$X = S$HoleNumber %/% MAXINT
   S$Y = S$HoleNumber %% MAXINT
-  
+
   if (labelReadTypes)
   {
     S$ReadType =
@@ -292,7 +292,7 @@ getStsH5Data = function(file, labelReadTypes = TRUE)
         "Indeterminate"
       )[S$ReadType + 1]
   }
-  
+
   #' Return non-fiducial ZMWs only:
   S[K[, 2] == 0, ]
 }
@@ -405,10 +405,10 @@ poissonPlot <- function(d, title) {
 
 makeReadTypePlots <- function(report, cd2) {
   loginfo("Making Read Type Plots")
-  
+
   cdunrolled = cd2 %>% group_by(Condition, hole, readType, productivity) %>% summarise(unrolledT = sum(tlen),
                                                                                        accuracy = 1 - (sum(mismatches) + sum(dels) + sum(inserts)) / sum(tlen))
-  
+
   tp <-
     ggplot(data = cdunrolled, aes(x = readType,
                                   y = unrolledT,
@@ -425,7 +425,7 @@ makeReadTypePlots <- function(report, cd2) {
     position = position_dodge(width = 0.9),
     vjust = -0.8
   )
-  
+
   report$ggsave(
     "unrolled_template_length_by_readtype_boxplot.png",
     tp,
@@ -442,7 +442,7 @@ makeReadTypePlots <- function(report, cd2) {
              "readtype"),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Unrolled Alignments Length (Summation) by Read Type"])
   )
-  
+
   tp <-
     ggplot(data = cdunrolled, aes(x = readType,
                                   y = accuracy,
@@ -450,7 +450,7 @@ makeReadTypePlots <- function(report, cd2) {
     geom_boxplot(position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Read Type", y = "Accuracy (per ZMW)", title = "Accuracy (per ZMW) by Read Type")
-  
+
   report$ggsave(
     "accuracy_by_readtype_boxplot.png",
     tp,
@@ -466,7 +466,7 @@ makeReadTypePlots <- function(report, cd2) {
              "readtype"),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Accuracy (per ZMW) by Read Type"])
   )
-  
+
   # Primary readType metric and agg plots
   if (any(!is.na(cd2$readType))) {
     cd2$readTypeAgg.1 <-
@@ -484,7 +484,7 @@ makeReadTypePlots <- function(report, cd2) {
           "Other"
         )
       )
-    
+
     cd2$readTypeAgg.2 <-
       ifelse(
         cd2$readType %in% c("Empty"),
@@ -500,7 +500,7 @@ makeReadTypePlots <- function(report, cd2) {
           "Other"
         )
       )
-    
+
     emptyVals = "Empty"
     singleVals = "Single"
     d1 = cd2 %>% group_by(Condition) %>% summarise(
@@ -511,7 +511,7 @@ makeReadTypePlots <- function(report, cd2) {
       empty  = mean(readTypeAgg.2 %in% emptyVals),
       single = mean(readTypeAgg.2 %in% singleVals)
     )
-    
+
     tp1 <- poissonPlot(d1, "readTypeAgg.1")
     report$ggsave(
       "readTypeAgg.1.png",
@@ -528,7 +528,7 @@ makeReadTypePlots <- function(report, cd2) {
                "readtype"),
       uid = as.vector(uid_table$uid_column[uid_table$plot_names == "readTypeAgg.1"])
     )
-    
+
     tp2 <- poissonPlot(d2, "readTypeAgg.2")
     report$ggsave(
       "readTypeAgg.2.png",
@@ -550,15 +550,15 @@ makeReadTypePlots <- function(report, cd2) {
 
 makeYieldPlots <- function(report, cdH5) {
   loginfo("Making yield (ZMWs) Plots")
-  
+
   # Yield (ZMWs) Percentage by Read type
-  
+
   cdreadtype = cdH5 %>% group_by(Condition, readType) %>% summarise(n = n())
   cdreadtype = cdreadtype %>% group_by(Condition) %>% mutate(nper = n / sum(n)) %>% ungroup()
   tp = ggplot(cdreadtype, aes(x = readType, y = nper, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Read Type", y = "(nZMWs by Read Type)/nZMWs", title = "Yield (ZMWs) Percentage by Read Type")
-  
+
   report$ggsave(
     "nzmws_readtype_hist_percentage.png",
     tp,
@@ -575,15 +575,15 @@ makeYieldPlots <- function(report, cdH5) {
              "percentage"),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Yield (ZMWs) Percentage by Read Type"])
   )
-  
+
   # Yield (ZMWs) Percentage by Productivity
-  
+
   cdproductivity = cdH5 %>% group_by(Condition, productivity) %>% summarise(n = n())
   cdproductivity = cdproductivity %>% group_by(Condition) %>% mutate(nper = n / sum(n)) %>% ungroup()
   tp = ggplot(cdproductivity, aes(x = productivity, y = nper, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Productivity", y = "(nZMWs by Productivity)/nZMWs", title = "Yield (ZMWs) Percentage by Productivity")
-  
+
   report$ggsave(
     "nzmws_productivity_hist_percentage.png",
     tp,
@@ -606,14 +606,14 @@ makeYieldPlots <- function(report, cdH5) {
 
 makestsXMLPlots <- function(report, cdXML) {
   loginfo("Making sts.xml Plots")
-  
+
   # Adapter Dimer Fraction by Condition
-  
+
   tp = ggplot(cdXML,
               aes(x = Condition, y = AdapterDimerFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Adapter Dimer Fraction", title = "Adapter Dimer Fraction by Condition")
-  
+
   report$ggsave(
     "adapter_dimer_fraction.png",
     tp,
@@ -630,14 +630,14 @@ makestsXMLPlots <- function(report, cdXML) {
              "fraction"),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Adapter Dimer Fraction by Condition"])
   )
-  
+
   # Short Insert Fraction by Condition
-  
+
   tp = ggplot(cdXML,
               aes(x = Condition, y = ShortInsertFraction, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Short Insert Fraction", title = "Short Insert Fraction by Condition")
-  
+
   report$ggsave(
     "short_insert_fraction.png",
     tp,
@@ -671,7 +671,7 @@ makeEmptyPlots <- function(report) {
       alpha = 0.5,
       family = 'Arial'
     )
-  
+
   report$ggsave(
     "unrolled_template_length_by_readtype_boxplot.png",
     tp + labs(title = "Unrolled Alignments Length (Summation) by Read Type"),
@@ -691,7 +691,7 @@ makeEmptyPlots <- function(report) {
     ),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Unrolled Alignments Length (Summation) by Read Type"])
   )
-  
+
   report$ggsave(
     "accuracy_by_readtype_boxplot.png",
     tp + labs(title = "Accuracy (per ZMW) by Read Type"),
@@ -708,7 +708,7 @@ makeEmptyPlots <- function(report) {
              "missing"),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Accuracy (per ZMW) by Read Type"])
   )
-  
+
   report$ggsave(
     "nzmws_readtype_hist_percentage.png",
     tp + labs(title = "Yield (ZMWs) Percentage by Read Type"),
@@ -728,7 +728,7 @@ makeEmptyPlots <- function(report) {
     ),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Yield (ZMWs) Percentage by Read Type"])
   )
-  
+
   report$ggsave(
     "nzmws_productivity_hist_percentage.png",
     tp + labs(title = "Yield (ZMWs) Percentage by Productivity"),
@@ -748,7 +748,7 @@ makeEmptyPlots <- function(report) {
     ),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Yield (ZMWs) Percentage by Productivity"])
   )
-  
+
   report$ggsave(
     "readTypeAgg.1.png",
     tp + labs(title = "readTypeAgg.1"),
@@ -765,7 +765,7 @@ makeEmptyPlots <- function(report) {
              "missing"),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "readTypeAgg.1"])
   )
-  
+
   report$ggsave(
     "readTypeAgg.2.png",
     tp + labs(title = "readTypeAgg.2"),
@@ -799,7 +799,7 @@ makeEmptyXMLPlots <- function(report) {
       alpha = 0.5,
       family = 'Arial'
     )
-  
+
   report$ggsave(
     "adapter_dimer_fraction.png",
     tp,
@@ -819,7 +819,7 @@ makeEmptyXMLPlots <- function(report) {
     ),
     uid = as.vector(uid_table$uid_column[uid_table$plot_names == "Adapter Dimer Fraction by Condition"])
   )
-  
+
   report$ggsave(
     "short_insert_fraction.png",
     tp,
@@ -845,7 +845,7 @@ makeSTSH5Heatmaps <- function(report, conditions) {
   MAXINT <<- 2 ^ 16
   N = c(8, 8)
   dist = getDistMat(N, key = 1e3)
-  
+
   try(lapply(1:nrow(conditions), function(k)
     generateStsH5Heatmaps(report, conditions$sts_h5[k], conditions$Condition[k], N, dist)), silent = FALSE)
 }
@@ -857,7 +857,7 @@ makeReport <- function(report) {
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
-  
+
   # Check if sts.h5 file exist
   conditions$STS = paste("./conditions/", conditions$Condition, "/sts.h5", sep = "")
   stsExist = TRUE
@@ -866,7 +866,7 @@ makeReport <- function(report) {
       stsExist = FALSE
     }
   }
-  
+
   # Check if sts.xml file exist
   conditions$STSXML = paste("./conditions/", conditions$Condition, "/sts.xml", sep = "")
   stsXMLExist = TRUE
@@ -875,7 +875,7 @@ makeReport <- function(report) {
       stsXMLExist = FALSE
     }
   }
-  
+
   if (stsExist) {
     # Load the sts.h5 file for each data frame
     dfsH5 = lapply(as.character(unique(conditions$STS)), function(s) {
@@ -883,14 +883,14 @@ makeReport <- function(report) {
       loadstsH5(s)
     })
     cdH5 = combineConditions(dfsH5, as.character(conditions$Condition))
-    
+
     # Make BaselineLevel plots
     BaselineLevel = cdH5[, .(Condition, hole, BaselineLevel_Green, BaselineLevel_Red)]
     colnames(BaselineLevel) = sub("BaselineLevel_", "", colnames(BaselineLevel))
-    BaselineLevel = BaselineLevel %>% gather(channel, BaselineLevel, Green, Red) 
-    
-    tp = ggplot(BaselineLevel, aes(x = Condition, y = BaselineLevel, fill = Condition)) + 
-      ylim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) + 
+    BaselineLevel = BaselineLevel %>% gather(channel, BaselineLevel, Green, Red)
+
+    tp = ggplot(BaselineLevel, aes(x = Condition, y = BaselineLevel, fill = Condition)) +
+      ylim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) +
       geom_boxplot() + stat_summary(
         fun.y = median,
         colour = "black",
@@ -911,9 +911,9 @@ makeReport <- function(report) {
       tags = c("sampled", "baselinelevel", "boxplot"),
       uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel Box Plot"])
     )
-    
+
     tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + geom_density(alpha = .5) +
-      xlim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) + 
+      xlim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) +
       plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
       labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (Density plot)")
     report$ggsave(
@@ -927,9 +927,9 @@ makeReport <- function(report) {
       tags = c("sampled", "baselinelevel", "density"),
       uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel Density Plot"])
     )
-    
+
     tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf() +
-      xlim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) + 
+      xlim(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T)) +
       plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
       labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (CDF)")
     report$ggsave(
@@ -943,8 +943,8 @@ makeReport <- function(report) {
       tags = c("sampled", "baselinelevel", "cdf"),
       uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel CDF Plot"])
     )
-    
-    tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf(aes(colour = Condition)) + 
+
+    tp = ggplot(BaselineLevel, aes(x = BaselineLevel, colour = Condition)) + stat_ecdf(aes(colour = Condition)) +
       scale_x_log10(limits = c(quantile(BaselineLevel$BaselineLevel, 0.05, na.rm = T), quantile(BaselineLevel$BaselineLevel, 0.95, na.rm = T))) +
       plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(BaselineLevel$channel)))) +
       labs(x = "BaselineLevel", title = "Distribution of BaselineLevel (Log-scale CDF)")
@@ -959,7 +959,7 @@ makeReport <- function(report) {
       tags = c("sampled", "baselinelevel", "cdf", "log"),
       uid = as.vector(uid_table$uid_column[uid_table$plot_names == "BaselineLevel CDF Plot (Log-scale)"])
     )
-    
+
     # Make Read Type and Productivity as factor
     cdH5$readType = as.factor(cdH5$readType)
     levels(cdH5$readType) <-
@@ -980,7 +980,7 @@ makeReport <- function(report) {
         "Productive_HQ_Region" = "1",
         "Other" = "2"
       )
-    
+
     # Load the pbi index for each data frame
     dfs = lapply(as.character(unique(conditions$MappedSubreads)), function(s) {
       loginfo(paste("Loading alignment set:", s))
@@ -993,17 +993,17 @@ makeReport <- function(report) {
     } else {
       dfs  = filteredData[[1]]
       conditions = filteredData[[2]]
-      
+
       cd = combineConditions(dfs, as.character(conditions$Condition))
-      
+
       # Now combine into one large data frame
       cd2 = left_join(cd, cdH5, by = c("hole", "Condition"))
       cd2$tlen = cd2$tend - cd2$tstart
-      
+
       # Make Plots
       try(makeReadTypePlots(report, cd2), silent = TRUE)
       try(makeYieldPlots(report, cdH5), silent = TRUE)
-      
+
       # Make sts.h5 heatmaps
       try(makeSTSH5Heatmaps(report, conditions), silent = TRUE)
     }
@@ -1011,7 +1011,7 @@ makeReport <- function(report) {
     warning("sts.h5 file does not exsit for at least one condition!")
     try(makeEmptyPlots(report), silent = TRUE)
   }
-  
+
   if (stsXMLExist) {
     # Load the sts.xml file for each data frame
     dfsXML = lapply(as.character(conditions$STSXML), function(s) {
@@ -1038,7 +1038,7 @@ main <- function()
   makeReport(report)
   jsonFile = "reports/ZMWstsPlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
-  
+
   # TODO: currently we don't rewrite the json report since the uid is not added to the heatmaps yet
   # try(rewriteJSON(jsonFile, uidTagCSV), silent = TRUE)
   0

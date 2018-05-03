@@ -147,15 +147,15 @@ constantArrow <-
       sep = "",
       collapse = "\n"
     ))
-    
+
     loginfo(paste("Fasta file:", input_ref))
-    
+
     # Filter the data set
     ind = loadPBI(input_aln)
     org_size = nrow(ind)
     indFilter = ind[ind$tend - ind$tstart > MIN_ALN_LENGTH,]
     loginfo(paste("Filtered out", org_size - nrow(indFilter), "alignments for being too small for fitting"))
-    
+
     # Handle case with no valid alignments, write empty CSV
     if (nrow(indFilter) == 0) {
       errormode <- data.frame(matrix(NA, nrow = 0, ncol = length(csv_names)))
@@ -184,14 +184,14 @@ constantArrow <-
     errormode$Condition = Condition
     errormode$Reference = indFilter$ref
     errormode$AlnTLength = indFilter$tend - indFilter$tstart
-    
+
     # Aggregate the pmf matrix
     baseAgg <- function(pmf) {
       pmf = aggregate(pmf[,c(1:4)], list(substr(pmf[, "CTX"], 2, 2)), function(x)
         (0.25 * x[1] + 0.75 * x[2]))
       pmf
     }
-    
+
     bases <- c("A", "C", "G", "T")
     for (i in 1:nrow(errormode)) {
       if ((i %% 100) == 0) {
@@ -199,7 +199,7 @@ constantArrow <-
       }
       singleZMW = loadSingleZmwHMMfromBAM(indFilter$offset[i], as.character(indFilter$file[i]), input_ref)
       errormode[i, paste("SNR.", bases, sep = "")] = as.numeric(attributes(singleZMW)[[1]])
-      
+
       ## Filter out really discordant alignments, they create numeric issues
       singleZMW <- filterData(singleZMW)
       # Handle case where all data is filtered
@@ -243,30 +243,30 @@ constantArrow <-
           darkCols <- which(csv_names == "A.Dark.A"):which(csv_names == "T.Dark.T")
           darkRows <- which(CTX == "NA"):which(CTX == "NT")
           errormode[i, darkCols] = predictions[darkRows, "Delete"]
-          
+
           # Merge rate
           mergeCols <- which(csv_names == "A.Merge.A"):which(csv_names == "T.Merge.T")
           mergeRows <- which(CTX == "AA"):which(CTX == "TT")
           errormode[i, mergeCols] = predictions[mergeRows, "Delete"] - predictions[darkRows, "Delete"]
-          
+
           # Match rate
           matchCols <- which(csv_names == "A.Match.A"):which(csv_names == "T.Match.T")
           matchVals <- predictions[, "Match"] * fit$mPmf[, bases]
           matchVals$CTX <- fit$mPmf$CTX
           errormode[i, matchCols] = as.vector(as.matrix(baseAgg(matchVals)[, bases]))
-          
+
           # When insert a different base, use stick
           stickCols <- which(csv_names == "A.Insert.A"):which(csv_names == "T.Insert.T")  # also includes branch, will replace below
           stickVals <- predictions[, "Stick"] * fit$sPmf[, bases]
           stickVals$CTX <- fit$sPmf$CTX
           errormode[i, stickCols] = as.vector(as.matrix(baseAgg(stickVals)[, bases]))
-          
+
           # When insert a same base, use branch
           branchCols <- which(csv_names %in% paste(bases, ".Insert.", bases, sep=""))
           branchVals <- predictions[, "Branch"] * fit$bPmf[, bases]
           branchVals$CTX <- fit$bPmf$CTX
           errormode[i, branchCols] = diag(as.matrix(baseAgg(branchVals)[, bases]))
-          
+
           errormode[i, "Time"] = fit$time_s
           errormode[i, "Iterations"] = length(fit$likelihoodHistory)
         }
@@ -285,22 +285,22 @@ makeReport <- function(report) {
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
-  
+
   # Generate constant Arrow CSV file
   errormodeList = lapply(1:n, function(i) {
     constantArrow(as.character(conditions$MappedSubreads[i]), as.character(conditions$Reference[i]), as.character(conditions$Condition[i]), report)
   })
-  
+
   errormodeCombine = rbindlist(errormodeList)
   loginfo("Making constant Arrow CSV file")
   report$write.table("errormode.csv",
                      errormodeCombine,
                      id = "errormode",
                      title = "Constant Arrow Errormode")
-  
+
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
-  
+
   # At the end of this function we need to call this last, it outputs the report
   report$write.report()
 }

@@ -51,13 +51,13 @@ set_panel_heights <- function(g, heights) {
 makeFishbonePlots <-
   function(errormodeMerge, report, minSample = 20) {
     loginfo("making fishbone plots.")
-    
+
     # some functions
     concat <- function(...)
       paste(..., sep = "")
     nam <- function(...)
       as.name(concat(...))
-    
+
     # functions to add SNR density plots to Insert/Mismatch hmm plots
     generateFixAxisPlot <- function(df, dfSNR_, dfSNRall_, maxSNR) {
       tp = ggplot(df,
@@ -98,10 +98,10 @@ makeFishbonePlots <-
           yend = Inf,
           size = 1
         )
-      
+
       tp1 = tp + xlim(xlimits) +
         scale_y_continuous(limits = ylimits, breaks = breaks) + facet_grid(exp_ ~ obs_)
-      
+
       tpdensity = ggplot(dfSNRall_, aes(x = as.numeric(as.character(snr)), colour = Condition)) +
         geom_density(alpha = .5) + plTheme + clScale + themeTilt +
         labs(x = "SNR", y = "SNR Density") +
@@ -131,25 +131,25 @@ makeFishbonePlots <-
         set_panel_heights(gfix, rep(0.6, 5))
       gfix
     }
-    
+
     generateFreeAxisPlot <- function(df, dfSNR_, type, dfSNRall_) {
       tmp = data.frame(matrix(rep(NA, 88), nrow = 8, ncol = 11))
       names(tmp) = names(df)
       tmp$exp_ = c(rep("A", 2), rep("C", 2), rep("G", 2), rep("T", 2))
       tmp$obs_ = tmp$exp
       tmp$mu = 0
-      
+
       ylimitsBase <- function(Base) {
         range(c(df[df$exp == Base, ]$mu - df[df$exp == Base, ]$ci, df[df$exp == Base, ]$mu + df[df$exp == Base, ]$ci))
       }
-      
+
       tmp$mu = c(ylimitsBase("A"),
                  ylimitsBase("C"),
                  ylimitsBase("G"),
                  ylimitsBase("T"))
       tmp$ci = 0
       tmp$Condition = df$Condition[1]
-      
+
       tpBase <- function(Base) {
         tp = ggplot(rbind(tmp, df[df$obs == Base, ]),
                     aes(
@@ -191,7 +191,7 @@ makeFishbonePlots <-
           )
         tp
       }
-      
+
       tp2A = tpBase("A") + facet_grid(exp_ ~ ., scales = "free") + theme(
         legend.position = "none",
         axis.title.x = element_blank(),
@@ -223,20 +223,20 @@ makeFishbonePlots <-
         axis.ticks.y = element_blank(),
         plot.title = element_text(size = 14)
       )
-      
+
       tp2Alimit = tp2A + xlim(ggplot_build(tp2A)$layout$panel_ranges[[1]]$x.range)
       tp2Climit = tp2C + xlim(ggplot_build(tp2C)$layout$panel_ranges[[1]]$x.range)
       tp2Glimit = tp2G + xlim(ggplot_build(tp2G)$layout$panel_ranges[[1]]$x.range)
       tp2Tlimit = tp2T + xlim(ggplot_build(tp2T)$layout$panel_ranges[[1]]$x.range)
-      
+
       pdf(NULL)
       g2A <- ggplotGrob(tp2Alimit)
       g2C <- ggplotGrob(tp2Climit)
       g2G <- ggplotGrob(tp2Glimit)
       g2T <- ggplotGrob(tp2Tlimit)
-      
+
       g2free <- cbind(g2A, g2C, g2G, g2T, size = "first")
-      
+
       tpdensityBase <- function(Base) {
         tpdensityA = ggplot(dfSNRall_[dfSNRall_$obs == Base, ], aes(x = as.numeric(as.character(snr)), colour = Condition)) +
           geom_density(alpha = .5) + plTheme + clScale + themeTilt +
@@ -258,7 +258,7 @@ makeFishbonePlots <-
             size = 1
           )
       }
-      
+
       tpdensityfreeA = tpdensityBase("A") + facet_grid(SNRlabel ~ obs_) + xlim(ggplot_build(tp2A)$layout$panel_ranges[[1]]$x.range) + theme(
         legend.position = "none",
         axis.title.x = element_blank(),
@@ -287,26 +287,26 @@ makeFishbonePlots <-
         axis.ticks.y = element_blank(),
         strip.text.x = element_blank()
       )
-      
+
       tpDensityYlimits = range(
         ggplot_build(tpdensityfreeA)$layout$panel_ranges[[1]]$y.range,
         ggplot_build(tpdensityfreeC)$layout$panel_ranges[[1]]$y.range,
         ggplot_build(tpdensityfreeG)$layout$panel_ranges[[1]]$y.range,
         ggplot_build(tpdensityfreeT)$layout$panel_ranges[[1]]$y.range
       )
-      
+
       pdf(NULL)
       gA <- ggplotGrob(tpdensityfreeA + ylim(tpDensityYlimits))
       gC <- ggplotGrob(tpdensityfreeC + ylim(tpDensityYlimits))
       gG <- ggplotGrob(tpdensityfreeG + ylim(tpDensityYlimits))
       gT <- ggplotGrob(tpdensityfreeT + ylim(tpDensityYlimits))
-      
+
       g4free <- cbind(gA, gC, gG, gT, size = "first")
-      
+
       gfree <- rbind(g2free, g4free, size = "first")
       gfree
     }
-    
+
     # Filter the ZMWs with SNR = 0 and NAs
     errormodeMerge <- errormodeMerge %>% na.omit()
     errormodeMerge <-
@@ -315,7 +315,7 @@ makeFishbonePlots <-
     maxSNR = (round(max(errormodeMerge$SNR.A, errormodeMerge$SNR.C, errormodeMerge$SNR.G, errormodeMerge$SNR.T)) + 1)
     breaks = c(0, 1:(1.5*maxSNR))/1.5
     bases <- c("A", "C", "G", "T")
-    
+
     massage <- function(df, channel) {
       # filter on data specifically under the expectation of the channel base
       ch <- concat(channel, ".")
@@ -323,7 +323,7 @@ makeFishbonePlots <-
       df <- df %>%
         dplyr::select(ZMW, starts_with("SNR."), starts_with(ch)) %>%
         dplyr::rename_(.dots = setNames(names(.), gsub(re, "", names(.))))
-      
+
       ci95 <-
         function(var)
           interp(~ sd(x) / sqrt(n()) * qt(0.975, n() - 1), x = lazy(var))
@@ -335,20 +335,20 @@ makeFishbonePlots <-
         function(b, moves)
           unlist(lapply(c(moves), function(x)
             concat(x, ".", b, ".", c("mu", "ci"))))
-      
+
       # collect the results for each outcome base
       dfCh <- NULL
-      
+
       for (b in bases) {
         # get the transition moves under the regime of expectedBase:observedBase
         moves <-
           gsub(".[ACGT]$", "", colnames(dplyr::select(
             df, ends_with(concat(".", b)), -starts_with("SNR")
           )))
-        
+
         # get the raw move names
         nms <- mvNams(b, moves)
-        
+
         # prepare the mean- and 95%ci-accumulating functions
         mus <-
           lapply(nms, function(x)
@@ -356,17 +356,17 @@ makeFishbonePlots <-
         cis <-
           lapply(nms, function(x)
             eval(interp(ci95(y), y = as.name(x))))
-        
+
         # create the interleaved list of mean- and 95%ci-accumulating functions
         obj <- c(rbind(mus, cis))
-        
+
         # get the names of the statistical variables
         nms <- stNams(b, moves)
-        
+
         # add the number of observations to the list of variables (for later filtering)
         obj <- c(obj, ~ n())
         nms <- c(nms, "N")
-        
+
         # group the samples by their SNR bin and collect summary mean and 95%ci
         suppressWarnings({
           dfStats <- df %>%
@@ -377,10 +377,10 @@ makeFishbonePlots <-
             dplyr::summarize_(.dots = setNames(obj, nms)) %>%
             dplyr::ungroup()
         })
-        
+
         # melt the data on which move and accumulate
         dfObs <- NULL
-        
+
         for (mv in moves) {
           dfMv <- dfStats %>%
             dplyr::select(snr, starts_with(mv), N) %>%
@@ -390,18 +390,18 @@ makeFishbonePlots <-
             dplyr::mutate(move = mv)
           dfObs <- rbind(dfObs, dfMv)
         }
-        
+
         dfObs$obs <- b
         dfCh <- rbind(dfCh, dfObs)
       }
-      
+
       dfCh$exp <- channel
       dfCh
     }
-    
+
     # collect the results over each expected match base
     dfErr = list()
-    
+
     readcondition = errormodeMerge$Condition
     for (i in 1:length(readcondition)) {
       dfErr[[i]] = NA
@@ -427,7 +427,7 @@ makeFishbonePlots <-
                        dfErr,
                        id = "fishbone_snr_binned_summary",
                        title = "Fishbone Snr Binned Summary")
-    
+
     ## WRITE THE PLOTS ##
     # filter by min number of samples in each SNR bin
     dfErr_ <- dfErr %>% filter(N >= minSample)
@@ -441,48 +441,48 @@ makeFishbonePlots <-
       t <-
         function(mv)
           ifelse(mv == "Match", "Mismatch", as.character(mv))
-      
+
       dfErr_ <- dfErr_ %>%
         dplyr::mutate(exp_ = exp, obs_ = concat(t(move), " ", obs))
       dfErr_$exp_ <- as.factor(dfErr_$exp_)
       dfErr_$obs_ <- as.factor(dfErr_$obs_)
       dfErr_$SNRlabel = ""
-      
+
       labelFn <- function(x) {
         sprintf("%0.2f", x)
       }
       breaksFn <- function(x) {
         seq(x[[1]], x[[2]], by = 0.05)
       }
-      
+
       df = errormodeMerge
       dfSNRall <- df %>%
         select(Condition, starts_with("SNR.")) %>%
         dplyr::rename_(.dots = setNames(names(.), gsub("SNR.", "", names(.)))) %>%
         melt(id.vars = c("Condition"),
-             variable.name = "obs_") 
+             variable.name = "obs_")
       dfSNR <- dfSNRall %>%
         group_by(Condition, obs_) %>%
         summarise(value = mean(value))
-      
+
       addMove <-
         function(df, mv)
           df %>% dplyr::mutate(obs_ = concat(mv, " ", obs_))
-      
+
       golden_ratio <- 1.618
       xlimits <- c(0, maxSNR)
       ylimits <- c(0, 0.15)
       ratio <- xlimits[[2]] / ylimits[[2]] / golden_ratio
       dfIns <- dfErr_ %>% filter(move == "Insert")
       breaks <- breaksFn(ylimits)
-      
+
       dfSNR_ = dfSNR %>% addMove("Insert")
       dfSNRall$SNRlabel = ""
       dfSNRall_ <- dplyr::rename(dfSNRall, snr = value, obs = obs_)
       dfSNRall_$obs_ = paste("Insert", dfSNRall_$obs)
       gInsFix = generateFixAxisPlot(dfIns, dfSNR_, dfSNRall_, maxSNR)
       gInsFree = generateFreeAxisPlot(dfIns, dfSNR_, "Insert", dfSNRall_)
-      
+
       report$ggsave(
         "fishboneplot_insertion.png",
         gInsFix,
@@ -514,7 +514,7 @@ makeFishbonePlots <-
         filter(obs_ != exp_) %>%
         addMove("Mismatch")
       dfSNRM_ <- dfSNR_
-      
+
       dfMM <- dfErr_ %>% filter(move == "Match" & obs != exp)
       breaks <- breaksFn(ylimits)
       dfSNRall_ <- dfSNRall %>% rename(snr = value, obs = obs_)
@@ -545,7 +545,7 @@ makeFishbonePlots <-
         tags = c("fishbone", "hmm", "errormode", "mismatch", "enlarged"),
         uid = "0010004"
       )
-      
+
       dfSNR_ <-
         rbind(dfSNR %>% transform(move = "Dark"),
               dfSNR %>% transform(move = "Merge")) %>% dplyr::rename(exp_ = obs_, obs_ = move)
@@ -615,7 +615,7 @@ makeFishbonePlots <-
         tags = c("fishbone", "hmm", "errormode", "deletion", "enlarged"),
         uid = "0010006"
       )
-      
+
       # Plot a merged fishbone plot that contains insetion, deletion and mismatch
       dfSNRM_ = rbind((do.call(rbind, lapply(bases, function(b) {
         dfSNR %>% transform(exp_ = b)
@@ -732,10 +732,10 @@ makeReport <- function(report) {
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
-  
+
   # Load csv files
   errormodeMerge = read.csv("reports/ConstantArrowFishbonePlots/errormode.csv")
-  
+
   if (nrow(errormodeMerge) == 0) {
     warning("The Errormode CSV file is empty!")
   } else {
@@ -743,10 +743,10 @@ makeReport <- function(report) {
     try(makeFishbonePlots(errormodeMerge, report), silent = TRUE)
     0
   }
-  
+
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
-  
+
   # At the end of this function we need to call this last, it outputs the report
   report$write.report()
 }
