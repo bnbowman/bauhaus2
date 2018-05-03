@@ -21,7 +21,7 @@ ENABLED_CRAM_TESTS_INTERNAL = \
 .SUFFIXES: .t
 
 .t:
-	cram $<
+	time cram $<
 
 test: $(ENABLED_CRAM_TESTS_SHORT)
 
