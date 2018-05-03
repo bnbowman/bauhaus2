@@ -53,10 +53,10 @@ generateNvalueMetrics <- function(report, cd) {
 
 makeCDFofaStartPlots <- function(report, cd) {
   loginfo("Making CDF of aStart Plots")
-  
+
   # Create and add a plot group
   tp = ggplot(cd, aes(x = astart)) + stat_ecdf(aes(colour = Condition)) + geom_vline(xintercept = 50, colour = "red") + plTheme + clScale + labs(x = "astart", y = "C.D.F", title = "CDF of aStart")
-  
+
   report$ggsave(
     "cdf_astart.png",
     tp,
@@ -68,11 +68,11 @@ makeCDFofaStartPlots <- function(report, cd) {
     tags = c("libdiagnostic", "library", "diagnostic", "cdf", "astart"),
     uid = "0020001"
   )
-  
+
   tp = ggplot(cd, aes(x = astart)) + stat_ecdf(aes(colour = Condition)) + scale_x_log10() + geom_vline(xintercept = 50, colour = "red") +
     plTheme + clScale +
     labs(x = "astart (Log-scale)", y = "C.D.F", title = "CDF of aStart (Log-scale)")
-  
+
   report$ggsave(
     "cdf_astart_log.png",
     tp,
@@ -91,12 +91,12 @@ makeCDFofaStartPlots <- function(report, cd) {
     ),
     uid = "0020002"
   )
-  
+
   # Yield (Subreads) by Reference
   tp = ggplot(cd, aes(ref, fill = Condition)) + geom_bar(position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "nSubreads", title = "Yield (Subreads) by Reference")
-  
+
   report$ggsave(
     "subreads_ref_hist.png",
     tp,
@@ -116,15 +116,15 @@ makeCDFofaStartPlots <- function(report, cd) {
     ),
     uid = "0020003"
   )
-  
+
   # Yield (Subreads) Percentage by Reference
-  
+
   cdref = cd %>% group_by(Condition, ref) %>% summarise(n = n())
   cdref = cdref %>% group_by(Condition) %>% mutate(nper = n / sum(n)) %>% ungroup()
   tp = ggplot(cdref, aes(x = ref, y = nper, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "(nSubreads by Reference)/nSubreads ", title = "Yield (Subreads) Percentage by Reference")
-  
+
   report$ggsave(
     "nsubreads_ref_hist_percentage.png",
     tp,
@@ -145,15 +145,15 @@ makeCDFofaStartPlots <- function(report, cd) {
     ),
     uid = "0020004"
   )
-  
+
   # for unrolled data
   cdunrolled = cd %>% group_by(Condition, hole, ref) %>% summarise(unrolledT = sum(tlen))
-  
+
   # Yield (Unrolled Alignments) by Reference
   tp = ggplot(cdunrolled, aes(ref, fill = Condition)) + geom_bar(position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "Unrolled Alignments", title = "Yield (Unrolled Alignments) by Reference")
-  
+
   report$ggsave(
     "unrolled_ref_hist.png",
     tp,
@@ -174,16 +174,16 @@ makeCDFofaStartPlots <- function(report, cd) {
     ),
     uid = "0020005"
   )
-  
+
   # Yield (Unrolled Alignments) Percentage by Reference
-  
+
   cdunrolledref = cdunrolled %>% group_by(Condition, ref) %>% summarise(n = n())
   cdunrolledref = cdunrolledref %>% group_by(Condition) %>% mutate(nper = n /
                                                                      sum(n)) %>% ungroup()
   tp = ggplot(cdunrolledref, aes(x = ref, y = nper, fill = Condition)) + geom_bar(stat = "identity", position = "dodge") +
     plTheme + themeTilt  + clFillScale +
     labs(x = "Reference", y = "(Unrolled Alignments by Reference)/Unrolled Alignments ", title = "Yield (Unrolled Alignments) Percentage by Reference")
-  
+
   report$ggsave(
     "unrolled_ref_hist_percentage.png",
     tp,
@@ -205,7 +205,7 @@ makeCDFofaStartPlots <- function(report, cd) {
     ),
     uid = "0020006"
   )
-  
+
   # Template Span by Reference
   tp <-
     ggplot(data = cd, aes(
@@ -223,7 +223,7 @@ makeCDFofaStartPlots <- function(report, cd) {
     position = position_dodge(width = 0.9),
     vjust = -0.8
   )
-  
+
   report$ggsave(
     "template_span_ref_box.png",
     tp,
@@ -242,9 +242,9 @@ makeCDFofaStartPlots <- function(report, cd) {
     ),
     uid = "0020007"
   )
-  
+
   #Using dataframes cdref and cdunrolledref to store all subreads statistics for each reference and condition
-  
+
   report$write.table(
     "Yieldbycdandref.csv",
     cdref,
@@ -261,7 +261,7 @@ makeCDFofaStartPlots <- function(report, cd) {
       "table"
     )
   )
-  
+
   report$write.table(
     "Yieldbycdandref_unrolled.csv",
     cdunrolledref,
@@ -279,12 +279,12 @@ makeCDFofaStartPlots <- function(report, cd) {
       "table"
     )
   )
-  
+
 }
 
 makeMaxVsUnrolledPlots <- function(report, cd) {
   loginfo("Making Max Insert Length vs Unrolled Aligned Read Length Plots")
-  
+
   # Here the unrolled sequence lengths are computed using High-Low method
   # They can also be computed by Summation method
   cd2_summation = cd %>% dplyr::group_by(Condition, hole) %>% dplyr::summarise(
@@ -304,7 +304,7 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
                          cd2_summation$MaxInsert >= 0.49 * cd2_summation$Unrolled] = "Region 3"
   cd2_summation$Region[cd2_summation$MaxInsert < 0.49 * cd2_summation$Unrolled] = "Region 4"
   cd2_summation$Region = as.factor(cd2_summation$Region)
-  
+
   cd2 = cd %>% dplyr::group_by(Condition, hole) %>% dplyr::summarise(
     MaxInsert = max(alen),
     MaxInsertT = max(tlen),
@@ -322,21 +322,21 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
                cd2$MaxInsert >= 0.49 * cd2$Unrolled] = "Region 3"
   cd2$Region[cd2$MaxInsert < 0.49 * cd2$Unrolled] = "Region 4"
   cd2$Region = as.factor(cd2$Region)
-  
+
   summaries = table(cd2$Region, by = cd2$Condition)
   report$write.table("sumtable.csv",
                      summaries,
                      id = "nReads",
                      title = "nReads in Regions I-IV")
-  
+
   # To avoid this warning: Error: Dimensions exceed 50 inches (height and width are specified in 'in' not pixels). If you're sure you a plot that big, use `limitsize = FALSE`.
   img_height = min(49.5, 3.6 * length(levels(cd2$Condition)))
   lim = max(cd2$Unrolled)
   limhq = max(cd2$hqlen)
-  
+
   cd2$SurvObj <- with(cd2, Surv(UnrolledT))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  
+
   # When cd2.by.con is empty or only has one row, skip the following two plots
   if (nrow(cd2.by.con) > 1) {
     p1 <-
@@ -344,7 +344,7 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     p2 <-
       autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Unrolled template Span", title = "Unrolled template Span Survival (Log-scale)")
     #tp <- arrangeGrob(p1, p2, nrow = 2)
-    
+
     report$ggsave(
       "unrolled_template.png",
       p1,
@@ -383,7 +383,7 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
       uid = "0020009"
     )
   }
-  
+
   tp = ggplot(cd2, aes(x = Condition, y = UnrolledT, fill = Condition)) + geom_boxplot() + stat_summary(
     fun.y = median,
     colour = "black",
@@ -393,7 +393,7 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     aes(label = round(..y.., digits = 4))
   ) +
     labs(y = "Unrolled template Span", title = "Unrolled template Span") + plTheme + themeTilt + clFillScale
-  
+
   report$ggsave(
     "unrolled_template_boxplot.png",
     tp,
@@ -412,11 +412,11 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020010"
   )
-  
+
   tp = ggplot(cd2, aes(x = UnrolledT, colour = Condition)) + geom_density(alpha = .5) +
     plTheme + themeTilt  + clScale +
     labs(x = "Unrolled template Span - HighLow", title = "Unrolled template Span - HighLow (Density Plot)") + scale_x_log10()
-  
+
   report$ggsave(
     "unrolled_template_densityplot.png",
     tp,
@@ -436,12 +436,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020011"
   )
-  
+
   # Summation
   tp = ggplot(cd2_summation, aes(x = UnrolledT, colour = Condition)) + geom_density(alpha = .5) +
     plTheme + themeTilt  + clScale +
     labs(x = "Unrolled template Span - Summation", title = "Unrolled template Span - Summation (Density Plot)") + scale_x_log10()
-  
+
   report$ggsave(
     "unrolled_template_densityplot_summation.png",
     tp,
@@ -461,12 +461,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020012"
   )
-  
+
   # max insert length vs hqlen
   tp = ggplot(cd2, aes(x = hqlen, y = MaxInsert)) + geom_point(aes(colour = Condition), size = 0.2) +
     xlim(0, limhq) + ylim(0, limhq) + facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme + themeTilt + labs(y = "Max Insert Length)", title = "Max Insert Length vs hqlen", x = "hqlen")
-  
+
   report$ggsave(
     "max_hqlen.png",
     tp,
@@ -484,7 +484,7 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020013"
   )
-  
+
   # CDF of (hqlen - MaxInsert)/hqlen
   tp = ggplot(cd2, aes(x = (hqlen - MaxInsert) / hqlen)) + stat_ecdf(aes(colour = Condition)) + scale_x_log10() +
     plTheme + clScale +
@@ -507,13 +507,13 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020014"
   )
-  
+
   # max insert length vs unrolled aligned read length
   tp = ggplot(cd2, aes(x = Unrolled, y = MaxInsert)) + geom_point(aes(colour = Region), size = 0.2) +
     xlim(0, lim) + ylim(0, lim) + facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme + themeTilt +
     labs(y = "Max Insert Length)", title = "Max Insert Length vs Unrolled Aligned Read Length", x = "Unrolled Aligned Read Length")
-  
+
   report$ggsave(
     "max_unrolled.png",
     tp,
@@ -532,12 +532,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020015"
   )
-  
+
   tp = ggplot(cd2, aes(x = UnrolledT, y = MaxInsertT)) + geom_point(aes(colour = Condition), size = 0.2) +
     xlim(0, lim) + ylim(0, lim) + facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme + themeTilt +
     labs(y = "Max Subread Template Span)", title = "Max Subread Template Span vs Unrolled Template Span", x = "Unrolled Template Span")
-  
+
   report$ggsave(
     "maxt_unrolledt.png",
     tp,
@@ -556,12 +556,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020016"
   )
-  
+
   tp = ggplot(cd2, aes(x = MaxInsert, fill = Region)) + geom_histogram(binwidth = 100) +
     facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme +
     labs(y = "Frequency", title = "Histogram of Max Insert Length", x = "Max Insert Length")
-  
+
   report$ggsave(
     "hist_max.png",
     tp,
@@ -579,12 +579,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020017"
   )
-  
+
   tp = ggplot(cd2, aes(x = MaxInsert, colour = Region)) + geom_density(alpha = .5) +
     facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme + themeTilt  + clScale +
     labs(y = "Density", title = "Denstiy Plot of Max Insert Length (by Region)", x = "Max Insert Length")
-  
+
   report$ggsave(
     "density_max_region.png",
     tp,
@@ -603,11 +603,11 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020018"
   )
-  
+
   tp = ggplot(cd2, aes(x = MaxInsert, colour = Condition)) + geom_density(alpha = .5) +
     plTheme + themeTilt  + clScale +
     labs(y = "Density", title = "Denstiy Plot of Max Insert Length", x = "Max Insert Length")
-  
+
   report$ggsave(
     "density_max.png",
     tp,
@@ -625,12 +625,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020019"
   )
-  
+
   tp = ggplot(cd2, aes(x = Unrolled, fill = Region)) + geom_histogram(binwidth = 500) +
     facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme +
     labs(y = "Frequency", title = "Histogram of Unrolled Aligned Read Length", x = "Unrolled Aligned Read Length")
-  
+
   report$ggsave(
     "hist_unroll.png",
     tp,
@@ -649,12 +649,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020020"
   )
-  
+
   tp = ggplot(cd2, aes(x = Unrolled, colour = Region)) + geom_density(alpha = .5) +
     facet_wrap( ~ Condition, nrow = length(levels(cd2$Condition))) +
     plTheme + themeTilt  + clScale +
     labs(y = "Density", title = "Denstiy Plot of Unrolled Aligned Read Length - HighLow", x = "Unrolled Aligned Read Length - HighLow")
-  
+
   report$ggsave(
     "density_unroll.png",
     tp,
@@ -697,12 +697,12 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
     ),
     uid = "0020022"
   )
-  
+
   cd2$Ratio  = (cd2$Unrolled - cd2$MaxInsert) / cd2$Unrolled
   tp = ggplot(cd2, aes(x = Ratio)) + stat_ecdf(aes(colour = Condition)) +
     plTheme +
     labs(y = "C.D.F", title = "CDF plot of (Unrolled - Max)/Unrolled", x = "(Unrolled Aligned Read Length − Max Insert Length) / Unrolled Aligned Read Length")
-  
+
   report$ggsave(
     "cdf_ratio.png",
     tp,
@@ -725,11 +725,11 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
 
 makeCDFofTemplatePlots <- function(report, cd) {
   loginfo("Making CDF of Template Span Plots")
-  
+
   # Create and add a plot group
   tp = ggplot(cd, aes(x = tlen)) + stat_ecdf(aes(colour = Condition)) + scale_y_log10() +
     plTheme + clScale + labs(x = "Template Span", y = "C.D.F", title = "CDF of Template Span")
-  
+
   report$ggsave(
     "cdf_tlen.png",
     tp,
@@ -768,20 +768,20 @@ fit_A_to_B = function(x, y, a, b, min_sep)
     return(c(0, 0, 99e99, 99e99, NA, NA))
   start = x[a]
   stop = x[b]
-  
+
   x = x[a:b]
   y = y[a:b]
   mX = sum(x) / N
   mY = sum(y) / N
-  
+
   #' Get slope of segment:
   x = x - mX
   y = y - mY
   beta = sum(x * y) / sum(x * x)
-  
+
   #' Get intercept:
   alpha = mY - beta * mX
-  
+
   #' Compute and return total and average residual
   #' Not subtracting alpha from y since x and y have been centered
   tmp = y - beta * x
@@ -810,20 +810,20 @@ fit_A_to_B_fast = function(x, y, a, b, min_sep)
   if (N < min_sep)
     return(c(0, 0, 99e99, 99e99))
   x = x[a:b]
-  
+
   #' The sole difference from fit_A_to_B:
   y = a:b
   mX = sum(x) / N
   mY = sum(y) / N
-  
+
   #' Get slope of segment:
   x = x - mX
   y = y - mY
   beta = sum(x * y) / sum(x * x)
-  
+
   #' Get intercept:
   alpha = mY - beta * mX
-  
+
   #' Compute and return total and average residual
   #' Not subtracting alpha from y since x and y have been centered
   tmp = y - beta * x
@@ -920,14 +920,14 @@ get_initial_points = function(opt, N, min_sep)
   #' Make sure initial points meet minimum separation criteria:
   opt = max(opt, 2 * min_sep + 1)
   opt = min(opt, N - 2 * min_sep)
-  
+
   #' Evenly spaced around guess opt:
   vec = c(1, opt, N)
   pt1 = (vec[-1] - vec[-3]) / 2 + vec[-3]
-  
+
   #' The guess opt, and a point to the right:
   pt2 = c(opt, pt1[2])
-  
+
   #' The guess opt, and a point ot the left:
   pt3 = c(pt1[1], opt)
   lapply(list(pt1, pt2, pt3), round)
@@ -952,26 +952,26 @@ fit_3_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
 {
   loginfo("Negative x?")
   loginfo(range(x))
-  
+
   #' Make sure minimum separation between two breakpoints is not too large relative to size of data:
   min_sep = min(min_sep, floor((N - 3) / 4))
-  
+
   #' Calculate average residual for a single fitted segment:
   res = simple_lin_reg(x, y, 1, N, min_sep)[4]
-  
+
   #' Solve problem for two segments:
   tmp = find_2_seg_breakpoint(x, y, N, simple_lin_reg, min_sep)
   res = c(res, tmp$obj)
-  
+
   #' Linear constraints on optimization:
   #' Breakpoint in vector b must be: b[1] < b[2] - min_sep + 1; 1 < b[1]; and b[2] < N
-  
+
   ui = as.matrix(rbind(c(-1, 1), c(1, 0), c(0, -1)))
   ci = matrix(c(min_sep - 1, 1, -N) , ncol = 1)
-  
+
   #' Get three initial points
   init = get_initial_points(tmp$min, N, min_sep)
-  
+
   #' Solve problem corresponding to three initial points
   L = lapply(init, function(p)
   {
@@ -988,32 +988,32 @@ fit_3_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
       min_sep = min_sep
     ),
     silent = TRUE)
-    
+
     if (class(res) == "try-error")
     {
       return(list(value = 99e99, opt = init[[2]]))
     }
     res
   })
-  
+
   #' Identify the best of three solutions:
   opt = L[[which.min(vapply(L, function(x)
     x$value, 0))]]
-  
+
   if (!is.null(opt$par)) {
     bpt = round(opt$par)
   } else {
     bpt = c(0, 0)
   }
-  
+
   res = c(res, opt$value)
-  
+
   tau = rbind(
     simple_lin_reg(x, y, 1, bpt[1], min_sep),
     simple_lin_reg(x, y, bpt[1] + 1, bpt[2], min_sep),
     simple_lin_reg(x, y, bpt[2] + 1, N, min_sep)
   )
-  
+
   list(
     tau = tau,
     yBreakPoints = bpt,
@@ -1041,12 +1041,12 @@ fit_2_segments = function(simple_lin_reg, x, y, N, min_sep = 10)
 {
   #' Calculate average residual for a single fitted segment:
   res = simple_lin_reg(x, y, 1, N, min_sep)[4]
-  
+
   tmp = find_2_seg_breakpoint(x, y, N, simple_lin_reg, min_sep)
   opt = round(tmp$min)
   tau = rbind(simple_lin_reg(x, y, 1, opt, min_sep),
               simple_lin_reg(x, y, opt + 1, N, min_sep))
-  
+
   list(
     tau = tau,
     residuals = c(res, tmp$obj),
@@ -1080,7 +1080,7 @@ censoredCDF = function(r,
                        matchOriginalPoints = TRUE)
 {
   #' Compute hazard function, h :
-  
+
   x = seq(min(r, na.rm = TRUE), max(r, na.rm = TRUE) + eps, eps)
   censoredCounts = hist(r[!ce],
                         breaks = x,
@@ -1091,19 +1091,19 @@ censoredCDF = function(r,
                           right = FALSE,
                           plot = FALSE)$counts
   h = censoredCounts / rev(cumsum(rev(uncensoredCounts)))
-  
+
   #' Prepare x and y values for plotting
-  
+
   x = x[-length(x)]
   if (what == "F") {
     y = 1 - cumprod(1 - h)
   } else {
     y = cumprod(1 - h)
   }
-  
-  
+
+
   #' Select out points in the original vector  of inputs, r:
-  
+
   if (matchOriginalPoints)
   {
     m = match(sort(unique(r), decreasing = FALSE), x)
@@ -1111,7 +1111,7 @@ censoredCDF = function(r,
     x = x[m]
     y = y[m]
   }
-  
+
   list(x = c(min(x, na.rm = TRUE), x), y = c(ifelse(what == 'F', 0, 1), y))
 }
 
@@ -1139,7 +1139,7 @@ fitTausToRegions = function(nTaus,
 {
   x = p$x
   y = log(ifelse(p$y == 0, min(p$y[p$y > 0], na.rm = TRUE), p$y))
-  
+
   if (!is.null(templateSpanLims))
   {
     w = which(x <= templateSpanLims[2] & x >= templateSpanLims[1])
@@ -1147,7 +1147,7 @@ fitTausToRegions = function(nTaus,
     y = y[w]
   }
   N = length(x)
-  
+
   if (nTaus == 1)
   {
     tau = simple_lin_reg(x, y, 1, N)
@@ -1184,7 +1184,7 @@ getTauConfidenceInterval = function(a,
   L = sapply(1:nBoot, function(i)
   {
     tmp = sample.int(n, replace = TRUE)
-    
+
     p = censoredCDF(a[tmp],
                     ce.a[tmp],
                     what = "1-F",
@@ -1263,10 +1263,10 @@ writeTauEstimatesToCsv = function(report,
     stop = tau[, 6]
   ))
   names(taus) = paste("Region", c(1:nRegions), sep = "_")
-  
+
   title = paste(condition, "Tau_Estimates", sep = "_")
   csvfile = paste(title, "csv", sep = ".")
-  
+
   report$write.table(
     csvfile,
     taus,
@@ -1378,14 +1378,14 @@ plotFirstPassTau = function(report, cd, nRegions = 3)
   s = split(1:nrow(cd), cd$Condition)
   tm = lapply(s, function(r)
     getFirstPassSubreads(cd[r, ]))
-  
+
   loginfo("Use simple bootstrapping to get confidence intervals for tau estimates.\n")
   l0 = lapply(tm, function(x)
     getCensoredCDFDataFrame(report, x, nRegions))
   n0 = bind_rows(lapply(l0, function(p)
     getTauFittingLinesForGGplot(p, nRegions)))
   l0 = bind_rows(l0)
-  
+
   loginfo("Plot survival curves with dotted lines showing tau fittings.\n")
   tb = ggplot(l0, aes(x = x, y = y, colour = Condition)) +
     scale_y_log10(limits = c(1e-8, 1)) +
@@ -1404,7 +1404,7 @@ plotFirstPassTau = function(report, cd, nRegions = 3)
       linetype = "dotted",
       show.legend = FALSE
     )
-  
+
   report$ggsave(
     "first_pass_tau.png",
     tb,
@@ -1454,7 +1454,7 @@ plotDensityOfMaxSubreadLength = function(report,
   title = ifelse(deNovo,
                  "de Novo Max Subread Length Density",
                  "Max Subread Length Density")
-  
+
   loginfo("Generate density plot of max subread length for all conditions:")
   tb = ggplot(bind_rows(maxSubreadLens),
               aes(x = MaxSubreadLen, colour = Condition)) +
@@ -1463,7 +1463,7 @@ plotDensityOfMaxSubreadLength = function(report,
     plTheme +
     clScale +
     labs(x = "Max Subread Length", y = "Density", title = title)
-  
+
   report$ggsave(
     paste(label, "png", sep = "."),
     tb,
@@ -1506,7 +1506,7 @@ plot_N_k_UsingLongestSubreads = function(report,
   title = ifelse(deNovo,
                  "de Novo Max Subread Length CDFs and Nth percentile",
                  "Max Subread Length CDFs and Nth percentile")
-  
+
   loginfo("Plot CDF of max subread lengths with one horizontal bar at Nth percentile for each value of k:")
   tb = ggplot(bind_rows(maxSubreadLenCDFs),
               aes(x = x, y = y, colour = Condition)) +
@@ -1518,7 +1518,7 @@ plot_N_k_UsingLongestSubreads = function(report,
   {
     tb = tb + geom_hline(yintercept = p)
   }
-  
+
   report$ggsave(
     paste(label, "png", sep = "."),
     tb,
@@ -1530,13 +1530,13 @@ plot_N_k_UsingLongestSubreads = function(report,
     tags = c("percentile", "CDF", searchTags),
     uid  = "0020027"
   )
-  
+
   loginfo("For each condition, compute N(k) for each value of k:")
   res = data.frame(t(sapply(maxSubreadLenCDFs,
                             function(z)
                               vapply(perc, function(p)
                                 z$x[which.min(abs(z$y - p))], 0))))
-  
+
   names(res) = paste(perc * 100, "th percentile", sep = "")
   res$nZMWs = vapply(maxSubreadLenCDFs, function(z)
     z$nReads[1], 0)
@@ -1565,14 +1565,14 @@ plotSurvivalUsingLongestSubreads = function(report,
     z$y = 1 - z$y
     z
   })
-  
+
   label = ifelse(deNovo,
                  "de_novo_max_subread_len_survival",
                  "max_subread_len_survival")
   title = ifelse(deNovo,
                  "de Novo Max Subread Length Survival",
                  "Max Subread Length Survival")
-  
+
   loginfo("Plot survival of longest subread per ZMW:")
   tb = ggplot(bind_rows(maxSubreadLenSurvival),
               aes(x = x, y = y, colour = Condition)) +
@@ -1584,7 +1584,7 @@ plotSurvivalUsingLongestSubreads = function(report,
   {
     tb = tb + geom_vline(xintercept = b)
   }
-  
+
   report$ggsave(
     paste(label, "png", sep = "."),
     tb,
@@ -1596,7 +1596,7 @@ plotSurvivalUsingLongestSubreads = function(report,
     tags = c("CDF", "survival", "benchmark", searchTags),
     uid  = "0020028"
   )
-  
+
   loginfo("What percentage of ZMWs have max subread length above each benchmark value?")
   res = data.frame(t(sapply(maxSubreadLenSurvival,
                             function(z)
@@ -1606,7 +1606,7 @@ plotSurvivalUsingLongestSubreads = function(report,
                                        w = which(z$x >= b)
                                        ifelse(length(w) == 0, NA, z$y[min(w)])
                                      }, 0))))
-  
+
   names(res) = paste("Greater_Than", benchmark, sep = "_")
   res
 }
@@ -1679,26 +1679,26 @@ generateLongLibraryMetricsAndPlots = function(report, cd, perc, benchmark, deNov
     "subread_length",
     "length"
   )
-  
+
   #' Get and plot density for max subread lengths:
-  
+
   rows = split(1:nrow(cd), cd$Condition)
   maxSubreadLens = lapply(rows, function(r)
     getMaxSubreadLengths(cd[r, ]))
   meanMaxSubread = plotDensityOfMaxSubreadLength(report, maxSubreadLens, deNovo, searchTags)
-  
+
   #' Get and plot CDF and survival for max subread lengths:
-  
+
   maxSubreadLenCDFs = lapply(maxSubreadLens, getMaxSubreadLenCDF)
   N50values = plot_N_k_UsingLongestSubreads(report, maxSubreadLenCDFs, perc, deNovo, searchTags)
   vsBenchmark = plotSurvivalUsingLongestSubreads(report, maxSubreadLenCDFs, benchmark, deNovo, searchTags)
-  
+
   loginfo("Write metrics to table:")
   tbl = merge(N50values, vsBenchmark, by = 0)
   tbl$MeanMaxSubreadLen = meanMaxSubread
   names(tbl)[names(tbl) == "Row.names"] = "Condition"
   row.names(tbl) = NULL
-  
+
   label = ifelse(deNovo,
                  "de_novo_max_subreads_per_zmw_metrics",
                  "max_subreads_per_zmw_metrics")
@@ -1721,7 +1721,7 @@ makeReport <- function(report) {
   #conds = decoded@conditions
   #tmp = lapply(conds, function(z) data.frame(condition = z@condId,subreadset = z@subreadset, alignmentset = z@alignmentset, referenceset = z@referenceset))
   #conditions = do.call(rbind, tmp)
-  
+
   conditions = report$condition.table
   # Load the pbi index for each data frame
   dfs = lapply(as.character(conditions$MappedSubreads), function(s) {
@@ -1735,17 +1735,17 @@ makeReport <- function(report) {
   } else {
     dfs  = filteredData[[1]]
     conditions = filteredData[[2]]
-    
+
     ## Let's set the graphic defaults
     n = length(levels(conditions$Condition))
     clFillScale <<- getPBFillScale(n)
     clScale <<- getPBColorScale(n)
-    
+
     # Now combine into one large data frame
     cd = combineConditions(dfs, as.character(conditions$Condition))
     cd$tlen = as.numeric(cd$tend - cd$tstart)
     cd$alen = as.numeric(cd$aend - cd$astart)
-    
+
     # Make Plots
     try(generateNvalueMetrics(report, cd), silent = TRUE)
     try(makeCDFofaStartPlots(report, cd), silent = TRUE)
@@ -1760,7 +1760,7 @@ makeReport <- function(report) {
     ),
     silent = TRUE)
   }
-  
+
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
   # At the end of this function we need to call this last, it outputs the report

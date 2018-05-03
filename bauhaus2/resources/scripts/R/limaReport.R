@@ -21,24 +21,24 @@ library(hexbin,quietly = TRUE, warn.conflicts = FALSE)
 makeReport <- function(reportbh) {
   s = unlist(strsplit(args[1],'/'))
   args[1] = paste(s[1:length(s)-1],collapse = "/")
-  
+
   reportbh$write.table("guess.csv",
                        as.data.frame(fread(paste0(args[1],"/barcoded.lima.guess"))),
                        id = "guess.csv",
                        title = "Barcode Guess")
-  
+
   reportbh$write.table("counts.csv",
                        as.data.frame(fread(paste0(args[1],"/barcoded.lima.counts"))),
                        id = "counts.csv",
                        title = "Barcode Counts")
-  
+
   reportbh$write.table("summary.csv",
                        as.data.frame(fread(paste0(args[1],"/barcoded.lima.summary"),blank.lines.skip=TRUE,sep=":")),
                        id = "summary.csv",
                        title = "Lima Summary")
-  
+
   reportPath = paste0(args[1],"/barcoded.lima.report")
-  
+
   report_sum = as.data.frame(fread(reportPath,stringsAsFactors=FALSE))
   report_sum$IdxFirstNamed[report_sum$IdxFirstNamed == "-1"] = "X"
   report_sum$IdxCombinedNamed[report_sum$IdxCombinedNamed == "-1"] = "X"
@@ -51,16 +51,16 @@ makeReport <- function(reportbh) {
   unique_bps = report_sum %>% filter(Barcoded) %>% filter(PassedFilters == 1) %>% distinct(BarcodePair)
   zmwYield = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW) %>% count(BarcodePair)
   zmwYield = rename(zmwYield, NumZMWs = n)
-  
+
   report_sum = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
   relevant_bps = report_sum %>% filter(PassedFilters == 1) %>% group_by(BarcodePair) %>% summarize(n=n()) %>% filter(n>100)
   if (nrow(relevant_bps) > 500)
     relevant_bps = relevant_bps[1:500,]
-  
+
   zmwYieldVsMeanScore1 = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ScoreCombined) %>% group_by(BarcodePair) %>% summarise(MeanScore=mean(ScoreCombined))
   zmwYieldVsMeanScore2 = report_sum %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ScoreCombined) %>% group_by(BarcodePair) %>% count(BarcodePair)
   zmwYieldVsMeanScore = full_join(zmwYieldVsMeanScore1,zmwYieldVsMeanScore2,by="BarcodePair") %>% rename(NumZMWs=n)
-  
+
   g = ggplot(zmwYieldVsMeanScore) +
     geom_jitter(aes(MeanScore, NumZMWs)) +
     coord_cartesian(xlim = c(0, 100), ylim = c(0, max(zmwYieldVsMeanScore$NumZMWs)*1.1)) +
@@ -75,7 +75,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   g = ggplot(zmwYieldVsMeanScore) +
     geom_jitter(aes(MeanScore, log10(NumZMWs))) +
     coord_cartesian(xlim = c(0, 100)) +
@@ -90,7 +90,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   g = ggplot(zmwYieldVsMeanScore) +
     geom_hex(aes(MeanScore, NumZMWs)) +
     coord_cartesian(xlim = c(0, 100), ylim = c(0, max(zmwYieldVsMeanScore$NumZMWs)*1.1)) +
@@ -105,7 +105,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   g = ggplot(zmwYieldVsMeanScore) +
     geom_hex(aes(MeanScore, log10(NumZMWs))) +
     coord_cartesian(xlim = c(0, 100)) +
@@ -120,7 +120,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   g = ggplot(zmwYield) +
     geom_histogram(aes(NumZMWs),fill="gray",color="black",alpha=.3)+
     scale_y_continuous(labels=comma)+
@@ -134,7 +134,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   g = ggplot(report_sum) +
     geom_histogram(aes(ScoreCombined),fill="gray",color="black",alpha=.3,binwidth = 1)+
     scale_y_continuous(labels=comma)+ scale_x_continuous(limits = c(0, 100))+
@@ -148,7 +148,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   binned = report_sum %>% filter(Barcoded) %>% filter(IdxFirst == IdxCombined) %>% select(BarcodePair, ScoreCombined) %>% arrange(BarcodePair) %>% group_by(BarcodePair) %>%  count(ScoreCombined) %>% arrange(BarcodePair, ScoreCombined)
   binned = rename(binned, counts=n)
   g = ggplot(binned) +
@@ -166,7 +166,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   tryCatch({report_sum$ReadLengths = sapply(report_sum$ReadLengths,function(x) list(as.numeric(unlist(strsplit(x,",")))))},error=function(e){})
   names(report_sum$ReadLengths) = c()
   readLengthsUnnested = report_sum %>% filter(Barcoded) %>% filter(IdxFirst == IdxCombined) %>% select(ReadLengths, BarcodePair) %>% unnest(ReadLengths)
@@ -184,7 +184,7 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
+
   report_sum$HQLength = sapply(report_sum$ReadLengths,sum)
   g = ggplot(report_sum %>% filter(Barcoded) %>% filter(IdxFirst == IdxCombined)) +
     geom_bin2d(aes(x=BarcodePair,y=HQLength),binwidth=1000) + scale_fill_viridis() + theme_minimal() +
@@ -202,8 +202,8 @@ makeReport <- function(reportbh) {
     tags = c("lima"),
     limitsize = FALSE
   )
-  
-  
+
+
   report = as.data.frame(fread(reportPath,stringsAsFactors=FALSE))
   report$IdxFirstNamed[report$IdxFirstNamed == "-1"] = "X"
   report$IdxCombinedNamed[report$IdxCombinedNamed == "-1"] = "X"
@@ -222,56 +222,56 @@ makeReport <- function(reportbh) {
     names(barcodeNamesOfInterest) = c()
     report = report %>% filter(IdxFirstNamed %in% barcodeNamesOfInterest | IdxCombinedNamed %in% barcodeNamesOfInterest | BarcodePair %in% barcodeNamesOfInterest)
   }
-  
+
   reportCounts = count(report,BarcodePair)
   count_labeller <- function(value){
     sapply(value,function(x) { paste(x,  " / ZMWs ", reportCounts[reportCounts$BarcodePair==x,]$n,sep="")})
   }
-  
+
   tryCatch({report$ReadLengths = sapply(report$ReadLengths,function(x) list(as.numeric(unlist(strsplit(x,",")))))},error=function(e){})
   names(report$ReadLengths) = c()
   report$HQLength = sapply(report$ReadLengths,sum)
-  
+
   unique_bps = report %>% filter(Barcoded) %>% filter(PassedFilters == 1) %>% distinct(BarcodePair)
   report_relevant = report %>% filter(BarcodePair %in% relevant_bps$BarcodePair)
   reportFilteredADP = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
   reportFilteredADP$NumAdapters = as.numeric(reportFilteredADP$NumAdapters)
   if (any(reportFilteredADP$NumAdapters >= 2)) reportFilteredADP[reportFilteredADP$NumAdapters >= 2,]$NumAdapters = 2
   reportFilteredADP = reportFilteredADP%>% mutate(Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
-  
+
   reportFilteredADP_pass = report_relevant %>% filter(Barcoded, PassedFilters == 1) %>% filter(BarcodePair %in% unique_bps$BarcodePair)
   reportFilteredADP_pass$NumAdapters = as.numeric(reportFilteredADP_pass$NumAdapters)
   if (any(reportFilteredADP_pass$NumAdapters >= 2)) reportFilteredADP_pass[reportFilteredADP_pass$NumAdapters >= 2,]$NumAdapters = 2
-  
+
   reportFiltered = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% mutate(Filter = "NONE", ScoreLead = ifelse(ScoreLead==-1,NA,ScoreLead))
   reportFiltered_pass = reportFiltered %>% filter(PassedFilters == 1) %>% mutate(Filter = "PASS")
-  
+
   reportFiltered$ScoreCombinedAll = reportFiltered$ScoreCombined
   if (any(reportFiltered$PassedFilters == 0)) reportFiltered[reportFiltered$PassedFilters == 0,]$ScoreCombined = NA
-  
+
   numadapters = report_relevant %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, NumAdapters,Barcoded) %>% group_by(BarcodePair, NumAdapters, Barcoded)
-  
+
   baseYield = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, PassedFilters) %>% unnest(ReadLengths) %>% group_by(BarcodePair,PassedFilters) %>% mutate(MegaBases = sum(ReadLengths) / 1000000) %>% select(BarcodePair, MegaBases, PassedFilters) %>% ungroup() %>% distinct(BarcodePair,MegaBases, PassedFilters) %>% mutate(Filter = PassedFilters) %>% ungroup() %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
   readYield = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, PassedFilters) %>% unnest(ReadLengths) %>% group_by(BarcodePair,PassedFilters) %>% count(BarcodePair, PassedFilters) %>% rename(NumReads = n) %>% mutate(Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
   zmwYield = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, PassedFilters) %>% count(BarcodePair, PassedFilters) %>% rename(NumZMWs = n, Filter = PassedFilters) %>% mutate(Filter=ifelse(Filter==0,"NONE","PASS"))
-  
+
   readLengthsUnnestedByBC = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ReadLengths, ScoreCombined) %>% unnest(ReadLengths) %>% mutate(ReadLengths = ReadLengths / 1000)
   readLengthsUnnestedByBCZmw = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ZMW, ReadLengths, ScoreCombined) %>% unnest(ReadLengths) %>% group_by(BarcodePair,ZMW) %>% mutate(KiloBases = sum(ReadLengths) / 1000) %>% select(BarcodePair, KiloBases,ScoreCombined, ZMW) %>% ungroup() %>% distinct(BarcodePair,KiloBases,ScoreCombined, ZMW)
-  
+
   barcodeCounts = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% count(BarcodePair)
   titration = report_relevant %>% filter(Barcoded) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ScoreCombined) %>% group_by(BarcodePair) %>% arrange(BarcodePair,desc(ScoreCombined)) %>% count(BarcodePair,ScoreCombined) %>% mutate(cs = cumsum(n))
   titration$Filter = "NONE"
   titration_pass = report_relevant %>% filter(Barcoded, PassedFilters) %>% filter(BarcodePair %in% unique_bps$BarcodePair) %>% select(BarcodePair, ScoreCombined) %>% group_by(BarcodePair) %>% arrange(BarcodePair,desc(ScoreCombined)) %>% count(BarcodePair,ScoreCombined) %>% mutate(cs = cumsum(n))
   titration_pass$Filter = "PASS"
-  
+
   readLengthsUnnested = report %>% select(ReadLengths, Barcoded) %>% unnest(ReadLengths)
-  
+
   dpi = 150
   unique_bps_relevant = unique_bps %>% filter(BarcodePair %in% relevant_bps$BarcodePair)
   facetHeight = max(nrow(unique_bps_relevant)+1,4)/4*5+1
   yieldHeight = max(nrow(unique_bps_relevant)+1,4)*0.5+3
   facetWidth = 5 + min(nrow(unique_bps_relevant)+1,4)*5
-  
+
   g = ggplot(bind_rows(titration,titration_pass)) +
     facet_wrap(~BarcodePair, scales = "free_y", ncol = 4)+
     geom_line(aes(x=ScoreCombined,y=cs,color=Filter))+
@@ -290,7 +290,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(bind_rows(reportFiltered, reportFiltered_pass), aes(group = BarcodePair)) +
     facet_wrap(~BarcodePair, scales = "free_y", ncol = 4)+
     geom_freqpoly(binwidth=5, aes(x = ScoreLead, group=Filter, color=Filter),alpha=.5)+
@@ -308,7 +308,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(bind_rows(reportFiltered, reportFiltered_pass), aes(group = BarcodePair)) +
     facet_wrap(~BarcodePair, scales = "free_y", ncol = 4)+
     geom_freqpoly(binwidth=1, aes(x = SignalIncrease, group=Filter, color=Filter),alpha=.75)+
@@ -326,7 +326,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(readLengthsUnnestedByBCZmw)+
     facet_wrap(~BarcodePair, labeller=as_labeller(count_labeller),ncol = 4)+
     geom_hex(aes(KiloBases, ScoreCombined, color = ..count..))+
@@ -346,7 +346,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(readLengthsUnnestedByBC)+
     facet_wrap(~BarcodePair, labeller=as_labeller(count_labeller),ncol = 4)+
     geom_hex(aes(ReadLengths, ScoreCombined, color = ..count..))+
@@ -366,7 +366,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(zmwYield) +
     geom_bar(aes(BarcodePair, NumZMWs, fill=Filter), stat='identity', width = .5)+
     scale_y_continuous(labels=comma)+ coord_flip()+
@@ -385,7 +385,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(readYield) +
     geom_bar(aes(BarcodePair, NumReads, fill=Filter), stat='identity', width = .5)+
     scale_y_continuous(labels=comma)+ coord_flip()+
@@ -404,7 +404,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(baseYield) +
     geom_bar(aes(BarcodePair, MegaBases, fill=Filter), stat='identity', width = .5)+
     scale_y_continuous(labels=comma)+
@@ -423,7 +423,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(report, aes(group = Barcoded, color = Barcoded, fill = Barcoded)) +
     geom_histogram(binwidth=2000,aes(HQLength),position = "identity", alpha=0.3)+
     coord_cartesian(xlim = c(0, quantile(report$HQLength,0.999))) +
@@ -440,7 +440,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(readLengthsUnnested, aes(group = Barcoded, color = Barcoded, fill = Barcoded)) +
     geom_histogram(binwidth=1000,aes(ReadLengths),position = "identity", alpha=0.3)+
     coord_cartesian(xlim = c(0, quantile(readLengthsUnnested$ReadLengths,0.999))) +
@@ -457,7 +457,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(reportFilteredADP, geom='none', aes(group = BarcodePair)) +
     facet_wrap(~BarcodePair,scales = "free_y",ncol=4)+
     coord_cartesian(xlim=c(0,100))+
@@ -479,7 +479,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   q = quantile(numadapters$NumAdapters,0.999)
   g = ggplot(numadapters, aes(group = BarcodePair, x = NumAdapters)) +
     facet_wrap(~BarcodePair, scales = "free_y",ncol=4)+
@@ -500,7 +500,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   x = reportFiltered %>% group_by(BarcodePair) %>% select(ReadLengths,BarcodePair) %>% unnest(ReadLengths)
   g = ggplot(x, aes(group = BarcodePair, x = ReadLengths)) +
     facet_wrap(~BarcodePair,ncol=4)+
@@ -519,7 +519,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(x, aes(group = BarcodePair, x = ReadLengths)) +
     facet_wrap(~BarcodePair, scales = "free_y",ncol=4)+
     coord_cartesian(xlim = c(0, quantile(x$ReadLengths,0.999))) +
@@ -537,7 +537,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(x, aes(group = BarcodePair, ReadLengths, color = BarcodePair)) +
     coord_cartesian(xlim = c(0, quantile(x$ReadLengths,0.999))) +
     geom_freqpoly(binwidth = 1000)+
@@ -554,7 +554,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   y = reportFiltered %>% group_by(BarcodePair) %>% select(HQLength,BarcodePair) %>% unnest(HQLength)
   g = ggplot(y, aes(group = BarcodePair, x = HQLength)) +
     facet_wrap(~BarcodePair,ncol=4)+
@@ -573,7 +573,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(y, aes(group = BarcodePair, x = HQLength)) +
     facet_wrap(~BarcodePair, scales = "free_y",ncol=4)+
     coord_cartesian(xlim = c(0, quantile(y$HQLength,0.999))) +
@@ -591,7 +591,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   g = ggplot(y, aes(group = BarcodePair, HQLength, color = BarcodePair)) +
     coord_cartesian(xlim = c(0, quantile(y$HQLength,0.999))) +
     geom_freqpoly(binwidth = 2000)+
@@ -608,7 +608,7 @@ makeReport <- function(reportbh) {
                   tags=c("lima"),
                   dpi=dpi
   )
-  
+
   # Save the report object for later debugging
   save(reportbh, file = file.path(reportbh$outputDir, "report.Rd"))
   # At the end of this function we need to call this last, it outputs the report
@@ -623,7 +623,7 @@ main <- function()
   makeReport(reportbh)
   jsonFile = "reports/BarcodingQC/report.json"
   uidTagCSV = "reports/uidTag.csv"
-  
+
   # TODO: currently we don't rewrite the json report since the uid is not added to the lima plots yet
   # rewriteJSON(jsonFile, uidTagCSV)
   0

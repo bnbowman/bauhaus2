@@ -14,12 +14,12 @@ rewriteJSON <- function(jsonFile, uidTagCSV) {
   if (file.exists(json)) {
     jsonReport = fromJSON(json)
     if (!length(jsonReport$plots) == 0) {
-      
+
       index = readLines(uidTagCSV)
       index = gsub("\"", "", index)
       index = gsub(" ", "", index)
       index <- strsplit(index, ",")
-      
+
       indexdf = data.frame(matrix(ncol = length(index[[1]]), nrow = length(index)))
       colnames(indexdf) = c("uid", "tags")
       for (i in 2:length(index)) {
@@ -111,9 +111,9 @@ plotSingleSummarizedHeatmap = function(report,
     N = c(N, N)
   }
   title = paste(n, " (summarized into ", N[1], " x ", N[2], " blocks) : ", label, sep = "")
-  
+
   loginfo(paste("\t Draw", n, "heatmap for condition:", label))
-  
+
   if (is.null(limits))
   {
     tmp = removeOutliers(res, n)
@@ -131,7 +131,7 @@ plotSingleSummarizedHeatmap = function(report,
         scale_x_continuous(position = "top") +
         theme(aspect.ratio = ASP_RATIO)
     )
-    
+
   }
   else
   {
@@ -168,7 +168,7 @@ plotSingleSummarizedHeatmap = function(report,
         theme(aspect.ratio = ASP_RATIO)
     )
   }
-  
+
   if (sts) {
     report$ggsave(
       paste(n, "_", label, ".png", sep = ""),
@@ -224,7 +224,7 @@ removeOutliers = function(m, name)
 normalizeWeightMatrix = function(weight)
 {
   diag(weight) <- 0
-  
+
   #' Normalize weight matrix by row sums:
   r = rowSums(weight)
   r[r == 0] <- 1
@@ -253,12 +253,12 @@ getDistMat = function(N, key)
   names(D) = c("x", "y")
   N = as.matrix(dist(D))
   diag(N) <- 1
-  
+
   M = normalizeWeightMatrix(1 / N)
   N[N < 1.5] <- 1
   N[N >= 1.5] <- 0
   N = normalizeWeightMatrix(N)
-  
+
   MatList = list(Inv = M, N = N)
   list(
     MatList = MatList,
@@ -349,7 +349,7 @@ bh2Reporter <-
     plotsToOutput <- NULL
     tablesToOutput <- NULL
     cond_table <- loadConditionTable(conditionTableCSV)
-    
+
     ## Save a ggplot in the report.
     .ggsave <-
       function(img_file_name,
@@ -367,7 +367,7 @@ bh2Reporter <-
         img_path = file.path(reportOutputDir, img_file_name)
         ggplot2::ggsave(img_path, plot = plot, ...)
         logging::loginfo(paste("Wrote img to: ", img_path))
-        
+
         thisPlot <- list(
           id = unbox(id),
           image = unbox(img_file_name),
@@ -378,7 +378,7 @@ bh2Reporter <-
         )
         plotsToOutput <<- rbind(plotsToOutput, thisPlot)
       }
-    
+
     ## Add a table to the report.
     .write.table <-
       function(tbl_file_name,
@@ -394,14 +394,14 @@ bh2Reporter <-
         tbl_path = file.path(reportOutputDir, tbl_file_name)
         write.csv(tbl, file = tbl_path)
         logging::loginfo(paste("Wrote table to: ", tbl_path))
-        
+
         thisTbl <- list(
           id = unbox(id),
           csv = unbox(tbl_file_name),
           title = unbox(title),
           tags = as.vector(tags, mode = "character")
         )
-        
+
         tablesToOutput <<- rbind(tablesToOutput, thisTbl)
       }
 
@@ -423,8 +423,8 @@ bh2Reporter <-
       write_json(list(plots = pp, tables = tt), reportOutputFile, pretty =
                    T)
       logging::loginfo(paste("Wrote report to: ", reportOutputFile))
-    } 
-    
+    }
+
     list(
       condition.table = cond_table,
       ggsave = .ggsave,

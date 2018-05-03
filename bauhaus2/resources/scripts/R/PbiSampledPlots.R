@@ -42,7 +42,7 @@ getTplPositions = function( loadAlnsRow, cd )
   r = subset( cd, hole == loadAlnsRow$hole[1] & Condition == loadAlnsRow$Condition[1] )
   r = r[ order( r$qstart ), ]
   val = c( NA, unlist( lapply( 1:nrow( r ), function( i ) ( r$tstart[i] + 1 ):( r$tend[i] ) ) ) )
-  val[ cumsum( loadAlnsRow$ref != '-' ) + 1 ] 
+  val[ cumsum( loadAlnsRow$ref != '-' ) + 1 ]
 }
 
 
@@ -64,7 +64,7 @@ getTplPositions = function( loadAlnsRow, cd )
 
 countHPbursts = function( loadAlnsRow, cd, minlen = 5 )
 {
-  # tpl = getTplPositions( loadAlnsRow, cd )  
+  # tpl = getTplPositions( loadAlnsRow, cd )
   w = which( loadAlnsRow$ref != '-' )
   d = diff( w )
   k = which( d >= minlen )
@@ -79,7 +79,7 @@ countHPbursts = function( loadAlnsRow, cd, minlen = 5 )
   a1 = sum( v )
   a2 = sum( w )
   n = n - a1 - a2
-  a4 = sum( d[k][v] ) 
+  a4 = sum( d[k][v] )
   a5 = sum( d[k][w] )
   a3 = sum( d[k] ) - a4 - a5
   c( c( n, a1, a2 ) / nrow( loadAlnsRow ), n / a3, a1 / a4, a2 / a5 )
@@ -390,14 +390,14 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
   # when one p_variables show up
   # Make Simple plot with one additional variable, data set merged by p_Var
   cd = as.data.frame(cd)
-  
+
   # Variables that will be plotted against p_variables
   plotVariables = c("tlen", "alen", "Accuracy", "irate", "drate", "mmrate", "snrC")
-  
+
   # Check if any of the plotVariables is empty
   plotVariables = names(Filter(function(x)
     ! all(is.na(x)), cd[, match(plotVariables, names(cd))]))
-  
+
   if (length(p_Var) == 1) {
     # Plot selected variables verses the p variable, groupd by condition
     # Note: When p_Var is categorical, the boxplots will overlap, so the plot is set to transparent with colored border
@@ -435,7 +435,7 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
     } else {
       p_Var = p_Var
     }
-    
+
     # Summerize median for plotVariables
     cdp = list()
     for (i in 1:length(plotVariables)) {
@@ -447,7 +447,7 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
       Reduce(function(...)
         merge(..., by = "Condition", all = TRUE), cdp)
     cdp = merge(cdp, conditions[, c("Condition", p_Var)], by = "Condition")
-    
+
     # Generate plots of each plotVariables verses the p variables
     # Define the vector of unique ids
     uidlist2= paste('00',c(seq(0040052, 0040058, 1)), sep='')
@@ -510,7 +510,7 @@ makeSamplingPlots <-
            conditions,
            sampleSize = 1000) {
     loginfo("Making Sampling plots")
-    
+
     load_alns <- function(tbl) {
       names(tbl)[names(tbl) == "ref"] <- "refName"
       curCondition = tbl$Condition[1]
@@ -534,8 +534,8 @@ makeSamplingPlots <-
     s1 = split(1:nrow(cd2), cd2$refName)
 
     loginfo("Draw plots of error rates in homopolymer regions of the template")
-    lapply( 1:length(s1), function(i) 
-      try( errorRatesInHomopolymerRegions( report, cd2[s1[[i]],], conditions, as.character( cd2$refName[s1[[i]][1]] ) ), 
+    lapply( 1:length(s1), function(i)
+      try( errorRatesInHomopolymerRegions( report, cd2[s1[[i]],], conditions, as.character( cd2$refName[s1[[i]][1]] ) ),
       silent = FALSE ) )
 
     loginfo("Draw plots to track the fraction of insertion bursts that are homopolymer insertions")
@@ -549,12 +549,12 @@ makeSamplingPlots <-
       cd2$AccuBases <- "Inaccurate"
       cd2$AccuBases[cd2$read == cd2$ref] = "Accurate"
       cd2$DC <- cd2$ipd + cd2$pw
-      
-      
+
+
       # ipd and pw are filtered by maxIPD and maxPW
       maxIPD = quantile(cd2$ipd, 0.95)
       maxPW = quantile(cd2$pw, 0.95)
-      
+
       # Set a boolean variable to see if all the conditions are internal mode
       # Only when all the conditions are internal mode, the variable is set to TRUE
       internalBAM = TRUE
@@ -566,7 +566,7 @@ makeSamplingPlots <-
           internalBAM = FALSE
         }
       }
-      
+
       # For internal mode and non-internal mode produce different dataframes
       # For internal mode, the dataframs contain time information
       if (internalBAM) {
@@ -628,17 +628,17 @@ makeSamplingPlots <-
           PolRate = mean(ipd + pw)
         )
       }
-      
+
       cd3$DC <- cd3$medianipd + cd3$medianpw
       cd3$DutyCycle  = cd3$medianpw / (cd3$medianpw + cd3$medianipd)
-      
+
       # cd4 is used to generate the plot of template span ove time
       cd4 = cd2 %>% group_by(Condition, framePerSecond, hole) %>% summarise(
         sumpw = sum(pw),
         sumipd = sum(ipd),
         templateSpan = length(ref[!ref == "-"])
       )
-      
+
       # Plots based on startFrame (Only produced when "sf" is loaded)
       if (internalBAM) {
         # template span vs start time scatter plot
@@ -668,7 +668,7 @@ makeSamplingPlots <-
           tags = c("sampled", "tlen", "time", "start", "template"),
           uid = "0040043"
         )
-        
+
         # template span vs end time scatter plot
         tp = ggplot(cd3, aes(
           x = endTime / 60,
@@ -696,7 +696,7 @@ makeSamplingPlots <-
           tags = c("sampled", "tlen", "time", "end", "template"),
           uid = "0040044"
         )
-        
+
         # Global/Local PolRate plot
         tp = ggplot(cd3, aes(
           x = basepersecond * (medianpw + medianipd) / log(2),
@@ -722,7 +722,7 @@ makeSamplingPlots <-
           tags = c("sampled", "polrate", "john eid"),
           uid = "0040033"
         )
-        
+
         # ActiveZMWs
         activeZMW <- function(rngs) {
           dta <- as.data.frame(rngs)
@@ -747,12 +747,12 @@ makeSamplingPlots <-
           }))
         #    dtm_unnorm = activeZMW(rngs_unnorm)
         dtm_norm = activeZMW(rngs_norm)
-        
+
         # tp = ggplot(dtm_unnorm, aes(x=time,y=value,color=condition,group=condition)) +
         #   geom_line(lty=1,lwd=1) + xlab("Seconds") + ylab("Percentage of Alignments") +
         #   labs(title = "Alignment Percentage by Time: Unnormalized")
         # report$ggsave("active_zmw_unnormalized.png", tp, id = "active_zmw_unnormalized.png", title = "Active ZMW - Unnormalized", caption = "Active ZMW - Unnormalized")
-        
+
         tp = ggplot(dtm_norm,
                     aes(
                       x = time,
@@ -773,9 +773,9 @@ makeSamplingPlots <-
           tags = c("sampled", "active ZMW", "time"),
           uid = "0040001"
         )
-        
+
         # pkMid for complete data set, accurate bases, and inaccurate bases
-        
+
         cd2.1 <- cd2[cd2$AccuBases == "Accurate", ]
         cd2.2 <- cd2[cd2$AccuBases == "Inaccurate", ]
         reads <- list(cd2, cd2.1, cd2.2)
@@ -784,10 +784,10 @@ makeSamplingPlots <-
             "accurate reference reads",
             "inaccurate reference reads")
         uniqueidA <- c("0040002", "0040003", "0040004")
-        
+
         for (i in 1:3) {
           img_height = min(49.5, 3 * length(levels(reads[[i]]$ref)))
-          
+
           tp = ggplot(reads[[i]], aes(
             x = Condition,
             y = pkmid,
@@ -818,7 +818,7 @@ makeSamplingPlots <-
             tags = c("sampled", "pkmid", "boxplot", variableTitle[i]),
             uid = uniqueidA[i]
           )
-          
+
           # tp = ggplot(reads[[i]], aes(x = Condition, y = pkmid, fill = Condition)) + geom_violin() +
           #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
           #   facet_wrap( ~ ref)
@@ -835,7 +835,7 @@ makeSamplingPlots <-
           #   ),
           #   tags = c("sampled", "pkmid", "violin", variableTitle[i])
           # )
-          
+
           uniqueidB <- c("0040005", "0040006", "0040007")
           tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + geom_density(alpha = .5) +
             plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
@@ -856,7 +856,7 @@ makeSamplingPlots <-
             tags = c("sampled", "pkmid", "density", variableTitle[i]),
             uid = uniqueidB[i]
           )
-          
+
           uniqueidC <- c("0040008", "0040009", "0040010")
           tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + stat_ecdf() +
             plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
@@ -879,7 +879,7 @@ makeSamplingPlots <-
             tags = c("sampled", "pkmid", "cdf", variableTitle[i]),
             uid = uniqueidC[i]
           )
-          
+
           uniqueidD <- c("0040011", "0040012", "0040013")
           tp = ggplot(reads[[i]], aes(x = pkmid, fill = Condition)) + geom_histogram() +
             plTheme + themeTilt  + clFillScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
@@ -901,9 +901,9 @@ makeSamplingPlots <-
             uid = uniqueidD[i]
           )
         }
-        
+
         # Density plots to compare pkMid for accurate bases and inaccurate bases
-        
+
         tp = ggplot(cd2, aes(x = pkmid, colour = AccuBases)) + geom_density(alpha = .5) +
           plTheme + themeTilt  + clScale + facet_wrap( ~ Condition + ref, ncol = 5) +
           labs(x = "pkMid", title = "pkMid for accurate bases and inaccurate bases")
@@ -918,7 +918,7 @@ makeSamplingPlots <-
           tags = c("sampled", "pkmid", "density"),
           uid = "0040014"
         )
-        
+
         # Make Pkmid / PW / PolRate by time plot
         cd2time = cd2 %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
           PW.Mean = mean(pw),
@@ -929,7 +929,7 @@ makeSamplingPlots <-
           PKMID.Median.Con = median(PKMID.Median.Con)
         )
         cd2time$time = as.numeric(cd2time$time) * 10
-        
+
         # Also make filtered data set by maxIPD and maxPW
         cd2timeFiltered = cd2[cd2$ipd < maxIPD &
                                 cd2$pw < maxPW,] %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
@@ -941,7 +941,7 @@ makeSamplingPlots <-
                                   PKMID.Median.Con = median(PKMID.Median.Con)
                                 )
         cd2timeFiltered$time = as.numeric(cd2timeFiltered$time) * 10
-        
+
         tp = ggplot(cd2time,
                     aes(
                       x = time,
@@ -963,7 +963,7 @@ makeSamplingPlots <-
           tags = c("sampled", "pw", "time"),
           uid = "0040015"
         )
-        
+
         tp = ggplot(cd2timeFiltered,
                     aes(
                       x = time,
@@ -987,7 +987,7 @@ makeSamplingPlots <-
           tags = c("sampled", "pw", "time", "filtered"),
           uid = "0040016"
         )
-        
+
         tp = ggplot(cd2time,
                     aes(
                       x = time,
@@ -1009,7 +1009,7 @@ makeSamplingPlots <-
           tags = c("sampled", "ipd", "time"),
           uid = "0040017"
         )
-        
+
         tp = ggplot(cd2timeFiltered,
                     aes(
                       x = time,
@@ -1033,7 +1033,7 @@ makeSamplingPlots <-
           tags = c("sampled", "ipd", "time", "filtered"),
           uid = "0040018"
         )
-        
+
         tp = ggplot(cd2time,
                     aes(
                       x = time,
@@ -1055,7 +1055,7 @@ makeSamplingPlots <-
           tags = c("sampled", "polrate", "time"),
           uid = "0040019"
         )
-        
+
         tp = ggplot(cd2time,
                     aes(
                       x = time,
@@ -1077,7 +1077,7 @@ makeSamplingPlots <-
           tags = c("sampled", "pkmid", "time"),
           uid = "0040020"
         )
-        
+
         tp = ggplot(cd2time,
                     aes(
                       x = time,
@@ -1099,7 +1099,7 @@ makeSamplingPlots <-
           tags = c("sampled", "pkmid", "time"),
           uid = "0040021"
         )
-        
+
         tp = ggplot(
           cd2time,
           aes(
@@ -1124,7 +1124,7 @@ makeSamplingPlots <-
           uid = "0040022"
         )
       }
-      
+
       # Polymerization Rate measured by template bases per second
       tp = ggplot(cd4, aes(
         x = Condition,
@@ -1140,7 +1140,7 @@ makeSamplingPlots <-
       ) +
         plTheme + themeTilt  + clFillScale +
         labs(x = "Condition", y = "Polymerization Rate (template bases per second)", title = "Polymerization Rate (template bases per second)")
-      
+
       report$ggsave(
         "polrate_template_per_second.png",
         tp,
@@ -1152,7 +1152,7 @@ makeSamplingPlots <-
         tags = c("sampled", "boxplot", "polrate", "template", "time"),
         uid = "0040023"
       )
-      
+
       # Polymerization Rate by Reference
       tp <-
         ggplot(data = cd3, aes(x = refName, y = PolRate, fill = Condition)) +
@@ -1168,7 +1168,7 @@ makeSamplingPlots <-
       ) +
         plTheme + themeTilt  + clFillScale +
         labs(x = "Reference", y = "Advance Time (mean(PW + IPD))", title = "Advance Time by Reference")
-      
+
       report$ggsave(
         "polrate_ref_box.png",
         tp,
@@ -1180,9 +1180,9 @@ makeSamplingPlots <-
         tags = c("sampled", "boxplot", "polrate", "reference"),
         uid = "0040024"
       )
-      
+
       img_height = min(49.5, 3 * length(levels(cd2$ref)))
-      
+
       # PW by Template Base
       tp = ggplot(cd2, aes(x = pw, colour = Condition)) + geom_density(alpha = .5) + xlim(0, 2) +
         labs(
@@ -1201,7 +1201,7 @@ makeSamplingPlots <-
         tags = c("sampled", "density", "pw"),
         uid = "0040025"
       )
-      
+
       tp = ggplot(cd2, aes(x = pw, colour = Condition)) + stat_ecdf() + xlim(0, 2) +
         labs(
           y = "CDF",
@@ -1223,7 +1223,7 @@ makeSamplingPlots <-
         tags = c("sampled", "pw", "cdf"),
         uid = "0040026"
       )
-      
+
       # # Local Polymerization Rate
       # # Note that thsi plot only works for the unrolled data set (one read per ZMW)
       # if (length(cd$hole) = length(unique(cd$hole))) {
@@ -1236,7 +1236,7 @@ makeSamplingPlots <-
       #                 id = "local_polrate",
       #                 title = "Local Polymerization Rate", caption = "Local Polymerization Rate")
       # }
-      
+
       # IPD Plots
       # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
       #   labs(
@@ -1250,7 +1250,7 @@ makeSamplingPlots <-
       #               title = "IPD Distribution - Violin Plot",
       #               caption = "IPD Distribution - Violin Plot",
       #               tags = c("sampled", "violin", "ipd"))
-      
+
       # tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_violin() + geom_boxplot(width = 0.1, fill = "white") +
       #   labs(
       #     y = paste("IPD (Truncated < ", maxIPD, ")", sep = ""),
@@ -1265,7 +1265,7 @@ makeSamplingPlots <-
       #   caption = "IPD Distribution by Ref Base - Violin Plot",
       #   tags = c("sampled", "violin", "ipd")
       # )
-      
+
       tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() + stat_summary(
         fun.y = median,
         colour = "black",
@@ -1294,7 +1294,7 @@ makeSamplingPlots <-
         tags = c("sampled", "boxplot", "ipd"),
         uid = "0040027"
       )
-      
+
       # PW Plots
       cd2$Insertion = cd2$ref == "-"
       # tp = ggplot(cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) + geom_violin() +
@@ -1319,7 +1319,7 @@ makeSamplingPlots <-
       #   caption = "PW Distribution - Violin Plot",
       #   tags = c("sampled", "violin", "pw")
       # )
-      
+
       tp <-
         ggplot(data = cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) +
         geom_boxplot(position = position_dodge(width = 0.9))
@@ -1352,9 +1352,9 @@ makeSamplingPlots <-
         tags = c("sampled", "boxplot", "pw"),
         uid = "0040028"
       )
-      
+
       tp3 = tp + facet_wrap( ~ ref, nrow = length(levels(cd2[cd2$pw < maxPW,]$ref)))
-      
+
       b <-
         aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i)
           round(median(i), digits = 4))
@@ -1373,7 +1373,7 @@ makeSamplingPlots <-
           )
         ) +
         plTheme + themeTilt + clFillScale
-      
+
       report$ggsave(
         "median_pw_boxplot_by_base.png",
         tp4,
@@ -1385,7 +1385,7 @@ makeSamplingPlots <-
         tags = c("sampled", "pw", "boxplot", "median"),
         uid = "0040029"
       )
-      
+
       c <-
         aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i)
           round(mean(i), digits = 4))
@@ -1404,7 +1404,7 @@ makeSamplingPlots <-
           )
         ) +
         plTheme + themeTilt + clFillScale
-      
+
       report$ggsave(
         "mean_pw_boxplot_by_base.png",
         tp5,
@@ -1416,15 +1416,15 @@ makeSamplingPlots <-
         tags = c("sampled", "pw", "boxplot", "mean"),
         uid = "0040030"
       )
-      
+
       # Make a median PW plot
       summaries = cd2[cd2$ipd < maxIPD,] %>% group_by(Condition, ref) %>% summarise(PW.Median = median(pw), IPD.Median = median(ipd)) %>% ungroup()
-      
+
       report$write.table("medianIPD.csv",
                          data.frame(summaries),
                          id = "medianIPD",
                          title = "Median IPD/PW Values by Reference")
-      
+
       # Duty Cycle plot
       tp = ggplot(cd3, aes(x = Condition, y = DutyCycle, fill = Condition)) + geom_boxplot() + stat_summary(
         fun.y = median,
@@ -1449,7 +1449,7 @@ makeSamplingPlots <-
         tags = c("sampled", "boxplot", "duty cycle"),
         uid = "0040031"
       )
-      
+
       # Local PolRate plot
       tp = ggplot(cd3, aes(x = Condition, y = 1 / DC, fill = Condition)) + geom_boxplot() + stat_summary(
         fun.y = median,
@@ -1478,7 +1478,7 @@ makeSamplingPlots <-
         tags = c("sampled", "boxplot", "polrate"),
         uid = "0040032"
       )
-      
+
       # Now mismatch insertions
       errorRates = cd2[cd2$read != "-",] %>%
         group_by(Condition, snrCfac, read) %>%
@@ -1486,9 +1486,9 @@ makeSamplingPlots <-
                   incorrect = sum(read != ref)) %>%
         mutate(erate = incorrect / (correct + incorrect)) %>%
         ungroup()
-      
+
       img_height = min(49.5, 3 * length(levels(errorRates$read)))
-      
+
       tp = ggplot(errorRates,
                   aes(
                     x = snrCfac,
@@ -1511,7 +1511,7 @@ makeSamplingPlots <-
         tags = c("sampled", "error rate", "base"),
         uid = "0040034"
       )
-      
+
       # Now for mismatch rates
       mmRates = cd2[cd2$read != "-" & cd2$ref != "-",] %>%
         group_by(Condition, snrCfac, ref) %>%
@@ -1519,9 +1519,9 @@ makeSamplingPlots <-
                   incorrect = sum(read != ref)) %>%
         mutate(erate = incorrect / (correct + incorrect)) %>%
         ungroup()
-      
+
       img_height = min(49.5, 3 * length(levels(mmRates$ref)))
-      
+
       tp = ggplot(mmRates,
                   aes(
                     x = snrCfac,
@@ -1543,9 +1543,9 @@ makeSamplingPlots <-
         tags = c("sampled", "mismatch", "error rate"),
         uid = "0040035"
       )
-      
+
       # Table of the polymerization rate
-      
+
       pr <- aggregate(DC ~ ref + Condition, cd2, median)
       pr.rs <-
         reshape(pr,
@@ -1593,11 +1593,11 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
       )) / n() * qt(CI, n() - 1)
     ) %>%
     dplyr::ungroup()
-  
+
   # Add error bars
   # The errorbars overlapped, so use position_dodge to move them horizontally
   pd <- position_dodge(0.2) # move them .05 to the left and right
-  
+
   tp = ggplot(cd2,
               aes(
                 x = snrCfac,
@@ -1622,7 +1622,7 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tags = c("sampled", "snr", "accuracy"),
     uid = "0040036"
   )
-  
+
   tp = ggplot(cd2,
               aes(
                 x = snrCfac,
@@ -1647,7 +1647,7 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tags = c("sampled", "snr", "insertion"),
     uid = "0040037"
   )
-  
+
   tp = ggplot(cd2,
               aes(
                 x = snrCfac,
@@ -1672,7 +1672,7 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tags = c("sampled", "snr", "deletion"),
     uid = "0040038"
   )
-  
+
   tp = ggplot(cd2,
               aes(
                 x = snrCfac,
@@ -1697,7 +1697,7 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
     tags = c("sampled", "snr", "mismatch"),
     uid = "0040039"
   )
-  
+
   tp = ggplot(cd2,
               aes(
                 x = snrCfac,
@@ -1741,11 +1741,11 @@ makeReport <- function(report) {
   } else {
     dfs  = filteredData[[1]]
     conditions = filteredData[[2]]
-    
+
     # Now combine into one large data frame
     ##browser()
     cd = combineConditions(dfs, as.character(conditions$Condition))
-    
+
     # Add p_ columns if any exists
     if (length(p_Var) > 0) {
       cd = merge(cd, conditions[, c("Condition", p_Var)], by = "Condition")
@@ -1758,7 +1758,7 @@ makeReport <- function(report) {
     cd$irate  = cd$inserts / cd$tlen
     cd$drate  = cd$dels / cd$tlen
     cd$qrlen = as.numeric(cd$qend - cd$qstart)
-    
+
     ## Let's set the graphic defaults
     n = length(levels(conditions$Condition))
     clFillScale <<- getPBFillScale(n)
@@ -1766,15 +1766,15 @@ makeReport <- function(report) {
     # Subsample cd to get a smaller data frame, load SNR values for this dataframe
     cd = loadSNRforSubset(cd)
     cd = as.data.table(cd)
-    
+
     # Let's look at SNR distributions
     logging::loginfo("Making SNR Distribution Plots")
     snrs = cd[, .(Condition, hole, snrA, snrC, snrG, snrT)]
     colnames(snrs) = sub("snr", "", colnames(snrs))
     snrs = snrs %>% gather(channel, SNR, A, C, G, T)
-    
+
     img_height = min(49.5, 3 * length(levels(as.factor(snrs$channel))))
-    
+
     # tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) + geom_violin() +
     #   geom_boxplot(width = 0.1, fill = "white") + plTheme + themeTilt  + clFillScale +
     #   facet_wrap(~ channel)
@@ -1786,7 +1786,7 @@ makeReport <- function(report) {
     #   caption = "Distribution of SNR in Aligned Files (Violin plot)",
     #   tags = c("sampled", "snr", "violin")
     # )
-    
+
     tp = ggplot(snrs, aes(x = SNR, colour = Condition)) + geom_density(alpha = .5) +
       plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(snrs$channel)))) +
       labs(x = "SNR", title = "Distribution of SNR in Aligned Files (Density plot)")
@@ -1801,7 +1801,7 @@ makeReport <- function(report) {
       tags = c("sampled", "snr", "density"),
       uid = "0040041"
     )
-    
+
     tp = ggplot(snrs, aes(x = Condition, y = SNR, fill = Condition)) +
       geom_boxplot() + stat_summary(
         fun.y = median,
@@ -1823,14 +1823,14 @@ makeReport <- function(report) {
       tags = c("sampled", "snr", "boxplot"),
       uid = "0040042"
     )
-    
+
     snrs = NULL # make available for GC
     tp = NULL
-    
+
     # Make p_variavle plots
     if (length(p_Var) > 0) {
       try(makepColPlots(report, cd, p_Var, conditions), silent = TRUE)
-      
+
       # When there are two p_columns and both of them are numerical or categorical
       # Switch the p_columns and generate the p_ variables plots again
       if (length(p_Var) == 2) {
@@ -1840,14 +1840,14 @@ makeReport <- function(report) {
         }
       }
     }
-    
+
     # Get Errors by SNR plot
     try(makeErrorsBySNRPlots(report, cd), silent = TRUE)
-    
+
     # Now plots from sampling alignments
     try(makeSamplingPlots(report, cd, conditions, sampleSize = 1000),
         silent = TRUE)
-    
+
     # Make a median SNR table
     summaries = cd[, .(
       A.Median = median(snrA),
@@ -1860,10 +1860,10 @@ makeReport <- function(report) {
                        id = "medianSNR",
                        title = "Median SNR values")
   }
-  
+
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
-  
+
   # Output error rates by SNR
   loginfo("Examining error rates by SNR Bin")
   # At the end of this function we need to call this last, it outputs the report

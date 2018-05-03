@@ -24,10 +24,10 @@ fillInMissingPositions = function( k, N )
     prev = n[w]
     if ( w > 1 ) { n[1:(w-1)] <- prev }
     bool = is.na( n )
-    for ( i in (w+1):N ) 
-    {  
+    for ( i in (w+1):N )
+    {
       if ( bool[i] ) { n[i] <- prev }
-      else { prev <- n[i] } 
+      else { prev <- n[i] }
     }
   }
   n
@@ -43,10 +43,10 @@ fillInMissingPositions = function( k, N )
 #' @examples
 
 getCovAndReadLen = function( data, N )
-{ 
+{
   data$len = data$qend - data$qstart
   data$tstart = data$tstart + 1
-  data$tend = data$tend + 1 
+  data$tend = data$tend + 1
   n = nrow( data )
   z = c( data$tstart, data$tend )
   label1 = c( data$len, -data$len )
@@ -83,7 +83,7 @@ getGCandCov = function( covreadlen, ref, winsize, half = floor( winsize / 2.0 ),
 
 
 
-#' Plot normalized coverage or normalized readlength vs. GC-content 
+#' Plot normalized coverage or normalized readlength vs. GC-content
 #'
 #' @param p = data frame output of \code{\link{{getGCandCov}}
 #' @param stat = string, either "Coverage", or "SubreadLength" -- columns of p
@@ -104,7 +104,7 @@ boxplotVsGC = function( report, p, name, label )
   loginfo( paste( "m = ", m ) )
   myplot = ( ggplot( p, aes( x = p[,"GC_Content"], y = p[,name], fill = p[,"nSites"] ) ) +
         geom_boxplot() +
-        geom_hline( yintercept = 1.0 ) + 
+        geom_hline( yintercept = 1.0 ) +
         labs( x = "GC Content", y = paste( name, "/ Median" ), title = paste( label, "\n Median", name, ":", format( m, digits = 4 ) ) ) )
 
   tag = paste( name, "vs_GC_Content", sep = "_" )
@@ -180,7 +180,7 @@ singleRef = function( report, data, ref, label, winsize )
 #' For each reference in fasta, call \link{singleRef} above
 #'
 #' @param alndir = smrtlink alignment directory
-#' @param reffasta = path to reference fasta file 
+#' @param reffasta = path to reference fasta file
 #' @param label = string title for plots
 #' @param winsize = window size for computing GC content
 #' @export
@@ -198,7 +198,7 @@ gcVcoverage = function( report, alnxml, reference, label, winsize = 100 )
     tmp = subset( data, ref == refName )
     if ( nrow( tmp ) < 100 ) { return( 0 ) }
     ref = refs[[ which( grepl( pattern = refName, x = names( refs ) ) ) ]]
-    singleRef( report, tmp, ref, paste( label, refName ), winsize ) 
+    singleRef( report, tmp, ref, paste( label, refName ), winsize )
   }
   1
 }

@@ -53,7 +53,7 @@ makeReadLengthPlots <- function(report, conditions) {
             stopifnot(length(csv_fns) == length(conditions))
             dat <- data.frame(readlength=integer(), condition=factor())
             for (i in 1:length(csv_fns)) {
-                dat <- rbind(dat, make_dat_from_csv(csv_fns[i], conditions[i])) 
+                dat <- rbind(dat, make_dat_from_csv(csv_fns[i], conditions[i]))
             }
             names(dat) = c('readlength', 'condition')
             dat
@@ -67,7 +67,7 @@ makeReadLengthPlots <- function(report, conditions) {
 
         # dat<-data.frame(condition=factor(rep(c("A", "B"), each=200)), readlength=c(sample(1:2000, 200), sample(500:2200, 200))) # test data
         dat <- make_dat_from_csvs(conditions$CSV, conditions$Condition)
-        # Make plot 
+        # Make plot
         bd <- min(300, floor(max(dat$readlength) / 20 /100.0) * 100) # compute binwidth
         tp <- ggplot(dat, aes(x=readlength, fill=condition)) + geom_histogram(binwidth=bd, position='dodge') + ggtitle(title)
 
@@ -87,7 +87,7 @@ makeSIRVPlots <- function(report, conditions)
 {
     # e.g., conditions=c('MovieA','MovieB'), read from './conditions/MovieA/eval/isoseq_rc0_validation_report.csv'
     # and './conditions/MovieB/eval/isoseq_rc0_validation_report.csv', make data.frame('name', 'value', 'condition'),
-    # ('collapse_to_sirv.num_TruePositive', 58, 'MovieA') 
+    # ('collapse_to_sirv.num_TruePositive', 58, 'MovieA')
     make_dat_from_val_report <- function(val_report_fn, cd) {
         # val_report_fn format: 'name   value', e.g.,'collapse_to_sirv.num_isoforms   55'
         d <- read.table(val_report_fn, sep='\t', header=TRUE)
@@ -101,7 +101,7 @@ makeSIRVPlots <- function(report, conditions)
         }
         dat
     }
-    makeBarPlot <- function(report, dat, key, prefix, desc) 
+    makeBarPlot <- function(report, dat, key, prefix, desc)
     {
         # dat = data.frame(name=character(), value=as.integer(), condition=factor())
         # key = 'collapse_to_sirv.num_TruePositive', prefix = 'sirv_n_true_positive', desc = 'SIRV True Positive'
@@ -116,7 +116,7 @@ makeSIRVPlots <- function(report, conditions)
         # Make data frame
         #dat <- data.frame(name=c('collapse_to_sirv.num_TruePositive'), value=c(56), condition=c('moviea')), test data
         dat <- dat[as.character(dat$name)==key,] # ('name', 'value', 'condition'), e.g., ('collapse_to_sirv.num_TruePositive', 57, 'MovieA')
-        # Make plot 
+        # Make plot
         tp <- ggplot(dat, aes(condition)) + geom_bar(aes(weight=value, fill=condition)) + ggtitle(title)
         report$ggsave(png_fn, tp, width=plotwidth, height=plotheight, id=id, title=title, caption=caption, tags=tags)
     }
@@ -146,7 +146,7 @@ makeReSeqToHumanPlots <- function(report, conditions)
         stopifnot(length(coverage_fns) == length(conditions))
         dat <- data.frame(name=character(), coverage=integer(), condition=factor())
         for (i in 1:length(coverage_fns)) {
-            dat <- rbind(dat, make_dat_from_coverage(coverage_fns[i], conditions[i])) 
+            dat <- rbind(dat, make_dat_from_coverage(coverage_fns[i], conditions[i]))
         }
         names(dat) = c('transcript', 'coverage', 'condition')
         dat

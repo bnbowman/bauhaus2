@@ -90,10 +90,10 @@ doCCSCumulativeYieldPlots <- function(report, ccsDf)
     xo$YieldFraction <- cumsum(xo$ReadLength) / sum(xo$ReadLength)
     xo[seq(1, nrow(xo), by = 10), ]
   }
-  
+
   ## yield <- ddply(ccsDf, "Condition", cumByCut)
   yield <- ccsDf %>% group_by(Condition) %>% do(cumByCut(.))
-  
+
   ## NumReads on y-axis
   p <-
     qplot(
@@ -110,7 +110,7 @@ doCCSCumulativeYieldPlots <- function(report, ccsDf)
     title = "Yield of reads by CCS accuracy",
     caption = "Yield of reads by CCS accuracy"
   )
-  
+
   ## Fraction of reads on y-axis
   p <-
     qplot(
@@ -169,7 +169,7 @@ doCCSNumPassesCDF <- function(report, ccsDf)
 doCCSReadQualityCalibrationPlots <- function(report, ccsDf)
 {
   ccsDf <- sample_n(ccsDf, min(5000, nrow(ccsDf)))
-  
+
   p <-
     qplot(ReadQuality,
           Identity,
@@ -293,10 +293,10 @@ makeReport <- function(report) {
                          title = "CCS Mapping CSV")
       doAllCCSPlots(report, ccsDf)
     }
-    
+
     # Save the report object for later debugging
     save(report, file = file.path(report$outputDir, "report.Rd"))
-    
+
     # At the end of this function we need to call this last, it outputs the report
     report$write.report()
   }

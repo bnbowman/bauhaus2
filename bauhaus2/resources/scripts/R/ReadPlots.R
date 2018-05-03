@@ -32,12 +32,12 @@ clFillScale <- scale_fill_brewer(palette = "Set1")
 makeGapSizePlots <- function(report, cd) {
   loginfo("Making Gap Size Plots")
   gaps = cd[["gapSizes"]]
-  
-  
+
+
   # Convert to relative frequencies
   gapf = gaps %>% group_by(Condition) %>% mutate(refFreq = refCnts / sum(refCnts),
                                                  readFreq = readCnts / sum(readCnts)) %>% ungroup()
-  
+
   if (sum(gapf$refCnts) == 0) {
     warning("The sum of reference Counts cannot be 0!")
   } else {
@@ -63,7 +63,7 @@ makeGapSizePlots <- function(report, cd) {
       tags = c("readplots", "deletion"),
       uid = "0050001"
     )
-    
+
     loginfo("Plot log Deletion Sizes")
     report$ggsave(
       "deletion_size_log.png",
@@ -77,7 +77,7 @@ makeGapSizePlots <- function(report, cd) {
       uid = "0050002"
     )
   }
-  
+
   if (sum(gapf$readCnts) == 0) {
     warning("The sum of read Counts cannot be 0!")
   } else {
@@ -103,7 +103,7 @@ makeGapSizePlots <- function(report, cd) {
       tags = c("readplots", "insertion"),
       uid = "0050003"
     )
-    
+
     loginfo("Plot log insertion sizes")
     report$ggsave(
       "insert_size_log.png",
@@ -122,16 +122,16 @@ makeGapSizePlots <- function(report, cd) {
 makeMismatchPlots <- function(report, cd) {
   loginfo("Making Mismatch Plots")
   mm = cd[["mismatches"]]
-  
+
   # Remove uninteresting rows
   mm = mm[mm$ref != mm$read &
             mm$ref != "N" & mm$ref != "-" &
             mm$read != "N" & mm$read != "-", ]
-  
+
   # Convert to relative frequencies
   mmf = mm %>% group_by(Condition) %>% mutate(freq = cnts / sum(cnts)) %>% ungroup()
   mmf$Error = mmf$ref:mmf$read
-  
+
   tp = ggplot(mmf, aes(x = Error, y = freq, fill = Condition)) + geom_bar(stat =
                                                                             "identity", position = "dodge") +
     clFillScale + plTheme + labs(x = "Ref:Read", y = "Relative Frequency (Sum = 1)",
@@ -152,7 +152,7 @@ makeMismatchPlots <- function(report, cd) {
 makeIndelPlots <- function(report, cd) {
   loginfo("Making Indel Plots")
   ind = cd[["indelCnts"]]
-  
+
   # Remove uninteresting rows
   ind = ind[ind$bp != "-" & ind$bp != "N", ]
   # Convert to relative frequencies
@@ -160,7 +160,7 @@ makeIndelPlots <- function(report, cd) {
     delFreq = delFromRefCnt / sum(delFromRefCnt),
     insFreq = insertIntoReadCnt / sum(insertIntoReadCnt)
   ) %>% ungroup()
-  
+
   tp = ggplot(indf, aes(x = bp, y = delFreq, fill = Condition)) + geom_bar(stat =
                                                                              "identity", position = "dodge") +
     clFillScale + plTheme + labs(x = "Deleted Base", y = "Relative Frequency (Sum = 1)",
@@ -176,7 +176,7 @@ makeIndelPlots <- function(report, cd) {
     tags = c("readplots", "deletion"),
     uid = "0050006"
   )
-  
+
   loginfo("Make Insertion Rates Plot")
   tp = ggplot(indf, aes(x = bp, y = insFreq, fill = Condition)) + geom_bar(stat =
                                                                              "identity", position = "dodge") +
@@ -198,10 +198,10 @@ makeIndelPlots <- function(report, cd) {
 makeClippingPlot <- function(report, cd) {
   loginfo("Making Clipping Plots")
   clips = cd[["clipping"]]
-  
+
   # Convert to relative frequencies
   clipsf = clips %>% group_by(Condition) %>% mutate(freq = cnts / sum(cnts)) %>% ungroup()
-  
+
   if (sum(clipsf$cnts) == 0) {
     warning("The sum of Counts for cliping cannot be 0!")
   } else {
@@ -226,12 +226,12 @@ makeClippingPlot <- function(report, cd) {
 # The core function, change the implementation in this to add new features.
 makeReport <- function(report) {
   conditions = report$condition.table
-  
+
   ## Let's set the graphic defaults
   n = length(levels(conditions$Condition))
   clFillScale <<- getPBFillScale(n)
   clScale <<- getPBColorScale(n)
-  
+
   # Load the read error rates for each dataset
   dfs = list()
   generateData <- function(conditions) {
@@ -263,7 +263,7 @@ makeReport <- function(report) {
     cd
   }
   cd = try(combineData(dfs), silent = TRUE)
-  
+
   # If the data is corrupted, cd will not be data frame
   if (!class(cd) == "try-error") {
     # Convert the integers in cd to numeric values to get rid of "integer overflow" caused by the integer maximum limit in R
@@ -272,8 +272,8 @@ makeReport <- function(report) {
     cd$gapSizes$readCnts = as.numeric(cd$gapSizes$readCnts)
     cd$indelCnts$delFromRefCnt = as.numeric(cd$indelCnts$delFromRefCnt)
     cd$indelCnts$insertIntoReadCnt = as.numeric(cd$indelCnts$insertIntoReadCnt)
-    cd$clipping$cnts = as.numeric(cd$clipping$cnts)  
-    
+    cd$clipping$cnts = as.numeric(cd$clipping$cnts)
+
     # Make Plots
     makeMismatchPlots(report, cd)
     makeGapSizePlots(report, cd)
@@ -282,10 +282,10 @@ makeReport <- function(report) {
   } else {
     warning("The input data is corrupted.")
   }
-  
+
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
-  
+
   # At the end of this function we need to call this last, it outputs the report
   report$write.report()
 }

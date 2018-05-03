@@ -33,11 +33,11 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
   loginfo("Making Template Span Survival Plots")
   cd2 = cd %>% dplyr::group_by(hole, Condition) %>% dplyr::summarise(tlen = sum(tlen))
   cd2 <- as.data.frame(cd2)
-  
+
   cd2$SurvObj <- with(cd2, Surv(tlen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  
-  
+
+
   # When cd2.by.con is empty or only has one row, skip the following two plots
   if (nrow(cd2.by.con) > 1) {
     p1 <-
@@ -68,20 +68,20 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
       uid = "0030002"
     )
   }
-  
+
   loginfo("Making Aligned Read Length Survival Plots")
-  
+
   cd2 = cd %>% dplyr::group_by(hole, Condition) %>% dplyr::summarise(alen = sum(alen))
   cd2 <- as.data.frame(cd2)
-  
+
   cd2$SurvObj <- with(cd2, Surv(alen))
   cd2.by.con <- survfit(SurvObj ~ Condition, data = cd2)
-  
+
   #against subread length
   cd0 = as.data.frame(cd)
   cd0$SurvObj <- with(cd0, Surv(tlen))
   cd0.by.con <- survfit(SurvObj ~ Condition, data = cd0)
-  
+
   if (nrow(cd2.by.con) > 1) {
     p1 <-
       autoplot(cd2.by.con) + labs(x = "Aligned Pol Read Length", title = "Aligned Pol Read Length Survival") + plTheme
@@ -90,8 +90,8 @@ makeReadLengthSurvivalPlots <- function(report, cd) {
     p2 <-
       autoplot(cd2.by.con) + scale_x_log10() + labs(x = "Aligned Pol Read Length", title = "Aligned Pol Read Length Survival (Log-scale)") + plTheme
     #  tp <- arrangeGrob(p1, p2, nrow = 2)
-    
-    
+
+
     report$ggsave(
       "aligned_pol_read_length_survival.png",
       p1,
@@ -143,7 +143,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "density", "accuracy"),
     uid = "0030005"
   )
-  
+
   loginfo("Making Accuracy Box Plots")
   tp = ggplot(cd, aes(x = Condition, y = Accuracy, colour = Condition)) + geom_boxplot() + stat_summary(
     fun.y = median,
@@ -165,7 +165,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "boxplot", "accuracy"),
     uid = "0030019"
   )
-  
+
   # loginfo("Making Accuracy Violin Plots")
   # tp = ggplot(cd, aes(x = Condition, y = Accuracy, fill = Condition)) + geom_violin() +
   #   plTheme + clFillScale + themeTilt +
@@ -180,7 +180,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
   #   title = "Accuracy Violin",
   #   caption = "Accuracy Violin"
   # )
-  
+
   loginfo("Making Template Length vs. Accuracy")
   samps_per_group = sampleSize / length(levels(cd$Condition))
   sample_nigel <-
@@ -208,7 +208,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
       idx <- unlist(sampled) + 1
       grouped_df(tbl[idx, , drop = FALSE], vars = groups(tbl))
     }
-  
+
   cd2 = cd %>% group_by(Condition) %>% sample_nigel(size = samps_per_group) %>% ungroup()
   tp = ggplot(cd2, aes(x = tlen, y = Accuracy, color = Condition)) + geom_point(alpha = .2) +
     plTheme  + geom_smooth(fill = NA) + clScale + labs(
@@ -228,7 +228,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "accuracy", "template"),
     uid = "0030006"
   )
-  
+
   tp = ggplot(cd2, aes(x = alen, y = Accuracy, color = Condition)) + geom_point(alpha = .2) +
     plTheme  + geom_smooth(fill = NA) + clScale + labs(
       y = "Accuracy (1 - Mean Errors Per Template Position)",
@@ -250,7 +250,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "accuracy", "read", "aligned"),
     uid = "0030007"
   )
-  
+
   tp = ggplot(cd2, aes(x = qrlen, y = alen, color = Condition)) + geom_point(alpha = .2) +
     plTheme  + geom_abline(intercept = 0,
                            slope = 1,
@@ -274,9 +274,9 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "read", "aligned", "unaligned"),
     uid = "0030008"
   )
-  
-  
-  
+
+
+
   # loginfo("Making Template Span Violin Plot")
   # tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_violin() +
   #   plTheme + clFillScale + themeTilt +
@@ -290,7 +290,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
   #   title = "Template Span Violin Plot",
   #   caption = "Template Span Violin Plot"
   # )
-  
+
   loginfo("Making Template Span Density Plot")
   tp = ggplot(cd, aes(x = tlen, colour = Condition)) + geom_density() +
     plTheme + clScale + themeTilt +
@@ -306,7 +306,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "density", "template"),
     uid = "0030009"
   )
-  
+
   loginfo("Making Aligned Subread Read Length Density Plot")
   tp = ggplot(cd, aes(x = alen, colour = Condition)) + geom_density() +
     plTheme + clScale + themeTilt +
@@ -322,7 +322,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "density", "read", "aligned"),
     uid = "0030010"
   )
-  
+
   loginfo("Making Aligned Pol Read Length Density Plot")
   cd3 = cd %>% dplyr::group_by(hole, Condition) %>% dplyr::summarise(tlen = sum(tlen))
   cd3 <- as.data.frame(cd3)
@@ -340,7 +340,7 @@ makeAccuracyDensityPlots <- function(report, cd) {
     tags = c("basic", "pbiplots", "density", "read", "aligned"),
     uid = "0030018"
   )
-  
+
   loginfo("Making Template Span Boxplot")
   tp = ggplot(cd, aes(x = Condition, y = tlen, fill = Condition)) + geom_boxplot() +
     plTheme + clFillScale + themeTilt + stat_summary(
@@ -486,7 +486,7 @@ makeReport <- function(report) {
   #conds = decoded@conditions
   #tmp = lapply(conds, function(z) data.frame(condition = z@condId,subreadset = z@subreadset, alignmentset = z@alignmentset, referenceset = z@referenceset))
   #conditions = do.call(rbind, tmp)
-  
+
   conditions = report$condition.table
   # Load the pbi index for each data frame
   dfs = lapply(as.character(conditions$MappedSubreads), function(s) {
@@ -500,15 +500,15 @@ makeReport <- function(report) {
   } else {
     dfs  = filteredData[[1]]
     conditions = filteredData[[2]]
-    
+
     # Now combine into one large data frame
     cd = combineConditions(dfs, as.character(conditions$Condition))
-    
+
     ## Let's set the graphic defaults
     n = length(levels(conditions$Condition))
     clFillScale <<- getPBFillScale(n)
     clScale <<- getPBColorScale(n)
-    
+
     cd$tlen = as.numeric(cd$tend - cd$tstart)
     cd$alen = as.numeric(cd$aend - cd$astart)
     cd$errors = as.numeric(cd$mismatches + cd$inserts + cd$dels)
@@ -517,7 +517,7 @@ makeReport <- function(report) {
     cd$irate  = cd$inserts / cd$tlen
     cd$drate  = cd$dels / cd$tlen
     cd$qrlen = as.numeric(cd$qend - cd$qstart)
-    
+
     summaries = cd[, .(
       AccuracyRate.Median = median(Accuracy),
       AlnLength = median(tlen),
@@ -553,7 +553,7 @@ makeReport <- function(report) {
                        summaries,
                        id = "sumtable",
                        title = "Summary Statistics (Median Values)")
-    
+
     # Make Plots
     try(makeReadLengthSurvivalPlots(report, cd), silent = TRUE)
     try(makeAccuracyDensityPlots(report, cd), silent = TRUE)
@@ -562,10 +562,10 @@ makeReport <- function(report) {
     try(makeBasesDistribution(report, cd), silent = TRUE)
     try(makeYieldHistogram(report, cd), silent = TRUE)
   }
-  
+
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
-  
+
   # At the end of this function we need to call this last, it outputs the report
   report$write.report()
 }

@@ -33,7 +33,7 @@ fillInMissingPositions = function(k, N)
   # n = complete vector of coverages:
   n = rep(NA, N)
   n[as.numeric(names(k))] <- k
-  
+
   # Fill in any missing reference positions with last non-missing value:
   w = !is.na(n)
   if (sum(w) > 0)
@@ -118,7 +118,7 @@ boxplotVsGC = function(report, p, name, label, uid)
   s = split(1:nrow(p), p$nSites)
   n = vapply(s, length, 0)
   p$nSites = factor(n[match(p$nSites, names(s))], levels = n)
-  
+
   m = median(p[, name], na.rm = TRUE)
   p[, name] = p[, name] / m
   loginfo(paste("m = ", m))
@@ -134,7 +134,7 @@ boxplotVsGC = function(report, p, name, label, uid)
         title = paste(label, "\n Median", name, ":", format(m, digits = 4))
       )
   )
-  
+
   tag = paste(label, name, "vs_GC_Content", sep = "_")
   pngfile = paste(tag, "png", sep = ".")
   report$ggsave(
@@ -216,7 +216,7 @@ gcVcoverage = function(report, alnxml, reference, label, winsize = 100)
     #return( 0 )
   } else{
     s = split(1:nrow(data), as.character(data$ref))
-    
+
     for (refName in names(s))
     {
       loginfo(paste("Draw plots for reference:", refName))
@@ -719,7 +719,7 @@ writeSummaryTable = function(bamFile, fastaname, blockSize = 5e3)
 {
   loginfo("Get basic statistics, such as read length, insertions, and deletions:")
   bam = loadPBI(bamFile, loadSNR = TRUE)
-  
+
   if (nrow(bam) == 0)
   {
     loginfo("[WARNING] - # rows in bam file == 0")
@@ -769,11 +769,11 @@ simpleErrorHandling = function(bamFile, fastaname, blockSize = 5e3)
 sumUpByMolecule = function(res, colList)
 {
   # Make sure only columns actually contained in data frame x are listed in nSum and so on.
-  
+
   nms = names(res)
   colList = lapply(colList, function(x)
     intersect(x, nms))
-  
+
   res = data.table(res)
   x = res[, lapply(.SD, function(x)
     sum(x, na.rm = TRUE)), by = .(HoleNumber), .SDcols = colList$nSum]
@@ -783,7 +783,7 @@ sumUpByMolecule = function(res, colList)
     min(x, na.rm = TRUE)), by = .(HoleNumber), .SDcols = colList$nMin]
   w = res[, lapply(.SD, function(x)
     max(x, na.rm = TRUE)), by = .(HoleNumber), .SDcols = colList$nMax]
-  
+
   #' Merge together and return:
   m = merge(x, y, by = "HoleNumber")
   m = merge(m, z, by = "HoleNumber")
@@ -841,7 +841,7 @@ postSummation = function(res, refTable)
   res$InsertionRate = res$Inserts / res$AlnReadLen
   res$DeletionRate = res$Dels / res$AlnReadLen
   res$Accuracy = 1 - res$MismatchRate - res$InsertionRate - res$DeletionRate
-  
+
   tmp = try(res$MaxSubreadLen / res$AlnReadLen , silent = FALSE)
   if (class(tmp) != "try-error") {
     res$MaxSubreadLenToAlnReadLenRatio = tmp
@@ -905,7 +905,7 @@ convenientSummarizerbam = function(res,
   y = as.numeric(res$Y) - y.min + 1
   X = (x %/% N[1]) + (x %% N[1] > 0)
   Y = (y %/% N[2]) + (y %% N[2] > 0)
-  
+
   if ("SNR_A" %in% names(res))
   {
     res$SNR_A[res$SNR_A == -1] <- NA
@@ -939,7 +939,7 @@ convenientSummarizerbam = function(res,
     tmp$centerP1 = v$sumcenterP1[m]
     tmp$edgeP1 = v$sumedgeP1[m]
   }
-  
+
   #' Estimate average number of pols per ZMW in each block of ZMWs:
   nZMWsPerBlk = N[1] * N[2]
   counts = as.numeric(tmp$Count)
@@ -973,7 +973,7 @@ plotReferenceHeatmap = function(report, res, label)
   plotID =  paste("Reference_Heatmap_", label, sep = "")
   pngfile = paste(plotID, "png", sep = ".")
   title = paste("Reference : ", label, sep = "")
-  
+
   myplot = (
     qplot(
       data = res,
@@ -988,7 +988,7 @@ plotReferenceHeatmap = function(report, res, label)
       scale_x_continuous(position = "top") +
       theme(aspect.ratio = ASP_RATIO)
   )
-  
+
   report$ggsave(
     pngfile,
     myplot,
@@ -1021,23 +1021,23 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     loginfo(paste("[ERROR] -- Too few rows for condition:", label))
     return(NULL)
   }
-  
+
   loginfo(paste("Summarize into", N[1], "x", N[2], "blocks for condition:", label))
-  
+
   df = convenientSummarizerbam(res, N, key)
-  
+
   # Re-order the rows so that they match the distance matrix
   tmp = data.frame(X = dist$ID %/% key, Y = dist$ID %% key)
   df = merge(tmp, df, by = c("X", "Y"), all.x = TRUE)
   df$Count[is.na(df$Count)] <- 0
-  
+
   df$AlnReadLenExtRange = df$AlnReadLen
   df$rStartExtRange = df$rStart
   df$MaxSubreadLenExtRange = df$MaxSubreadLen
   df$AccuracyExtRange = df$Accuracy
   try(addLoadingUniformityPlots(report, df, N, label, dist),
       silent = TRUE)
-  
+
   loginfo(paste("Plot individual heatmaps for condition:", label))
   plotReferenceHeatmap(report, res, label)
   try(plotSingleSummarizedHeatmap(report,
@@ -1100,7 +1100,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
                                   limits = c(0, 25000),
                                   uid = "0070011"),
       silent = FALSE)
-  
+
   # Target SNR: SNR_A="5.438" SNR_C="10.406" SNR_G="4.875" SNR_T="7.969"
   targetSNR = data.frame(
     base = c("A", "G", "C", "T"),
@@ -1111,7 +1111,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
   targetSNR$UpperLimit = targetSNR$targetSNRvalue * (1 + targetSNR$range)
   #define a column of uids
   targetSNR$uidcol = c("0070014", "0070015", "0070016", "0070017")
-  
+
   for (k in targetSNR$base) {
     try(plotSingleSummarizedHeatmap(
       report,
@@ -1124,7 +1124,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     ),
     silent = FALSE)
   }
-  
+
   try(plotSingleSummarizedHeatmap(
     report,
     df,
@@ -1135,7 +1135,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     uid = "0070007"
   ),
   silent = FALSE)
-  
+
   excludeColumns = c(
     "X",
     "Y",
@@ -1163,7 +1163,7 @@ drawSummarizedHeatmaps = function(report, res, label, dist, N, key)
     "Coverage",
     "Subread_Length"
   )
-  
+
   #create a dataframe 'Non_excl_uid' that has column names of the non-excluded columns and corresponding uid's
   Non_excl_columns = c(
     "MaxSubreadLen",
@@ -1220,7 +1220,7 @@ drawHistogramForUniformity = function(report, label, counts, N, tbl)
 {
   title = paste("Uniformity_histogram", label, sep = "_")
   pngfile = paste(title, "png", sep = ".")
-  
+
   xlabel = paste("# of Alignments per", N[1], "x", N[2], "block of ZMWs")
   ylabel = paste("# of",  N[1], "x", N[2], "blocks")
   myplot = (qplot(
@@ -1233,7 +1233,7 @@ drawHistogramForUniformity = function(report, label, counts, N, tbl)
     labs(list(
       title = title, x = xlabel, y = ylabel
     )))
-  
+
   loginfo(paste("\t Draw loading uniformity histogram for condition:", label))
   # savePlots( myplot, pngfile )
   # if ( 0 ) {
@@ -1302,25 +1302,25 @@ ape.moranI = function(x,
   if (nrow(weight) != n)
     stop("Number of counts should match size of weight matrix")
   x[is.na(x)] <- 0
-  
+
   #' Observed value of statistic, obs:
   y = x - sum(x, na.rm = TRUE) / n
   y2 = y * y
   var = sum(y2, na.rm = TRUE)
-  
+
   #' The next non-commented line is faster than, but equivalent to,
   #' obs = sum( weight * y %o% y, na.rm = TRUE ) / var
   obs = sum(y * (weight %*% y), na.rm = TRUE) / var
-  
+
   if (scaled)
   {
     i.max = sd(y) / sqrt(var / (n - 1))
     obs = obs / i.max
   }
-  
+
   #' Expected value of statistic if there is no spatial autocorrelation:
   expected = -1 / (n - 1)
-  
+
   #' Standard deviation of Moran's I statistic -- needed for p-value
   S1 = S1.S2[1]
   S2 = S1.S2[2]
@@ -1330,7 +1330,7 @@ ape.moranI = function(x,
   num.2 = k * (n * (n - 1) * S1 - 2 * n * S2 + 6 * S0.2)
   den = ((n - 1) * (n - 2) * (n - 3) * S0.2)
   sd = sqrt((num.1 - num.2) / den - expected ^ 2)
-  
+
   #' obs ~ N( expected, sd ):
   c(obs, sd, pnorm(
     obs,
@@ -1377,33 +1377,33 @@ getUniformityMetricsTable = function(res, label, N, com, SNR, dist, cutoff = 2)
 {
   loginfo(paste("\t Write uniformity metrics table for condition:", label))
   counts = as.numeric(res$Count)
-  
+
   # cutoff = round( max( 1, boxplot( counts, plot = FALSE )$stat[1] ) )
   y = counts[counts >= cutoff]
-  
+
   n.counts = length(counts)
   n.y = length(y)
   lowLoad = 1 - (n.y / n.counts)
-  
+
   mu = mean(y, na.rm = TRUE)
   vr = var(y, na.rm = TRUE)
   dispersion = vr / mu - 1
   t1 = dispersion * sqrt(2 / n.y)
   le = getLoadingEfficiency(counts, N)
   kv = getKVossMetric(res)
-  
+
   # Compute "center to edge" metric
   # "center to edge" metric is a ratio of the loading (P1) of
   # the 50% of the inside zmws divided by the loading of the 50% outside zmws
   centerLoad = sum(res$centerP1, na.rm = T)
   edgeLoad = sum(res$edgeP1, na.rm = T)
   centertoedge = centerLoad / edgeLoad
-  
+
   # Compute Moran's I statistics and corresponding p-values
   mi = unlist(lapply(1:dist$nMatrices,
                      function(i)
                        ape.moranI(counts, dist$MatList[[i]], dist$S1.S2[[i]])))
-  
+
   data.frame(
     ID =  label,
     Cutoff = cutoff,
@@ -1454,18 +1454,18 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
   if (length(N) == 1) {
     N = c(N, N)
   }
-  
+
   SNR_A = mean(tmp$SNR_A, na.rm = TRUE)
   SNR_C = mean(tmp$SNR_C, na.rm = TRUE)
   SNR_G = mean(tmp$SNR_G, na.rm = TRUE)
   SNR_T = mean(tmp$SNR_T, na.rm = TRUE)
   SNR = c(SNR_A, SNR_C, SNR_G, SNR_T)
-  
+
   #' Compute center of mass
   x = as.numeric(tmp$X)
   y = as.numeric(tmp$Y)
   com = c(mean(x, na.rm = TRUE), mean(y, na.rm = TRUE)) - c(595 %/% N[1], 544 %/% N[2])
-  
+
   tbl = getUniformityMetricsTable(tmp, label, N, com, SNR, dist)
   drawHistogramForUniformity(report, label, as.numeric(tmp$Count), N, tbl)
   csvfile = paste("Uniformity_metrics_", label, ".csv", sep = "")
@@ -1506,7 +1506,7 @@ generateHeatmapsPerCondition = function(report,
 {
   loginfo(paste("Render coverage vs. GC content plots for condition:", label))
   gcVcoverage(report, alnxml, reference, label)
-  
+
   loginfo(paste("Get data for condition:", label))
   fastaname = getReferencePath(reference)
   res = simpleErrorHandling(alnxml, fastaname)
@@ -1519,10 +1519,10 @@ generateHeatmapsPerCondition = function(report,
       loginfo("[WARNING] - Too few rows in BAM file.")
       return(0)
     }
-    
+
     loginfo(paste("Summarize data for condition:", label))
     res$SMRTlinkID = label
-    
+
     loginfo(paste("Draw regular heatmaps for condition:", label))
     res = subset(res, SNR_A != -1 &
                    SNR_C != -1 & SNR_G != -1 & SNR_T != -1)
@@ -1536,19 +1536,19 @@ generateHeatmapsPerCondition = function(report,
 makeReport = function(report)
 {
   conditions = report$condition.table
-  
+
   alnxmls = as.character(conditions$MappedSubreads)
   w = which(!duplicated(alnxmls))
   alnxmls = alnxmls[w]
   refs = as.character(conditions$Reference)[w]
   labels = as.character(conditions$Condition)[w]
-  
+
   N = c(8, 8)
   key = 1e3
   dist = getDistMat(N, key)
   res = lapply(1:length(alnxmls), function(k)
     generateHeatmapsPerCondition(report, alnxmls[k], refs[k], labels[k], dist, N, key))
-  
+
   # Make barplot for Uniformity metrics
   csvfile = paste(report$outputDir,
                   "/Uniformity_metrics_",
@@ -1598,7 +1598,7 @@ makeReport = function(report)
         ),
         uid = "0072000"
       )
-      
+
       # Center to edge histogram
       UniformityCTE = Uniformity[, c("ID",
                                      "CenterToEdge")]
@@ -1622,7 +1622,7 @@ makeReport = function(report)
                  "edge",
                  "P1"),
         uid = "0074000"
-      ) 
+      )
     }
     try(generateUniformityPlots(csvfile), silent = FALSE)
   }
@@ -1643,9 +1643,9 @@ main = function()
   makeReport(report)
   jsonFile = "reports/AlignmentBasedHeatmaps/report.json"
   uidTagCSV = "reports/uidTag.csv"
-  
+
   # TODO: currently we don't rewrite the json report since the uid is not added to the heatmaps yet
-  
+
   # rewriteJSON(jsonFile, uidTagCSV)
   0
 }
