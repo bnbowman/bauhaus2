@@ -13,21 +13,30 @@ library(reshape2)
 ## FIXME: make a real package
 myDir = "./scripts/R"
 source(file.path(myDir, "Bauhaus2.R"))
-#source("/home/sxu/bitbucket/bauhaus2/bauhaus2/resources/scripts/R/Bauhaus2.R")
+source(file.path(myDir, "mummerOneCondition.R"))
 
 midTitle <- theme(plot.title = element_text(hjust = 0.5, size = 12))
 plTheme <-
-  theme_bw(base_size = 14) + theme(legend.text = element_text(size=12), legend.title = element_text(size=12), plot.title = element_text(hjust = 0.5, size = 12), 
-                                   axis.title=element_text(size=12), axis.text=element_text(size=12))
+  theme_bw(base_size = 14) + theme(
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 12),
+    plot.title = element_text(hjust = 0.5, size = 12),
+    axis.title = element_text(size = 12),
+    axis.text = element_text(size = 12)
+  )
 clScale <- scale_colour_brewer(palette = "Set1")
 clFillScale <- scale_fill_brewer(palette = "Set1")
-themeTilt = theme(axis.text.x = element_text(angle = 45, hjust = 1,size = 12))
+themeTilt = theme(axis.text.x = element_text(
+  angle = 45,
+  hjust = 1,
+  size = 12
+))
 plotwidth = 7.2
 plotheight = 4.2
 
 
-makeTwelvePlots <- function(report, data){
-  tp1 = ggplot(data, aes(x = condition,polished_assembly.polished_contigs)) + geom_point() + plTheme + themeTilt  + clFillScale +
+makeTwelvePlots <- function(report, data) {
+  tp1 = ggplot(data, aes(x = condition, polished_assembly.polished_contigs)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Polished.Contigs", title = "Polished.Contigs. vs. Condition")
   report$ggsave(
     "polished_contigs.png",
@@ -40,7 +49,8 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100000"
   )
-  tp2 = ggplot(data, aes(x = condition,polished_assembly.max_contig_length)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp2 = ggplot(data,
+               aes(x = condition, polished_assembly.max_contig_length)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Maximum.Contig.Length", title = "Maximum.Contig.Length vs. Condition")
   
   report$ggsave(
@@ -54,7 +64,8 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100001"
   )
-  tp3 = ggplot(data, aes(x = condition,polished_assembly.sum_contig_lengths)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp3 = ggplot(data,
+               aes(x = condition, polished_assembly.sum_contig_lengths)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Sum.of.Contig.Lengths", title = "Sum.of.Contig.Lengths vs. Condition")
   report$ggsave(
     "polished_assembly.sum_contig_lengths.png",
@@ -67,7 +78,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100002"
   )
-  tp4 = ggplot(data, aes(x = condition,preassembly.raw_coverage)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp4 = ggplot(data, aes(x = condition, preassembly.raw_coverage)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Filtered.Subread.Coverage", title = "Filtered.Subread.Coverage vs. Condition")
   report$ggsave(
     "preassembly.raw_coverage.png",
@@ -80,7 +91,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100003"
   )
-  tp5 = ggplot(data, aes(x = condition,preassembly.seed_mean)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp5 = ggplot(data, aes(x = condition, preassembly.seed_mean)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Seed.Read.Length.Mean", title = "Seed.Read.Length.Mean vs. Condition")
   report$ggsave(
     "preassembly.seed_mean.png",
@@ -93,7 +104,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100004"
   )
-  tp6 = ggplot(data, aes(x = condition,preassembly.seed_n50)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp6 = ggplot(data, aes(x = condition, preassembly.seed_n50)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Seed.Read.Length..N50", title = "Seed.Read.Length..N50 vs. Condition")
   report$ggsave(
     "preassembly.seed_n50.png",
@@ -106,7 +117,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100005"
   )
-  tp7 = ggplot(data, aes(x = condition,preassembly.preassembled_reads)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp7 = ggplot(data, aes(x = condition, preassembly.preassembled_reads)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Number.of.Pre.Assembled.Reads", title = "Number.of.Pre.Assembled.Reads vs. Condition")
   report$ggsave(
     "preassembly.preassembled_reads.png",
@@ -119,7 +130,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100006"
   )
-  tp8 = ggplot(data, aes(x = condition,preassembly.preassembled_yield)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp8 = ggplot(data, aes(x = condition, preassembly.preassembled_yield)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Pre.Assembled.Yield..bases.seed_bases", title = "Pre.Assembled.Yield..bases.seed_bases vs. Condition")
   report$ggsave(
     "preassembly.preassembled_yield.png",
@@ -132,7 +143,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100007"
   )
-  tp9 = ggplot(data, aes(x = condition,preassembly.preassembled_mean)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp9 = ggplot(data, aes(x = condition, preassembly.preassembled_mean)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Pre.Assembled.Read.Length.Mean", title = "Pre.Assembled.Read.Length.Mean vs. Condition")
   report$ggsave(
     "preassembly.preassembled_mean.png",
@@ -145,7 +156,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100008"
   )
-  tp10 = ggplot(data, aes(x = condition,preassembly.preassembled_n50)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp10 = ggplot(data, aes(x = condition, preassembly.preassembled_n50)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Pre.Assembled.Read.Length..N50", title = "Pre.Assembled.Read.Length..N50 vs. Condition")
   report$ggsave(
     "preassembly.preassembled_n50.png",
@@ -158,7 +169,8 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100009"
   )
-  tp11 = ggplot(data, aes(x = condition,preassembly.preassembled_seed_fragmentation)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp11 = ggplot(data,
+                aes(x = condition, preassembly.preassembled_seed_fragmentation)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Avg.Num.Reads.Each.Seed.Is.Broken.Into", title = "Avg.Num.Reads.Each.Seed.Is.Broken.Into vs. Condition")
   report$ggsave(
     "preassembly.preassembled_seed_fragmentation.png",
@@ -171,7 +183,7 @@ makeTwelvePlots <- function(report, data){
     tags = c("basic", "hgapplots", "pointplot"),
     uid = "0100010"
   )
-  tp12 = ggplot(data, aes(x = condition,preassembly.preassembled_coverage)) + geom_point() + plTheme + themeTilt  + clFillScale +
+  tp12 = ggplot(data, aes(x = condition, preassembly.preassembled_coverage)) + geom_point() + plTheme + themeTilt  + clFillScale +
     labs(x = "Condition", y = "Pre.Assembled.Coverage", title = "Pre.Assembled.Coverage vs. Condition")
   report$ggsave(
     "preassembly.preassembled_coverage.png",
@@ -189,44 +201,10 @@ makeTwelvePlots <- function(report, data){
   
 }
 
-makeResidualErrorPlots <- function(report, errors){
-  errors =
-    errors[, !(names(errors) %in% c('X1', 'X2', 'X3'))]
-  errors$CtxR = as.character(errors$CtxR)
-  errors$CtxQ = as.character(errors$CtxQ)
-  errors$Error.Type = ifelse(errors$Rb == '.', 'ins', ifelse(errors$Qb == '.', 'del', 'mis'))
-  
-  Rval = unlist(lapply(errors$CtxR, function(x) {
-    rle(unlist(strsplit(substr(
-      x, (nchar(x) - 1) / 2 + 1, nchar(x)
-    ), split = '')))[[1]][1] +    rle(rev(unlist(strsplit(
-      substr(x, 1, (nchar(x) - 1) / 2 + 1), split = ''
-    ))))[[1]][1] - 1
-  }))
-  Qval = unlist(lapply(errors$CtxQ, function(x) {
-    rle(unlist(strsplit(substr(
-      x, (nchar(x) - 1) / 2 + 1, nchar(x)
-    ), split = '')))[[1]][1] +    rle(rev(unlist(strsplit(
-      substr(x, 1, (nchar(x) - 1) / 2 + 1), split = ''
-    ))))[[1]][1] - 1
-  }))
-  errors$LenHP = ifelse(errors$Rb ==
-                          '.', Qval, Rval)
-  errors$Base = ifelse(errors$Rb ==
-                         '.',
-                       as.character(errors$Qb),
-                       as.character(errors$Rb))
-  errors$Homopolymer =
-    ifelse(errors$LenHP > 1, 'yes', 'no')
-  
-  numE <-
-    errors %>% dplyr::group_by(Error.Type, Base) %>% dplyr::count(Homopolymer)  ##Not sure what this does
-  ######## graph1
-  g <- ggplot(errors, aes(Homopolymer))
-  tp = g + geom_bar(aes(fill = Base)) + facet_grid(Condition ~ Error.Type) + ggtitle("Residual Errors by Error Type")
+makeResidualErrorReports <- function(report, residualErrorPlots) {
   report$ggsave(
     "combined_residual_error_1.png",
-    tp,
+    residualErrorPlots[[1]],
     width = plotwidth,
     height = plotheight,
     id = "combined_residual_error_1",
@@ -236,17 +214,9 @@ makeResidualErrorPlots <- function(report, errors){
     uid = "0100020"
   )
   
-  ########### graph2
-  tp = qplot(
-    data = subset(errors, Homopolymer == "yes"),
-    x = LenHP,
-    fill = Base,
-    geom = "bar",
-    xlim = c(0, 10)
-  ) + facet_grid(Condition ~ Error.Type)
   report$ggsave(
     "combined_residual_error_2.png",
-    tp,
+    residualErrorPlots[[2]],
     width = plotwidth,
     height = plotheight,
     id = "combined_residual_error_2",
@@ -261,22 +231,21 @@ makeReport <- function(report) {
   table1 = read.csv("reports/Combined_Conditions/combinedAssembly.csv")
   #Adding the condition name
   #data$Condition = c("A","B", "C")
-  data = dcast(table1, condition~id, value.var = 'value')
+  data = dcast(table1, condition ~ id, value.var = 'value')
   
   # Make combined residual error plots from snps.csv
   snps = read.csv("reports/Combined_Conditions/merge_snps.csv")
   
   # Make Plots
-  makeResidualErrorPlots(report,snps)
-  makeTwelvePlots(report,data)
+  residualErrorPlots = makeResidualErrorPlots(snps)
+  makeResidualErrorReports(report, residualErrorPlots)
+  makeTwelvePlots(report, data)
   
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))
   # At the end of this function we need to call this last, it outputs the report
   report$write.report()
 }
-
-
 
 main <- function()
 {
@@ -292,4 +261,3 @@ main <- function()
 ## Leave this as the last line in the file.
 logging::basicConfig()
 main()
-
