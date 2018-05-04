@@ -7,6 +7,37 @@ library(jsonlite)
 ## Core functions for operation in a bauhaus2/zia environment.
 ##
 
+# Load data from conflunce plot index
+loadCSVIndex <- function(uidTagCSV) {
+  index = readLines(uidTagCSV)
+  index = gsub("\"", "", index)
+  index = gsub(" ", "", index)
+  index <- strsplit(index, ",")
+  
+  indexdf = data.frame(matrix(ncol = length(index[[1]]), nrow = length(index) - 1))
+  colnames(indexdf) = c("uid", "tags")
+  
+  for (i in 2:length(index)) {
+    indexdf$uid[i - 1] = index[[i]][1]
+    indexdf$tags[i - 1] = list(index[[i]][2:length(index[[i]])])
+  }
+  
+  indexdf
+}
+
+# Assert all plots ids show up in confluence plot index
+
+PlotIDinIndex <- function(jsonFile, uidTagCSV) {
+  jsonlist <- fromJSON(jsonFile, flatten = TRUE)
+  indexdf <- loadCSVIndex(uidTagCSV)
+  print("Json Report ID:")
+  print(jsonlist[[1]]$uid)
+  print("Index ID:")
+  print(indexdf$uid)
+  stopifnot(jsonlist[[1]]$uid %in% indexdf$uid)
+  stopifnot(!(NA %in% indexdf$uid))
+} 
+
 # Rewrite json file by providing a uid-tag table
 
 rewriteJSON <- function(jsonFile, uidTagCSV) {
@@ -14,18 +45,7 @@ rewriteJSON <- function(jsonFile, uidTagCSV) {
   if (file.exists(json)) {
     jsonReport = fromJSON(json)
     if (!length(jsonReport$plots) == 0) {
-
-      index = readLines(uidTagCSV)
-      index = gsub("\"", "", index)
-      index = gsub(" ", "", index)
-      index <- strsplit(index, ",")
-
-      indexdf = data.frame(matrix(ncol = length(index[[1]]), nrow = length(index)))
-      colnames(indexdf) = c("uid", "tags")
-      for (i in 2:length(index)) {
-        indexdf$uid[i - 1] = index[[i]][1]
-        indexdf$tags[i - 1] = list(index[[i]][2:length(index[[i]])])
-      }
+      indexdf = loadCSVIndex(uidTagCSV)
       # Remove index with NA in its tags
       row.has.na <- unlist(lapply(indexdf$tags, function(x){any(is.na(x))}))
       indexdf.filtered <- indexdf[!row.has.na,]
