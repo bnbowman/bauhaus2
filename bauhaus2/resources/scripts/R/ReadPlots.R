@@ -301,6 +301,11 @@ main <- function()
   makeReport(report)
   jsonFile = "reports/ReadPlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
+  
+  # Assert all plots are indexed in the confluence plot index
+  # When run loca test, we suggest to delete "try" to get the error warnings
+  try(PlotIDinIndex(jsonFile, uidTagCSV))
+  
   try(rewriteJSON(jsonFile, uidTagCSV), silent = TRUE)
   0
 }
