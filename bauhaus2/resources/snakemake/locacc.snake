@@ -21,13 +21,14 @@ rule LocAccPlots:
     output: "reports/LocAccPlots/report.json"
     params: names = cond_names
     benchmark: "benchmarks/locacc.tsv"
+    threads: min(16, len(cond_names))
     shell:
         """
         module use /pbi/dept/primary/modulefiles
         module use /mnt/software/modulefiles
         module load primary-toolkit
 
-        locacc {input.alignments} {params.names} --nreads 5000 -o reports/LocAccPlots/LocAcc --warnonly --mask
+        locacc {input.alignments} {params.names} --nreads 5000 -o reports/LocAccPlots/LocAcc --warnonly --mask --nworkers {threads}
         """
 
 """ If the trc.h5 is not shared between conditions (and by shared I mean
