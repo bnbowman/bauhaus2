@@ -518,6 +518,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- mean_pw_boxplot_by_base.png
   |   |   |-- medianAccuracyvsp_Enzbyp_LP.png
   |   |   |-- medianIPD.csv
+  |   |   |-- medianPolRateGlobal.csv
+  |   |   |-- medianPolRateLocal.csv
   |   |   |-- medianPolymerizationRate.csv
   |   |   |-- medianSNR.csv
   |   |   |-- median_pw_boxplot_by_base.png
@@ -593,7 +595,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 540 files
+  36 directories, 542 files
 
 
 
@@ -892,9 +894,21 @@ Generate mapping reports workflow, starting from subreads.
         "tags": []
       },
       {
+        "id": "medianPolRateGlobal",
+        "csv": "medianPolRateGlobal.csv",
+        "title": "Median Global PolRate",
+        "tags": []
+      },
+      {
         "id": "medianIPD",
         "csv": "medianIPD.csv",
         "title": "Median IPD/PW Values by Reference",
+        "tags": []
+      },
+      {
+        "id": "medianPolRateLocal",
+        "csv": "medianPolRateLocal.csv",
+        "title": "Median Local Ploymerization Rate",
         "tags": []
       },
       {

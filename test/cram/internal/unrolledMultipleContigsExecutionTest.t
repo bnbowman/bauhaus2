@@ -387,6 +387,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- localpolrate_boxplot.png
   |   |   |-- mean_pw_boxplot_by_base.png
   |   |   |-- medianIPD.csv
+  |   |   |-- medianPolRateGlobal.csv
+  |   |   |-- medianPolRateLocal.csv
   |   |   |-- medianPolymerizationRate.csv
   |   |   |-- medianSNR.csv
   |   |   |-- median_pw_boxplot_by_base.png
@@ -468,5 +470,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 423 files
+  28 directories, 425 files
 
