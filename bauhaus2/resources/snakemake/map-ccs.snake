@@ -30,9 +30,10 @@ rule map_chunked_ccs_one_chunk:
         ccsreads="conditions/{condition}/ccs/chunks/ccs.chunk{chunkNo}.consensusreadset.xml",
         reference="conditions/{condition}/reference.fasta"
     output: "conditions/{condition}/mapped_ccs/chunks/mapped-ccs.chunk{chunkNo}.alignmentset.xml"
+    threads: 8
     shell:
         """
-        pbalign --tmpDir=/scratch --nproc 8 {input.ccsreads} {input.reference} {output}
+        pbalign --tmpDir=/scratch --nproc {threads} {input.ccsreads} {input.reference} {output}
         """
 
 rule map_chunked_ccs_and_gather_one_condition:
