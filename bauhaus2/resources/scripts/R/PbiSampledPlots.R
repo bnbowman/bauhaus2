@@ -1706,7 +1706,7 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
       aes(ymin = accmean - accci, ymax = accmean + accci),
       width = .1,
       position = pd
-    ) +
+    ) + ylim(0.7,1) +
     plTheme + themeTilt + clScale + labs(x = "SNR C Bin", y = "Accuracy (1 - errors per template pos)")
   report$ggsave(
     "snrvsacc.png",
