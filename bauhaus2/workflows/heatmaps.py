@@ -13,7 +13,8 @@ class HeatmapsWorkflow(Workflow):
     R_SCRIPTS            = ( "R/AlignmentBasedHeatmaps.R",
                              "R/ZMWstsPlots.R",
                              "R/Bauhaus2.R", )
-    PYTHON_SCRIPTS       = ( "Python/GetZiaTags.py", )
+    PYTHON_SCRIPTS       = ( "Python/GetZiaTags.py", 
+                             "Python/jsonIDinCSV.py",)
     def plan(self):
         return ["heatmaps.snake",
                 "uid-tag.snake"] + \
