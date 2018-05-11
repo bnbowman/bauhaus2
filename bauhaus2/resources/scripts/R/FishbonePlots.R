@@ -49,7 +49,7 @@ set_panel_heights <- function(g, heights) {
 }
 
 makeFishbonePlots <-
-  function(errormodeMerge, report, minSample = 20) {
+  function(errormodeMerge, report, minSample = 7) {
     loginfo("making fishbone plots.")
 
     # some functions
