@@ -13,6 +13,6 @@ args = parser.parse_args()
 with open(args.json) as f:
      d = json.load(f)
 
-nycphil = json_normalize(d['attributes'])
-nycphil['condition'] = args.condition
-nycphil.to_csv(args.csv)
+df = json_normalize(d['attributes'])
+df['condition'] = args.condition
+df.to_csv(args.csv)
