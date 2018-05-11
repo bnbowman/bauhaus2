@@ -16,7 +16,8 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   |-- scripts
   |   |-- Python
   |   |   |-- GetZiaTags.py
-  |   |   `-- MakeMappingMetricsCsv.py
+  |   |   |-- MakeMappingMetricsCsv.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -30,7 +31,7 @@ Generate mapping reports workflow, starting from subreads, and doing mapping our
   `-- workflow
       `-- Snakefile
   
-  4 directories, 16 files
+  4 directories, 17 files
 
 Let's look at the "plan" that got assembled in the Snakemake file.
 

@@ -202,6 +202,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode-simple.csv
   |   |   |-- errormode.csv
+  |   |   |-- fishboneplot_deletion.png
+  |   |   |-- fishboneplot_deletion_enlarged.png
+  |   |   |-- fishboneplot_insertion.png
+  |   |   |-- fishboneplot_insertion_enlarged.png
+  |   |   |-- fishboneplot_merge.png
+  |   |   |-- fishboneplot_merge_enlarged.png
+  |   |   |-- fishboneplot_mismatch.png
+  |   |   |-- fishboneplot_mismatch_enlarged.png
   |   |   |-- mapped-metrics.csv
   |   |   |-- modelReport.json
   |   |   |-- report.Rd
@@ -455,7 +463,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- GetZiaTags.py
   |   |   |-- MakeChunkedConditionTable.py
   |   |   |-- MakeMappingMetricsCsv.py
-  |   |   `-- RefilterMappedReadsByReference.py
+  |   |   |-- RefilterMappedReadsByReference.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
