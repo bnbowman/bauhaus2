@@ -202,7 +202,8 @@ Generate heatmaps workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
-  |   |   `-- GetZiaTags.py
+  |   |   |-- GetZiaTags.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -212,3 +213,5 @@ Generate heatmaps workflow, starting from subreads.
       `-- Snakefile
   
   19 directories, 175 files
+
+  $ python heatmaps/scripts/Python/jsonIDinCSV.py heatmaps/reports/AlignmentBasedHeatmaps/report.json heatmaps/reports/uidTag.csv

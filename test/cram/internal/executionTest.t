@@ -580,7 +580,8 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   |-- Python
   |   |   |-- GetZiaTags.py
-  |   |   `-- MakeMappingMetricsCsv.py
+  |   |   |-- MakeMappingMetricsCsv.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -595,7 +596,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 542 files
+  36 directories, 543 files
 
 
 
@@ -925,3 +926,17 @@ Generate mapping reports workflow, starting from subreads.
       }
     ]
   }
+
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/AlignmentBasedHeatmaps/report.json mapping-reports/reports/uidTag.csv
+
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ConstantArrowFishbonePlots/report.json mapping-reports/reports/uidTag.csv
+  
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/LibDiagnosticPlots/report.json mapping-reports/reports/uidTag.csv
+  
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiPlots/report.json mapping-reports/reports/uidTag.csv
+  
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiSampledPlots/report.json mapping-reports/reports/uidTag.csv
+    
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ReadPlots/report.json mapping-reports/reports/uidTag.csv
+      
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ZMWstsPlots/report.json mapping-reports/reports/uidTag.csv

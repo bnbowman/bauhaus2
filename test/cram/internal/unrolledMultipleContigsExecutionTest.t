@@ -472,3 +472,16 @@ Generate mapping reports workflow, starting from subreads.
   
   28 directories, 425 files
 
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ConstantArrowFishbonePlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/LibDiagnosticPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/PbiPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/PbiSampledPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+    
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ReadPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+      
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ZMWstsPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv

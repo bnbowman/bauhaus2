@@ -449,3 +449,16 @@ Generate mapping reports workflow, starting from subreads.
   
   26 directories, 404 files
 
+  $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-mapping/reports/uidTag.csv
+
+  $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/ConstantArrowFishbonePlots/report.json unrolled-mapping/reports/uidTag.csv
+  
+  $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/LibDiagnosticPlots/report.json unrolled-mapping/reports/uidTag.csv
+  
+  $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/PbiPlots/report.json unrolled-mapping/reports/uidTag.csv
+  
+  $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/PbiSampledPlots/report.json unrolled-mapping/reports/uidTag.csv
+    
+  $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/ReadPlots/report.json unrolled-mapping/reports/uidTag.csv
+      
+  $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/ZMWstsPlots/report.json unrolled-mapping/reports/uidTag.csv
