@@ -1,22 +1,25 @@
 import csv
 import json
 import argparse
-import pandas as pd
 import numpy as np
-from pandas.io.json import json_normalize 
+from numpy import genfromtxt
 
 parser = argparse.ArgumentParser(description='Verify Plot IDs in Json Report exist in Conflunence CSV Index')
 parser.add_argument('json', help='Input Json File')
 parser.add_argument('csv', help='Input CSV File')
 args = parser.parse_args()
 
-with open(args.json) as f:
-     d = json.load(f)
-df = json_normalize(d['plots'])        
-plotList = df['uid']
-
-df1 = pd.read_csv(args.csv, dtype={'ID': object})
-index = df1['ID']
+input_file = open (args.json)
+json_array = json.load(input_file)
+plotList = [item['uid'] for item in json_array['plots']]
+       
+with open(args.csv,'r') as index_f:
+    data_iter = csv.reader(index_f, 
+                           delimiter = ',', 
+                           quotechar = '"')
+    data = [data for data in data_iter]
+data_array = np.asarray(data)  
+index = [item[0] for item in data_array]
 
 # check if index contains all elements in plotList
 index_diff = np.setdiff1d(plotList,index)
