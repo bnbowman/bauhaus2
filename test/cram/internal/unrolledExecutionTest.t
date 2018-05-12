@@ -460,7 +460,6 @@ Generate mapping reports workflow, starting from subreads.
 
   $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-mapping/reports/uidTag.csv
   Yes, confluence plot index contains all plots in json report
-
   $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/ConstantArrowFishbonePlots/report.json unrolled-mapping/reports/uidTag.csv
   Yes, confluence plot index contains all plots in json report
   $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/LibDiagnosticPlots/report.json unrolled-mapping/reports/uidTag.csv

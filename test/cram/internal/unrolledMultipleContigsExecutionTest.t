@@ -479,18 +479,19 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 425 files
+  28 directories, 434 files
 
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
-
+  Yes, confluence plot index contains all plots in json report
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ConstantArrowFishbonePlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
-  
+  Yes, confluence plot index contains all plots in json report
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/LibDiagnosticPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
-  
+  Yes, confluence plot index contains all plots in json report
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/PbiPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
-  
+  Yes, confluence plot index contains all plots in json report
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/PbiSampledPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
-    
+  Yes, confluence plot index contains all plots in json report
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ReadPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
-      
+  Yes, confluence plot index contains all plots in json report
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ZMWstsPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report

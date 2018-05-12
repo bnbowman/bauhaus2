@@ -926,17 +926,18 @@ Generate mapping reports workflow, starting from subreads.
       }
     ]
   }
-
+ 
   $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/AlignmentBasedHeatmaps/report.json mapping-reports/reports/uidTag.csv
-
+  Yes, confluence plot index contains all plots in json report
   $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ConstantArrowFishbonePlots/report.json mapping-reports/reports/uidTag.csv
-  
+  Yes, confluence plot index contains all plots in json report
   $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/LibDiagnosticPlots/report.json mapping-reports/reports/uidTag.csv
-  
+  Yes, confluence plot index contains all plots in json report
   $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiPlots/report.json mapping-reports/reports/uidTag.csv
-  
+  Yes, confluence plot index contains all plots in json report
   $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiSampledPlots/report.json mapping-reports/reports/uidTag.csv
-    
+  Yes, confluence plot index contains all plots in json report
   $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ReadPlots/report.json mapping-reports/reports/uidTag.csv
-      
+  Yes, confluence plot index contains all plots in json report
   $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ZMWstsPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
