@@ -45,7 +45,8 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "R/AlignmentBasedHeatmaps.R",
                              "R/Bauhaus2.R" )
     PYTHON_SCRIPTS       = ( "Python/MakeMappingMetricsCsv.py",
-                             "Python/GetZiaTags.py")
+                             "Python/GetZiaTags.py",
+                             "Python/jsonIDinCSV.py",)
 
     def plan(self):
         return ["summarize-mappings.snake",

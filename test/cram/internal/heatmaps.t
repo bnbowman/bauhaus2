@@ -107,7 +107,7 @@ Generate heatmaps workflow, starting from subreads.
   |       |   `-- mapped.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.h5 -> sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
   |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
@@ -175,6 +175,10 @@ Generate heatmaps workflow, starting from subreads.
   |   |   |-- Uniformity_metrics_MovieB.csv
   |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
+  |   |   |-- hist_tend_MovieA.png
+  |   |   |-- hist_tend_MovieB.png
+  |   |   |-- hist_tstart_MovieA.png
+  |   |   |-- hist_tstart_MovieB.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
   |   |   |-- rStartExtRange_MovieA.png
@@ -202,7 +206,8 @@ Generate heatmaps workflow, starting from subreads.
   |-- run.sh
   |-- scripts
   |   |-- Python
-  |   |   `-- GetZiaTags.py
+  |   |   |-- GetZiaTags.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -211,4 +216,7 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 175 files
+  19 directories, 180 files
+
+  $ python heatmaps/scripts/Python/jsonIDinCSV.py heatmaps/reports/AlignmentBasedHeatmaps/report.json heatmaps/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report

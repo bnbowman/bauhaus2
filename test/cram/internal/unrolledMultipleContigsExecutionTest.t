@@ -186,6 +186,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Uniformity_metrics_MovieB.csv
   |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
+  |   |   |-- hist_tend_MovieA.png
+  |   |   |-- hist_tend_MovieB.png
+  |   |   |-- hist_tstart_MovieA.png
+  |   |   |-- hist_tstart_MovieB.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
   |   |   |-- rStartExtRange_MovieA.png
@@ -202,6 +206,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode-simple.csv
   |   |   |-- errormode.csv
+  |   |   |-- fishboneplot_deletion.png
+  |   |   |-- fishboneplot_deletion_enlarged.png
+  |   |   |-- fishboneplot_insertion.png
+  |   |   |-- fishboneplot_insertion_enlarged.png
+  |   |   |-- fishboneplot_merge.png
+  |   |   |-- fishboneplot_merge_enlarged.png
+  |   |   |-- fishboneplot_mismatch.png
+  |   |   |-- fishboneplot_mismatch_enlarged.png
   |   |   |-- mapped-metrics.csv
   |   |   |-- modelReport.json
   |   |   |-- report.Rd
@@ -455,7 +467,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- GetZiaTags.py
   |   |   |-- MakeChunkedConditionTable.py
   |   |   |-- MakeMappingMetricsCsv.py
-  |   |   `-- RefilterMappedReadsByReference.py
+  |   |   |-- RefilterMappedReadsByReference.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -470,5 +483,19 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 425 files
+  28 directories, 438 files
 
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ConstantArrowFishbonePlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/LibDiagnosticPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/PbiPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/PbiSampledPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ReadPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/ZMWstsPlots/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
