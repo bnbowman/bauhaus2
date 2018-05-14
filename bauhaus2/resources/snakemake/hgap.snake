@@ -15,19 +15,19 @@ local_references = \
 polished_references = \
     { c : expand("conditions/{condition}/polished.fasta", condition=c)
       for c in ct.conditions }
-      
+
 csv_results = \
     { c : expand("conditions/{condition}/outputs_{condition}/snps.csv", condition=c)
       for c in ct.conditions }
-      
+
 plot_results = \
     { c : expand("reports/{condition}/{condition}_output.png", condition=c)
       for c in ct.conditions }
-      
+
 txt_results = \
     { c : expand("conditions/{condition}/fastalengthfile.txt", condition=c)
       for c in ct.conditions }
-      
+
 json_results = \
     { c : expand("reports/{condition}/report.json", condition=c)
       for c in ct.conditions }
@@ -38,8 +38,8 @@ local_assemblyStats = \
 
 local_snpsCSV = \
     { c : "reports/{condition}/polished_snps.csv".format(condition=c)
-      for c in ct.conditions }  
-      
+      for c in ct.conditions }
+
 # -- Target --
 
 rule collect_csv:
@@ -62,13 +62,14 @@ rule generatePlots:
            "reports/Combined_Conditions/merge_snps.csv"
     output: "reports/Combined_Conditions/report.json",
             "reports/Combined_Conditions"
+    benchmark: "benchmarks/generateHGAPplots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/combined_hgap.R
         """
 
 rule convertJsonToCSV:
-    input: 
+    input:
         polishedjson="conditions/{condition}/assemblystats/polished_assembly_report.json",
         prejson="conditions/{condition}/assemblystats/preassembly_yield.json"
     output:
@@ -89,9 +90,9 @@ rule convertJsonToCSV:
         cat {params.nhpolishedcsv} {params.nhprecsv} > {output.mergecsv}
         rm -f {params.nhpolishedcsv} {params.nhprecsv}
         """
-        
+
 rule variantCaller:
-    input: 
+    input:
         alignment_set="conditions/{condition}/mapped/mapped.alignmentset.xml",
         reference="conditions/{condition}/smrtlink-reference.fasta"
     output:
@@ -100,6 +101,7 @@ rule variantCaller:
         gff = "conditions/{condition}/polished.polished.gff",
         vcf = "conditions/{condition}/polished.vcf"
     threads: 24
+    benchmark: "benchmarks/{condition}_hgapVariantCaller.tsv"
     params:
         modelPath=lambda wc: ct.modelPathArg(wc.condition, "-P")
     shell:
@@ -108,15 +110,16 @@ rule variantCaller:
         module add smrtlink/internal
         exec variantCaller --algorithm=arrow -j{threads} -x0 -q0 {params.modelPath} -p trained_condition -o {output.polished_fasta} -o {output.fastq} -o {output.gff} -o {output.vcf} -r {input.reference} {input.alignment_set}
         """
-        
+
 rule run_mummer:
-    input: 
+    input:
         reference="conditions/{condition}/reference.fasta",
         polished_fasta="conditions/{condition}/polished.fasta"
     output:
         csvfile = "conditions/{condition}/outputs_{condition}/snps.csv",
         deltafile="conditions/{condition}/outputs_{condition}/dnadiff.delta",
         outputdir = "conditions/{condition}/outputs_{condition}"
+    benchmark: "benchmarks/{condition}_run_HGAP_mummer.tsv"
     shell:
         """
         module load mummer
@@ -126,11 +129,12 @@ rule run_mummer:
         show-snps -x10 -C nucmer.delta > ../../../{output.csvfile}
         cd ../../../
         """
-    
+
 rule generate_mummer_plot:
-    input: 
+    input:
         deltafile="conditions/{condition}/outputs_{condition}/dnadiff.delta",
         outputdir = "conditions/{condition}/outputs_{condition}"
+    benchmark: "benchmarks/{condition}_generate_mummer_plot_HGAP.tsv"
     output:
         indir = "conditions/{condition}/",
         outdir = "reports/{condition}/",
@@ -142,11 +146,12 @@ rule generate_mummer_plot:
         """
 
 rule generate_mummer_table:
-    input: 
+    input:
         indir = "conditions/{condition}/",
         outdir = "reports/{condition}/",
         polished_fasta= "conditions/{condition}/polished.fasta",
         csvfile = "conditions/{condition}/outputs_{condition}/snps.csv"
+    benchmark: "benchmarks/{condition}_generate_mummer_table.tsv"
     output:
         txtfile = "conditions/{condition}/fastalengthfile.txt",
         rplot = "reports/{condition}/{condition}_myoutput.png",
@@ -159,7 +164,7 @@ rule generate_mummer_table:
         module load exonerate
         fastalength {input.polished_fasta} > {output.txtfile}
         Rscript --vanilla scripts/R/mummerOneCondition.R --inDir {input.indir} --outDir {input.outdir} --conditionname {params.tag}
-        """   
+        """
 
 rule mergeSnpsCSV:
     input: local_snpsCSV.values()
@@ -169,9 +174,9 @@ rule mergeSnpsCSV:
         cat reports/*/polished_snps.csv > {output.mergesnpscsv}
         sed -i.bak 1i"PosR,Rb,Qb,PosQ,X1,Buff,Dist,X2,CtxR,CtxQ,X3,F1,F2,Ref,Unitig,Condition" {output.mergesnpscsv}
         """
-        
+
 rule generate_json:
-    input: 
+    input:
         outdir = "reports/{condition}/",
         rplot = "reports/{condition}/{condition}_myoutput.png"
     output:
@@ -181,6 +186,7 @@ rule generate_json:
         tag2 = "{condition}_output",
         tag3 = "{condition}_residual_error_1",
         tag4 = "{condition}_residual_error_2"
+    benchmark: "benchmarks/{condition}_generate_HGAP_JSON.tsv"
     shell:
         """
         module use /pbi/dept/primary/modulefiles
@@ -188,6 +194,6 @@ rule generate_json:
         module load primary-toolkit
         cd {input.outdir}
         python ../../scripts/Python/generateJsonReport.py -p {params.tag1} {params.tag2} {params.tag3} {params.tag4}
-        cd ../..  
-        """    
-   
+        cd ../..
+        """
+

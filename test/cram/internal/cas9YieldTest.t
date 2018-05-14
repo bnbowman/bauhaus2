@@ -15,6 +15,13 @@ Generate heatmaps workflow, starting from subreads.
 
   $ tree -I __pycache__ cas9
   cas9
+  |-- benchmarks
+  |   |-- MovieA_cas9_yield_diagnostic_report_one_condition.tsv
+  |   |-- MovieA_index_mapped_bam_one_condition.tsv
+  |   |-- MovieA_map_subreads_bam_one_condition.tsv
+  |   |-- MovieB_cas9_yield_diagnostic_report_one_condition.tsv
+  |   |-- MovieB_index_mapped_bam_one_condition.tsv
+  |   `-- MovieB_map_subreads_bam_one_condition.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -49,5 +56,5 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  13 directories, 20 files
+  14 directories, 26 files
  

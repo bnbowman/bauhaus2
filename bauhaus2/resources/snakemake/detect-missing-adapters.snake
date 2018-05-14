@@ -9,7 +9,7 @@ mapped_subreads = \
 local_fasta_files = \
     { c : expand("conditions/{condition}/reference.fasta", condition=c)
       for c in ct.conditions }
-      
+
 missing_adapter_reports = \
     { c : expand("reports/MissingAdapter_{condition}/report.json", condition=c)
       for c in ct.conditions }
@@ -43,6 +43,7 @@ rule missing_adapter_reports_one_condition:
     output: "reports/MissingAdapter_{condition}/missing_adapter.csv",
             "reports/MissingAdapter_{condition}/missing_adapter.txt"
     params: outdir="reports/MissingAdapter_{condition}"
+    benchmark: "benchmarks/{condition}_missing_adapter_reports_one_condition.tsv"
     shell:
         """
         module load pbqctools
@@ -50,28 +51,29 @@ rule missing_adapter_reports_one_condition:
         pbQcAdapters --zia=missing_adapter.csv --adapterReport=missing_adapter.txt --sampleSize="all" ../../{input.reference} ../../{input.subreadset}
         cd ../..
         """
-        
+
 rule missing_adapter_plots_one_condition:
     input: subreadset="conditions/{condition}/subreads/input.subreadset.xml",
            data="reports/MissingAdapter_{condition}/missing_adapter.txt",
            csv="reports/MissingAdapter_{condition}/missing_adapter.csv"
     output: rplot="reports/MissingAdapter_{condition}/{condition}_sop.png"
+    benchmark: "benchmarks/{condition}_missing_adapter_plots_one_condition.tsv"
     params: tag="{condition}",
             dir="reports/MissingAdapter_{condition}"
     shell:
         """
         Rscript --vanilla scripts/R/missingAdapter.R --subreadset {input.subreadset} --txtReport {input.data} --csv {input.csv} --tag {params.tag} --output {params.dir}
         """
-        
+
 rule missing_adapter_json_one_condition:
-    input: 
+    input:
         rplot="reports/MissingAdapter_{condition}/{condition}_sop.png"
     output:
         json="reports/MissingAdapter_{condition}/report.json"
     params:
         outdir="reports/MissingAdapter_{condition}",
         tag = "{condition}"
-    
+    benchmark: "benchmarks/{condition}_missing_adapter_json_one_condition.tsv"
     shell:
         """
         module use /pbi/dept/primary/modulefiles
@@ -79,5 +81,5 @@ rule missing_adapter_json_one_condition:
         module load primary-toolkit
         cd {params.outdir}
         python ../../scripts/Python/generateJsonReport.py -p {params.tag}_sop {params.tag}_table
-        cd ../..  
+        cd ../..
         """

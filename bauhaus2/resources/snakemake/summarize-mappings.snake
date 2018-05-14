@@ -31,6 +31,7 @@ rule PbiPlots:
            local_fasta_files.values(),
            uid_tag_csv_file
     output: "reports/PbiPlots/report.json"
+    benchmark: "benchmarks/PbiPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/PbiPlots.R
@@ -41,6 +42,7 @@ rule PbiSampledPlots:
            local_fasta_files.values(),
            uid_tag_csv_file
     output: "reports/PbiSampledPlots/report.json"
+    benchmark: "benchmarks/PbiSampledPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/PbiSampledPlots.R
@@ -51,6 +53,7 @@ rule LibDiagnosticPlots:
            local_fasta_files.values(),
            uid_tag_csv_file
     output: "reports/LibDiagnosticPlots/report.json"
+    benchmark: "benchmarks/LibDiagnosticPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/LibDiagnosticPlots.R
@@ -61,6 +64,7 @@ rule ReadPlots:
            local_fasta_files.values(),
            uid_tag_csv_file
     output: "reports/ReadPlots/report.json"
+    benchmark: "benchmarks/ReadPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/ReadPlots.R

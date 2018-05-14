@@ -17,6 +17,7 @@ rule evaluate_hqrf:
         subreads=raw_subreads.values(),
         alns=mapped_subreads.values()
     output: "reports/HQRF/report.json"
+    benchmark: "benchmarks/evaluate_hqrf.tsv"
     shell:
         """
         module use /pbi/dept/primary/modulefiles

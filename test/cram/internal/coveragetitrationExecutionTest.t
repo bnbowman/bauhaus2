@@ -16,6 +16,34 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ coverage-titration | sed 's|\ ->.*||'
   coverage-titration
+  |-- benchmarks
+  |   |-- MovieA_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_chunk_subreads_one_condition.tsv
+  |   |-- MovieA_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieA_mask_variants.tsv
+  |   |-- MovieA_summarize_coverage.tsv
+  |   |-- MovieA_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_chunk_subreads_one_condition.tsv
+  |   |-- MovieB_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieB_mask_variants.tsv
+  |   |-- MovieB_summarize_coverage.tsv
+  |   |-- MovieB_variant_call_fixed_coverage_one_condition.tsv
+  |   `-- coverage_titration_report.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -222,7 +250,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 186 files
+  20 directories, 213 files
 
 
   $ rm -fr coverage-titration
@@ -235,6 +263,34 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ coverage-titration | sed 's|\ ->.*||'
   coverage-titration
+  |-- benchmarks
+  |   |-- MovieAModelPath_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_chunk_subreads_one_condition.tsv
+  |   |-- MovieAModelPath_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieAModelPath_mask_variants.tsv
+  |   |-- MovieAModelPath_summarize_coverage.tsv
+  |   |-- MovieAModelPath_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_chunk_subreads_one_condition.tsv
+  |   |-- MovieBZiaJob_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieBZiaJob_mask_variants.tsv
+  |   |-- MovieBZiaJob_summarize_coverage.tsv
+  |   |-- MovieBZiaJob_variant_call_fixed_coverage_one_condition.tsv
+  |   `-- coverage_titration_report.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieAModelPath
@@ -441,4 +497,4 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 186 files
+  20 directories, 213 files

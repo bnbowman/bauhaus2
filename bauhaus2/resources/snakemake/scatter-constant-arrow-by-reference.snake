@@ -11,6 +11,7 @@ rule constant_arrow_plots:
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
     output: "reports/ConstantArrowFishbonePlots/report.json"
+    benchmark: "benchmarks/ConstantArrowPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/FishbonePlots.R
@@ -21,6 +22,7 @@ rule MakeMappingMetricsCsv:
         asets = expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions),
         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
+    benchmark: "benchmarks/MakeMappingMetricsCsv.tsv"
     shell:
         """
         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
@@ -29,6 +31,7 @@ rule MakeMappingMetricsCsv:
 rule SimplifyConstantArrowCsv:
     input: "reports/ConstantArrowFishbonePlots/errormode.csv"
     output: "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
+    benchmark: "benchmarks/SimplifyConstantArrowCsv.tsv"
     shell:
         """
         python scripts/Python/ConsolidateArrowConditions.py --arrow-csv {input} --output {output}
@@ -37,6 +40,7 @@ rule SimplifyConstantArrowCsv:
 rule ConstantArrow:
     input: "contig-chunked-condition-table.csv"
     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    benchmark: "benchmarks/ConstantArrow.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/constant_arrow.R --sampleByRef TRUE
@@ -50,6 +54,7 @@ rule CreateArrowConditionTable:
         refs = expand("conditions/{condition}/reference.fasta", condition=ct.conditions),
         condition_table = "condition-table.csv"
     output: "contig-chunked-condition-table.csv"
+    benchmark: "benchmarks/{condition}_CreateArrowConditionTable.tsv"
     run:
         shell("echo {input.scatterdone}")
         shell("python scripts/Python/RefilterMappedReadsByReference.py --asets {input.chunked_asets}") # hack bc rname not supported in pbbam
@@ -62,6 +67,7 @@ rule ScatterMappedReadsByReference:
         chunk_path = "conditions/{condition}/mapped/ref_chunk/"
     output: 
         is_done = "conditions/{condition}/mapped/scatterdone.empty"
+    benchmark: "benchmarks/{condition}_ScatterMappedReadsByReference.tsv"
     run:
         shell("mkdir {params.chunk_path}")
         shell("dataset split --contigs --outdir {params.chunk_path} {input.asets}")

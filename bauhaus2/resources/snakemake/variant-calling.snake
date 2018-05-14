@@ -19,6 +19,7 @@ rule variant_call_fixed_coverage_one_condition:
         modelSpec=lambda wc: ct.modelSpecArg(wc.condition, "-p")
         reference=reference=lambda wc: ct.reference(wc.condition)
     threads: 8
+    benchmark: "benchmarks/{condition}_variant_call_fixed_coverage_one_condition.tsv"
     shell:
         """
         variantCaller {params.modelPath} {params.modelSpec} --algorithm={params.algorithm} \

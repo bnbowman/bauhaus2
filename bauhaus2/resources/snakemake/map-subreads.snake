@@ -50,6 +50,7 @@ rule map_chunked_subreads_one_chunk:
     output: "conditions/{condition}/mapped/chunks/mapped.chunk{chunkNo}.alignmentset.xml"
     threads: 8
     params: opts=getOpts
+    benchmark: "benchmarks/{condition}_{chunkNo}_map_chunked_subreads_one_chunk.tsv"
     shell:
         """
         pbalign --tmpDir=/scratch {params.opts} --nproc {threads} {input.subreads} {input.reference} {output}
@@ -58,6 +59,7 @@ rule map_chunked_subreads_one_chunk:
 rule map_chunked_subreads_and_gather_one_condition:
     input: lambda wc: mapped_chunks[wc.condition]
     output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    benchmark: "benchmarks/{condition}_map_chunked_subreads_and_gather_one_condition.tsv"
     shell:
         """
         dataset merge {output} {input}

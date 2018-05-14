@@ -62,6 +62,7 @@ rule unrolled_reference_one_condition:
         unrolledcsv="conditions/{condition}/unrolled_reference/unrolled_pos.csv",
         outputdir="conditions/{condition}/unrolled_reference"
     threads: 24
+    benchmark: "benchmarks/{condition}_unrolled_reference_one_condition.tsv"
     shell:
         """
         module purge
@@ -77,6 +78,7 @@ rule hqregion_bam_one_condition:
         hqregionsbam= "conditions/{condition}/unrolled_bam/unrolled.hqregions.bam",
         outputdir="conditions/{condition}/unrolled_bam"
     threads: 24
+    benchmark: "benchmarks/{condition}_hqregion_bam_one_condition.tsv"
     shell:
         """
         module purge
@@ -92,6 +94,7 @@ rule blasr_alignment_one_condition:
     output:
         alignbam= "conditions/{condition}/mapped/unrolled.hqregions.align.bam"       
     threads: 24
+    benchmark: "benchmarks/{condition}_blasr_alignment_one_condition.tsv"
     shell:
         """
         module purge
@@ -106,6 +109,7 @@ rule adapter_labeled_one_condition:
     output:
         adapterdata= "conditions/{condition}/adapter/adapter_data.csv"       
     threads: 24
+    benchmark: "benchmarks/{condition}_adapter_labeled_one_condition.tsv"
     shell:
         """
         module load smstools
@@ -121,6 +125,7 @@ rule adapter_summary_one_condition:
     params:
         tag = "{condition}"
     threads: 24
+    benchmark: "benchmarks/{condition}_adapter_summary_one_condition.tsv"
     shell:
         """
         module load smstools
@@ -132,6 +137,7 @@ rule result_summary_one_condition:
     output:
         reportscsv= "reports/{condition}/results.csv"       
     threads: 24
+    benchmark: "benchmarks/{condition}_result_summary_one_condition.tsv"
     shell:
         """
         python scripts/Python/est_rates2.py {input.finalcsv} > {output.reportscsv}
@@ -148,6 +154,7 @@ rule result_plot_one_condition:
         condition= "{condition}",
         reportsfolder= "reports/{condition}"
     threads: 24
+    benchmark: "benchmarks/{condition}_result_plot_one_condition.tsv"
     shell:
         """
         module load smstools
@@ -163,6 +170,7 @@ rule combineCSV:
            local_zmwCSVNH.values()
     output: combinedCallcsv="reports/Combined_Conditions/combined_callAccuracy.csv",
             combinedZMWcsv="reports/Combined_Conditions/combined_zmwAccuracy.csv"
+    benchmark: "benchmarks/combineCSV.tsv"
     shell:
         """
         
@@ -179,6 +187,7 @@ rule generateCombinedPlots:
             "reports/Combined_Conditions"
     params:
         reportsfolder= "reports/Combined_Conditions"
+    benchmark: "benchmarks/generateCombinedPlots.tsv"
     shell:
         """
         module load smstools

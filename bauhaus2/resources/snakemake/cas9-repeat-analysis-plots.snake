@@ -23,6 +23,7 @@ rule cas9_repeat_analysis_plots_one_condition:
         report_json="reports/Cas9RepeatAnalysisPlots_{condition}/report.json"
     params:
         condition="{condition}"
+    benchmark: "benchmarks/{condition}_cas9_repeat_analysis_plots_one_condition.tsv"
     shell:
         """
         module load gcc/6.4.0

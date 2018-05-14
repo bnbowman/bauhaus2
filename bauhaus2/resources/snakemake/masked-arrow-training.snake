@@ -23,6 +23,7 @@ rule arrow_training:
         trainingAlignments=training_alignments.values(),
         trainingReferences=training_references.values(),
         trainingMasks=training_masks.values()
+    benchmark: "benchmarks/{condition}_arrow_training.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/arrowTraining.R training

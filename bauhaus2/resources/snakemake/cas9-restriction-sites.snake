@@ -18,6 +18,7 @@ rule cas9_restriction_sites_report_one_condition:
         reportdir="reports/Cas9RestrictionSitePlots_{condition}"
     params:
         conditionname="{condition}"
+    benchmark: "benchmarks/{condition}_cas9_restriction_sites_report_one_condition.tsv"
     shell:
         """
         module load gcc/6.4.0

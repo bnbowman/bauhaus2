@@ -11,6 +11,7 @@ rule ConstantArrow:
         asets = mapped_subreads.values(),
         fastas = expand("conditions/{condition}/reference.fasta", condition=ct.conditions)
     output: "reports/ConstantArrowFishbonePlots/errormode.csv"
+    benchmark: "benchmarks/ConstantArrow.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/constant_arrow.R --minAlnLength 360

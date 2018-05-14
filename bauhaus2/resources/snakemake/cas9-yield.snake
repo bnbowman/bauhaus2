@@ -16,6 +16,7 @@ rule cas9_yield_diagnostic_report_one_condition:
         report_dir="reports/Cas9YieldDiagnosticPlots_{condition}"
     params:
         condition_name="{condition}"
+    benchmark: "benchmarks/{condition}_cas9_yield_diagnostic_report_one_condition.tsv"
     shell:
         """
         module load gcc/6.4.0
