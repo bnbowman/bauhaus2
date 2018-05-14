@@ -167,7 +167,8 @@ Generate constant arrow for short movie workflow, starting from subreads.
   |-- scripts
   |   |-- Python
   |   |   |-- GetZiaTags.py
-  |   |   `-- MakeMappingMetricsCsv.py
+  |   |   |-- MakeMappingMetricsCsv.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
@@ -177,3 +178,6 @@ Generate constant arrow for short movie workflow, starting from subreads.
       `-- Snakefile
   
   19 directories, 140 files
+
+  $ python constantarrowforshortmovie/scripts/Python/jsonIDinCSV.py constantarrowforshortmovie/reports/ConstantArrowFishbonePlots/report.json constantarrowforshortmovie/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report

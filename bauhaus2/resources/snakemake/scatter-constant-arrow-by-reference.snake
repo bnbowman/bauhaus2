@@ -54,7 +54,7 @@ rule CreateArrowConditionTable:
         refs = expand("conditions/{condition}/reference.fasta", condition=ct.conditions),
         condition_table = "condition-table.csv"
     output: "contig-chunked-condition-table.csv"
-    benchmark: "benchmarks/{condition}_CreateArrowConditionTable.tsv"
+    benchmark: "benchmarks/CreateArrowConditionTable.tsv"
     run:
         shell("echo {input.scatterdone}")
         shell("python scripts/Python/RefilterMappedReadsByReference.py --asets {input.chunked_asets}") # hack bc rname not supported in pbbam

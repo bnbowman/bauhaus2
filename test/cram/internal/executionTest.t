@@ -108,8 +108,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -159,8 +159,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -210,8 +210,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -261,8 +261,8 @@ Generate mapping reports workflow, starting from subreads.
   |       |   `-- mapped.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |       |-- sts.xml -> /home/UNIXHOME/mdsmith/Bitbucket/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -377,6 +377,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Uniformity_metrics_MovieD.csv
   |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
+  |   |   |-- hist_tend_MovieA.png
+  |   |   |-- hist_tend_MovieB.png
+  |   |   |-- hist_tend_MovieC.png
+  |   |   |-- hist_tend_MovieD.png
+  |   |   |-- hist_tstart_MovieA.png
+  |   |   |-- hist_tstart_MovieB.png
+  |   |   |-- hist_tstart_MovieC.png
+  |   |   |-- hist_tstart_MovieD.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
   |   |   |-- rEnd_MovieC.png
@@ -630,7 +638,8 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   |-- Python
   |   |   |-- GetZiaTags.py
-  |   |   `-- MakeMappingMetricsCsv.py
+  |   |   |-- MakeMappingMetricsCsv.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -645,7 +654,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 592 files
+  36 directories, 601 files
 
 
 
@@ -975,3 +984,18 @@ Generate mapping reports workflow, starting from subreads.
       }
     ]
   }
+ 
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/AlignmentBasedHeatmaps/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ConstantArrowFishbonePlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/LibDiagnosticPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiSampledPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ReadPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ZMWstsPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
