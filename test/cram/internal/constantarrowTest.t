@@ -56,8 +56,8 @@ Generate constant arrow workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |   |   |-- sts.h5 -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5
+  |   |   |-- sts.xml -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.xml
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -107,8 +107,8 @@ Generate constant arrow workflow, starting from subreads.
   |       |   `-- mapped.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
-  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
+  |       |-- sts.h5 -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5
+  |       |-- sts.xml -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.xml
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -143,7 +143,8 @@ Generate constant arrow workflow, starting from subreads.
   |-- scripts
   |   |-- Python
   |   |   |-- GetZiaTags.py
-  |   |   `-- MakeMappingMetricsCsv.py
+  |   |   |-- MakeMappingMetricsCsv.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- Bauhaus2.R
   |       |-- FishbonePlots.R
@@ -152,4 +153,7 @@ Generate constant arrow workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  18 directories, 117 files
+  18 directories, 118 files
+
+  $ python constantarrow/scripts/Python/jsonIDinCSV.py constantarrow/reports/ConstantArrowFishbonePlots/report.json constantarrow/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
