@@ -1492,7 +1492,7 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
 addtStartPlots = function(report, res, label)
 {
   loginfo("Making Histogram of tStart/tEnd")
-  tp = ggplot(res, aes(x = tStart)) + geom_histogram(bins = 1000) + plTheme + clScale + labs(x = "tstart", title = paste("Histogram of tStart - ", label, sep = ""))
+  tp = ggplot(res, aes(x = tStart)) + geom_histogram(bins = 1000) + labs(x = "tstart", title = paste("Histogram of tStart - ", label, sep = ""))
   
   report$ggsave(
     paste("hist_tstart_", label, ".png", sep = ""),
@@ -1506,7 +1506,7 @@ addtStartPlots = function(report, res, label)
     uid = "0071001"
   )   
   
-  tp = ggplot(res, aes(x = tEnd)) + geom_histogram(bins = 1000) + plTheme + clScale + labs(x = "tend", title = paste("Histogram of tEnd - ", label, sep = ""))
+  tp = ggplot(res, aes(x = tEnd)) + geom_histogram(bins = 1000) + labs(x = "tend", title = paste("Histogram of tEnd - ", label, sep = ""))
   
   report$ggsave(
     paste("hist_tend_", label, ".png", sep = ""),

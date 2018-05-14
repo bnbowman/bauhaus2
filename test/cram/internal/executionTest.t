@@ -327,6 +327,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Uniformity_metrics_MovieD.csv
   |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
+  |   |   |-- hist_tend_MovieA.png
+  |   |   |-- hist_tend_MovieB.png
+  |   |   |-- hist_tend_MovieC.png
+  |   |   |-- hist_tend_MovieD.png
+  |   |   |-- hist_tstart_MovieA.png
+  |   |   |-- hist_tstart_MovieB.png
+  |   |   |-- hist_tstart_MovieC.png
+  |   |   |-- hist_tstart_MovieD.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
   |   |   |-- rEnd_MovieC.png
@@ -596,7 +604,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 543 files
+  36 directories, 551 files
 
 
 

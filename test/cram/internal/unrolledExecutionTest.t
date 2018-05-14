@@ -167,6 +167,10 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Uniformity_metrics_MovieB.csv
   |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
+  |   |   |-- hist_tend_MovieA.png
+  |   |   |-- hist_tend_MovieB.png
+  |   |   |-- hist_tstart_MovieA.png
+  |   |   |-- hist_tstart_MovieB.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
   |   |   |-- rStartExtRange_MovieA.png
@@ -456,7 +460,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  26 directories, 413 files
+  26 directories, 417 files
 
   $ python unrolled-mapping/scripts/Python/jsonIDinCSV.py unrolled-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-mapping/reports/uidTag.csv
   Yes, confluence plot index contains all plots in json report
