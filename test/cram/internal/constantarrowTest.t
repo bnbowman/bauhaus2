@@ -56,8 +56,8 @@ Generate constant arrow workflow, starting from subreads.
   |   |   |   `-- mapped.alignmentset.xml
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |   |   |-- sts.h5 -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |   |   |-- sts.xml -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |   |   |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |   |   `-- subreads
   |   |       |-- chunks
   |   |       |   |-- input.chunk0.subreadset.xml
@@ -107,8 +107,8 @@ Generate constant arrow workflow, starting from subreads.
   |       |   `-- mapped.alignmentset.xml
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/pBR322_EcoRV/sequence/pBR322_EcoRV.fasta.fai
-  |       |-- sts.h5 -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.h5
-  |       |-- sts.xml -> /home/ytian/git/bauhaus2/bauhaus2/resources/extras/no_sts.xml
+  |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
+  |       |-- sts.xml -> .*/bauhaus2/resources/extras/no_sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
