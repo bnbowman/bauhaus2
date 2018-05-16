@@ -44,7 +44,6 @@ NO_CT = args$noCT
 INPUT_ALN = args$input_aln
 INPUT_REF = args$input_ref
 OUTPUT_CSV = args$output_csv
-#OUTPUT_CSV = substr(OUTPUT_CSV,1,nchar(str) - 17)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
