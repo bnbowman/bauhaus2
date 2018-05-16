@@ -25,6 +25,7 @@ rule map_subreads_bam_one_condition:
     output: 
         mappedbam="conditions/{condition}/mapped/OUTPUT_BAM"
     threads: 16
+    benchmark: "benchmarks/{condition}_map_subreads_bam_one_condition.tsv"
     shell:
         """
         blasr {input.local_subreadset} {cas19reference} --sa {cas19referencesa} --out {output.mappedbam} --bam --nproc 16 --bestn 1
@@ -35,6 +36,7 @@ rule index_mapped_bam_one_condition:
         mappedbam="conditions/{condition}/mapped/OUTPUT_BAM",
     output: 
         indexedbam="conditions/{condition}/mapped/OUTPUT_BAM.pbi"
+    benchmark: "benchmarks/{condition}_index_mapped_bam_one_condition.tsv"
     shell:
         """
         pbindex {input.mappedbam}

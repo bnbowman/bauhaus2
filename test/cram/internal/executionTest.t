@@ -17,7 +17,57 @@ Generate mapping reports workflow, starting from subreads.
   $ tree -I __pycache__ mapping-reports
   mapping-reports
   |-- benchmarks
-  |   `-- locacc.tsv
+  |   |-- AlignmentBasedHeatmaps.tsv
+  |   |-- ConstantArrow.tsv
+  |   |-- ConstantArrowPlots.tsv
+  |   |-- LibDiagnosticPlots.tsv
+  |   |-- MakeMappingMetricsCsv.tsv
+  |   |-- MovieA_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_chunk_subreads_one_condition.tsv
+  |   |-- MovieA_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieB_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_chunk_subreads_one_condition.tsv
+  |   |-- MovieB_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieC_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_chunk_subreads_one_condition.tsv
+  |   |-- MovieC_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieD_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_chunk_subreads_one_condition.tsv
+  |   |-- MovieD_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- PbiPlots.tsv
+  |   |-- PbiSampledPlots.tsv
+  |   |-- ReadPlots.tsv
+  |   |-- ZMWstsPlots.tsv
+  |   |-- locacc.tsv
+  |   `-- uidTagCSV.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -604,7 +654,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 551 files
+  36 directories, 601 files
 
 
 

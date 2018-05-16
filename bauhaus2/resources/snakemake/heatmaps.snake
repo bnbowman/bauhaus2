@@ -24,6 +24,7 @@ rule AlignmentBasedHeatmaps:
            local_fasta_files.values(),
            uid_tag_csv_file
     output: "reports/AlignmentBasedHeatmaps/report.json"
+    benchmark: "benchmarks/AlignmentBasedHeatmaps.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/AlignmentBasedHeatmaps.R
@@ -34,6 +35,7 @@ rule ZMWstsPlots:
            local_fasta_files.values(),
            uid_tag_csv_file
     output: "reports/ZMWstsPlots/report.json"
+    benchmark: "benchmarks/ZMWstsPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/ZMWstsPlots.R

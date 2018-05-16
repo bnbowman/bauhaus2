@@ -19,6 +19,7 @@ rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode.csv",
            uid_tag_csv_file
     output: "reports/ConstantArrowFishbonePlots/report.json"
+    benchmark: "benchmarks/ConstantArrowPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/FishbonePlots.R
@@ -29,6 +30,7 @@ rule MakeMappingMetricsCsv:
         asets = mapped_subreads.values(),
         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode.csv"
     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
+    benchmark: "benchmarks/MakeMappingMetricsCsv.tsv"
     shell:
         """
         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}

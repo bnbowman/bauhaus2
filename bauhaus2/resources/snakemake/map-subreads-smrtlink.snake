@@ -67,6 +67,7 @@ rule map_subreads_smrtlink_poll:
         flagFile="conditions/{condition}/mapped/job_complete",
         pollJson="conditions/{condition}/mapped/poll.json",
         localJobLink="conditions/{condition}/mapped/job_link"
+    benchmark: "benchmarks/{condition}_map_subreads_smrtlink_poll.tsv"
     run:
         import time, sys, os
         jobId = extractJobId(input[0])
@@ -94,6 +95,7 @@ rule map_subreads_smrtlink_collect:
         pollFile="conditions/{condition}/mapped/poll.json",
         localJobLink="conditions/{condition}/mapped/job_link",
         reference="conditions/{condition}/reference.fasta"
+    benchmark: "benchmarks/{condition}_map_subreads_smrtlink_collect.tsv"
     output:
         "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:

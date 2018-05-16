@@ -26,6 +26,7 @@ rule coverage_titration_report:
     input:
         maskedVariantGffs=masked_variant_calls.values(),
         alignmentSummary=alignments_summaries.values()
+    benchmark: "benchmarks/coverage_titration_report.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/coverageTitrationPlots.R .
@@ -42,6 +43,7 @@ rule mask_variants_1:
     input:
         rawVariantsGff="conditions/{condition}/variant_calling/variants.{depth}.gff",
         genomeMask=lambda wc: ct.referenceMask(wc.condition)
+    benchmark: "benchmarks/{condition}_{depth}_mask_variants.tsv"
     shell:
         """
         module load gfftools/dalexander
@@ -58,6 +60,7 @@ rule summarize_coverage:
     input:
         alignments="conditions/{condition}/mapped/mapped.alignmentset.xml",
         reference="conditions/{condition}/reference.fasta"
+    benchmark: "benchmarks/{condition}_summarize_coverage.tsv"
     shell:
         """
         module load smrttools
@@ -82,6 +85,7 @@ rule variant_call_fixed_coverage_one_condition:
         modelSpec=lambda wc: ct.modelSpecArg(wc.condition, "-p"),
         reference=lambda wc: ct.reference(wc.condition)
     threads: 8
+    benchmark: "benchmarks/{condition}_{depth}_variant_call_fixed_coverage_one_condition.tsv"
     shell:
         """
         variantCaller {params.modelPath} {params.modelSpec} --algorithm={params.algorithm} \

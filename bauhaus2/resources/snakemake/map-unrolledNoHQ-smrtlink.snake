@@ -54,6 +54,7 @@ rule map_unrolledNoHQ_smrtlink_poll:
         flagFile="conditions/{condition}/mapped/job_complete",
         pollJson="conditions/{condition}/mapped/poll.json",
         localJobLink="conditions/{condition}/mapped/job_link"
+    benchmark: "benchmarks/{condition}_map_unrolledNoHQ_smrtlink_poll.tsv"
     run:
         import time, sys, os
         jobId = extractJobId(input[0])
@@ -85,6 +86,7 @@ rule map_unrolledNoHQ_smrtlink_collect:
         "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:
         locationOfAlignmentSet="tasks/pbalign.tasks.consolidate_alignments-0/combined.alignmentset.xml"
+    benchmark: "benchmarks/{condition}_map_unrolledNoHQ_smrtlink_collect.tsv"
     shell:
         """
         dataset create {output} {input.localJobLink}/{params.locationOfAlignmentSet}

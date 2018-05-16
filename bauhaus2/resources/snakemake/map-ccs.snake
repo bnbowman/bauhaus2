@@ -31,6 +31,7 @@ rule map_chunked_ccs_one_chunk:
         reference="conditions/{condition}/reference.fasta"
     output: "conditions/{condition}/mapped_ccs/chunks/mapped-ccs.chunk{chunkNo}.alignmentset.xml"
     threads: 8
+    benchmark: "benchmarks/{condition}_{chunkNo}_map_chunked_ccs_one_chunk.tsv"
     shell:
         """
         pbalign --tmpDir=/scratch --nproc {threads} {input.ccsreads} {input.reference} {output}
@@ -39,6 +40,7 @@ rule map_chunked_ccs_one_chunk:
 rule map_chunked_ccs_and_gather_one_condition:
     input: lambda wc: mapped_ccs_chunks[wc.condition]
     output: "conditions/{condition}/mapped_ccs/mapped-ccs.alignmentset.xml"
+    benchmark: "benchmarks/{condition}_map_chunked_ccs_and_gather_one_condition.tsv"
     shell:
         """
         dataset merge {output} {input}

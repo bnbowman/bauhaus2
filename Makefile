@@ -16,7 +16,8 @@ ENABLED_CRAM_TESTS_INTERNAL = \
 	test/cram/internal/barcodingQCTest \
 	test/cram/internal/coveragetitrationExecutionTest \
 	test/cram/internal/isoseqExecutionTest \
-	test/cram/internal/constantarrowTest
+	test/cram/internal/constantarrowTest \
+	test/cram/internal/primaryExecutionTest
 
 .SUFFIXES: .t
 

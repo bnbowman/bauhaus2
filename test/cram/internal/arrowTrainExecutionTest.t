@@ -16,6 +16,28 @@ Generate Arrow training workflow, starting from subreads.
 
   $ tree -I __pycache__ arrow-training
   arrow-training
+  |-- benchmarks
+  |   |-- MovieA_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_chunk_subreads_one_condition.tsv
+  |   |-- MovieA_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieB_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_chunk_subreads_one_condition.tsv
+  |   |-- MovieB_map_chunked_subreads_and_gather_one_condition.tsv
+  |   `-- arrow_training.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -164,4 +186,4 @@ Generate Arrow training workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  18 directories, 129 files
+  19 directories, 150 files
