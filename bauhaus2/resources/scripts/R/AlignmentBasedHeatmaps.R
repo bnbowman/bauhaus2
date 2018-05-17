@@ -30,31 +30,11 @@ plotheight = 4.2
 
 fillInMissingPositions = function(k, N)
 {
-  # n = complete vector of coverages:
-  n = rep(NA, N)
-  n[as.numeric(names(k))] <- k
-
-  # Fill in any missing reference positions with last non-missing value:
-  w = !is.na(n)
-  if (sum(w) > 0)
-  {
-    w = which(w)[1]
-    prev = n[w]
-    if (w > 1) {
-      n[1:(w - 1)] <- prev
-    }
-    bool = is.na(n)
-    for (i in (w + 1):N)
-    {
-      if (bool[i]) {
-        n[i] <- prev
-      }
-      else {
-        prev <- n[i]
-      }
-    }
-  }
-  n
+  m = as.numeric(names(k)) + 1
+  ind = rep(FALSE, N)
+  ind[m] = TRUE
+  n = c(NA, k)
+  n[cumsum(ind) + 1]
 }
 
 #' Return a vector the length of the reference genome with the mean unaligned subread length at each position
