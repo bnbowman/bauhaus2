@@ -2,6 +2,8 @@
 # scatter-constant-arrow-by-reference.snake: fit constant arrow model separately by reference, 
 # generating csv file of errormodes, and make Fishbone plots using the csv file.
 
+import shutil
+
 # -- Target rules --
 
 rule constant_arrow_plots:
@@ -12,25 +14,27 @@ rule ScatterMappedReadsByReference:
     input: 
         asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:
-        chunk_path = "conditions/{condition}/mapped/ref_chunk/"
+        chunk_path = "conditions/{condition}/mapped/ref_chunker/"
     output: 
-        is_done = "conditions/{condition}/mapped/scatterdone.empty"
+        is_done = "conditions/{condition}/mapped/ref_chunker/scatterdone.empty"
     shell:
         """
         mkdir -p {params.chunk_path}
-        dataset --debug split --contigs --outdir {params.chunk_path} {input.asets} &> log/split.log
+        dataset split --contigs --outdir {params.chunk_path} {input.asets}
         ls {params.chunk_path}
         touch {output.is_done}
+        ls {params.chunk_path}
         """
-       
+
 rule numChunksSolution:
-    input: scatterdonefile = expand("conditions/{condition}/mapped/scatterdone.empty", condition=ct.conditions)
-    output: 
-       chunked_asets = dynamic("conditions/{anycondition}/mapped/ref_chunk/mapped.chunk{n}.alignmentset.xml")
-    shell:
-        """
-        ls conditions/MovieA/mapped/ref_chunk
-        """
+    input: expand("conditions/{condition}/mapped/ref_chunker/scatterdone.empty", condition=ct.conditions)
+    output:
+       chunked_asets = dynamic("conditions/{dynCondition}/mapped/ref_chunk/mapped.chunk{dynChunkN}.alignmentset.xml")
+    run:
+        for path in input:
+            dirname = os.path.dirname(path)
+            shutil.copytree(dirname, dirname.replace('ref_chunker', 'ref_chunk'))
+
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv",
     output: "reports/ConstantArrowFishbonePlots/report.json"
@@ -67,11 +71,12 @@ rule ConstantArrowEachConditionRef:
         """
         
 rule mergeCSV:
-    input: ca_asets = dynamic("conditions/{anycondition}/mapped/ref_chunk/ref_con_{n}.csv"),
+    input: ca_asets = dynamic("conditions/{dynCondition}/mapped/ref_chunk/ref_con_{dynChunkN}.csv"),
            scatterdonefile = expand("conditions/{condition}/mapped/scatterdone.empty", condition=ct.conditions)
     output: outputcsv = "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
         awk  'FNR > 1' conditions/*/mapped/ref_chunk/*.csv > {output.outputcsv}
         sed -i.bak 1i"ZMW,SNR.A,SNR.C,SNR.G,SNR.T,A.Insert.A,C.Insert.A,G.Insert.A,T.Insert.A,A.Insert.C,C.Insert.C,G.Insert.C,T.Insert.C,A.Insert.G,C.Insert.G,G.Insert.G,T.Insert.G,A.Insert.T,C.Insert.T,G.Insert.T,T.Insert.T,A.Match.A,C.Match.A,G.Match.A,T.Match.A,A.Match.C,C.Match.C,G.Match.C,T.Match.C,A.Match.G,C.Match.G,G.Match.G,T.Match.G,A.Match.T,C.Match.T,G.Match.T,T.Match.T,A.Dark.A,C.Dark.C,G.Dark.G,T.Dark.T,A.Merge.A,C.Merge.C,G.Merge.G,T.Merge.T,AlnTLength,Time,Iterations,Condition,Reference" {output.outputcsv}
-        """      
+        """
+
