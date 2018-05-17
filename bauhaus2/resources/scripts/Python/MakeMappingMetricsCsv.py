@@ -144,11 +144,12 @@ def sortPwAndIpdByBase(pws, ipds, reference):
     """
     sort pulse widths and ipds by base
     """
-    pw = {'A': [], 'C': [], 'G': [], 'T': [], '-': []}
-    ipd = {'A': [], 'C': [], 'G': [], 'T': [], '-': []}
+    pw = {'A': [], 'C': [], 'G': [], 'T': [], '-': [], 'N': []}
+    ipd = {'A': [], 'C': [], 'G': [], 'T': [], '-': [], 'N': []}
     EXCLUDED = 65535
+    UNKNOWN = 'N'
     for i, base in enumerate(reference):
-        if pws[i] != EXCLUDED and ipds[i] != EXCLUDED:
+        if pws[i] != EXCLUDED and ipds[i] != EXCLUDED and pws[i] != UNKNOWN and ipds[i] != UNKNOWN:
             # they weren't detected (i.e. deletions). 65535 is a placeholder
             base = base.upper()
             pw[base].append(pws[i])
