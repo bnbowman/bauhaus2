@@ -238,8 +238,8 @@ makeReport <- function(report) {
   
   # Make Plots
   residualErrorPlots = makeResidualErrorPlots(snps)
-  makeResidualErrorReports(report, residualErrorPlots)
-  makeTwelvePlots(report, data)
+  try(makeResidualErrorReports(report, residualErrorPlots), silent = TRUE)
+  try(makeTwelvePlots(report, data), silent = TRUE)
   
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))

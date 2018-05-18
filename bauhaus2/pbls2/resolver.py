@@ -1,6 +1,7 @@
 from future import standard_library
 standard_library.install_aliases()
 from builtins import object
+from pkg_resources import Requirement, resource_filename
 __all__ = [ "Resolver" ]
 
 
@@ -137,8 +138,10 @@ class Resolver(object):
                                    "tasks/pbreports.tasks.polished_assembly-0/polished_assembly_report.json")))
         if len(candidates) < 1:
             print("Polished Assembly Stats not found in job directory %s " % jobDir)
+            return resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_assembly.json')
         elif len(candidates) > 1:
             print("Multiple Polished Assembly Stats present in job directory %s" % jobDir)
+            return resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_assembly.json')
         else:
             return candidates[0]
             
@@ -150,8 +153,10 @@ class Resolver(object):
                                    "tasks/falcon_ns.tasks.task_report_preassembly_yield-0/preassembly_yield.json")))
         if len(candidates) < 1:
             print("Pre-assembly Stats not found in job directory %s " % jobDir)
+            return resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_assembly.json')
         elif len(candidates) > 1:
             print("Multiple Pre-assembly Stats present in job directory %s" % jobDir)
+            return resource_filename(Requirement.parse('bauhaus2'), 'bauhaus2/resources/extras/no_assembly.json')
         else:
             return candidates[0]
 
