@@ -11,31 +11,30 @@ rule constant_arrow_plots:
         constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
 
 rule ScatterMappedReadsByReference:
-    input: 
+    input:
         asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:
         chunk_path = "conditions/{condition}/mapped/ref_chunker/"
-    output: 
-        is_done = "conditions/{condition}/mapped/ref_chunker/scatterdone.empty"
+    output:
+        "conditions/{condition}/mapped/ref_chunker/done.empty"
     shell:
         """
         mkdir -p {params.chunk_path}
         dataset split --contigs --outdir {params.chunk_path} {input.asets}
-        ls {params.chunk_path}
-        touch {output.is_done}
-        ls {params.chunk_path}
+        touch {output}
         """
 
-rule numChunksSolution:
-    input: expand("conditions/{condition}/mapped/ref_chunker/scatterdone.empty", condition=ct.conditions)
+rule findChunks:
+    input:
+        expand("conditions/{condition}/mapped/ref_chunker/done.empty", condition=ct.conditions)
     output:
-       chunked_asets = dynamic("conditions/{dynCondition}/mapped/ref_chunk/mapped.chunk{dynChunkN}.alignmentset.xml")
+        dynamic(expand("conditions/{condition}/mapped/ref_chunk/mapped.chunk{{dynChunkN}}.alignmentset.xml", condition=ct.conditions))
     run:
         for path in input:
+            print(path)
             indir = os.path.dirname(path)
             outdir = indir.replace('ref_chunker', 'ref_chunk')
-            shutil.rmtree(outdir, ignore_errors=True)
-            shutil.copytree(indir, outdir)
+            shell("mkdir -p {o} && cp -r {i}/* {o}".format(i=indir, o=outdir))
 
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv",
@@ -46,7 +45,7 @@ rule ConstantArrowPlots:
         """
 
 rule MakeMappingMetricsCsv:
-    input: 
+    input:
         asets = expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions),
         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
@@ -64,20 +63,20 @@ rule SimplifyConstantArrowCsv:
         """
 
 rule ConstantArrowEachConditionRef:
-    input:  asetfile = "conditions/{condition}/mapped/ref_chunk/mapped.chunk{num}.alignmentset.xml"
-    output: outputcsv = "conditions/{condition}/mapped/ref_chunk/ref_con_{num}.csv"
+    input:  asetfile = "conditions/{condition}/mapped/ref_chunk/mapped.chunk{dynChunkN}.alignmentset.xml"
+    output: outputcsv = "conditions/{condition}/mapped/ref_chunk/ref_con_{dynChunkN}.csv"
     params: fastafile = "conditions/{condition}/reference.fasta"
     shell:
         """
         Rscript --vanilla scripts/R/constant_arrow.R --noCT --input_aln {input.asetfile} --input_ref {params.fastafile} --output_csv {output.outputcsv}
         """
-        
+
 rule mergeCSV:
-    input: ca_asets = dynamic("conditions/{dynCondition}/mapped/ref_chunk/ref_con_{dynChunkN}.csv")
+    input: dynamic(expand("conditions/{condition}/mapped/ref_chunk/ref_con_{{dynChunkN}}.csv", condition=ct.conditions))
     output: outputcsv = "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
-        awk  'FNR > 1' conditions/*/mapped/ref_chunk/*.csv > {output.outputcsv}
+        awk  'FNR > 1' {input} > {output.outputcsv}
         sed -i.bak 1i"ZMW,SNR.A,SNR.C,SNR.G,SNR.T,A.Insert.A,C.Insert.A,G.Insert.A,T.Insert.A,A.Insert.C,C.Insert.C,G.Insert.C,T.Insert.C,A.Insert.G,C.Insert.G,G.Insert.G,T.Insert.G,A.Insert.T,C.Insert.T,G.Insert.T,T.Insert.T,A.Match.A,C.Match.A,G.Match.A,T.Match.A,A.Match.C,C.Match.C,G.Match.C,T.Match.C,A.Match.G,C.Match.G,G.Match.G,T.Match.G,A.Match.T,C.Match.T,G.Match.T,T.Match.T,A.Dark.A,C.Dark.C,G.Dark.G,T.Dark.T,A.Merge.A,C.Merge.C,G.Merge.G,T.Merge.T,AlnTLength,Time,Iterations,Condition,Reference" {output.outputcsv}
         """
 
