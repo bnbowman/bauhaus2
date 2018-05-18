@@ -13,6 +13,10 @@ args = parser.parse_args()
 with open(args.json) as f:
      d = json.load(f)
 
-df = json_normalize(d['attributes'])
-df['condition'] = args.condition
-df.to_csv(args.csv)
+if len(d) == 0:
+  with open(args.csv, "w") as my_empty_csv:
+    pass
+else:
+  df = json_normalize(d['attributes'])
+  df['condition'] = args.condition
+  df.to_csv(args.csv)
