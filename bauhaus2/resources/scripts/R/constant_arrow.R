@@ -152,7 +152,7 @@ constantArrow <-
     loginfo(paste("Fasta file:", input_ref))
 
     # Filter the data set
-    ind = loadPBI(input_aln)
+    ind = loadPBI2(input_aln)
     org_size = nrow(ind)
     indFilter = ind[ind$tend - ind$tstart > MIN_ALN_LENGTH,]
     loginfo(paste("Filtered out", org_size - nrow(indFilter), "alignments for being too small for fitting"))

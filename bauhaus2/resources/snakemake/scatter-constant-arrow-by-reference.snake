@@ -71,8 +71,7 @@ rule ConstantArrowEachConditionRef:
         """
         
 rule mergeCSV:
-    input: ca_asets = dynamic("conditions/{dynCondition}/mapped/ref_chunk/ref_con_{dynChunkN}.csv"),
-           scatterdonefile = expand("conditions/{condition}/mapped/scatterdone.empty", condition=ct.conditions)
+    input: ca_asets = dynamic("conditions/{dynCondition}/mapped/ref_chunk/ref_con_{dynChunkN}.csv")
     output: outputcsv = "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
