@@ -3,3 +3,4 @@ eztable
 jinja2
 future
 psutil
+flock

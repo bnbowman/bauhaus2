@@ -14,27 +14,16 @@ rule ScatterMappedReadsByReference:
     input:
         asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
     params:
-        chunk_path = "conditions/{condition}/mapped/ref_chunker/"
+        chunk_path = "conditions/{condition}/mapped/ref_chunk/"
     output:
-        "conditions/{condition}/mapped/ref_chunker/done.empty"
+        expand("conditions/{{condition}}/mapped/ref_chunk/worker{i}",
+               i=range(config["bh2.scatter_subreads.chunks_per_condition"]))
     shell:
         """
         mkdir -p {params.chunk_path}
         dataset split --contigs --outdir {params.chunk_path} {input.asets}
         touch {output}
         """
-
-rule findChunks:
-    input:
-        expand("conditions/{condition}/mapped/ref_chunker/done.empty", condition=ct.conditions)
-    output:
-        dynamic(expand("conditions/{condition}/mapped/ref_chunk/mapped.chunk{{dynChunkN}}.alignmentset.xml", condition=ct.conditions))
-    run:
-        for path in input:
-            print(path)
-            indir = os.path.dirname(path)
-            outdir = indir.replace('ref_chunker', 'ref_chunk')
-            shell("mkdir -p {o} && cp -r {i}/* {o}".format(i=indir, o=outdir))
 
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv",
@@ -62,21 +51,48 @@ rule SimplifyConstantArrowCsv:
         python scripts/Python/ConsolidateArrowConditions.py --arrow-csv {input} --output {output}
         """
 
+import flock
+import os
+import time
 rule ConstantArrowEachConditionRef:
-    input:  asetfile = "conditions/{condition}/mapped/ref_chunk/mapped.chunk{dynChunkN}.alignmentset.xml"
-    output: outputcsv = "conditions/{condition}/mapped/ref_chunk/ref_con_{dynChunkN}.csv"
-    params: fastafile = "conditions/{condition}/reference.fasta"
-    shell:
-        """
-        Rscript --vanilla scripts/R/constant_arrow.R --noCT --input_aln {input.asetfile} --input_ref {params.fastafile} --output_csv {output.outputcsv}
-        """
+    input: "conditions/{condition}/mapped/ref_chunk/worker{i}"
+    output: "conditions/{condition}/mapped/ref_chunk/worker{i}.done"
+    params:
+        fastafile = "conditions/{condition}/reference.fasta"
+    run:
+        while not os.path.isfile(output[0]):
+            this = None
+            with open('conditions/{condition}/mapped/ref_chunk/lock.file'.format(condition=wildcards.condition), 'w') as fp:
+                with flock.Flock(fp, flock.LOCK_EX) as lock:
+                    print(glob_wildcards(
+                        "conditions/{condition}/mapped/ref_chunk/mapped.chunk{{chunkNo}}.alignmentset.xml".format(
+                            condition=wildcards.condition)).chunkNo)
+                    todo = set(glob_wildcards(
+                        "conditions/{condition}/mapped/ref_chunk/mapped.chunk{{chunkNo}}.alignmentset.xml".format(
+                            condition=wildcards.condition)).chunkNo)
+                    doing = set(glob_wildcards("conditions/{condition}/mapped/ref_chunk/ref_con_{{chunkNo}}.working".format(
+                            condition=wildcards.condition)).chunkNo)
+                    if todo - doing:
+                        this = list(todo - doing)[0]
+                    if this:
+                        with open("conditions/{condition}/mapped/ref_chunk/ref_con_{i}.working".format(
+                                condition=wildcards.condition, i=this), 'w') as ofh:
+                            ofh.write("Worker {} is processing this chunk\n".format(wildcards.i))
+                    else: this = None
+            if this is not None:
+                shell("Rscript --vanilla scripts/R/constant_arrow.R --noCT --input_aln conditions/{condition}/mapped/ref_chunk/mapped.chunk{chunkNo}.alignmentset.xml --input_ref {fasta} --output_csv conditions/{condition}/mapped/ref_chunk/ref_con_{chunkNo}.csv".format(condition=wildcards.condition, fasta = params.fastafile, chunkNo=this))
+            else:
+                with open(output[0], 'w') as ofh:
+                    ofh.write("Took you long enough!\n")
 
 rule mergeCSV:
-    input: dynamic(expand("conditions/{condition}/mapped/ref_chunk/ref_con_{{dynChunkN}}.csv", condition=ct.conditions))
+    input: 
+        expand("conditions/{condition}/mapped/ref_chunk/worker{i}.done",
+               i=range(config["bh2.scatter_subreads.chunks_per_condition"]), condition=ct.conditions)
     output: outputcsv = "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
-        awk  'FNR > 1' {input} > {output.outputcsv}
+        awk  'FNR > 1' conditions/*/mapped/ref_chunk/ref_con_*.csv > {output.outputcsv}
         sed -i.bak 1i"ZMW,SNR.A,SNR.C,SNR.G,SNR.T,A.Insert.A,C.Insert.A,G.Insert.A,T.Insert.A,A.Insert.C,C.Insert.C,G.Insert.C,T.Insert.C,A.Insert.G,C.Insert.G,G.Insert.G,T.Insert.G,A.Insert.T,C.Insert.T,G.Insert.T,T.Insert.T,A.Match.A,C.Match.A,G.Match.A,T.Match.A,A.Match.C,C.Match.C,G.Match.C,T.Match.C,A.Match.G,C.Match.G,G.Match.G,T.Match.G,A.Match.T,C.Match.T,G.Match.T,T.Match.T,A.Dark.A,C.Dark.C,G.Dark.G,T.Dark.T,A.Merge.A,C.Merge.C,G.Merge.G,T.Merge.T,AlnTLength,Time,Iterations,Condition,Reference" {output.outputcsv}
         """
 
