@@ -53,7 +53,6 @@ rule SimplifyConstantArrowCsv:
 
 import flock
 import os
-import time
 rule ConstantArrowEachConditionRef:
     input: "conditions/{condition}/mapped/ref_chunk/worker{i}"
     output: "conditions/{condition}/mapped/ref_chunk/worker{i}.done"
@@ -64,9 +63,6 @@ rule ConstantArrowEachConditionRef:
             this = None
             with open('conditions/{condition}/mapped/ref_chunk/lock.file'.format(condition=wildcards.condition), 'w') as fp:
                 with flock.Flock(fp, flock.LOCK_EX) as lock:
-                    print(glob_wildcards(
-                        "conditions/{condition}/mapped/ref_chunk/mapped.chunk{{chunkNo}}.alignmentset.xml".format(
-                            condition=wildcards.condition)).chunkNo)
                     todo = set(glob_wildcards(
                         "conditions/{condition}/mapped/ref_chunk/mapped.chunk{{chunkNo}}.alignmentset.xml".format(
                             condition=wildcards.condition)).chunkNo)
