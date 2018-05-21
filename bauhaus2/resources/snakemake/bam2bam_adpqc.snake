@@ -1,0 +1,60 @@
+
+# Target
+rule target_outputs:
+    input:
+        AdpReport="reports/AdapterQC/report.json"
+
+def get_adapters(wc, input):
+    sa = shell("module use /pbi/dept/primary/modulefiles && "
+               "module load primary-toolkit && "
+               "python -c \"from pbcore.io import SubreadSet; "
+               "print SubreadSet('{input}')."
+               "externalResources[0].adapters\"".format(input=input),
+               iterable=True)
+    exe = ct.ppaExe(wc.condition)
+    if '--adapters=' in exe:
+        for split in exe.split():
+            if '--adapters=' in split:
+                return split.split('=')[1]
+    elif '--adapters ' in exe:
+        # we can do pretty much the same thing, but take the next token
+        take = False
+        for split in exe.split():
+            if take:
+                return split
+            if '--adapters' in split:
+                take=True
+    return next(sa)
+
+"""This could be used to go from PrimaryRefarm output to adpqc modified
+output, but it is preferable to just generate adapter diagnostic data
+in baz2bam, as bam2bam tends to segfault. This will be used for the
+workflow that starts with a production bam, however"""
+rule emit_adapter_diagnostics:
+    input: 'conditions/{condition}/subreads/input.subreadset.xml'
+    output:
+        subreadset='conditions/{condition}/primary/input.subreadset.xml',
+        adapters='conditions/{condition}/primary/input.adapters.fasta'
+    params:
+        module=lambda wc: ct.ppaModule(wc.condition),
+        prefix=lambda wc, output: (
+            output.subreadset[:-1 * len('.subreadset.xml')]),
+        exe=lambda wc: ct.ppaExe(wc.condition)
+    benchmark: "benchmarks/{condition}_bam2bam_adapter_diagnostics.tsv"
+    threads: 16
+    run:
+        params.adapters = get_adapters(wildcards, input)
+        shell(
+            "module use /pbi/dept/primary/modulefiles\n"
+            "module load primary-toolkit\n"
+            "subreads=`python -c \"from pbcore.io import SubreadSet; "
+            "print SubreadSet('{input}').externalResources[0].bam\"`\n"
+            "scraps=`python -c \"from pbcore.io import SubreadSet; "
+            "print SubreadSet('{input}').externalResources[0].scraps\"`\n"
+            "module purge\n"
+            "module load {params.module}\n"
+            "{params.exe} -o {params.prefix} $subreads $scraps "
+            "--adpqc --adapters={params.adapters} -j {threads} "
+            "--inlinePbi\n"
+            "cp {params.adapters} {output.adapters}\n")
+

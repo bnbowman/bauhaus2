@@ -21,8 +21,6 @@ baz2hdf support should be added to support certain tools, like HQRF
 """
 # TODO: Support controls and barcoding? Not a core function?
 
-import subprocess
-
 local_subreadset = {
     c: expand("conditions/{condition}/subreads/input.subreadset.xml",
               condition=c)
@@ -60,15 +58,10 @@ rule primary_summarize_mappings:
         LocAccPlots="reports/LocAccPlots/report.json",
         AccDeltaPlots="reports/AccDeltaPlots/report.json",
         RuntimePlots="reports/PrimaryRuntime/report.json",
-        IGVbam=igv_bams
+        IGVbam=igv_bams,
+        AdpReport="reports/AdapterQC/report.json"
 
-# -- Target --
-
-rule all:
-    input:
-        subreads=local_subreadset.values(),
-
-# -- Worker --
+# -- Workers --
 
 def deduplicate(paths):
     seen = set([])
@@ -164,7 +157,7 @@ rule run_baz2bam:
         module load {params.module}
         {params.exe} -o {params.prefix} -m {input.meta} \
         -j {threads} --adapters={input.adapters} \
-        {input.baz}
+        {input.baz} --adpqc
         ln -sf `pwd`/{params.prefix}.sts.h5 `pwd`/{output.stsh5}
         ln -sf `pwd`/{params.prefix}.sts.xml `pwd`/{output.stsxml}
         module load smrtlink/siv
@@ -222,6 +215,7 @@ rule nohq:
         scraps='conditions/{condition}/primary/input.scraps.bam',
         adapters=lambda wc, input: (input[0][:-1 * len('subreadset.xml')]
                                     + 'adapters.fasta')
+    benchmark: "benchmarks/{condition}_bam2bam_fullHQ.tsv"
     shell:
         """
         module purge

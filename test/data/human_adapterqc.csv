@@ -1,0 +1,2 @@
+Condition,SubreadSet,Genome,PPA
+human,/pbi/dept/secondary/siv/testdata/itg/adapterqc-human/m54006_180424_190315.fp+tp.subreads.bam,hg38_reference,ppa/mainline bam2bam --adapters=/pbi/dept/secondary/siv/testdata/itg/adapterqc-human/m54006_180424_190315.adapters.fasta

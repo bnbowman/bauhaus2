@@ -7,7 +7,11 @@ until we have a better plan.
 
 Generate mapping reports workflow, starting from trace files and basecallers
 
-  $ bauhaus2 --no-smrtlink --noGrid generate -w PrimaryRefarm -t ${BH_ROOT}test/data/two-tiny-primary-refarms-hq-adapters-1k-nobam2bam.csv -o primary-refarm
+TODO (MDS 20180522): This conditiontable specifies basecaller/mainline, because
+the --adpqc feature is not available in other modules. We should change this to
+a more stable module when possible
+
+  $ bauhaus2 --no-smrtlink --noGrid generate -w PrimaryRefarm -t ${BH_ROOT}test/data/two-tiny-primary-refarms-hq-adapters-1k.csv -o primary-refarm
   Validation and input resolution succeeded.
   Generated runnable workflow to "primary-refarm"
 
@@ -32,6 +36,7 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |-- HQLib_map_chunked_subreads_and_gather_one_condition.tsv
   |   |-- HQLib_postprimary.tsv
   |   |-- HQLib_primary.tsv
+  |   |-- HQLib_run_pbQcAdapters.tsv
   |   |-- HQunrolled_0_map_chunked_subreads_one_chunk.tsv
   |   |-- HQunrolled_1_map_chunked_subreads_one_chunk.tsv
   |   |-- HQunrolled_2_map_chunked_subreads_one_chunk.tsv
@@ -45,6 +50,7 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |-- HQunrolled_map_chunked_subreads_and_gather_one_condition.tsv
   |   |-- HQunrolled_postprimary.tsv
   |   |-- HQunrolled_primary.tsv
+  |   |-- HQunrolled_run_pbQcAdapters.tsv
   |   |-- LibDiagnosticPlots.tsv
   |   |-- MakeMappingMetricsCsv.tsv
   |   |-- PbiPlots.tsv
@@ -52,6 +58,21 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |-- ReadPlots.tsv
   |   |-- accdelta.tsv
   |   |-- locacc.tsv
+  |   |-- noHQLib_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- noHQLib_bam2bam_fullHQ.tsv
+  |   |-- noHQLib_chunk_subreads_one_condition.tsv
+  |   |-- noHQLib_igvbam.tsv
+  |   |-- noHQLib_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- noHQLib_postprimary.tsv
+  |   |-- noHQLib_primary.tsv
+  |   |-- noHQLib_run_pbQcAdapters.tsv
   |   |-- noHQunrolled_0_map_chunked_subreads_one_chunk.tsv
   |   |-- noHQunrolled_1_map_chunked_subreads_one_chunk.tsv
   |   |-- noHQunrolled_2_map_chunked_subreads_one_chunk.tsv
@@ -65,6 +86,7 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |-- noHQunrolled_map_chunked_subreads_and_gather_one_condition.tsv
   |   |-- noHQunrolled_postprimary.tsv
   |   |-- noHQunrolled_primary.tsv
+  |   |-- noHQunrolled_run_pbQcAdapters.tsv
   |   `-- uidTagCSV.tsv
   |-- condition-table.csv
   |-- conditions
@@ -212,6 +234,86 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |       |-- input.subreads.bam
   |   |       |-- input.subreads.bam.pbi
   |   |       `-- input.subreadset.xml
+  |   |-- noHQLib
+  |   |   |-- mapped
+  |   |   |   |-- chunks
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk0.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk0.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk1.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk1.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk2.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk2.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk3.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk3.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk4.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk4.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk5.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk5.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk6.alignmentset.bam.pbi
+  |   |   |   |   |-- mapped.chunk6.alignmentset.xml
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.bai
+  |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
+  |   |   |   |   `-- mapped.chunk7.alignmentset.xml
+  |   |   |   |-- mapped.alignmentset.xml
+  |   |   |   |-- mapped.bam
+  |   |   |   `-- mapped.bam.bai
+  |   |   |-- nohq
+  |   |   |   |-- input.adapters.fasta
+  |   |   |   |-- input.bam2bam_1.log
+  |   |   |   |-- input.report.json.gz
+  |   |   |   |-- input.scraps.bam
+  |   |   |   |-- input.scraps.bam.pbi
+  |   |   |   |-- input.subreads.bam
+  |   |   |   |-- input.subreads.bam.pbi
+  |   |   |   `-- input.subreadset.xml
+  |   |   |-- primary
+  |   |   |   |-- input.adapters.fasta -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.adapters.fasta
+  |   |   |   |-- input.baz
+  |   |   |   |-- input.baz2bam_1.log
+  |   |   |   |-- input.metadata.xml -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/.m54011_170509_185953.metadata.xml
+  |   |   |   |-- input.scraps.bam
+  |   |   |   |-- input.scraps.bam.pbi
+  |   |   |   |-- input.sts.h5
+  |   |   |   |-- input.sts.xml
+  |   |   |   |-- input.subreads.bam
+  |   |   |   |-- input.subreads.bam.pbi
+  |   |   |   |-- input.subreadset.xml
+  |   |   |   `-- input.trc.h5 -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5
+  |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta
+  |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta.fai
+  |   |   |-- sts.h5 -> */conditions/noHQLib/primary/input.sts.h5 (re)
+  |   |   |-- sts.xml -> */conditions/noHQLib/primary/input.sts.xml (re)
+  |   |   `-- subreads
+  |   |       |-- chunks
+  |   |       |   |-- input.chunk0.subreadset.xml
+  |   |       |   |-- input.chunk1.subreadset.xml
+  |   |       |   |-- input.chunk2.subreadset.xml
+  |   |       |   |-- input.chunk3.subreadset.xml
+  |   |       |   |-- input.chunk4.subreadset.xml
+  |   |       |   |-- input.chunk5.subreadset.xml
+  |   |       |   |-- input.chunk6.subreadset.xml
+  |   |       |   `-- input.chunk7.subreadset.xml
+  |   |       |-- input.adapters.fasta
+  |   |       |-- input.scraps.bam
+  |   |       |-- input.scraps.bam.pbi
+  |   |       |-- input.subreads.bam
+  |   |       |-- input.subreads.bam.pbi
+  |   |       `-- input.subreadset.xml
   |   `-- noHQunrolled
   |       |-- mapped
   |       |   |-- chunks
@@ -265,8 +367,8 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |       |   `-- input.trc.h5 -> /pbi/dept/itg/test-data/pbi/collections/323/3230043/r54011_20170509_182922/1_D01/m54011_170509_185953.trc.h5
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/11k_pbell_H1_6_ScaI/sequence/11k_pbell_H1_6_ScaI.fasta.fai
-  |   |   |-- sts.h5 -> */conditions/noHQunrolled/primary/input.sts.h5 (re)
-  |   |   |-- sts.xml -> */conditions/noHQunrolled/primary/input.sts.xml (re)
+  |       |-- sts.h5 -> */conditions/noHQunrolled/primary/input.sts.h5 (re)
+  |       |-- sts.xml -> */conditions/noHQunrolled/primary/input.sts.xml (re)
   |       `-- subreads
   |           |-- chunks
   |           |   |-- input.chunk0.subreadset.xml
@@ -294,6 +396,24 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- AccDelta.read_accuracies.png
   |   |   |-- report.json
   |   |   `-- traceviewer_links.txt
+  |   |-- AdapterQC
+  |   |   |-- HQLib
+  |   |   |   |-- adapterQCReport.txt
+  |   |   |   |-- adapterReport.csv
+  |   |   |   `-- adapterZiaReport.csv
+  |   |   |-- HQunrolled
+  |   |   |   |-- adapterQCReport.txt
+  |   |   |   |-- adapterReport.csv
+  |   |   |   `-- adapterZiaReport.csv
+  |   |   |-- noHQLib
+  |   |   |   |-- adapterQCReport.txt
+  |   |   |   |-- adapterReport.csv
+  |   |   |   `-- adapterZiaReport.csv
+  |   |   |-- noHQunrolled
+  |   |   |   |-- adapterQCReport.txt
+  |   |   |   |-- adapterReport.csv
+  |   |   |   `-- adapterZiaReport.csv
+  |   |   `-- report.json
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
@@ -334,6 +454,7 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- max_subreads_per_zmw_metrics.csv
   |   |   |-- max_unrolled.png
   |   |   |-- maxt_unrolledt.png
+  |   |   |-- noHQLib_Tau_Estimates.csv
   |   |   |-- noHQunrolled_Tau_Estimates.csv
   |   |   |-- nsubreads_ref_hist_percentage.png
   |   |   |-- report.Rd
@@ -396,6 +517,21 @@ Generate mapping reports workflow, starting from trace files and basecallers
   |   |   |-- LocAcc.nDelrate_snr_scatter.png
   |   |   |-- LocAcc.nInsrate_snr_scatter.png
   |   |   |-- LocAcc.nMMrate_snr_scatter.png
+  |   |   |-- LocAcc.noHQLib.accuracy_scatter.png
+  |   |   |-- LocAcc.noHQLib.aln_cols.csv
+  |   |   |-- LocAcc.noHQLib.core.csv
+  |   |   |-- LocAcc.noHQLib.delta_confusion.png
+  |   |   |-- LocAcc.noHQLib.error_counts.csv
+  |   |   |-- LocAcc.noHQLib.high_confusion.png
+  |   |   |-- LocAcc.noHQLib.hqerr_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.noHQLib.hqerr_duration_histogram.png
+  |   |   |-- LocAcc.noHQLib.hqerr_reverse_cumulative_duration_histogram.png
+  |   |   |-- LocAcc.noHQLib.hqerrlens.csv
+  |   |   |-- LocAcc.noHQLib.local_accuracies.csv
+  |   |   |-- LocAcc.noHQLib.low_confusion.png
+  |   |   |-- LocAcc.noHQLib.mask.csv
+  |   |   |-- LocAcc.noHQLib.read_bases.csv
+  |   |   |-- LocAcc.noHQLib.template_bases.csv
   |   |   |-- LocAcc.noHQunrolled.accuracy_scatter.png
   |   |   |-- LocAcc.noHQunrolled.aln_cols.csv
   |   |   |-- LocAcc.noHQunrolled.core.csv
@@ -534,5 +670,5 @@ Generate mapping reports workflow, starting from trace files and basecallers
   `-- workflow
       `-- Snakefile
   
-  34 directories, 483 files
+  46 directories, 603 files
 

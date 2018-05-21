@@ -1,0 +1,29 @@
+
+rule run_pbQcAdapters:
+    input:
+        subreadset='conditions/{condition}/primary/input.subreadset.xml',
+        reference="conditions/{condition}/reference.fasta"
+    benchmark: "benchmarks/{condition}_run_pbQcAdapters.tsv"
+    output:
+        adp_rep="reports/AdapterQC/{condition}/adapterReport.csv",
+        zia_rep='reports/AdapterQC/{condition}/adapterZiaReport.csv',
+        txt_rep='reports/AdapterQC/{condition}/adapterQCReport.txt'
+    params: subreads='conditions/{condition}/primary/input.subreads.bam'
+    threads: 3
+    shell:
+        """
+        module load pbqctools
+        pbQcAdapters {input.reference} {params.subreads} --adapterReport \
+        {output.adp_rep} --zia {output.zia_rep} --sampleSize 5000 \
+        --randomSample > {output.txt_rep}
+        """
+
+rule adapter_reports:
+    input:
+        expand("reports/AdapterQC/{condition}/adapterReport.csv",
+               condition=ct.conditions),
+        expand("reports/AdapterQC/{condition}/adapterZiaReport.csv",
+               condition=ct.conditions)
+    output: "reports/AdapterQC/report.json"
+    shell:
+        """echo "{{}}" > {output}"""
