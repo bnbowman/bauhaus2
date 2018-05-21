@@ -1009,7 +1009,7 @@ makeSamplingPlots <-
           PolRate = mean(ipd + pw),
           PKMID.Median.Con = median(PKMID.Median.Con)
         )
-        cd2time$time = as.numeric(cd2time$time) * 10
+        cd2time$time = as.numeric(as.factor(cd2time$time)) * 10
         
         # Also make filtered data set by maxIPD and maxPW
         cd2timeFiltered = cd2[cd2$ipd < maxIPD &
