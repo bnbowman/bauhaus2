@@ -18,11 +18,7 @@ Generate mapping reports workflow, starting from subreads.
   unrolled-multiple-contigs-mapping
   |-- benchmarks
   |   |-- AlignmentBasedHeatmaps.tsv
-  |   |-- ConstantArrow.tsv
-  |   |-- ConstantArrowPlots.tsv
-  |   |-- CreateArrowConditionTable.tsv
   |   |-- LibDiagnosticPlots.tsv
-  |   |-- MakeMappingMetricsCsv.tsv
   |   |-- MovieA_0_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieA_1_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieA_2_map_chunked_unrolledNoHQ_one_chunk.tsv
@@ -31,7 +27,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- MovieA_5_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieA_6_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieA_7_map_chunked_unrolledNoHQ_one_chunk.tsv
-  |   |-- MovieA_ScatterMappedReadsByReference.tsv
   |   |-- MovieA_chunk_subreads_one_condition.tsv
   |   |-- MovieA_map_chunked_unrolledNoHQ_and_gather.tsv
   |   |-- MovieB_0_map_chunked_unrolledNoHQ_one_chunk.tsv
@@ -42,13 +37,11 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- MovieB_5_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieB_6_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieB_7_map_chunked_unrolledNoHQ_one_chunk.tsv
-  |   |-- MovieB_ScatterMappedReadsByReference.tsv
   |   |-- MovieB_chunk_subreads_one_condition.tsv
   |   |-- MovieB_map_chunked_unrolledNoHQ_and_gather.tsv
   |   |-- PbiPlots.tsv
   |   |-- PbiSampledPlots.tsv
   |   |-- ReadPlots.tsv
-  |   |-- SimplifyConstantArrowCsv.tsv
   |   |-- ZMWstsPlots.tsv
   |   |-- locacc.tsv
   |   `-- uidTagCSV.tsv
@@ -576,8 +569,8 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
+  28 directories, 524 files
 
-  28 directories, 492 files
 
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
   Yes, confluence plot index contains all plots in json report
