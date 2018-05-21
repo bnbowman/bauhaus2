@@ -37,6 +37,7 @@ rule lima_one_condition:
         bam= "conditions/{condition}/lima/barcoded.bam",  
         limaReport="conditions/{condition}/lima/barcoded.lima.report"       
     threads: 24
+    benchmark: "benchmarks/{condition}_lima_one_condition.tsv"
     shell:
         """
         . /etc/profile.d/modules.sh

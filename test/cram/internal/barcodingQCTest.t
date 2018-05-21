@@ -15,6 +15,9 @@ Generate heatmaps workflow, starting from subreads.
 
   $ tree -I __pycache__ lima
   lima
+  |-- benchmarks
+  |   |-- A_lima_one_condition.tsv
+  |   `-- barcode_and_qc_report.tsv
   |-- condition-table.csv
   |-- conditions
   |   `-- A
@@ -75,5 +78,5 @@ Generate heatmaps workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  10 directories, 49 files
+  11 directories, 51 files
 

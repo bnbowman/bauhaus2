@@ -48,7 +48,8 @@ class UnrolledNoHQMappingWorkflow(Workflow):
                              "Python/MakeChunkedConditionTable.py",
                              "Python/RefilterMappedReadsByReference.py",
                              "Python/ConsolidateArrowConditions.py",
-                             "Python/GetZiaTags.py")
+                             "Python/GetZiaTags.py",
+                             "Python/jsonIDinCSV.py",)
 
     def plan(self):
         return ["summarize-mappings.snake",

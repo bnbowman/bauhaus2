@@ -10,6 +10,7 @@ uid_tag_address = "http://confluence.nanofluidics.com:8090/display/ITG/Zia+Plot+
 
 rule uidTagCSV:
     output: csv = uid_tag_csv_file
+    benchmark: "benchmarks/uidTagCSV.tsv"
     shell:
         """
         module load anaconda

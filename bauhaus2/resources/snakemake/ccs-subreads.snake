@@ -31,6 +31,7 @@ rule ccs_one_chunk:
         modelPath=lambda wc: ct.modelPathArg(wc.condition, "--modelPath"),
         modelSpec=lambda wc: ct.modelSpecArg(wc.condition, "--modelSpec")
     threads: 8
+    benchmark: "benchmarks/{condition}_{chunkNo}_ccs_one_chunk.tsv"
     shell:
         """
         ccs --force --numThreads={threads} \

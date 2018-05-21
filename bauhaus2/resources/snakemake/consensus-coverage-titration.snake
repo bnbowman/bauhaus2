@@ -26,6 +26,7 @@ rule coverage_titration_report:
     input:
         maskedVariantGffs=masked_variant_calls.values(),
         alignmentSummary=alignments_summaries.values()
+    benchmark: "benchmarks/coverage_titration_report.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/coverageTitrationPlots.R .
@@ -42,6 +43,7 @@ rule mask_variants_1:
     input:
         rawVariantsGff="conditions/{condition}/variant_calling/variants.{depth}.gff",
         genomeMask=lambda wc: ct.referenceMask(wc.condition)
+    benchmark: "benchmarks/{condition}_{depth}_mask_variants.tsv"
     shell:
         """
         module load gfftools/dalexander
@@ -51,16 +53,18 @@ rule mask_variants_1:
 # -- summarize true available coverage levels
 
 # TODO: make "otherbin" tools available via "module load smrtanalysis/mainline-with-otherbins
-SUMMARIZE_COVERAGE="/pbi/dept/secondary/builds/links/current_develop_smrttools-cleanbuild_installdir/private/otherbins/internalall/bin/summarize_coverage"
+# SUMMARIZE_COVERAGE="/pbi/dept/secondary/builds/links/current_develop_smrttools-cleanbuild_installdir/private/otherbins/internalall/bin/summarize_coverage"
 
 rule summarize_coverage:
     output: "conditions/{condition}/variant_calling/alignments-summary.gff"
     input:
         alignments="conditions/{condition}/mapped/mapped.alignmentset.xml",
         reference="conditions/{condition}/reference.fasta"
+    benchmark: "benchmarks/{condition}_summarize_coverage.tsv"
     shell:
         """
-        {SUMMARIZE_COVERAGE} --region_size=10000 {input.alignments} {input.reference} {output}
+        module load smrttools
+        python -m pbreports.report.summarize_coverage.summarize_coverage --region_size=10000 {input.alignments} {input.reference} {output}
         """
 
 # -- variant calling at fixed coverage depths;
@@ -81,6 +85,7 @@ rule variant_call_fixed_coverage_one_condition:
         modelSpec=lambda wc: ct.modelSpecArg(wc.condition, "-p"),
         reference=lambda wc: ct.reference(wc.condition)
     threads: 8
+    benchmark: "benchmarks/{condition}_{depth}_variant_call_fixed_coverage_one_condition.tsv"
     shell:
         """
         variantCaller {params.modelPath} {params.modelSpec} --algorithm={params.algorithm} \

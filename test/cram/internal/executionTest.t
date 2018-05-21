@@ -17,7 +17,57 @@ Generate mapping reports workflow, starting from subreads.
   $ tree -I __pycache__ mapping-reports
   mapping-reports
   |-- benchmarks
-  |   `-- locacc.tsv
+  |   |-- AlignmentBasedHeatmaps.tsv
+  |   |-- ConstantArrow.tsv
+  |   |-- ConstantArrowPlots.tsv
+  |   |-- LibDiagnosticPlots.tsv
+  |   |-- MakeMappingMetricsCsv.tsv
+  |   |-- MovieA_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_chunk_subreads_one_condition.tsv
+  |   |-- MovieA_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieB_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_chunk_subreads_one_condition.tsv
+  |   |-- MovieB_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieC_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieC_chunk_subreads_one_condition.tsv
+  |   |-- MovieC_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieD_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieD_chunk_subreads_one_condition.tsv
+  |   |-- MovieD_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- PbiPlots.tsv
+  |   |-- PbiSampledPlots.tsv
+  |   |-- ReadPlots.tsv
+  |   |-- ZMWstsPlots.tsv
+  |   |-- locacc.tsv
+  |   `-- uidTagCSV.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -327,6 +377,14 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- Uniformity_metrics_MovieD.csv
   |   |   |-- barchart_of_center_to_edge_p1.png
   |   |   |-- barchart_of_uniformity.png
+  |   |   |-- hist_tend_MovieA.png
+  |   |   |-- hist_tend_MovieB.png
+  |   |   |-- hist_tend_MovieC.png
+  |   |   |-- hist_tend_MovieD.png
+  |   |   |-- hist_tstart_MovieA.png
+  |   |   |-- hist_tstart_MovieB.png
+  |   |   |-- hist_tstart_MovieC.png
+  |   |   |-- hist_tstart_MovieD.png
   |   |   |-- rEnd_MovieA.png
   |   |   |-- rEnd_MovieB.png
   |   |   |-- rEnd_MovieC.png
@@ -580,7 +638,8 @@ Generate mapping reports workflow, starting from subreads.
   |-- scripts
   |   |-- Python
   |   |   |-- GetZiaTags.py
-  |   |   `-- MakeMappingMetricsCsv.py
+  |   |   |-- MakeMappingMetricsCsv.py
+  |   |   `-- jsonIDinCSV.py
   |   `-- R
   |       |-- AlignmentBasedHeatmaps.R
   |       |-- Bauhaus2.R
@@ -595,7 +654,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 542 files
+  36 directories, 601 files
 
 
 
@@ -815,50 +874,50 @@ Generate mapping reports workflow, starting from subreads.
       },
       {
         "uid": "0041010",
-        "id": "pBR322_EcoRV_Prob_Ins_Burst",
+        "id": "Prob_Ins_Burst",
         "image": "pBR322_EcoRV_Prob_Ins_Burst.png",
-        "title": "pBR322_EcoRV_Prob_Ins_Burst",
-        "caption": "Distribution ofpBR322_EcoRV_Prob_Ins_Burst (Boxplot)",
+        "title": "pBR322_EcoRV _ Prob_Ins_Burst",
+        "caption": "Distribution ofProb_Ins_Burst (Boxplot)",
         "tags": ["sampled", "homopolymer"]
       },
       {
         "uid": "0041020",
-        "id": "pBR322_EcoRV_Prob_HP_Burst",
+        "id": "Prob_HP_Burst",
         "image": "pBR322_EcoRV_Prob_HP_Burst.png",
-        "title": "pBR322_EcoRV_Prob_HP_Burst",
-        "caption": "Distribution ofpBR322_EcoRV_Prob_HP_Burst (Boxplot)",
+        "title": "pBR322_EcoRV _ Prob_HP_Burst",
+        "caption": "Distribution ofProb_HP_Burst (Boxplot)",
         "tags": ["sampled", "homopolymer"]
       },
       {
         "uid": "0041030",
-        "id": "pBR322_EcoRV_Prob_Pause_Burst",
+        "id": "Prob_Pause_Burst",
         "image": "pBR322_EcoRV_Prob_Pause_Burst.png",
-        "title": "pBR322_EcoRV_Prob_Pause_Burst",
-        "caption": "Distribution ofpBR322_EcoRV_Prob_Pause_Burst (Boxplot)",
+        "title": "pBR322_EcoRV _ Prob_Pause_Burst",
+        "caption": "Distribution ofProb_Pause_Burst (Boxplot)",
         "tags": ["sampled", "homopolymer"]
       },
       {
         "uid": "0041040",
-        "id": "pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal",
+        "id": "Prob_From_Ins_Burst_to_Normal",
         "image": "pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal.png",
-        "title": "pBR322_EcoRV_Prob_From_Ins_Burst_to_Normal",
-        "caption": "Distribution ofpBR322_EcoRV_Prob_From_Ins_Burst_to_Normal (Boxplot)",
+        "title": "pBR322_EcoRV _ Prob_From_Ins_Burst_to_Normal",
+        "caption": "Distribution ofProb_From_Ins_Burst_to_Normal (Boxplot)",
         "tags": ["sampled", "homopolymer"]
       },
       {
         "uid": "0041050",
-        "id": "pBR322_EcoRV_Prob_HP_Burst_to_Normal",
+        "id": "Prob_HP_Burst_to_Normal",
         "image": "pBR322_EcoRV_Prob_HP_Burst_to_Normal.png",
-        "title": "pBR322_EcoRV_Prob_HP_Burst_to_Normal",
-        "caption": "Distribution ofpBR322_EcoRV_Prob_HP_Burst_to_Normal (Boxplot)",
+        "title": "pBR322_EcoRV _ Prob_HP_Burst_to_Normal",
+        "caption": "Distribution ofProb_HP_Burst_to_Normal (Boxplot)",
         "tags": ["sampled", "homopolymer"]
       },
       {
         "uid": "0041060",
-        "id": "pBR322_EcoRV_Prob_Pause_Burst_to_Normal",
+        "id": "Prob_Pause_Burst_to_Normal",
         "image": "pBR322_EcoRV_Prob_Pause_Burst_to_Normal.png",
-        "title": "pBR322_EcoRV_Prob_Pause_Burst_to_Normal",
-        "caption": "Distribution ofpBR322_EcoRV_Prob_Pause_Burst_to_Normal (Boxplot)",
+        "title": "pBR322_EcoRV _ Prob_Pause_Burst_to_Normal",
+        "caption": "Distribution ofProb_Pause_Burst_to_Normal (Boxplot)",
         "tags": ["sampled", "homopolymer"]
       },
       {
@@ -925,3 +984,18 @@ Generate mapping reports workflow, starting from subreads.
       }
     ]
   }
+ 
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/AlignmentBasedHeatmaps/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ConstantArrowFishbonePlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/LibDiagnosticPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/PbiSampledPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ReadPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report
+  $ python mapping-reports/scripts/Python/jsonIDinCSV.py mapping-reports/reports/ZMWstsPlots/report.json mapping-reports/reports/uidTag.csv
+  Yes, confluence plot index contains all plots in json report

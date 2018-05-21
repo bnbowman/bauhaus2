@@ -16,6 +16,70 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ coverage-titration | sed 's|\ ->.*||'
   coverage-titration
+  |-- benchmarks
+  |   |-- MovieA_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_100_mask_variants.tsv
+  |   |-- MovieA_100_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_10_mask_variants.tsv
+  |   |-- MovieA_10_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_15_mask_variants.tsv
+  |   |-- MovieA_15_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_20_mask_variants.tsv
+  |   |-- MovieA_20_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_30_mask_variants.tsv
+  |   |-- MovieA_30_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_40_mask_variants.tsv
+  |   |-- MovieA_40_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_5_mask_variants.tsv
+  |   |-- MovieA_5_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_63_mask_variants.tsv
+  |   |-- MovieA_63_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_75_mask_variants.tsv
+  |   |-- MovieA_75_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieA_88_mask_variants.tsv
+  |   |-- MovieA_88_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieA_chunk_subreads_one_condition.tsv
+  |   |-- MovieA_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieA_summarize_coverage.tsv
+  |   |-- MovieB_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_100_mask_variants.tsv
+  |   |-- MovieB_100_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_10_mask_variants.tsv
+  |   |-- MovieB_10_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_15_mask_variants.tsv
+  |   |-- MovieB_15_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_20_mask_variants.tsv
+  |   |-- MovieB_20_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_30_mask_variants.tsv
+  |   |-- MovieB_30_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_40_mask_variants.tsv
+  |   |-- MovieB_40_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_5_mask_variants.tsv
+  |   |-- MovieB_5_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_63_mask_variants.tsv
+  |   |-- MovieB_63_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_75_mask_variants.tsv
+  |   |-- MovieB_75_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieB_88_mask_variants.tsv
+  |   |-- MovieB_88_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieB_chunk_subreads_one_condition.tsv
+  |   |-- MovieB_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieB_summarize_coverage.tsv
+  |   `-- coverage_titration_report.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -222,7 +286,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 186 files
+  20 directories, 249 files
 
 
   $ rm -fr coverage-titration
@@ -235,6 +299,70 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ coverage-titration | sed 's|\ ->.*||'
   coverage-titration
+  |-- benchmarks
+  |   |-- MovieAModelPath_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_100_mask_variants.tsv
+  |   |-- MovieAModelPath_100_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_10_mask_variants.tsv
+  |   |-- MovieAModelPath_10_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_15_mask_variants.tsv
+  |   |-- MovieAModelPath_15_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_20_mask_variants.tsv
+  |   |-- MovieAModelPath_20_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_30_mask_variants.tsv
+  |   |-- MovieAModelPath_30_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_40_mask_variants.tsv
+  |   |-- MovieAModelPath_40_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_5_mask_variants.tsv
+  |   |-- MovieAModelPath_5_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_63_mask_variants.tsv
+  |   |-- MovieAModelPath_63_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_75_mask_variants.tsv
+  |   |-- MovieAModelPath_75_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieAModelPath_88_mask_variants.tsv
+  |   |-- MovieAModelPath_88_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieAModelPath_chunk_subreads_one_condition.tsv
+  |   |-- MovieAModelPath_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieAModelPath_summarize_coverage.tsv
+  |   |-- MovieBZiaJob_0_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_100_mask_variants.tsv
+  |   |-- MovieBZiaJob_100_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_10_mask_variants.tsv
+  |   |-- MovieBZiaJob_10_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_15_mask_variants.tsv
+  |   |-- MovieBZiaJob_15_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_1_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_20_mask_variants.tsv
+  |   |-- MovieBZiaJob_20_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_2_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_30_mask_variants.tsv
+  |   |-- MovieBZiaJob_30_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_3_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_40_mask_variants.tsv
+  |   |-- MovieBZiaJob_40_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_4_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_5_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_5_mask_variants.tsv
+  |   |-- MovieBZiaJob_5_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_63_mask_variants.tsv
+  |   |-- MovieBZiaJob_63_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_6_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_75_mask_variants.tsv
+  |   |-- MovieBZiaJob_75_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_7_map_chunked_subreads_one_chunk.tsv
+  |   |-- MovieBZiaJob_88_mask_variants.tsv
+  |   |-- MovieBZiaJob_88_variant_call_fixed_coverage_one_condition.tsv
+  |   |-- MovieBZiaJob_chunk_subreads_one_condition.tsv
+  |   |-- MovieBZiaJob_map_chunked_subreads_and_gather_one_condition.tsv
+  |   |-- MovieBZiaJob_summarize_coverage.tsv
+  |   `-- coverage_titration_report.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieAModelPath
@@ -441,4 +569,4 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 186 files
+  20 directories, 249 files

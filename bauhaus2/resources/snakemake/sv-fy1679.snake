@@ -17,6 +17,7 @@ rule validation:
         plt_dir="reports/SV",
         plt_csv="reports/SV/plt.csv",
         zia_report_json='reports/SV/report.json'
+    benchmark: "benchmarks/SV_validation.tsv"
     shell:
         """
         source /mnt/software/Modules/current/init/bash && module purge && module load pbsvvv

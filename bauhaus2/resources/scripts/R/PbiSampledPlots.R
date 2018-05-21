@@ -15,7 +15,7 @@ library(stats)
 library(IRanges)
 library(stringr)
 library(lazyeval)
-library(Biostrings )
+library(Biostrings)
 
 ## FIXME: make a real package
 myDir = "./scripts/R"
@@ -37,12 +37,15 @@ plotheight = 4.2
 
 
 
-getTplPositions = function( loadAlnsRow, cd )
+getTplPositions = function(loadAlnsRow, cd)
 {
-  r = subset( cd, hole == loadAlnsRow$hole[1] & Condition == loadAlnsRow$Condition[1] )
-  r = r[ order( r$qstart ), ]
-  val = c( NA, unlist( lapply( 1:nrow( r ), function( i ) ( r$tstart[i] + 1 ):( r$tend[i] ) ) ) )
-  val[ cumsum( loadAlnsRow$ref != '-' ) + 1 ]
+  r = subset(cd,
+             hole == loadAlnsRow$hole[1] &
+               Condition == loadAlnsRow$Condition[1])
+  r = r[order(r$qstart),]
+  val = c(NA, unlist(lapply(1:nrow(r), function(i)
+    (r$tstart[i] + 1):(r$tend[i]))))
+  val[cumsum(loadAlnsRow$ref != '-') + 1]
 }
 
 
@@ -62,27 +65,31 @@ getTplPositions = function( loadAlnsRow, cd )
 #' @param minlen = minimum number of consecutive insertions in alignment in order to be considered an insertion burst
 #' @export
 
-countHPbursts = function( loadAlnsRow, cd, minlen = 5 )
+countHPbursts = function(loadAlnsRow, cd, minlen = 5)
 {
   # tpl = getTplPositions( loadAlnsRow, cd )
-  w = which( loadAlnsRow$ref != '-' )
-  d = diff( w )
-  k = which( d >= minlen )
-  n = length( k )
-  if ( n == 0 ) { return( rep( 0, 4 ) ) }
+  w = which(loadAlnsRow$ref != '-')
+  d = diff(w)
+  k = which(d >= minlen)
+  n = length(k)
+  if (n == 0) {
+    return(rep(0, 4))
+  }
   start = w[k] + 1
   stop = w[k + 1] - 1
-  v = vapply( 1:n, function( i ) max( table( loadAlnsRow$read[start[i]:stop[i]] ) ) / (stop[i] - start[i]) >= 0.9, FALSE )
-  w = vapply( 1:n, function( i ) median( loadAlnsRow$ipd[start[i]:stop[i]], na.rm = TRUE ) > 80, FALSE )
+  v = vapply(1:n, function(i)
+    max(table(loadAlnsRow$read[start[i]:stop[i]])) / (stop[i] - start[i]) >= 0.9, FALSE)
+  w = vapply(1:n, function(i)
+    median(loadAlnsRow$ipd[start[i]:stop[i]], na.rm = TRUE) > 80, FALSE)
   # If both w and v, change v to FALSE
-  v[ v & w ] <- FALSE
-  a1 = sum( v )
-  a2 = sum( w )
+  v[v & w] <- FALSE
+  a1 = sum(v)
+  a2 = sum(w)
   n = n - a1 - a2
-  a4 = sum( d[k][v] )
-  a5 = sum( d[k][w] )
-  a3 = sum( d[k] ) - a4 - a5
-  c( c( n, a1, a2 ) / nrow( loadAlnsRow ), n / a3, a1 / a4, a2 / a5 )
+  a4 = sum(d[k][v])
+  a5 = sum(d[k][w])
+  a3 = sum(d[k]) - a4 - a5
+  c(c(n, a1, a2) / nrow(loadAlnsRow), n / a3, a1 / a4, a2 / a5)
 }
 
 
@@ -93,30 +100,42 @@ countHPbursts = function( loadAlnsRow, cd, minlen = 5 )
 #' @param uid = string id for each of the ten plots
 #' @export
 
-for_hp_burst_counts = function( report, r, colname, uid )
+for_hp_burst_counts = function(report, r, colname, uid, refname, ylabel)
 {
-  loginfo( paste( "Draw homopolymer plots:", colname ) )
-  tp = ( ggplot( r, aes_string( x = "Condition", y = colname, fill = "Condition" ) ) +
-           geom_boxplot( outlier.shape = NA ) +
-           scale_y_continuous( limits = boxplot( r[,colname], plot = FALSE )$stat[c(1,5)] ) +
-           stat_summary(
-             fun.y = median,
-             colour = "black",
-             geom = "text",
-             show.legend = FALSE,
-             vjust = -0.8,
-             aes( label = round(..y.., digits = 7 ) ) ) +
-           plTheme + themeTilt  + clFillScale + labs( title = colname ) )
+  loginfo(paste("Draw homopolymer plots:", colname))
+  tp = (
+    ggplot(r, aes_string(
+      x = "Condition", y = colname, fill = "Condition"
+    )) +
+      geom_boxplot(outlier.shape = NA) +
+      scale_y_continuous(limits = boxplot(r[, colname], plot = FALSE)$stat[c(1, 5)]) +
+      stat_summary(
+        fun.y = median,
+        colour = "black",
+        geom = "text",
+        show.legend = FALSE,
+        vjust = -0.8,
+        aes(label = round(..y.., digits = 7))
+      ) +
+      plTheme + themeTilt  + clFillScale + labs(title = refname, y = ylabel)
+  )
   
   report$ggsave(
-    paste( colname, ".png", sep = ""),
+    paste(refname, "_", colname, ".png", sep = ""),
     tp,
     width = plotwidth,
     height = plotheight,
     id = colname,
-    title = colname,
-    caption = paste( "Distribution of", colname, " (Boxplot)", sep = "" ),
-    tags = c( "sampled", "bursts", "insertions", "homopolymers", "boxplot", colname ),
+    title = paste(refname, "_", colname),
+    caption = paste("Distribution of", colname, " (Boxplot)", sep = ""),
+    tags = c(
+      "sampled",
+      "bursts",
+      "insertions",
+      "homopolymers",
+      "boxplot",
+      colname
+    ),
     uid = uid
   )
 }
@@ -127,27 +146,43 @@ for_hp_burst_counts = function( report, r, colname, uid )
 #' @param cd2 = data frame generated using output of pbbamr::loadAlnsFromIndex in \code{\link{makeSamplingPlots}}
 #' @export
 
-homopolymerCountSingleRef = function( report, cd, cd2, refname, refcount )
+homopolymerCountSingleRef = function(report, cd, cd2, refname, refcount)
 {
-  loginfo( refname )
-  plotnames = c("Prob_Ins_Burst", "Prob_HP_Burst", "Prob_Pause_Burst", "Prob_From_Ins_Burst_to_Normal", "Prob_HP_Burst_to_Normal", "Prob_Pause_Burst_to_Normal")
-  plotnames = paste( refname, plotnames, sep = "_" )
-  uids = c( 4101:4106 ) *10
-  uids = paste( "00", uids, sep = "" )
+  loginfo(refname)
+  plotnames = c(
+    "Prob_Ins_Burst",
+    "Prob_HP_Burst",
+    "Prob_Pause_Burst",
+    "Prob_From_Ins_Burst_to_Normal",
+    "Prob_HP_Burst_to_Normal",
+    "Prob_Pause_Burst_to_Normal"
+  )
+  ylabels = c(
+    'Prob( Complex Ins. Burst )',
+    'Prob( HP Ins. Burst )',
+    'Prob( Pause Ins. Burst )',
+    'Prob( Complex Ins. Burst -> Normal )',
+    'Prob( HP Burst -> Normal )',
+    'Prob( Pause Burst -> Normal )'
+  )
+  uids = c(4101:4106) * 10
+  uids = paste("00", uids, sep = "")
   
-  loginfo( paste( "Draw homopolymer plots for reference:", cd2$refName[1] ) )
-  r = lapply( split( 1:nrow( cd2 ), cd2$Condition ),
-              function( x )
-              {
-                s = split( 1:length( x ), cd2$hole[ x ] )
-                l = lapply( s, function( z ) countHPbursts( cd2[ x, ][ z, ], cd ) )
-                l = data.frame( do.call( rbind, l )  )
-                names( l ) = plotnames
-                l$Condition = cd2$Condition[ x[1] ]
-                l
-              } )
-  r = data.frame( data.table::rbindlist( r ) )
-  lapply( 1:length( plotnames ), function( k ) for_hp_burst_counts( report, r, plotnames[k], uids[k] ) )
+  loginfo(paste("Draw homopolymer plots for reference:", cd2$refName[1]))
+  r = lapply(split(1:nrow(cd2), cd2$Condition),
+             function(x)
+             {
+               s = split(1:length(x), cd2$hole[x])
+               l = lapply(s, function(z)
+                 countHPbursts(cd2[x,][z,], cd))
+               l = data.frame(do.call(rbind, l))
+               names(l) = plotnames
+               l$Condition = cd2$Condition[x[1]]
+               l
+             })
+  r = data.frame(data.table::rbindlist(r))
+  lapply(1:length(plotnames), function(k)
+    for_hp_burst_counts(report, r, plotnames[k], uids[k], refname, ylabels[k]))
   1
 }
 
@@ -169,11 +204,11 @@ homopolymerCountSingleRef = function( report, cd, cd2, refname, refcount )
 #' @export
 
 
-addTplPosition = function( aln, pbi.row )
+addTplPosition = function(aln, pbi.row)
 {
-  ind = ( aln$ref != '-' )
-  n = c( NA, pbi.row$tstart:( pbi.row$tend - 1 ) )
-  n[ cumsum( ind ) + 1 ] + 1
+  ind = (aln$ref != '-')
+  n = c(NA, pbi.row$tstart:(pbi.row$tend - 1))
+  n[cumsum(ind) + 1] + 1
 }
 
 
@@ -183,13 +218,15 @@ addTplPosition = function( aln, pbi.row )
 #' @param ref = output of Biostrings::readDNAStringSet( fasta file )
 #' @param base = either 'A', 'C', 'G', or 'T'
 
-getHomopolymerTplPositions = function( ref, base )
+getHomopolymerTplPositions = function(ref, base)
 {
-  pat = paste( '[^', base, ']', sep = '' )
+  pat = paste('[^', base, ']', sep = '')
   # Positions that are not this base:
-  w = gregexpr( text = as.character( ref ), pattern = pat )[[1]]
-  d = diff( w )
-  lapply( 1:5, function(i) unlist( lapply( 1:i, function(k) w[which( d == i + 1 )] + k ) ) )
+  w = gregexpr(text = as.character(ref), pattern = pat)[[1]]
+  d = diff(w)
+  lapply(1:5, function(i)
+    unlist(lapply(1:i, function(k)
+      w[which(d == i + 1)] + k)))
 }
 
 
@@ -200,11 +237,11 @@ getHomopolymerTplPositions = function( ref, base )
 #' @example
 #' getErrRateMeanAndSE( aln$read == '-' )
 
-getErrRateMeanAndSE = function( x )
+getErrRateMeanAndSE = function(x)
 {
-  mu = mean( x, na.rm = TRUE )
-  se = sqrt( ( mu * ( 1 - mu ) ) / sum( !is.na( x ) ) )
-  c( mu, se )
+  mu = mean(x, na.rm = TRUE)
+  se = sqrt((mu * (1 - mu)) / sum(!is.na(x)))
+  c(mu, se)
 }
 
 
@@ -217,19 +254,22 @@ getErrRateMeanAndSE = function( x )
 #' @param cd2 = data frame of sampled alignments
 #' @param base = either 'A', 'C', 'G', or 'T'
 
-getRatesPerBase = function( ref, ref.rc, cd2, base )
+getRatesPerBase = function(ref, ref.rc, cd2, base)
 {
-  fwd.idx = getHomopolymerTplPositions( ref, base )
-  rev.idx = getHomopolymerTplPositions( ref.rc, base )
-  sapply( 1:5, function( i )
+  fwd.idx = getHomopolymerTplPositions(ref, base)
+  rev.idx = getHomopolymerTplPositions(ref.rc, base)
+  sapply(1:5, function(i)
   {
-    fwd = subset( cd2, !rc & tpl %in% fwd.idx[[i]] )
-    rev = subset( cd2,  rc & tpl %in% rev.idx[[i]] )
-    tmp = rbind( fwd, rev )
-    c(  getErrRateMeanAndSE( tmp$read == '-' ),
-        getErrRateMeanAndSE( tmp$ref == '-' ),
-        getErrRateMeanAndSE( tmp$read != tmp$ref & tmp$ref != '-' & tmp$read != '-' ) )
-  } )
+    fwd = subset(cd2,!rc & tpl %in% fwd.idx[[i]])
+    rev = subset(cd2,  rc & tpl %in% rev.idx[[i]])
+    tmp = rbind(fwd, rev)
+    c(
+      getErrRateMeanAndSE(tmp$read == '-'),
+      getErrRateMeanAndSE(tmp$ref == '-'),
+      getErrRateMeanAndSE(tmp$read != tmp$ref &
+                            tmp$ref != '-' & tmp$read != '-')
+    )
+  })
 }
 
 
@@ -240,17 +280,20 @@ getRatesPerBase = function( ref, ref.rc, cd2, base )
 #' @param condition = string label for condition
 #' @export
 
-getDataFrameByErrType = function( k, idx, condition )
+getDataFrameByErrType = function(k, idx, condition)
 {
   dna = c("A", "C", "G", "T")
-  data.table::rbindlist( lapply( 1:4, function(i)
+  data.table::rbindlist(lapply(1:4, function(i)
   {
-    tmp = data.frame( cbind( k[[i]][idx,], k[[i]][idx + 1,], 1:5 ) );
-    names( tmp ) = c('Rate','SE','Length');
-    tmp$Base = dna[i];
+    tmp = data.frame(cbind(k[[i]][idx, ], k[[i]][idx + 1, ], 1:5))
+    
+    names(tmp) = c('Rate', 'SE', 'Length')
+    
+    tmp$Base = dna[i]
+    
     tmp$Condition = condition
     tmp
-  } ) )
+  }))
 }
 
 
@@ -260,22 +303,26 @@ getDataFrameByErrType = function( k, idx, condition )
 #' @param conditions = conditions table data frame
 #' @export
 
-getDataByCondition = function( cd2, conditions )
+getDataByCondition = function(cd2, conditions)
 {
-  loginfo( paste( "Plot error rates in homopolymer regions for condition", cd2$Condition[1] ) )
+  loginfo(paste(
+    "Plot error rates in homopolymer regions for condition",
+    cd2$Condition[1]
+  ))
   dna = c('A', 'C', 'G', 'T')
   
-  rsfname = conditions$Reference[ as.character( conditions$Condition ) == as.character( cd2$Condition[1] ) ]
-  fasta = pbbamr::getReferencePath( rsfname )
-  ref = readDNAStringSet( fasta )[[1]]
-  ref.rc = reverseComplement( ref )
+  rsfname = conditions$Reference[as.character(conditions$Condition) == as.character(cd2$Condition[1])]
+  fasta = pbbamr::getReferencePath(rsfname)
+  ref = readDNAStringSet(fasta)[[1]]
+  ref.rc = reverseComplement(ref)
   
-  k = lapply( dna, function( base ) getRatesPerBase( ref, ref.rc, cd2, base ) )
-  label= cd2$Condition[1]
-  del = getDataFrameByErrType( k, 1, label )
-  ins = getDataFrameByErrType( k, 3, label )
-  mis = getDataFrameByErrType( k, 5, label )
-  list( del = del, ins = ins, mis = mis )
+  k = lapply(dna, function(base)
+    getRatesPerBase(ref, ref.rc, cd2, base))
+  label = cd2$Condition[1]
+  del = getDataFrameByErrType(k, 1, label)
+  ins = getDataFrameByErrType(k, 3, label)
+  mis = getDataFrameByErrType(k, 5, label)
+  list(del = del, ins = ins, mis = mis)
 }
 
 
@@ -284,25 +331,47 @@ getDataByCondition = function( cd2, conditions )
 #' @param data = data frame created by concatenating outputs of \link{\code{getDataByCondition}} for each condition
 #' @export
 
-getPlotByErrType = function( report, data, error.type, plotname, uid )
+getPlotByErrType = function(report, data, error.type, plotname, uid)
 {
-  myplot <- ( ggplot( data, aes( x = Length, y = Rate, color = Condition, ymin = Rate - SE, ymax = Rate + SE ) ) +
-                facet_wrap(~ Base) +
-                geom_point(size = 3, position = position_dodge( width = 0.2 ) ) +
-                geom_errorbar(width = .3, position = position_dodge( width = 0.2 ) ) +
-                labs( title = paste( "Mean", error.type, "Rate by Homopolymer Context" ),
-                      x = 'Homopolymer Length',
-                      y = paste( 'Mean', error.type, 'Rate' ) ) )
+  myplot <-
+    (
+      ggplot(
+        data,
+        aes(
+          x = Length,
+          y = Rate,
+          color = Condition,
+          ymin = Rate - SE,
+          ymax = Rate + SE
+        )
+      ) +
+        facet_wrap( ~ Base) +
+        geom_point(size = 3, position = position_dodge(width = 0.2)) +
+        geom_errorbar(width = .3, position = position_dodge(width = 0.2)) +
+        labs(
+          title = paste("Mean", error.type, "Rate by Homopolymer Context"),
+          x = 'Homopolymer Length',
+          y = paste('Mean', error.type, 'Rate')
+        )
+    )
   
   report$ggsave(
-    paste( plotname, "png", sep = "." ),
+    paste(plotname, "png", sep = "."),
     myplot,
     width = plotwidth,
     height = plotheight,
     id = error.type,
     title = error.type,
-    caption = paste( 'Mean', error.type, 'rate in homopolymer regions of reference' ),
-    tags = c( 'sampled', 'homopolymer', 'error', error.type, 'lengths', 'regions', 'reference' ),
+    caption = paste('Mean', error.type, 'rate in homopolymer regions of reference'),
+    tags = c(
+      'sampled',
+      'homopolymer',
+      'error',
+      error.type,
+      'lengths',
+      'regions',
+      'reference'
+    ),
     uid = uid
   )
 }
@@ -314,23 +383,31 @@ getPlotByErrType = function( report, data, error.type, plotname, uid )
 #' @param conditions = conditions table data frame
 #' @export
 
-errorRatesInHomopolymerRegions = function( report, cd2, conditions, refname )
+errorRatesInHomopolymerRegions = function(report, cd2, conditions, refname)
 {
-  plotnames = c("DelRateInHomopolymerRegions", "InsRateInHomopolymerRegions", "MisRateInHomopolymerRegions" )
-  plotnames = paste( refname, plotnames, sep = "_" )
-  uids = c( 5101:5103 ) * 10
-  uids = paste( "00", uids, sep = "" )
+  plotnames = c(
+    "DelRateInHomopolymerRegions",
+    "InsRateInHomopolymerRegions",
+    "MisRateInHomopolymerRegions"
+  )
+  plotnames = paste(refname, plotnames, sep = "_")
+  uids = c(5101:5103) * 10
+  uids = paste("00", uids, sep = "")
   
-  r = lapply( split( 1:nrow( cd2 ), cd2$Condition ), function( x ) getDataByCondition( cd2[x,], conditions ) )
+  r = lapply(split(1:nrow(cd2), cd2$Condition), function(x)
+    getDataByCondition(cd2[x, ], conditions))
   
-  del = data.table::rbindlist( lapply( r, function( x ) x$del ) )
-  getPlotByErrType( report, del, 'Deletion', plotnames[1], uids[1] )
+  del = data.table::rbindlist(lapply(r, function(x)
+    x$del))
+  getPlotByErrType(report, del, 'Deletion', plotnames[1], uids[1])
   
-  ins = data.table::rbindlist( lapply( r, function( x ) x$ins ) )
-  getPlotByErrType( report, ins, 'Insertion', plotnames[2], uids[2] )
+  ins = data.table::rbindlist(lapply(r, function(x)
+    x$ins))
+  getPlotByErrType(report, ins, 'Insertion', plotnames[2], uids[2])
   
-  mis = data.table::rbindlist( lapply( r, function( x ) x$mis ) )
-  getPlotByErrType( report, mis, 'Miscall', plotnames[3], uids[3] )
+  mis = data.table::rbindlist(lapply(r, function(x)
+    x$mis))
+  getPlotByErrType(report, mis, 'Miscall', plotnames[3], uids[3])
 }
 
 
@@ -403,7 +480,7 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
     # Plot selected variables verses the p variable, groupd by condition
     # Note: When p_Var is categorical, the boxplots will overlap, so the plot is set to transparent with colored border
     # definte the vector of unique ids
-    uidlist1= paste('00',c(seq(0040045, 0040051, 1)), sep='')
+    uidlist1 = paste('00', c(seq(0040045, 0040051, 1)), sep = '')
     for (i in 1:length(plotVariables)) {
       tp <- ggplot(cd, aes_string(x = p_Var,
                                   y = cd[, match(plotVariables[i], names(cd))])) +
@@ -451,7 +528,7 @@ makepColPlots <- function(report, cd, p_Var, conditions) {
     
     # Generate plots of each plotVariables verses the p variables
     # Define the vector of unique ids
-    uidlist2= paste('00',c(seq(0040052, 0040058, 1)), sep='')
+    uidlist2 = paste('00', c(seq(0040052, 0040058, 1)), sep = '')
     for (i in 1:length(plotVariables)) {
       tp = ggplot(cdp,
                   aes_string(
@@ -521,9 +598,9 @@ makeSamplingPlots <-
       alns = loadAlnsFromIndex(tbl, fasta)
       sampleSize = min(nrow(tbl), sampleSize)
       for (i in (1:sampleSize)) {
-        alns[[i]]$hole = as.factor( as.character( tbl$hole ) )[i]
-        alns[[i]]$refName = as.factor( as.character( tbl$refName ) )[i]
-        alns[[i]]$tpl = addTplPosition( alns[[i]], tbl[i,] )
+        alns[[i]]$hole = as.factor(as.character(tbl$hole))[i]
+        alns[[i]]$refName = as.factor(as.character(tbl$refName))[i]
+        alns[[i]]$tpl = addTplPosition(alns[[i]], tbl[i, ])
         alns[[i]]$rc = tbl$rc[i]
       }
       alnsTotal = data.table::rbindlist(alns)
@@ -535,16 +612,18 @@ makeSamplingPlots <-
     s1 = split(1:nrow(cd2), cd2$refName)
     
     loginfo("Draw plots of error rates in homopolymer regions of the template")
-    lapply( 1:length(s1), function(i)
-      try( errorRatesInHomopolymerRegions( report, cd2[s1[[i]],], conditions, as.character( cd2$refName[s1[[i]][1]] ) ),
-           silent = FALSE ) )
+    lapply(1:length(s1), function(i)
+      try(errorRatesInHomopolymerRegions(report, cd2[s1[[i]], ], conditions, as.character(cd2$refName[s1[[i]][1]])),
+          silent = FALSE))
     
     loginfo("Draw plots to track the fraction of insertion bursts that are homopolymer insertions")
     lapply(1:length(s1), function(i)
-      try(homopolymerCountSingleRef(report, cd, cd2[s1[[i]],], as.character(cd2$refName[s1[[i]][1]]), i),
-          silent = TRUE))
+      try(homopolymerCountSingleRef(report, cd, cd2[s1[[i]], ], as.character(cd2$refName[s1[[i]][1]]), i),
+          silent = TRUE)
+    )
     
-    if ((("ipd" %in% colnames(cd2)) & ("pw" %in% colnames(cd2)))) {
+    if ((("ipd" %in% colnames(cd2)) & ("pw" %in% colnames(cd2))))
+    {
       cd2$ipd = cd2$ipd / cd2$framePerSecond
       cd2$pw = cd2$pw / cd2$framePerSecond
       cd2$AccuBases <- "Inaccurate"
@@ -559,7 +638,8 @@ makeSamplingPlots <-
       # Set a boolean variable to see if all the conditions are internal mode
       # Only when all the conditions are internal mode, the variable is set to TRUE
       internalBAM = TRUE
-      if (!("sf" %in% colnames(cd2))) {
+      if (!("sf" %in% colnames(cd2)))
+      {
         internalBAM = FALSE
       } else {
         cd2internal = cd2 %>% group_by(Condition) %>% summarise(sf = all(unique(sf) %in% NA))
@@ -577,7 +657,7 @@ makeSamplingPlots <-
             0, ceiling(max(cd2$sf) / min(framePerSecond) / 600)
           ) * 600))
         ) %>% ungroup()
-        cd3 = cd2[!cd2$read == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
+        cd3 = cd2[!cd2$read == "-",] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
           medianpw = median(pw),
           medianipd = median(ipd),
           PolRate = mean(ipd + pw),
@@ -585,7 +665,7 @@ makeSamplingPlots <-
           # Here we group by condition, frame rate and hole, so there should be only one unique frame rate
           endTime = max(sf) / unique(framePerSecond)
         )
-        cd3temp = cd2[!cd2$ref == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(tlen = n())
+        cd3temp = cd2[!cd2$ref == "-",] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(tlen = n())
         cd3 <-
           merge(cd3,
                 cd3temp,
@@ -623,7 +703,7 @@ makeSamplingPlots <-
                            id = "noninternalBAM",
                            title = "Missing plots that require internal BAM files")
         cd2 = cd2 %>% group_by(Condition, framePerSecond) %>% mutate(snrCfac = cut(snrC, breaks = c(0, seq(3, 20), 50))) %>% ungroup()
-        cd3 = cd2[!cd2$read == "-", ] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
+        cd3 = cd2[!cd2$read == "-",] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
           medianpw = median(pw),
           medianipd = median(ipd),
           PolRate = mean(ipd + pw)
@@ -656,7 +736,7 @@ makeSamplingPlots <-
               " Sampled Alignments)"
             ),
             x = "Start Time (minutes)"
-          ) + facet_wrap( ~ Condition, nrow = length(levels(cd3$Condition)))
+          ) + facet_wrap(~ Condition, nrow = length(levels(cd3$Condition)))
         img_height = min(49.5, plotheight * length(levels(cd3$Condition)))
         report$ggsave(
           "tlenvsstarttime.png",
@@ -684,7 +764,7 @@ makeSamplingPlots <-
               " Sampled Alignments)"
             ),
             x = "End Time (minutes)"
-          ) + facet_wrap( ~ Condition, nrow = length(levels(cd3$Condition)))
+          ) + facet_wrap(~ Condition, nrow = length(levels(cd3$Condition)))
         img_height = min(49.5, plotheight * length(levels(cd3$Condition)))
         report$ggsave(
           "tlenvsendtime.png",
@@ -777,8 +857,8 @@ makeSamplingPlots <-
         
         # pkMid for complete data set, accurate bases, and inaccurate bases
         
-        cd2.1 <- cd2[cd2$AccuBases == "Accurate", ]
-        cd2.2 <- cd2[cd2$AccuBases == "Inaccurate", ]
+        cd2.1 <- cd2[cd2$AccuBases == "Accurate",]
+        cd2.2 <- cd2[cd2$AccuBases == "Inaccurate",]
         reads <- list(cd2, cd2.1, cd2.2)
         variableTitle <-
           c("all reference reads",
@@ -802,7 +882,7 @@ makeSamplingPlots <-
               vjust = -0.8,
               aes(label = round(..y.., digits = 3))
             ) + plTheme + themeTilt  + clFillScale +
-            facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref)))
+            facet_wrap(~ ref, nrow = length(levels(reads[[i]]$ref)))
           report$ggsave(
             paste("pkMid_Box_", variableTitle[i], ".png", sep = ""),
             tp,
@@ -839,7 +919,7 @@ makeSamplingPlots <-
           
           uniqueidB <- c("0040005", "0040006", "0040007")
           tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + geom_density(alpha = .5) +
-            plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
+            plTheme + themeTilt  + clScale + facet_wrap(~ ref, nrow = length(levels(reads[[i]]$ref))) +
             labs(x = "pkMid (after normalization)", title = "pkMid by Condition")
           report$ggsave(
             paste("pkMid_Dens_", variableTitle[i], ".png", sep = ""),
@@ -860,7 +940,7 @@ makeSamplingPlots <-
           
           uniqueidC <- c("0040008", "0040009", "0040010")
           tp = ggplot(reads[[i]], aes(x = pkmid, colour = Condition)) + stat_ecdf() +
-            plTheme + themeTilt  + clScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
+            plTheme + themeTilt  + clScale + facet_wrap(~ ref, nrow = length(levels(reads[[i]]$ref))) +
             labs(x = "pkMid",
                  y = "CDF",
                  title = "pkMid by Condition (CDF)")
@@ -883,7 +963,7 @@ makeSamplingPlots <-
           
           uniqueidD <- c("0040011", "0040012", "0040013")
           tp = ggplot(reads[[i]], aes(x = pkmid, fill = Condition)) + geom_histogram() +
-            plTheme + themeTilt  + clFillScale + facet_wrap( ~ ref, nrow = length(levels(reads[[i]]$ref))) +
+            plTheme + themeTilt  + clFillScale + facet_wrap(~ ref, nrow = length(levels(reads[[i]]$ref))) +
             labs(x = "pkMid", title = "pkMid by Condition")
           report$ggsave(
             paste("pkMid_Hist_", variableTitle[i], ".png", sep = ""),
@@ -906,7 +986,7 @@ makeSamplingPlots <-
         # Density plots to compare pkMid for accurate bases and inaccurate bases
         
         tp = ggplot(cd2, aes(x = pkmid, colour = AccuBases)) + geom_density(alpha = .5) +
-          plTheme + themeTilt  + clScale + facet_wrap( ~ Condition + ref, ncol = 5) +
+          plTheme + themeTilt  + clScale + facet_wrap(~ Condition + ref, ncol = 5) +
           labs(x = "pkMid", title = "pkMid for accurate bases and inaccurate bases")
         report$ggsave(
           "pkMid_Accu_vs_Inaccu_Dens.png",
@@ -933,7 +1013,7 @@ makeSamplingPlots <-
         
         # Also make filtered data set by maxIPD and maxPW
         cd2timeFiltered = cd2[cd2$ipd < maxIPD &
-                                cd2$pw < maxPW,] %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
+                                cd2$pw < maxPW, ] %>% group_by(Condition) %>% mutate(PKMID.Median.Con = median(pkmid)) %>% ungroup() %>% group_by(Condition, time) %>% summarise(
                                   PW.Mean = mean(pw),
                                   PKMID.Median = median(pkmid),
                                   PKMID.Mean = mean(pkmid),
@@ -1198,7 +1278,7 @@ makeSamplingPlots <-
           y = "frequency",
           x = "seconds",
           title = paste("Pulse Width\n(From ", sampleSize, "Sampled Alignments)")
-        ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
+        ) + plTheme + themeTilt + clScale + facet_wrap(~ ref, nrow = length(levels(cd2$ref)))
       report$ggsave(
         "pw_by_template.png",
         tp,
@@ -1220,7 +1300,7 @@ makeSamplingPlots <-
             sampleSize,
             "Sampled Alignments)"
           )
-        ) + plTheme + themeTilt + clScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
+        ) + plTheme + themeTilt + clScale + facet_wrap(~ ref, nrow = length(levels(cd2$ref)))
       report$ggsave(
         "pw_by_template_cdf.png",
         tp,
@@ -1275,7 +1355,7 @@ makeSamplingPlots <-
       #   tags = c("sampled", "violin", "ipd")
       # )
       
-      tp = ggplot(cd2[cd2$ipd < maxIPD,], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() + stat_summary(
+      tp = ggplot(cd2[cd2$ipd < maxIPD, ], aes(x = Condition, y = ipd, fill = Condition)) + geom_boxplot() + stat_summary(
         fun.y = median,
         colour = "black",
         geom = "text",
@@ -1291,7 +1371,7 @@ makeSamplingPlots <-
             "Sampled Alignments)"
           )
         ) +
-        plTheme + themeTilt + clFillScale + facet_wrap( ~ ref, nrow = length(levels(cd2$ref)))
+        plTheme + themeTilt + clFillScale + facet_wrap(~ ref, nrow = length(levels(cd2$ref)))
       report$ggsave(
         "ipddistbybase_boxplot.png",
         tp,
@@ -1330,10 +1410,10 @@ makeSamplingPlots <-
       # )
       
       tp <-
-        ggplot(data = cd2[cd2$pw < maxPW,], aes(x = Condition, y = pw, fill = Insertion)) +
+        ggplot(data = cd2[cd2$pw < maxPW, ], aes(x = Condition, y = pw, fill = Insertion)) +
         geom_boxplot(position = position_dodge(width = 0.9))
       a <-
-        aggregate(pw ~ Condition + Insertion, cd2[cd2$pw < maxPW,], function(i)
+        aggregate(pw ~ Condition + Insertion, cd2[cd2$pw < maxPW, ], function(i)
           round(median(i), digits = 4))
       tp2 <- tp +  geom_text(
         data = a,
@@ -1362,10 +1442,10 @@ makeSamplingPlots <-
         uid = "0040028"
       )
       
-      tp3 = tp + facet_wrap( ~ ref, nrow = length(levels(cd2[cd2$pw < maxPW,]$ref)))
+      tp3 = tp + facet_wrap(~ ref, nrow = length(levels(cd2[cd2$pw < maxPW, ]$ref)))
       
       b <-
-        aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i)
+        aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW, ], function(i)
           round(median(i), digits = 4))
       tp4 <- tp3 +  geom_text(
         data = b,
@@ -1396,7 +1476,7 @@ makeSamplingPlots <-
       )
       
       c <-
-        aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW,], function(i)
+        aggregate(pw ~ Condition + ref + Insertion, cd2[cd2$pw < maxPW, ], function(i)
           round(mean(i), digits = 4))
       tp5 <- tp3 +  geom_text(
         data = c,
@@ -1427,7 +1507,7 @@ makeSamplingPlots <-
       )
       
       # Make a median PW plot
-      summaries = cd2[cd2$ipd < maxIPD,] %>% group_by(Condition, ref) %>% summarise(PW.Median = median(pw), IPD.Median = median(ipd)) %>% ungroup()
+      summaries = cd2[cd2$ipd < maxIPD, ] %>% group_by(Condition, ref) %>% summarise(PW.Median = median(pw), IPD.Median = median(ipd)) %>% ungroup()
       
       report$write.table("medianIPD.csv",
                          data.frame(summaries),
@@ -1497,7 +1577,7 @@ makeSamplingPlots <-
       )
       
       # Now mismatch insertions
-      errorRates = cd2[cd2$read != "-",] %>%
+      errorRates = cd2[cd2$read != "-", ] %>%
         group_by(Condition, snrCfac, read) %>%
         summarise(correct = sum(read == ref),
                   incorrect = sum(read != ref)) %>%
@@ -1515,8 +1595,8 @@ makeSamplingPlots <-
                   )) + geom_point() +
         geom_line()  + clScale + plTheme + themeTilt + labs(y = "Error Rate (per called BP)\nFrom Sampled Alignments",
                                                             x = "SNR C Bin",
-                                                            title = "Error Rates By Called Base") + facet_wrap(~
-                                                                                                                 read, nrow = length(levels(errorRates$read)))
+                                                            title = "Error Rates By Called Base") + facet_wrap( ~
+                                                                                                                  read, nrow = length(levels(errorRates$read)))
       report$ggsave(
         "bperr_rate_by_snr.png",
         tp,
@@ -1530,7 +1610,7 @@ makeSamplingPlots <-
       )
       
       # Now for mismatch rates
-      mmRates = cd2[cd2$read != "-" & cd2$ref != "-",] %>%
+      mmRates = cd2[cd2$read != "-" & cd2$ref != "-", ] %>%
         group_by(Condition, snrCfac, ref) %>%
         summarise(correct = sum(read == ref),
                   incorrect = sum(read != ref)) %>%
@@ -1548,7 +1628,7 @@ makeSamplingPlots <-
                   )) + geom_point() +
         geom_line()  + clScale + plTheme + themeTilt + labs(y = "Mismatch Rate (per ref BP)\nFrom Sampled Alignments",
                                                             x = "SNR C Bin",
-                                                            title = "Mismatch Rates By Template Base") + facet_wrap(~ ref, nrow = length(levels(mmRates$ref)))
+                                                            title = "Mismatch Rates By Template Base") + facet_wrap( ~ ref, nrow = length(levels(mmRates$ref)))
       report$ggsave(
         "bpmm_rate_by_snr.png",
         tp,
@@ -1626,7 +1706,7 @@ makeErrorsBySNRPlots <- function(report, cd, conLevel = 0.95) {
       aes(ymin = accmean - accci, ymax = accmean + accci),
       width = .1,
       position = pd
-    ) +
+    ) + ylim(0.7,1) +
     plTheme + themeTilt + clScale + labs(x = "SNR C Bin", y = "Accuracy (1 - errors per template pos)")
   report$ggsave(
     "snrvsacc.png",
@@ -1805,7 +1885,7 @@ makeReport <- function(report) {
     # )
     
     tp = ggplot(snrs, aes(x = SNR, colour = Condition)) + geom_density(alpha = .5) +
-      plTheme + themeTilt  + clScale + facet_wrap(~ channel, nrow = length(levels(as.factor(snrs$channel)))) +
+      plTheme + themeTilt  + clScale + facet_wrap( ~ channel, nrow = length(levels(as.factor(snrs$channel)))) +
       labs(x = "SNR", title = "Distribution of SNR in Aligned Files (Density plot)")
     report$ggsave(
       "snrDensity.png",
@@ -1828,7 +1908,7 @@ makeReport <- function(report) {
         vjust = -0.8,
         aes(label = round(..y.., digits = 4))
       ) + plTheme + themeTilt  + clFillScale +
-      facet_wrap( ~ channel, nrow = length(levels(as.factor(snrs$channel))))
+      facet_wrap(~ channel, nrow = length(levels(as.factor(snrs$channel))))
     report$ggsave(
       "snrBoxNoViolin.png",
       tp,
@@ -1853,7 +1933,8 @@ makeReport <- function(report) {
       if (length(p_Var) == 2) {
         if (is.numeric(conditions[, match(p_Var[1], names(conditions))]) == is.numeric(conditions[, match(p_Var[2], names(conditions))])) {
           p_Var = c(p_Var[2], p_Var[1])
-          try(makepColPlots(report, cd, p_Var, conditions), silent = TRUE)
+          try(makepColPlots(report, cd, p_Var, conditions),
+              silent = TRUE)
         }
       }
     }
@@ -1897,6 +1978,11 @@ main <- function()
   makeReport(report)
   jsonFile = "reports/PbiSampledPlots/report.json"
   uidTagCSV = "reports/uidTag.csv"
+  
+  # Assert all plots are indexed in the confluence plot index
+  # When run loca test, we suggest to delete "try" to get the error warnings
+  try(PlotIDinIndex(jsonFile, uidTagCSV))
+  
   try(rewriteJSON(jsonFile, uidTagCSV), silent = TRUE)
   0
 }

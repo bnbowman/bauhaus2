@@ -16,6 +16,44 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ ccsmappingreports | sed 's|\ ->.*||'
   ccsmappingreports
+  |-- benchmarks
+  |   |-- MovieA_0_ccs_one_chunk.tsv
+  |   |-- MovieA_0_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_1_ccs_one_chunk.tsv
+  |   |-- MovieA_1_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_2_ccs_one_chunk.tsv
+  |   |-- MovieA_2_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_3_ccs_one_chunk.tsv
+  |   |-- MovieA_3_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_4_ccs_one_chunk.tsv
+  |   |-- MovieA_4_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_5_ccs_one_chunk.tsv
+  |   |-- MovieA_5_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_6_ccs_one_chunk.tsv
+  |   |-- MovieA_6_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_7_ccs_one_chunk.tsv
+  |   |-- MovieA_7_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_chunk_subreads_one_condition.tsv
+  |   |-- MovieA_map_chunked_ccs_and_gather_one_condition.tsv
+  |   |-- MovieB_0_ccs_one_chunk.tsv
+  |   |-- MovieB_0_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_1_ccs_one_chunk.tsv
+  |   |-- MovieB_1_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_2_ccs_one_chunk.tsv
+  |   |-- MovieB_2_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_3_ccs_one_chunk.tsv
+  |   |-- MovieB_3_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_4_ccs_one_chunk.tsv
+  |   |-- MovieB_4_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_5_ccs_one_chunk.tsv
+  |   |-- MovieB_5_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_6_ccs_one_chunk.tsv
+  |   |-- MovieB_6_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_7_ccs_one_chunk.tsv
+  |   |-- MovieB_7_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_chunk_subreads_one_condition.tsv
+  |   |-- MovieB_map_chunked_ccs_and_gather_one_condition.tsv
+  |   `-- map_ccs_and_report.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -213,7 +251,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  21 directories, 175 files
+  22 directories, 212 files
 
 
   $ rm -fr ccsmappingreports
@@ -226,6 +264,44 @@ Generate mapping reports workflow, starting from subreads.
 
   $ tree -I __pycache__ ccsmappingreports | sed 's|\ ->.*||'
   ccsmappingreports
+  |-- benchmarks
+  |   |-- MovieA_0_ccs_one_chunk.tsv
+  |   |-- MovieA_0_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_1_ccs_one_chunk.tsv
+  |   |-- MovieA_1_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_2_ccs_one_chunk.tsv
+  |   |-- MovieA_2_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_3_ccs_one_chunk.tsv
+  |   |-- MovieA_3_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_4_ccs_one_chunk.tsv
+  |   |-- MovieA_4_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_5_ccs_one_chunk.tsv
+  |   |-- MovieA_5_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_6_ccs_one_chunk.tsv
+  |   |-- MovieA_6_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_7_ccs_one_chunk.tsv
+  |   |-- MovieA_7_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieA_chunk_subreads_one_condition.tsv
+  |   |-- MovieA_map_chunked_ccs_and_gather_one_condition.tsv
+  |   |-- MovieB_0_ccs_one_chunk.tsv
+  |   |-- MovieB_0_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_1_ccs_one_chunk.tsv
+  |   |-- MovieB_1_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_2_ccs_one_chunk.tsv
+  |   |-- MovieB_2_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_3_ccs_one_chunk.tsv
+  |   |-- MovieB_3_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_4_ccs_one_chunk.tsv
+  |   |-- MovieB_4_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_5_ccs_one_chunk.tsv
+  |   |-- MovieB_5_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_6_ccs_one_chunk.tsv
+  |   |-- MovieB_6_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_7_ccs_one_chunk.tsv
+  |   |-- MovieB_7_map_chunked_ccs_one_chunk.tsv
+  |   |-- MovieB_chunk_subreads_one_condition.tsv
+  |   |-- MovieB_map_chunked_ccs_and_gather_one_condition.tsv
+  |   `-- map_ccs_and_report.tsv
   |-- condition-table.csv
   |-- conditions
   |   |-- MovieA
@@ -423,4 +499,4 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  21 directories, 175 files
+  22 directories, 212 files

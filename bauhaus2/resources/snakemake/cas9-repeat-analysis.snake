@@ -31,6 +31,7 @@ rule cas9_repeat_analysis_one_condition:
         zmws="conditions/{condition}/repeat_analysis/repeat_analysis_zmws",
         mapping="conditions/{condition}/repeat_analysis/repeat_analysis_mapping",
         threads=8
+    benchmark: "benchmarks/{condition}_cas9_repeat_analysis_one_condition.tsv"
     shell:
         """
         module load gcc/6.4.0

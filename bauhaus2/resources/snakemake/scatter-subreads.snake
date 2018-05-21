@@ -18,6 +18,7 @@ rule chunk_subreads_one_condition:
     output:
         expand("conditions/{{condition}}/subreads/chunks/input.chunk{chunkNo}.subreadset.xml",
                chunkNo=range(config["bh2.scatter_subreads.chunks_per_condition"]))
+    benchmark: "benchmarks/{condition}_chunk_subreads_one_condition.tsv"
     params:
         chunkNo=config["bh2.scatter_subreads.chunks_per_condition"],
         outdir="conditions/{condition}/subreads/chunks"

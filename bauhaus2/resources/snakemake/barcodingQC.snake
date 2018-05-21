@@ -13,6 +13,7 @@ lima_reports = \
 rule barcode_and_qc_report:
     output: "reports/BarcodingQC/report.json"
     input: lima_reports.values()
+    benchmark: "benchmarks/barcode_and_qc_report.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/limaReport.R {input}

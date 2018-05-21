@@ -19,6 +19,7 @@ rule map_ccs_and_report:
     output: "reports/CCSMappingReports/report.json"
     input: local_alignmentset.values(),
            local_fasta_files.values()
+    benchmark: "benchmarks/map_ccs_and_report.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/ccsMappingPlots.R

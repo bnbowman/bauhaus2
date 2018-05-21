@@ -18,9 +18,11 @@ rule map_subreads_one_condition:
         subreads="conditions/{condition}/subreads/input.subreadset.xml",
         reference="conditions/{condition}/reference.fasta"
     output: "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    threads: 8
+    benchmark: "benchmarks/{condition}_map_subreads.tsv"
     shell:
         """
-        pbalign  --tmpDir=/scratch --nproc 8 {input.subreads} {input.reference} {output}
+        pbalign  --tmpDir=/scratch --nproc {threads} {input.subreads} {input.reference} {output}
         """
 
 # ---------------------------------------------------------------------------------------------------

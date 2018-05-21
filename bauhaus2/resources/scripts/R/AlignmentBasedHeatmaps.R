@@ -30,31 +30,11 @@ plotheight = 4.2
 
 fillInMissingPositions = function(k, N)
 {
-  # n = complete vector of coverages:
-  n = rep(NA, N)
-  n[as.numeric(names(k))] <- k
-
-  # Fill in any missing reference positions with last non-missing value:
-  w = !is.na(n)
-  if (sum(w) > 0)
-  {
-    w = which(w)[1]
-    prev = n[w]
-    if (w > 1) {
-      n[1:(w - 1)] <- prev
-    }
-    bool = is.na(n)
-    for (i in (w + 1):N)
-    {
-      if (bool[i]) {
-        n[i] <- prev
-      }
-      else {
-        prev <- n[i]
-      }
-    }
-  }
-  n
+  m = as.numeric(names(k)) + 1
+  ind = rep(FALSE, N)
+  ind[m] = TRUE
+  n = c(NA, k)
+  n[cumsum(ind) + 1]
 }
 
 #' Return a vector the length of the reference genome with the mean unaligned subread length at each position
@@ -1479,6 +1459,48 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
   )
 }
 
+#' The length of a string (in characters).
+#'
+#' @param res data frame output of \code{\link{simpleErrorHandling}}
+#' @param label string containing label for histogram.
+#'
+#' @export
+#' @examples
+#' res = simpleErrorHandling(alnxml, fastaname)
+#' addLoadingUniformityPlots( report, res, "Condition_A" )
+
+addtStartPlots = function(report, res, label)
+{
+  loginfo("Making Histogram of tStart/tEnd")
+  tp = ggplot(res, aes(x = tStart)) + geom_histogram(bins = 1000) + labs(x = "tstart", title = paste("Histogram of tStart - ", label, sep = ""))
+  
+  report$ggsave(
+    paste("hist_tstart_", label, ".png", sep = ""),
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = paste("hist_tstart_", label, sep = ""),
+    title = paste("Histogram of tStart - ", label, sep = ""),
+    caption = paste("Histogram of tStart - ", label, sep = ""),
+    tags = c("histogram", "tstart", "heatmap"),
+    uid = "0071001"
+  )   
+  
+  tp = ggplot(res, aes(x = tEnd)) + geom_histogram(bins = 1000) + labs(x = "tend", title = paste("Histogram of tEnd - ", label, sep = ""))
+  
+  report$ggsave(
+    paste("hist_tend_", label, ".png", sep = ""),
+    tp,
+    width = plotwidth,
+    height = plotheight,
+    id = paste("hist_tend_", label, sep = ""),
+    title = paste("Histogram of tEnd - ", label, sep = ""),
+    caption = paste("Histogram of tEnd - ", label, sep = ""),
+    tags = c("histogram", "tend", "heatmap"),
+    uid = "0071002"
+  ) 
+}
+
 #' Main function called by makeReport
 #'
 #' 1. Load data from aligned BAM files
@@ -1510,6 +1532,9 @@ generateHeatmapsPerCondition = function(report,
   loginfo(paste("Get data for condition:", label))
   fastaname = getReferencePath(reference)
   res = simpleErrorHandling(alnxml, fastaname)
+  
+  try(addtStartPlots(report, res, label))
+  
   if (is.null(res)) {
     loginfo("[WARNING] - Empty BAM file.")
     return(0)
@@ -1519,7 +1544,7 @@ generateHeatmapsPerCondition = function(report,
       loginfo("[WARNING] - Too few rows in BAM file.")
       return(0)
     }
-
+    
     loginfo(paste("Summarize data for condition:", label))
     res$SMRTlinkID = label
 
