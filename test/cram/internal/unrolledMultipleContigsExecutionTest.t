@@ -56,15 +56,45 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |   |-- mapped.alignmentset.xml
-  |   |   |   |-- ref_chunk
-  |   |   |   |   |-- mapped.chunk0.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk1.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk2.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk3.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk4.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk5.alignmentset.xml
-  |   |   |   |   `-- mapped.chunk6.alignmentset.xml
-  |   |   |   `-- scatterdone.empty
+  |   |   |   `-- ref_chunk
+  |   |   |       |-- lock.file
+  |   |   |       |-- mapped.chunk0.alignmentset.xml
+  |   |   |       |-- mapped.chunk1.alignmentset.xml
+  |   |   |       |-- mapped.chunk2.alignmentset.xml
+  |   |   |       |-- mapped.chunk3.alignmentset.xml
+  |   |   |       |-- mapped.chunk4.alignmentset.xml
+  |   |   |       |-- mapped.chunk5.alignmentset.xml
+  |   |   |       |-- mapped.chunk6.alignmentset.xml
+  |   |   |       |-- ref_con_0.csv
+  |   |   |       |-- ref_con_0.working
+  |   |   |       |-- ref_con_1.csv
+  |   |   |       |-- ref_con_1.working
+  |   |   |       |-- ref_con_2.csv
+  |   |   |       |-- ref_con_2.working
+  |   |   |       |-- ref_con_3.csv
+  |   |   |       |-- ref_con_3.working
+  |   |   |       |-- ref_con_4.csv
+  |   |   |       |-- ref_con_4.working
+  |   |   |       |-- ref_con_5.csv
+  |   |   |       |-- ref_con_5.working
+  |   |   |       |-- ref_con_6.csv
+  |   |   |       |-- ref_con_6.working
+  |   |   |       |-- worker0
+  |   |   |       |-- worker0.done
+  |   |   |       |-- worker1
+  |   |   |       |-- worker1.done
+  |   |   |       |-- worker2
+  |   |   |       |-- worker2.done
+  |   |   |       |-- worker3
+  |   |   |       |-- worker3.done
+  |   |   |       |-- worker4
+  |   |   |       |-- worker4.done
+  |   |   |       |-- worker5
+  |   |   |       |-- worker5.done
+  |   |   |       |-- worker6
+  |   |   |       |-- worker6.done
+  |   |   |       |-- worker7
+  |   |   |       `-- worker7.done
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
@@ -116,15 +146,45 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |       |   |   `-- mapped.chunk7.alignmentset.xml
   |       |   |-- mapped.alignmentset.xml
-  |       |   |-- ref_chunk
-  |       |   |   |-- mapped.chunk0.alignmentset.xml
-  |       |   |   |-- mapped.chunk1.alignmentset.xml
-  |       |   |   |-- mapped.chunk2.alignmentset.xml
-  |       |   |   |-- mapped.chunk3.alignmentset.xml
-  |       |   |   |-- mapped.chunk4.alignmentset.xml
-  |       |   |   |-- mapped.chunk5.alignmentset.xml
-  |       |   |   `-- mapped.chunk6.alignmentset.xml
-  |       |   `-- scatterdone.empty
+  |       |   `-- ref_chunk
+  |       |       |-- lock.file
+  |       |       |-- mapped.chunk0.alignmentset.xml
+  |       |       |-- mapped.chunk1.alignmentset.xml
+  |       |       |-- mapped.chunk2.alignmentset.xml
+  |       |       |-- mapped.chunk3.alignmentset.xml
+  |       |       |-- mapped.chunk4.alignmentset.xml
+  |       |       |-- mapped.chunk5.alignmentset.xml
+  |       |       |-- mapped.chunk6.alignmentset.xml
+  |       |       |-- ref_con_0.csv
+  |       |       |-- ref_con_0.working
+  |       |       |-- ref_con_1.csv
+  |       |       |-- ref_con_1.working
+  |       |       |-- ref_con_2.csv
+  |       |       |-- ref_con_2.working
+  |       |       |-- ref_con_3.csv
+  |       |       |-- ref_con_3.working
+  |       |       |-- ref_con_4.csv
+  |       |       |-- ref_con_4.working
+  |       |       |-- ref_con_5.csv
+  |       |       |-- ref_con_5.working
+  |       |       |-- ref_con_6.csv
+  |       |       |-- ref_con_6.working
+  |       |       |-- worker0
+  |       |       |-- worker0.done
+  |       |       |-- worker1
+  |       |       |-- worker1.done
+  |       |       |-- worker2
+  |       |       |-- worker2.done
+  |       |       |-- worker3
+  |       |       |-- worker3.done
+  |       |       |-- worker4
+  |       |       |-- worker4.done
+  |       |       |-- worker5
+  |       |       |-- worker5.done
+  |       |       |-- worker6
+  |       |       |-- worker6.done
+  |       |       |-- worker7
+  |       |       `-- worker7.done
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
@@ -141,7 +201,6 @@ Generate mapping reports workflow, starting from subreads.
   |           |   `-- input.chunk7.subreadset.xml
   |           `-- input.subreadset.xml
   |-- config.json
-  |-- contig-chunked-condition-table.csv
   |-- log
   |-- prefix.sh
   |-- reports
@@ -202,8 +261,16 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode-simple.csv
   |   |   |-- errormode.csv
+  |   |   |-- errormode.csv.bak
+  |   |   |-- fishboneplot_deletion.png
+  |   |   |-- fishboneplot_deletion_enlarged.png
+  |   |   |-- fishboneplot_insertion.png
+  |   |   |-- fishboneplot_insertion_enlarged.png
+  |   |   |-- fishboneplot_merge.png
+  |   |   |-- fishboneplot_merge_enlarged.png
+  |   |   |-- fishboneplot_mismatch.png
+  |   |   |-- fishboneplot_mismatch_enlarged.png
   |   |   |-- mapped-metrics.csv
-  |   |   |-- modelReport.json
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   |-- LibDiagnosticPlots
@@ -470,5 +537,5 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 425 files
+  28 directories, 492 files
 
