@@ -26,8 +26,9 @@ rule ScatterMappedReadsByReference:
         """
 
 rule ConstantArrowPlots:
-    input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv",
-    output: "reports/ConstantArrowFishbonePlots/report.json"
+    input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
+    output: "reports/ConstantArrowFishbonePlots/report.json",
+    benchmark: "benchmarks/ConstantArrowPlots.tsv"
     shell:
         """
         Rscript --vanilla scripts/R/FishbonePlots.R
@@ -38,6 +39,7 @@ rule MakeMappingMetricsCsv:
         asets = expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions),
         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
+    benchmark: "benchmarks/MakeMappingMetrics.tsv"
     shell:
         """
         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
@@ -56,6 +58,7 @@ import os
 rule ConstantArrowEachConditionRef:
     input: "conditions/{condition}/mapped/ref_chunk/worker{i}"
     output: "conditions/{condition}/mapped/ref_chunk/worker{i}.done"
+    benchmark: "benchmarks/ConstantArrowEachConditionRef.tsv"
     params:
         fastafile = "conditions/{condition}/reference.fasta"
     run:
