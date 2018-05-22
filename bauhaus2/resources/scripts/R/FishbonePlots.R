@@ -426,7 +426,9 @@ makeFishbonePlots <-
     report$write.table("FishboneSnrBinnedSummary.csv",
                        dfErr,
                        id = "fishbone_snr_binned_summary",
-                       title = "Fishbone Snr Binned Summary")
+                       title = "Fishbone Snr Binned Summary",
+                       tags = c("table", "errormode"),
+                       uid = "9010002")
 
     ## WRITE THE PLOTS ##
     # filter by min number of samples in each SNR bin
@@ -735,6 +737,12 @@ makeReport <- function(report) {
 
   # Load csv files
   errormodeMerge = read.csv("reports/ConstantArrowFishbonePlots/errormode.csv")
+  report$write.table("errormodeMerge.csv",
+                     errormodeMerge,
+                     id = "errormodeMerge",
+                     title = "Constant Arrow Errormode (Merge across conditions)",
+                     tags = c("table", "errormode"),
+                     uid = "9010001")
 
   if (nrow(errormodeMerge) == 0) {
     warning("The Errormode CSV file is empty!")

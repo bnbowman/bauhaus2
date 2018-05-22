@@ -416,8 +416,10 @@ bh2Reporter <-
         logging::loginfo(paste("Wrote table to: ", tbl_path))
 
         thisTbl <- list(
+          uid = unbox(uid),
           id = unbox(id),
           csv = unbox(tbl_file_name),
+          path = unbox(tbl_path),
           title = unbox(title),
           tags = as.vector(tags, mode = "character")
         )

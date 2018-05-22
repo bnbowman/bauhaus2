@@ -701,7 +701,9 @@ makeSamplingPlots <-
         report$write.table("noninternalBAM.csv",
                            noninternalBAM,
                            id = "noninternalBAM",
-                           title = "Missing plots that require internal BAM files")
+                           title = "Missing plots that require internal BAM files",
+                           tags = c("sampled", "missing", "table"),
+                           uid = "9040001")
         cd2 = cd2 %>% group_by(Condition, framePerSecond) %>% mutate(snrCfac = cut(snrC, breaks = c(0, seq(3, 20), 50))) %>% ungroup()
         cd3 = cd2[!cd2$read == "-",] %>% group_by(Condition, framePerSecond, hole, refName) %>% summarise(
           medianpw = median(pw),
@@ -1212,7 +1214,9 @@ makeSamplingPlots <-
       report$write.table("medianPolRateGlobal.csv",
                          data.frame(polRateGlobal),
                          id = "medianPolRateGlobal",
-                         title = "Median Global PolRate")
+                         title = "Median Global PolRate",
+                         tags = c("sampled", "polrate", "table"),
+                         uid = "9040002")
       
       # Polymerization Rate measured by template bases per second
       tp = ggplot(cd4, aes(
@@ -1512,7 +1516,9 @@ makeSamplingPlots <-
       report$write.table("medianIPD.csv",
                          data.frame(summaries),
                          id = "medianIPD",
-                         title = "Median IPD/PW Values by Reference")
+                         title = "Median IPD/PW Values by Reference",
+                         tags = c("sampled", "ipd", "pw", "table"),
+                         uid = "9040003")
       
       # Duty Cycle plot
       tp = ggplot(cd3, aes(x = Condition, y = DutyCycle, fill = Condition)) + geom_boxplot() + stat_summary(
@@ -1545,7 +1551,9 @@ makeSamplingPlots <-
       report$write.table("medianPolRateLocal.csv",
                          data.frame(polRateLocal),
                          id = "medianPolRateLocal",
-                         title = "Median Local Ploymerization Rate")
+                         title = "Median Local Ploymerization Rate",
+                         tags = c("sampled", "polrate", "table"),
+                         uid = "9040004")
       
       # Local PolRate plot
       tp = ggplot(cd3, aes(x = Condition, y = 1 / DC, fill = Condition)) + geom_boxplot() + stat_summary(
@@ -1652,7 +1660,9 @@ makeSamplingPlots <-
       report$write.table("medianPolymerizationRate.csv",
                          pr.rs,
                          id = "medianPolymerizationRate",
-                         title = "Median Polymerization Rate")
+                         title = "Median Polymerization Rate",
+                         tags = c("sampled", "polrate", "table"),
+                         uid = "9040005")
     } else {
       warning("ipd or pw information not available!")
       0
@@ -1956,7 +1966,9 @@ makeReport <- function(report) {
     report$write.table("medianSNR.csv",
                        summaries,
                        id = "medianSNR",
-                       title = "Median SNR values")
+                       title = "Median SNR values",
+                       tags = c("sampled", "snr", "table"),
+                       uid = "9040006")
   }
   
   # Save the report object for later debugging

@@ -297,7 +297,9 @@ makeReport <- function(report) {
   report$write.table("errormode.csv",
                      errormodeCombine,
                      id = "errormode",
-                     title = "Constant Arrow Errormode")
+                     title = "Constant Arrow Errormode",
+                     tags = c("table", "errormode"),
+                     uid = "9010001")
 
   # Save the report object for later debugging
   save(report, file = file.path(report$outputDir, "report.Rd"))

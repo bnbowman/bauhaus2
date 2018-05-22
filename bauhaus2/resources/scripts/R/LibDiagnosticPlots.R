@@ -48,7 +48,9 @@ generateNvalueMetrics <- function(report, cd) {
   report$write.table("Nvalues.csv",
                      cd3,
                      id = "nvalues",
-                     title = "Nvalues")
+                     title = "Nvalues",
+                     tags = c("libdiagnostics", "nvalues", "table"),
+                     uid = "9020001")
 }
 
 makeCDFofaStartPlots <- function(report, cd) {
@@ -259,7 +261,8 @@ makeCDFofaStartPlots <- function(report, cd) {
       "reference",
       "subreads",
       "table"
-    )
+    ),
+    uid = "9020002"
   )
 
   report$write.table(
@@ -277,7 +280,8 @@ makeCDFofaStartPlots <- function(report, cd) {
       "subreads",
       "unrolled",
       "table"
-    )
+    ),
+    uid = "9020003"
   )
 
 }
@@ -327,7 +331,9 @@ makeMaxVsUnrolledPlots <- function(report, cd) {
   report$write.table("sumtable.csv",
                      summaries,
                      id = "nReads",
-                     title = "nReads in Regions I-IV")
+                     title = "nReads in Regions I-IV",
+                     tags = c("libdiagnostic", "nreads", "table"),
+                     uid = "9020004")
 
   # To avoid this warning: Error: Dimensions exceed 50 inches (height and width are specified in 'in' not pixels). If you're sure you a plot that big, use `limitsize = FALSE`.
   img_height = min(49.5, 3.6 * length(levels(cd2$Condition)))
@@ -1272,7 +1278,8 @@ writeTauEstimatesToCsv = function(report,
     taus,
     id = "tau_estimate_table",
     title = title,
-    tags = c("tau", "first", "pass", "first_pass", "survival", "table")
+    tags = c("tau", "first", "pass", "first_pass", "survival", "table"),
+    uid = "9020005"
   )
   taus
 }
@@ -1707,7 +1714,8 @@ generateLongLibraryMetricsAndPlots = function(report, cd, perc, benchmark, deNov
     tbl,
     id = label,
     title = "MaxSubreads per ZMW Metrics",
-    tags = c("table", "metrics", "max_subreads_per_zmw_metrics", searchTags)
+    tags = c("table", "metrics", "max_subreads_per_zmw_metrics", searchTags),
+    uid = "9020006"
   )
 }
 
