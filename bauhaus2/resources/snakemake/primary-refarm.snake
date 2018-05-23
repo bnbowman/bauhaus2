@@ -148,32 +148,34 @@ rule run_baz2bam:
         cond=lambda wc: wc.condition,
     threads: 16
     benchmark: "benchmarks/{condition}_postprimary.tsv"
-    shell:
-        """
-        if [ -e {output.stsh5} ] ;
-        then unlink `pwd`/{output.stsh5} ; unlink `pwd`/{output.stsxml} ;
-        fi
-        module purge
-        module load {params.module}
-        {params.exe} -o {params.prefix} -m {input.meta} \
-        -j {threads} --adapters={input.adapters} \
-        {input.baz} --adpqc
-        ln -sf `pwd`/{params.prefix}.sts.h5 `pwd`/{output.stsh5}
-        ln -sf `pwd`/{params.prefix}.sts.xml `pwd`/{output.stsxml}
-        module load smrtlink/siv
-        echo "note: not to panic if conditional below is empty; it is a noop."
-        if [ {params.toCopy} ] ;
-        then mkdir -p {params.toCopy} ;
-        dataset copyto {output.sset} \
-        {params.toCopy}/{params.mov}.subreadset.xml ;
-        cp {input.baz} {params.toCopy}/{params.mov}.baz ;
-        cp {output.stsh5} {params.toCopy}/{params.mov}.sts.h5 ;
-        pwd > {params.toCopy}/{params.mov}.Bauhaus2analysis.txt ;
-        echo "Condition: {params.cond}" >> \
-        {params.toCopy}/{params.mov}.bauhaus2analysis.txt ;
-        chmod g+w -R {params.toCopy} || true
-        fi
-        """
+    run:
+        do_adpqc = has_adpqc(wildcards)
+        params.adpqc = "--adpqc" if do_adpqc else ""
+        cmd = ("if [ -e {output.stsh5} ] ;\n"
+        "then unlink `pwd`/{output.stsh5} ; unlink `pwd`/{output.stsxml} ;\n"
+        "fi\n"
+        "module purge\n"
+        "module load {params.module}\n"
+        "{params.exe} -o {params.prefix} -m {input.meta} "
+        "-j {threads} --adapters={input.adapters} "
+        "{input.baz} {params.adpqc}\n"
+        "ln -sf `pwd`/{params.prefix}.sts.h5 `pwd`/{output.stsh5}\n"
+        "ln -sf `pwd`/{params.prefix}.sts.xml `pwd`/{output.stsxml}\n"
+        "module load smrtlink/siv\n"
+        "echo \"note: not to panic if conditional below is empty; it is a noop.\"\n"
+        "if [ {params.toCopy} ] ;\n"
+        "then mkdir -p {params.toCopy} ;\n"
+        "dataset copyto {output.sset} "
+        "{params.toCopy}/{params.mov}.subreadset.xml ;\n"
+        "cp {input.baz} {params.toCopy}/{params.mov}.baz ;\n"
+        "cp {output.stsh5} {params.toCopy}/{params.mov}.sts.h5 ;\n"
+        "pwd > {params.toCopy}/{params.mov}.Bauhaus2analysis.txt ;\n"
+        "echo \"Condition: {params.cond}\" >> "
+        "{params.toCopy}/{params.mov}.bauhaus2analysis.txt ;\n"
+        "chmod g+w -R {params.toCopy} || true\n"
+        "fi\n"
+        )
+        shell(cmd)
 
 def lookupInput(wc):
     # nohq library mappings aren't possible with blasr alone (we don't call
