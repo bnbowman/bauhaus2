@@ -1,3 +1,16 @@
+import subprocess
+
+def has_adpqc(wildcards):
+    module = ct.ppaModule(wildcards.condition)
+    exe = ct.ppaExe(wildcards.condition)
+    sa = subprocess.check_output(
+        "source /mnt/software/Modules/current/init/bash && "
+        "module use /mnt/software/modulefiles && module purge && "
+        "module load {module} && "
+        "{exe} -h | grep adpqc > /dev/null; echo $?".format(
+            module=module, exe=exe),
+        shell=True, executable="/bin/bash")
+    return not bool(int(sa.strip()[0]))
 
 rule run_pbQcAdapters:
     input:
@@ -10,14 +23,20 @@ rule run_pbQcAdapters:
         txt_rep='reports/AdapterQC/{condition}/adapterQCReport.txt'
     params: subreads='conditions/{condition}/primary/input.subreads.bam'
     threads: 3
-    shell:
-        """
-        module load pbqctools
-        pbQcAdapters {input.reference} {params.subreads} --adapterReport \
-        {output.adp_rep} --zia {output.zia_rep} --sampleSize 5000 \
-        --randomSample > {output.txt_rep}
-        """
+    run:
+        if has_adpqc(wildcards):
+            cmd = (
+                "module load pbqctools\n"
+                "pbQcAdapters {input.reference} {params.subreads} --adapterReport "
+                "{output.adp_rep} --zia {output.zia_rep} --sampleSize 5000 "
+                "--randomSample > {output.txt_rep}\n")
+            shell(cmd)
+        else:
+            for ofn in output:
+                with open(ofn, 'w') as ofh:
+                    ofh.write('\n')
 
+"""This is a dummy gather step over conditions for now."""
 rule adapter_reports:
     input:
         expand("reports/AdapterQC/{condition}/adapterReport.csv",
