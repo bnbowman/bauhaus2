@@ -27,7 +27,7 @@ rule ScatterMappedReadsByReference:
 
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
-    output: "reports/ConstantArrowFishbonePlots/report.json",
+    output: "reports/ConstantArrowFishbonePlots/report.json"
     benchmark: "benchmarks/ConstantArrowPlots.tsv"
     shell:
         """
@@ -58,7 +58,7 @@ import os
 rule ConstantArrowEachConditionRef:
     input: "conditions/{condition}/mapped/ref_chunk/worker{i}"
     output: "conditions/{condition}/mapped/ref_chunk/worker{i}.done"
-    benchmark: "benchmarks/ConstantArrowEachConditionRef.tsv"
+    benchmark: "benchmarks/{condition}_{i}_ConstantArrowEachConditionRef.tsv"
     params:
         fastafile = "conditions/{condition}/reference.fasta"
     run:

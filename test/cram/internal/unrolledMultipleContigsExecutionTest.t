@@ -18,24 +18,42 @@ Generate mapping reports workflow, starting from subreads.
   unrolled-multiple-contigs-mapping
   |-- benchmarks
   |   |-- AlignmentBasedHeatmaps.tsv
+  |   |-- ConstantArrowPlots.tsv
   |   |-- LibDiagnosticPlots.tsv
+  |   |-- MakeMappingMetrics.tsv
+  |   |-- MovieA_0_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_0_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_1_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_1_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_2_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_2_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_3_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_3_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_4_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_4_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_5_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_5_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_6_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_6_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_7_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_7_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieA_chunk_subreads_one_condition.tsv
   |   |-- MovieA_map_chunked_unrolledNoHQ_and_gather.tsv
+  |   |-- MovieB_0_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_0_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_1_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_1_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_2_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_2_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_3_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_3_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_4_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_4_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_5_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_5_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_6_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_6_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_7_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_7_map_chunked_unrolledNoHQ_one_chunk.tsv
   |   |-- MovieB_chunk_subreads_one_condition.tsv
   |   |-- MovieB_map_chunked_unrolledNoHQ_and_gather.tsv
@@ -569,7 +587,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 524 files
+  28 directories, 542 files
 
 
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
