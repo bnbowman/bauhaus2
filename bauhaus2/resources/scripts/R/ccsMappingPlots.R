@@ -290,7 +290,9 @@ makeReport <- function(report) {
       report$write.table("ccs-mapping.csv",
                          ccsDf,
                          id = "ccs",
-                         title = "CCS Mapping CSV")
+                         title = "CCS Mapping CSV",
+                         tags = c("ccs"),
+                         uid = "9300001")
       doAllCCSPlots(report, ccsDf)
     }
 
