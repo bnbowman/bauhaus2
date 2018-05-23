@@ -18,37 +18,48 @@ Generate mapping reports workflow, starting from subreads.
   unrolled-multiple-contigs-mapping
   |-- benchmarks
   |   |-- AlignmentBasedHeatmaps.tsv
-  |   |-- ConstantArrow.tsv
   |   |-- ConstantArrowPlots.tsv
-  |   |-- CreateArrowConditionTable.tsv
   |   |-- LibDiagnosticPlots.tsv
-  |   |-- MakeMappingMetricsCsv.tsv
+  |   |-- MakeMappingMetrics.tsv
+  |   |-- MovieA_0_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_0_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_1_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_1_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_2_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_2_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_3_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_3_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_4_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_4_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_5_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_5_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_6_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_6_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieA_7_ConstantArrowEachConditionRef.tsv
   |   |-- MovieA_7_map_chunked_unrolledNoHQ_one_chunk.tsv
-  |   |-- MovieA_ScatterMappedReadsByReference.tsv
   |   |-- MovieA_chunk_subreads_one_condition.tsv
   |   |-- MovieA_map_chunked_unrolledNoHQ_and_gather.tsv
+  |   |-- MovieB_0_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_0_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_1_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_1_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_2_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_2_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_3_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_3_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_4_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_4_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_5_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_5_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_6_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_6_map_chunked_unrolledNoHQ_one_chunk.tsv
+  |   |-- MovieB_7_ConstantArrowEachConditionRef.tsv
   |   |-- MovieB_7_map_chunked_unrolledNoHQ_one_chunk.tsv
-  |   |-- MovieB_ScatterMappedReadsByReference.tsv
   |   |-- MovieB_chunk_subreads_one_condition.tsv
   |   |-- MovieB_map_chunked_unrolledNoHQ_and_gather.tsv
   |   |-- PbiPlots.tsv
   |   |-- PbiSampledPlots.tsv
   |   |-- ReadPlots.tsv
-  |   |-- SimplifyConstantArrowCsv.tsv
   |   |-- ZMWstsPlots.tsv
   |   |-- locacc.tsv
   |   `-- uidTagCSV.tsv
@@ -90,15 +101,45 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |   |   |   |   `-- mapped.chunk7.alignmentset.xml
   |   |   |   |-- mapped.alignmentset.xml
-  |   |   |   |-- ref_chunk
-  |   |   |   |   |-- mapped.chunk0.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk1.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk2.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk3.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk4.alignmentset.xml
-  |   |   |   |   |-- mapped.chunk5.alignmentset.xml
-  |   |   |   |   `-- mapped.chunk6.alignmentset.xml
-  |   |   |   `-- scatterdone.empty
+  |   |   |   `-- ref_chunk
+  |   |   |       |-- lock.file
+  |   |   |       |-- mapped.chunk0.alignmentset.xml
+  |   |   |       |-- mapped.chunk1.alignmentset.xml
+  |   |   |       |-- mapped.chunk2.alignmentset.xml
+  |   |   |       |-- mapped.chunk3.alignmentset.xml
+  |   |   |       |-- mapped.chunk4.alignmentset.xml
+  |   |   |       |-- mapped.chunk5.alignmentset.xml
+  |   |   |       |-- mapped.chunk6.alignmentset.xml
+  |   |   |       |-- ref_con_0.csv
+  |   |   |       |-- ref_con_0.working
+  |   |   |       |-- ref_con_1.csv
+  |   |   |       |-- ref_con_1.working
+  |   |   |       |-- ref_con_2.csv
+  |   |   |       |-- ref_con_2.working
+  |   |   |       |-- ref_con_3.csv
+  |   |   |       |-- ref_con_3.working
+  |   |   |       |-- ref_con_4.csv
+  |   |   |       |-- ref_con_4.working
+  |   |   |       |-- ref_con_5.csv
+  |   |   |       |-- ref_con_5.working
+  |   |   |       |-- ref_con_6.csv
+  |   |   |       |-- ref_con_6.working
+  |   |   |       |-- worker0
+  |   |   |       |-- worker0.done
+  |   |   |       |-- worker1
+  |   |   |       |-- worker1.done
+  |   |   |       |-- worker2
+  |   |   |       |-- worker2.done
+  |   |   |       |-- worker3
+  |   |   |       |-- worker3.done
+  |   |   |       |-- worker4
+  |   |   |       |-- worker4.done
+  |   |   |       |-- worker5
+  |   |   |       |-- worker5.done
+  |   |   |       |-- worker6
+  |   |   |       |-- worker6.done
+  |   |   |       |-- worker7
+  |   |   |       `-- worker7.done
   |   |   |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |   |   |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |   |   |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
@@ -150,15 +191,45 @@ Generate mapping reports workflow, starting from subreads.
   |       |   |   |-- mapped.chunk7.alignmentset.bam.pbi
   |       |   |   `-- mapped.chunk7.alignmentset.xml
   |       |   |-- mapped.alignmentset.xml
-  |       |   |-- ref_chunk
-  |       |   |   |-- mapped.chunk0.alignmentset.xml
-  |       |   |   |-- mapped.chunk1.alignmentset.xml
-  |       |   |   |-- mapped.chunk2.alignmentset.xml
-  |       |   |   |-- mapped.chunk3.alignmentset.xml
-  |       |   |   |-- mapped.chunk4.alignmentset.xml
-  |       |   |   |-- mapped.chunk5.alignmentset.xml
-  |       |   |   `-- mapped.chunk6.alignmentset.xml
-  |       |   `-- scatterdone.empty
+  |       |   `-- ref_chunk
+  |       |       |-- lock.file
+  |       |       |-- mapped.chunk0.alignmentset.xml
+  |       |       |-- mapped.chunk1.alignmentset.xml
+  |       |       |-- mapped.chunk2.alignmentset.xml
+  |       |       |-- mapped.chunk3.alignmentset.xml
+  |       |       |-- mapped.chunk4.alignmentset.xml
+  |       |       |-- mapped.chunk5.alignmentset.xml
+  |       |       |-- mapped.chunk6.alignmentset.xml
+  |       |       |-- ref_con_0.csv
+  |       |       |-- ref_con_0.working
+  |       |       |-- ref_con_1.csv
+  |       |       |-- ref_con_1.working
+  |       |       |-- ref_con_2.csv
+  |       |       |-- ref_con_2.working
+  |       |       |-- ref_con_3.csv
+  |       |       |-- ref_con_3.working
+  |       |       |-- ref_con_4.csv
+  |       |       |-- ref_con_4.working
+  |       |       |-- ref_con_5.csv
+  |       |       |-- ref_con_5.working
+  |       |       |-- ref_con_6.csv
+  |       |       |-- ref_con_6.working
+  |       |       |-- worker0
+  |       |       |-- worker0.done
+  |       |       |-- worker1
+  |       |       |-- worker1.done
+  |       |       |-- worker2
+  |       |       |-- worker2.done
+  |       |       |-- worker3
+  |       |       |-- worker3.done
+  |       |       |-- worker4
+  |       |       |-- worker4.done
+  |       |       |-- worker5
+  |       |       |-- worker5.done
+  |       |       |-- worker6
+  |       |       |-- worker6.done
+  |       |       |-- worker7
+  |       |       `-- worker7.done
   |       |-- reference.fasta -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta
   |       |-- reference.fasta.fai -> /pbi/dept/secondary/siv/references/All5Mers_unrolled_circular_22x_l50600/sequence/All5Mers_unrolled_circular_22x_l50600.fasta.fai
   |       |-- sts.h5 -> .*/bauhaus2/resources/extras/no_sts.h5 (re)
@@ -175,7 +246,6 @@ Generate mapping reports workflow, starting from subreads.
   |           |   `-- input.chunk7.subreadset.xml
   |           `-- input.subreadset.xml
   |-- config.json
-  |-- contig-chunked-condition-table.csv
   |-- log
   |-- prefix.sh
   |-- reports
@@ -240,6 +310,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode-simple.csv
   |   |   |-- errormode.csv
+  |   |   |-- errormode.csv.bak
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_deletion_enlarged.png
   |   |   |-- fishboneplot_insertion.png
@@ -249,7 +320,6 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- fishboneplot_mismatch.png
   |   |   |-- fishboneplot_mismatch_enlarged.png
   |   |   |-- mapped-metrics.csv
-  |   |   |-- modelReport.json
   |   |   |-- report.Rd
   |   |   `-- report.json
   |   |-- LibDiagnosticPlots
@@ -517,7 +587,8 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  28 directories, 472 files
+  28 directories, 542 files
+
 
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
   Yes, confluence plot index contains all plots in json report

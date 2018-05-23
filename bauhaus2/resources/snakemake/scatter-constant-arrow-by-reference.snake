@@ -2,11 +2,28 @@
 # scatter-constant-arrow-by-reference.snake: fit constant arrow model separately by reference, 
 # generating csv file of errormodes, and make Fishbone plots using the csv file.
 
+import shutil
+
 # -- Target rules --
 
 rule constant_arrow_plots:
     input:
         constantArrowPlots = "reports/ConstantArrowFishbonePlots/report.json"
+
+rule ScatterMappedReadsByReference:
+    input:
+        asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
+    params:
+        chunk_path = "conditions/{condition}/mapped/ref_chunk/"
+    output:
+        expand("conditions/{{condition}}/mapped/ref_chunk/worker{i}",
+               i=range(config["bh2.scatter_subreads.chunks_per_condition"]))
+    shell:
+        """
+        mkdir -p {params.chunk_path}
+        dataset split --contigs --outdir {params.chunk_path} {input.asets}
+        touch {output}
+        """
 
 rule ConstantArrowPlots:
     input: "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
@@ -18,11 +35,11 @@ rule ConstantArrowPlots:
         """
 
 rule MakeMappingMetricsCsv:
-    input: 
+    input:
         asets = expand("conditions/{condition}/mapped/mapped.alignmentset.xml", condition=ct.conditions),
         arrow_csv = "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
     output: metrics_csv = "reports/ConstantArrowFishbonePlots/mapped-metrics.csv"
-    benchmark: "benchmarks/MakeMappingMetricsCsv.tsv"
+    benchmark: "benchmarks/MakeMappingMetrics.tsv"
     shell:
         """
         python scripts/Python/MakeMappingMetricsCsv.py --asets {input.asets} --arrow-csv {input.arrow_csv} --output {output.metrics_csv}
@@ -31,44 +48,50 @@ rule MakeMappingMetricsCsv:
 rule SimplifyConstantArrowCsv:
     input: "reports/ConstantArrowFishbonePlots/errormode.csv"
     output: "reports/ConstantArrowFishbonePlots/errormode-simple.csv"
-    benchmark: "benchmarks/SimplifyConstantArrowCsv.tsv"
     shell:
         """
         python scripts/Python/ConsolidateArrowConditions.py --arrow-csv {input} --output {output}
         """
 
-rule ConstantArrow:
-    input: "contig-chunked-condition-table.csv"
-    output: "reports/ConstantArrowFishbonePlots/errormode.csv"
-    benchmark: "benchmarks/ConstantArrow.tsv"
+import flock
+import os
+rule ConstantArrowEachConditionRef:
+    input: "conditions/{condition}/mapped/ref_chunk/worker{i}"
+    output: "conditions/{condition}/mapped/ref_chunk/worker{i}.done"
+    benchmark: "benchmarks/{condition}_{i}_ConstantArrowEachConditionRef.tsv"
+    params:
+        fastafile = "conditions/{condition}/reference.fasta"
+    run:
+        while not os.path.isfile(output[0]):
+            this = None
+            with open('conditions/{condition}/mapped/ref_chunk/lock.file'.format(condition=wildcards.condition), 'w') as fp:
+                with flock.Flock(fp, flock.LOCK_EX) as lock:
+                    todo = set(glob_wildcards(
+                        "conditions/{condition}/mapped/ref_chunk/mapped.chunk{{chunkNo}}.alignmentset.xml".format(
+                            condition=wildcards.condition)).chunkNo)
+                    doing = set(glob_wildcards("conditions/{condition}/mapped/ref_chunk/ref_con_{{chunkNo}}.working".format(
+                            condition=wildcards.condition)).chunkNo)
+                    if todo - doing:
+                        this = list(todo - doing)[0]
+                    if this:
+                        with open("conditions/{condition}/mapped/ref_chunk/ref_con_{i}.working".format(
+                                condition=wildcards.condition, i=this), 'w') as ofh:
+                            ofh.write("Worker {} is processing this chunk\n".format(wildcards.i))
+                    else: this = None
+            if this is not None:
+                shell("Rscript --vanilla scripts/R/constant_arrow.R --noCT --input_aln conditions/{condition}/mapped/ref_chunk/mapped.chunk{chunkNo}.alignmentset.xml --input_ref {fasta} --output_csv conditions/{condition}/mapped/ref_chunk/ref_con_{chunkNo}.csv".format(condition=wildcards.condition, fasta = params.fastafile, chunkNo=this))
+            else:
+                with open(output[0], 'w') as ofh:
+                    ofh.write("Took you long enough!\n")
+
+rule mergeCSV:
+    input: 
+        expand("conditions/{condition}/mapped/ref_chunk/worker{i}.done",
+               i=range(config["bh2.scatter_subreads.chunks_per_condition"]), condition=ct.conditions)
+    output: outputcsv = "reports/ConstantArrowFishbonePlots/errormode.csv"
     shell:
         """
-        Rscript --vanilla scripts/R/constant_arrow.R --sampleByRef TRUE
+        awk  'FNR > 1' conditions/*/mapped/ref_chunk/ref_con_*.csv > {output.outputcsv}
+        sed -i.bak 1i"ZMW,SNR.A,SNR.C,SNR.G,SNR.T,A.Insert.A,C.Insert.A,G.Insert.A,T.Insert.A,A.Insert.C,C.Insert.C,G.Insert.C,T.Insert.C,A.Insert.G,C.Insert.G,G.Insert.G,T.Insert.G,A.Insert.T,C.Insert.T,G.Insert.T,T.Insert.T,A.Match.A,C.Match.A,G.Match.A,T.Match.A,A.Match.C,C.Match.C,G.Match.C,T.Match.C,A.Match.G,C.Match.G,G.Match.G,T.Match.G,A.Match.T,C.Match.T,G.Match.T,T.Match.T,A.Dark.A,C.Dark.C,G.Dark.G,T.Dark.T,A.Merge.A,C.Merge.C,G.Merge.G,T.Merge.T,AlnTLength,Time,Iterations,Condition,Reference" {output.outputcsv}
         """
 
-condition, num = glob_wildcards("conditions/{c}/mapped/ref_chunk/mapped.chunk{f}.alignmentset.xml")
-rule CreateArrowConditionTable:
-    input:  
-        scatterdone = expand("conditions/{condition}/mapped/scatterdone.empty", condition=ct.conditions),
-        chunked_asets = expand("conditions/{condition}/mapped/ref_chunk/mapped.chunk{num}.alignmentset.xml", zip, condition=condition, num=num), 
-        refs = expand("conditions/{condition}/reference.fasta", condition=ct.conditions),
-        condition_table = "condition-table.csv"
-    output: "contig-chunked-condition-table.csv"
-    benchmark: "benchmarks/CreateArrowConditionTable.tsv"
-    run:
-        shell("echo {input.scatterdone}")
-        shell("python scripts/Python/RefilterMappedReadsByReference.py --asets {input.chunked_asets}") # hack bc rname not supported in pbbam
-        shell("python scripts/Python/MakeChunkedConditionTable.py --asets {input.chunked_asets} --condition-table {input.condition_table} --refs {input.refs} --output {output}")
-    
-rule ScatterMappedReadsByReference:
-    input: 
-        asets = "conditions/{condition}/mapped/mapped.alignmentset.xml"
-    params:
-        chunk_path = "conditions/{condition}/mapped/ref_chunk/"
-    output: 
-        is_done = "conditions/{condition}/mapped/scatterdone.empty"
-    benchmark: "benchmarks/{condition}_ScatterMappedReadsByReference.tsv"
-    run:
-        shell("mkdir {params.chunk_path}")
-        shell("dataset split --contigs --outdir {params.chunk_path} {input.asets}")
-        shell("touch {output.is_done}")
