@@ -57,6 +57,7 @@ class PrimaryRefarmWorkflow(Workflow):
 
     def plan(self):
         return (["primary-refarm.snake",
+                 "adapterQC.snake",
                  "summarize-mappings.snake",
                  "constant-arrow.snake",
                  "constant-arrow-regular.snake",

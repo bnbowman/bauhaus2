@@ -1,6 +1,7 @@
 
   $ bauhaus2 list-workflows
   AdapterEvaluation
+  AdapterQC
   ArrowTraining
   BarcodingPPV
   BarcodingQC

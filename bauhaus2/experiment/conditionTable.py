@@ -10,6 +10,7 @@ __all__ = [ "InputType",
             "IsoSeqConditionTable",
             "LimaConditionTable",
             "AdapterConditionTable",
+            "AdapterQcConditionTable",
             "LimaConditionTable2",
             "Cas9ConditionTable",
             "TableValidationError",
@@ -441,13 +442,54 @@ class PrimaryResequencingConditionTable(ResequencingConditionTable):
     def callAdapters(self, condition):
         return str2bool(self.condition(condition).Library[0])
 
+class AdapterQcConditionTable(ResequencingConditionTable):
+
+    def _validatePPA(self):
+        required = ['PPA']
+        for rq in required:
+            if rq not in self.tbl.column_names:
+                raise TableValidationError(
+                    "'{}' column must be present".format(rq))
+
+    def _parsePPAString(self, condition):
+        ppa = self.condition(condition).PPA
+        exe, mod = parse_exe_or_module(ppa[0], 'bam2bam', ('ppa', 'basecaller'))
+        return mod, exe
+
+    def _parsePPA(self):
+        self._ppaModuleByCondition = {}
+        self._ppaExeByCondition = {}
+        for condition in self.conditions:
+            try:
+                mod, exe = self._parsePPAString(condition)
+                self._ppaModuleByCondition[condition] = mod
+                self._ppaExeByCondition[condition] = exe
+            except DataNotFound as e:
+                raise InputResolutionError(str(e))
+
+    def _resolveInputs(self, resolver):
+        super(AdapterQcConditionTable, self)._resolveInputs(resolver)
+        self._parsePPA()
+
+    def _validateTable(self):
+        super(AdapterQcConditionTable, self)._validateTable()
+        self._validatePPA()
+
+    def ppaModule(self, condition):
+        return self._ppaModuleByCondition[condition]
+
+    def ppaExe(self, condition):
+        return self._ppaExeByCondition[condition]
+
+
 
 class CoverageTitrationConditionTable(ResequencingConditionTable):
 
     def _validateAtLeastOnePVariable(self):
         if len(_pVariables(self.tbl)) < 1:
-            raise TableValidationError(
-                'For CoverageTitration, there must be at least one covariate ("p_" variable) in the condition table')
+            raise TableValidationError('For CoverageTitration, there must '
+                                       'be at least one covariate ("p_" '
+                                       'variable) in the condition table')
 
     def _validateTable(self):
         super(CoverageTitrationConditionTable, self)._validateTable()
@@ -462,7 +504,8 @@ class CoverageTitrationConditionTable(ResequencingConditionTable):
         for condition in self.conditions:
             genome = self.genome(condition)
             try:
-                self._referenceMaskByCondition[condition] = resolver.resolveReferenceMask(genome)
+                self._referenceMaskByCondition[condition] = (
+                    resolver.resolveReferenceMask(genome))
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
 
@@ -480,13 +523,15 @@ class UnrolledMappingConditionTable(ResequencingConditionTable):
         super(UnrolledMappingConditionTable, self)._validateTable()
 
         if self.inputsAreMapped:
-            raise TableValidationError("Unrolled mapping workflow requires unmapped inputs.")
+            raise TableValidationError(
+                "Unrolled mapping workflow requires unmapped inputs.")
 
         for genome in self.tbl.Genome:
             if "unrolled" in genome.lower() or "circular" in genome.lower():
                 continue
             else:
-                raise TableValidationError("Unrolled mapping requires an unrolled reference")
+                raise TableValidationError(
+                    "Unrolled mapping requires an unrolled reference")
 
 
 class IsoSeqConditionTable(ConditionTable):
@@ -495,8 +540,9 @@ class IsoSeqConditionTable(ConditionTable):
         return
 
     def _resolveInput(self, resolver, rowRecord):
-        """
-        Condition Tables must contain either ('SMRTLinkServer', 'JobId') or ('JobPath').
+        """ Condition Tables must contain either ('SMRTLinkServer', 'JobId') or
+        ('JobPath').
+
         Return [JobPath], path to SMRTLink IsoSeq jobs."""
         cols = self.tbl.column_names
         if {"SMRTLinkServer", "JobId"}.issubset(cols):
@@ -504,13 +550,13 @@ class IsoSeqConditionTable(ConditionTable):
         elif {"JobPath"}.issubset(cols):
             return rowRecord.JobPath
         else:
-            raise TableValidationError("IsoSeq ConditionTable should either contain both 'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
+            raise TableValidationError(
+                "IsoSeq ConditionTable should either contain both "
+                "'SMRTLinkServer' and 'JobId' or only contain 'JobPath'")
 
 class LimaConditionTable(ConditionTable):
-    """
-    This workflow is for barcoding (lima) QC jobs
-    """
-    
+    """This workflow is for barcoding (lima) QC jobs"""
+
     """Override validate table for lima"""
     def _validateBarcode(self):
         required = ['Condition', 'SubreadSet']
@@ -519,17 +565,21 @@ class LimaConditionTable(ConditionTable):
             if rq not in self.tbl.column_names:
                 raise TableValidationError(
                     "'{}' column must be present".format(rq))
-        if exclusive[0] in self.tbl.column_names and exclusive[1] in self.tbl.column_names:
+        if (exclusive[0] in self.tbl.column_names
+                and exclusive[1] in self.tbl.column_names):
             raise TableValidationError(
-                    "LimaConditionTable should only contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
-        elif exclusive[0] not in self.tbl.column_names and exclusive[1] not in self.tbl.column_names:
+                "LimaConditionTable should only contain one of either "
+                "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+        elif (exclusive[0] not in self.tbl.column_names
+                and exclusive[1] not in self.tbl.column_names):
             raise TableValidationError(
-                    "LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
-        
+                "LimaConditionTable should contain one of either "
+                "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+
     def _validateTable(self):
         super(LimaConditionTable, self)._validateTable()
         self._validateBarcode()
-        
+
     def prefix(self, condition):
         prefixlist = ['--same', '--min-passes 1']
         try:
@@ -540,16 +590,22 @@ class LimaConditionTable(ConditionTable):
                 if bool(self.condition(condition).AsymmetricBarcodeSet):
                     return prefixlist[1]
             except:
-                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+                return TableValidationError(
+                    "LimaConditionTable should contain one of either "
+                    "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
 
     def barcodeSet(self, condition):
         try:
             return self.condition(condition).SymmetricBarcodeSet
-        except:  ## TODO(lhepler): use proper exception here for SymmetricBarcodeSet lookup failure
+        except:
+            # TODO(lhepler): use proper exception here for SymmetricBarcodeSet
+            # lookup failure
             try:
                 return self.condition(condition).AsymmetricBarcodeSet
             except:
-                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+                return TableValidationError(
+                    "LimaConditionTable should contain one of either "
+                    "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
 
     def _resolveInputs(self, resolver):
         super(LimaConditionTable, self)._resolveInputs(resolver)
@@ -558,12 +614,10 @@ class LimaConditionTable(ConditionTable):
                 barcodeSet = self.barcodeSet(condition)
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
-                
+
 class LimaConditionTable2(ConditionTable):
-    """
-    This workflow is for barcoding (lima) QC jobs
-    """
-    
+    """This workflow is for barcoding (lima) QC jobs"""
+
     """Override validate table for lima"""
     def _validateBarcode(self):
         required = ['Condition', 'SubreadSet']
@@ -572,17 +626,21 @@ class LimaConditionTable2(ConditionTable):
             if rq not in self.tbl.column_names:
                 raise TableValidationError(
                     "'{}' column must be present".format(rq))
-        if exclusive[0] in self.tbl.column_names and exclusive[1] in self.tbl.column_names:
+        if (exclusive[0] in self.tbl.column_names
+                and exclusive[1] in self.tbl.column_names):
             raise TableValidationError(
-                    "LimaConditionTable should only contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
-        elif exclusive[0] not in self.tbl.column_names and exclusive[1] not in self.tbl.column_names:
+                "LimaConditionTable should only contain one of either "
+                "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+        elif (exclusive[0] not in self.tbl.column_names
+                and exclusive[1] not in self.tbl.column_names):
             raise TableValidationError(
-                    "LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
-        
+                "LimaConditionTable should contain one of either "
+                "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+
     def _validateTable(self):
         super(LimaConditionTable2, self)._validateTable()
         self._validateBarcode()
-        
+
     def prefix(self, condition):
         prefixlist = ['--same', '--min-passes 1']
         try:
@@ -593,8 +651,10 @@ class LimaConditionTable2(ConditionTable):
                 if bool(self.condition(condition).AsymmetricBarcodeSet):
                     return prefixlist[1]
             except:
-                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
-   
+                return TableValidationError(
+                    "LimaConditionTable should contain one of either "
+                    "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+
     def prefix2(self, condition):
         prefixlist2 = ['same', 'different']
         try:
@@ -605,17 +665,23 @@ class LimaConditionTable2(ConditionTable):
                 if bool(self.condition(condition).AsymmetricBarcodeSet):
                     return prefixlist2[1]
             except:
-                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+                return TableValidationError(
+                    "LimaConditionTable should contain one of either "
+                    "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
 
 
     def barcodeSet(self, condition):
         try:
             return self.condition(condition).SymmetricBarcodeSet
-        except:  ## TODO(lhepler): use proper exception here for SymmetricBarcodeSet lookup failure
+        except:
+            # TODO(lhepler): use proper exception here for SymmetricBarcodeSet
+            # lookup failure
             try:
                 return self.condition(condition).AsymmetricBarcodeSet
             except:
-                return TableValidationError("LimaConditionTable should contain one of either 'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
+                return TableValidationError(
+                    "LimaConditionTable should contain one of either "
+                    "'SymmetricBarcodeSet' or 'AsymmetricBarcodeSet' columns")
 
     def _resolveInputs(self, resolver):
         super(LimaConditionTable2, self)._resolveInputs(resolver)
@@ -625,9 +691,12 @@ class LimaConditionTable2(ConditionTable):
         for condition in self.conditions:
             genome = self.genome(condition)
             try:
-                self._referenceByCondition[condition] = resolver.resolveReference(genome)
-                self._referenceSetByCondition[condition] = resolver.resolveReferenceSet(genome)
-                self._mappingByCondition[condition] = resolver.ensureMapping(self.condition(condition).Mapping[0])
+                self._referenceByCondition[condition] = (
+                    resolver.resolveReference(genome))
+                self._referenceSetByCondition[condition] = (
+                    resolver.resolveReferenceSet(genome))
+                self._mappingByCondition[condition] = resolver.ensureMapping(
+                    self.condition(condition).Mapping[0])
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
         for condition in self.conditions:
@@ -635,7 +704,7 @@ class LimaConditionTable2(ConditionTable):
                 barcodeSet = self.barcodeSet(condition)
             except DataNotFound as e:
                 raise InputResolutionError(str(e))
-        
+
    # def variables(self):
         """
         In addition to the "p_" variables, "Genome" is considered an implicit
@@ -651,15 +720,17 @@ class LimaConditionTable2(ConditionTable):
         genomes = _unique(self.condition(condition).Genome)
         assert len(genomes) == 1
         return genomes[0]
-        
+
     def mapping(self, condition):
         return self._mappingByCondition[condition]
-        
+
     def reference(self, condition):
         return self._referenceByCondition[condition]
 
     def referenceSet(self, condition):
         return self._referenceSetByCondition[condition]
+
+
 class AdapterConditionTable(ResequencingConditionTable):
     """
     This workflow is for adapter evaluation jobs
@@ -667,13 +738,17 @@ class AdapterConditionTable(ResequencingConditionTable):
 
     def _validateAdapter(self):
         exclusive = ['AsymmetricAdapterSet', 'SymmetricAdapterSet']
-        if exclusive[0] in self.tbl.column_names and exclusive[1] in self.tbl.column_names:
+        if (exclusive[0] in self.tbl.column_names
+                and exclusive[1] in self.tbl.column_names):
             raise TableValidationError(
-                    "AdapterConditionTable should only contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
-        elif exclusive[0] not in self.tbl.column_names and exclusive[1] not in self.tbl.column_names:
+                "AdapterConditionTable should only contain one of either "
+                "'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+        elif (exclusive[0] not in self.tbl.column_names
+                and exclusive[1] not in self.tbl.column_names):
             raise TableValidationError(
-                    "AdapterConditionTable should contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
-        
+                "AdapterConditionTable should contain one of either "
+                "'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+
     def prefix(self, condition):
         prefixlist = ['--same', '--min-passes 1']
         try:
@@ -684,16 +759,22 @@ class AdapterConditionTable(ResequencingConditionTable):
                 if bool(self.condition(condition).AsymmetricAdapterSet):
                     return prefixlist[1]
             except:
-                return TableValidationError("AdapterConditionTable should contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+                return TableValidationError(
+                    "AdapterConditionTable should contain one of either "
+                    "'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
 
     def adapter(self, condition):
         try:
             return self.condition(condition).SymmetricAdapterSet
-        except:  ## TODO(lhepler): use proper exception here for SymmetricAdapterSet lookup failure
+        except:
+            # TODO(lhepler): use proper exception here for SymmetricAdapterSet
+            # lookup failure
             try:
                 return self.condition(condition).AsymmetricAdapterSet
             except:
-                return TableValidationError("AdapterConditionTable should contain one of either 'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
+                return TableValidationError(
+                    "AdapterConditionTable should contain one of either "
+                    "'SymmetricAdapterSet' or 'AsymmetricAdapterSet' columns")
 
     def _resolveInputs(self, resolver):
         super(AdapterConditionTable, self)._resolveInputs(resolver)
@@ -701,11 +782,12 @@ class AdapterConditionTable(ResequencingConditionTable):
             try:
                 adapter = self.adapter(condition)
             except DataNotFound as e:
-                raise InputResolutionError(str(e)) 
-    
+                raise InputResolutionError(str(e))
+
     def _validateTable(self):
         super(AdapterConditionTable, self)._validateTable()
         self._validateAdapter()
+
 
 class Cas9ConditionTable(ConditionTable):
     """Override validate table for Cas9Yield"""
