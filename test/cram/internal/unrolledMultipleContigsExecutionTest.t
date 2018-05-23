@@ -310,11 +310,8 @@ Generate mapping reports workflow, starting from subreads.
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode-simple.csv
   |   |   |-- errormode.csv
-<<<<<<< 938b0328dccac2f1e5f4fe6224e5dd12dab7183d
   |   |   |-- errormode.csv.bak
-=======
   |   |   |-- errormodeMerge.csv
->>>>>>> Update CCS script and cram test
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_deletion_enlarged.png
   |   |   |-- fishboneplot_insertion.png
@@ -591,12 +588,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-<<<<<<< 938b0328dccac2f1e5f4fe6224e5dd12dab7183d
-  28 directories, 542 files
-
-=======
-  28 directories, 473 files
->>>>>>> Update CCS script and cram test
+  28 directories, 543 files
 
   $ python unrolled-multiple-contigs-mapping/scripts/Python/jsonIDinCSV.py unrolled-multiple-contigs-mapping/reports/AlignmentBasedHeatmaps/report.json unrolled-multiple-contigs-mapping/reports/uidTag.csv
   Yes, confluence plot index contains all plots in json report

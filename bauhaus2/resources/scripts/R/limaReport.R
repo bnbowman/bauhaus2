@@ -25,17 +25,23 @@ makeReport <- function(reportbh) {
   reportbh$write.table("guess.csv",
                        as.data.frame(fread(paste0(args[1],"/barcoded.lima.guess"))),
                        id = "guess.csv",
-                       title = "Barcode Guess")
+                       title = "Barcode Guess",
+                       tags = c("table", "barcode", "lima"),
+                       uid = "9200001")
 
   reportbh$write.table("counts.csv",
                        as.data.frame(fread(paste0(args[1],"/barcoded.lima.counts"))),
                        id = "counts.csv",
-                       title = "Barcode Counts")
+                       title = "Barcode Counts",
+                       tags = c("table", "barcode", "lima"),
+                       uid = "9200002")
 
   reportbh$write.table("summary.csv",
                        as.data.frame(fread(paste0(args[1],"/barcoded.lima.summary"),blank.lines.skip=TRUE,sep=":")),
                        id = "summary.csv",
-                       title = "Lima Summary")
+                       title = "Lima Summary",
+                       tags = c("table", "barcode", "lima"),
+                       uid = "9200003")
 
   reportPath = paste0(args[1],"/barcoded.lima.report")
 
