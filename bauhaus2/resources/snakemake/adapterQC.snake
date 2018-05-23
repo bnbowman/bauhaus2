@@ -10,7 +10,8 @@ def has_adpqc(wildcards):
         "{exe} -h | grep adpqc > /dev/null; echo $?".format(
             module=module, exe=exe),
         shell=True, executable="/bin/bash")
-    return not bool(int(sa.strip()[0]))
+    tbr = not bool(int(sa.strip()))
+    return tbr
 
 rule run_pbQcAdapters:
     input:
@@ -28,8 +29,8 @@ rule run_pbQcAdapters:
             cmd = (
                 "module load pbqctools\n"
                 "pbQcAdapters {input.reference} {params.subreads} --adapterReport "
-                "{output.adp_rep} --zia {output.zia_rep} --sampleSize 5000 "
-                "--randomSample > {output.txt_rep}\n")
+                "{output.adp_rep} --zia {output.zia_rep} "
+                "> {output.txt_rep}\n")
             shell(cmd)
         else:
             for ofn in output:
