@@ -357,7 +357,9 @@ if (!interactive())
   report$write.table("coverage-titration.csv",
                      tbl,
                      id = "coverage-titration",
-                     title = "Coverage titration summary table")
+                     title = "Coverage titration summary table",
+                     tags = c("table", "coverage", "titration"),
+                     uid = "9400001")
 
   ## Generate plots
   doTitrationPlots(report, tbl)

@@ -552,7 +552,9 @@ makeReport <- function(report) {
     report$write.table("sumtable.csv",
                        summaries,
                        id = "sumtable",
-                       title = "Summary Statistics (Median Values)")
+                       title = "Summary Statistics (Median Values)",
+                       tags = c("summary", "table", "median"),
+                       uid = "9030001")
 
     # Make Plots
     try(makeReadLengthSurvivalPlots(report, cd), silent = TRUE)

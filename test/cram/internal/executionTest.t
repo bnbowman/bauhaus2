@@ -410,6 +410,7 @@ Generate mapping reports workflow, starting from subreads.
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
+  |   |   |-- errormodeMerge.csv
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_deletion_enlarged.png
   |   |   |-- fishboneplot_insertion.png
@@ -654,7 +655,7 @@ Generate mapping reports workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  36 directories, 601 files
+  36 directories, 602 files
 
 
 
@@ -947,40 +948,52 @@ Generate mapping reports workflow, starting from subreads.
     ],
     "tables": [
       {
+        "uid": "9040001",
         "id": "noninternalBAM",
         "csv": "noninternalBAM.csv",
+        "path": "reports/PbiSampledPlots/noninternalBAM.csv",
         "title": "Missing plots that require internal BAM files",
-        "tags": []
+        "tags": ["sampled", "missing", "table"]
       },
       {
+        "uid": "9040002",
         "id": "medianPolRateGlobal",
         "csv": "medianPolRateGlobal.csv",
+        "path": "reports/PbiSampledPlots/medianPolRateGlobal.csv",
         "title": "Median Global PolRate",
-        "tags": []
+        "tags": ["sampled", "polrate", "table"]
       },
       {
+        "uid": "9040003",
         "id": "medianIPD",
         "csv": "medianIPD.csv",
+        "path": "reports/PbiSampledPlots/medianIPD.csv",
         "title": "Median IPD/PW Values by Reference",
-        "tags": []
+        "tags": ["sampled", "ipd", "pw", "table"]
       },
       {
+        "uid": "9040004",
         "id": "medianPolRateLocal",
         "csv": "medianPolRateLocal.csv",
+        "path": "reports/PbiSampledPlots/medianPolRateLocal.csv",
         "title": "Median Local Ploymerization Rate",
-        "tags": []
+        "tags": ["sampled", "polrate", "table"]
       },
       {
+        "uid": "9040005",
         "id": "medianPolymerizationRate",
         "csv": "medianPolymerizationRate.csv",
+        "path": "reports/PbiSampledPlots/medianPolymerizationRate.csv",
         "title": "Median Polymerization Rate",
-        "tags": []
+        "tags": ["sampled", "polrate", "table"]
       },
       {
+        "uid": "9040006",
         "id": "medianSNR",
         "csv": "medianSNR.csv",
+        "path": "reports/PbiSampledPlots/medianSNR.csv",
         "title": "Median SNR values",
-        "tags": []
+        "tags": ["sampled", "snr", "table"]
       }
     ]
   }

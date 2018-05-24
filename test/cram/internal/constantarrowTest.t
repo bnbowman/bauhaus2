@@ -151,6 +151,7 @@ Generate constant arrow workflow, starting from subreads.
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
+  |   |   |-- errormodeMerge.csv
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_deletion_enlarged.png
   |   |   |-- fishboneplot_insertion.png
@@ -177,7 +178,7 @@ Generate constant arrow workflow, starting from subreads.
   `-- workflow
       `-- Snakefile
   
-  19 directories, 141 files
+  19 directories, 142 files
 
   $ python constantarrow/scripts/Python/jsonIDinCSV.py constantarrow/reports/ConstantArrowFishbonePlots/report.json constantarrow/reports/uidTag.csv
   Yes, confluence plot index contains all plots in json report

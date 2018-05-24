@@ -417,6 +417,7 @@ a more stable module when possible
   |   |-- ConstantArrowFishbonePlots
   |   |   |-- FishboneSnrBinnedSummary.csv
   |   |   |-- errormode.csv
+  |   |   |-- errormodeMerge.csv
   |   |   |-- fishboneplot_deletion.png
   |   |   |-- fishboneplot_deletion_enlarged.png
   |   |   |-- fishboneplot_insertion.png
@@ -670,5 +671,6 @@ a more stable module when possible
   `-- workflow
       `-- Snakefile
   
-  46 directories, 603 files
+  46 directories, 604 files
+
 

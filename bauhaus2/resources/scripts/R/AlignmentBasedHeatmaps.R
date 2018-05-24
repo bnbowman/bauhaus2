@@ -1452,7 +1452,7 @@ addLoadingUniformityPlots = function(report, tmp, N, label, dist)
   report$write.table(
     csvfile,
     tbl,
-    id = "loading_metrics_table",
+    id = paste("loading_metrics_table_", label, sep = ""),
     title = paste(label, "Loading_uniformity_metrics", sep = "_"),
     tags = c("table", "uniformity", "loading", "metrics"),
     uid = "0073000"
